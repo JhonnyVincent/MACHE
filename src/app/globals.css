@@ -310,3 +310,243 @@ img {
     grid-template-columns: 1fr;
   }
 }
+/* EXTRA BADGES */
+.btag {
+  display: inline-flex;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.bg-new {
+  background: var(--mache-blue-soft);
+  color: var(--mache-blue);
+}
+
+.bg-hot {
+  background: var(--mache-primary-soft);
+  color: var(--mache-primary);
+}
+
+.bg-promo {
+  background: #feeee8;
+  color: var(--mache-danger);
+}
+
+.bg-fresh {
+  background: var(--mache-success-soft);
+  color: var(--mache-success);
+}
+
+.bg-lux {
+  background: var(--mache-gold-soft);
+  color: var(--mache-gold);
+}
+
+/* PROMO GRID */
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 13px;
+}
+
+.promo-card {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+
+.promo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.4s;
+}
+
+.promo-card:hover img {
+  transform: scale(1.05);
+}
+
+.promo-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.72) 0%, transparent 55%);
+}
+
+.promo-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 16px;
+}
+
+.promo-badge {
+  display: inline-flex;
+  margin-bottom: 6px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background: var(--mache-primary);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.promo-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: white;
+}
+
+.promo-sub {
+  margin-top: 3px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* SELLER BAND */
+.sband {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--mache-dark);
+  padding: 44px;
+}
+
+.sband::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40%;
+  background: url("https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80")
+    center / cover;
+  opacity: 0.14;
+}
+
+.sbg {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.sbk {
+  margin-bottom: 10px;
+  color: var(--mache-primary-strong);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sbh {
+  margin-bottom: 12px;
+  color: white;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+
+.sbp {
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.sbsteps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.sbstep {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 13px;
+}
+
+.sbstep .n {
+  margin-bottom: 3px;
+  color: var(--mache-primary-strong);
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.sbstep p {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.sbcards {
+  display: grid;
+  gap: 10px;
+}
+
+.sbcard {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 13px;
+}
+
+.sbcard-ico {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: rgba(232, 66, 10, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.sbcard h4 {
+  margin-bottom: 2px;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sbcard p {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1100px) {
+  .sbg {
+    grid-template-columns: 1fr;
+  }
+
+  .promo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .sbsteps {
+    grid-template-columns: 1fr;
+  }
+}
