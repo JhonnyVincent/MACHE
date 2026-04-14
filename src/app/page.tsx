@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { featuredProducts, featuredVendors } from "@/lib/mock-data";
 import { ProductCard } from "@/components/product-card";
+import { HomeHeroSlider } from "@/components/home-hero-slider";
+import { HomeTicker } from "@/components/home-ticker";
 
 const categories = [
   {
@@ -56,40 +58,10 @@ const promos = [
 export default function HomePage() {
   return (
     <main>
+      <HomeTicker />
+
       <section className="container-page pt-8">
-        <div className="market-hero">
-          <div className="market-hero-grid">
-            <div className="market-hero-copy">
-              <span className="market-hero-kicker">Marketplace Caribbean</span>
-
-              <h1 className="market-hero-title">
-                Le commerce moderne entre <em>Haïti</em>, la <em>Caraïbe</em> et la <em>diaspora</em>.
-              </h1>
-
-              <p className="market-hero-text">
-                Mache rassemble vendeurs particuliers, vendeurs business,
-                fournisseurs, export et vérification agent dans une plateforme
-                premium, crédible et pensée pour durer.
-              </p>
-
-              <div className="market-hero-actions">
-                <Link href="/shop" className="btn-primary">
-                  Explorer la boutique
-                </Link>
-                <Link href="/sell" className="btn-secondary">
-                  Devenir vendeur
-                </Link>
-              </div>
-            </div>
-
-            <div className="market-hero-visual">
-              <img
-                src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1600&auto=format&fit=crop"
-                alt="Mache marketplace"
-              />
-            </div>
-          </div>
-        </div>
+        <HomeHeroSlider />
 
         <div className="market-strip">
           <div className="market-strip-card">
