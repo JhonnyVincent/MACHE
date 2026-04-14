@@ -2,12 +2,15 @@ import { UserRole } from "@/types";
 
 export function canAccessDashboard(role: UserRole, dashboardRole: string) {
   if (role === "admin") return true;
+
   if (dashboardRole === "buyer") return role === "buyer";
+
   if (dashboardRole === "seller") {
     return role === "seller_individual" || role === "seller_business";
   }
+
   if (dashboardRole === "agent") return role === "agent";
-  if (dashboardRole === "admin") return role === "admin";
+
   return false;
 }
 
