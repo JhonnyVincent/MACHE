@@ -61,8 +61,11 @@ export function Header() {
           <Link href="/about" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
             About
           </Link>
+          <Link href="/services" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+            Services
+           </Link>
           <Link href="/contact" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
-            Contact
+             Contact
           </Link>
         </div>
       </div>
