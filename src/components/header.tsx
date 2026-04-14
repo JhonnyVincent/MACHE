@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useCart } from "./cart-provider";
 
 export function Header() {
+  const { count, openCart } = useCart();
+
   return (
     <header className="sticky top-0 z-40 border-b bg-[var(--mache-white)]/95 backdrop-blur">
       <div className="container-page">
@@ -39,9 +44,13 @@ export function Header() {
             <Link href="/login" className="btn-secondary">
               Login
             </Link>
-            <Link href="/register" className="btn-primary">
-              Register
-            </Link>
+
+            <button onClick={openCart} className="btn-primary relative">
+              Panier
+              <span className="ml-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-white px-1.5 py-0.5 text-[10px] font-[800] text-[var(--mache-primary)]">
+                {count}
+              </span>
+            </button>
           </div>
         </div>
 
@@ -63,9 +72,9 @@ export function Header() {
           </Link>
           <Link href="/services" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
             Services
-           </Link>
+          </Link>
           <Link href="/contact" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
-             Contact
+            Contact
           </Link>
         </div>
       </div>
