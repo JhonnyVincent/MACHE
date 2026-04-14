@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { allProducts } from "@/lib/mock-data";
+import { ProductActions } from "@/components/product-actions";
 
 export default async function ProductPage({
   params
@@ -116,18 +117,7 @@ export default async function ProductPage({
               </div>
             ) : null}
 
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <div className="flex items-center overflow-hidden rounded-[8px] border border-[var(--mache-line)]">
-                <button className="h-10 w-10 text-lg">-</button>
-                <div className="flex h-10 items-center border-x border-[var(--mache-line)] px-4 font-[700]">
-                  1
-                </div>
-                <button className="h-10 w-10 text-lg">+</button>
-              </div>
-
-              <button className="btn-primary">Ajouter au panier</button>
-              <button className="btn-secondary">Ajouter à la wishlist</button>
-            </div>
+            <ProductActions productId={product.id} />
 
             <div className="mt-7 grid gap-3 sm:grid-cols-2">
               <div className="rounded-[10px] bg-[var(--mache-bg)] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
@@ -190,8 +180,7 @@ export default async function ProductPage({
         <div className="mb-6">
           <h2 className="section-title">Produits similaires</h2>
           <p className="section-subtitle">
-            On affiche ici des produits liés à la catégorie ou d’autres produits du catalogue,
-            pas un bloc vendeur figé.
+            Suggestions produit dynamiques pour garder une logique e-commerce vivante.
           </p>
         </div>
 
