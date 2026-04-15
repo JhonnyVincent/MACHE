@@ -45,9 +45,13 @@ export function Header() {
               Login
             </Link>
 
-            <button onClick={openCart} className="btn-primary relative">
+            <Link href="/register" className="btn-primary">
+              Register
+            </Link>
+
+            <button onClick={openCart} className="btn-secondary relative">
               Panier
-              <span className="ml-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-white px-1.5 py-0.5 text-[10px] font-[800] text-[var(--mache-primary)]">
+              <span className="ml-2 inline-flex min-w-[18px] items-center justify-center rounded-full bg-[var(--mache-primary)] px-1.5 py-0.5 text-[10px] font-[800] text-white">
                 {count}
               </span>
             </button>
@@ -55,25 +59,46 @@ export function Header() {
         </div>
 
         <div className="hidden items-center gap-1 overflow-x-auto whitespace-nowrap border-t border-[var(--mache-line)] py-2 text-[12px] text-[var(--mache-muted)] md:flex">
-          <Link href="/shop" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+          <Link
+            href="/shop"
+            className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]"
+          >
             Shop
           </Link>
-          <Link href="/sell" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+          <Link
+            href="/sell"
+            className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]"
+          >
             Sell
           </Link>
-          <Link href="/export" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+          <Link
+            href="/export"
+            className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]"
+          >
             Export
           </Link>
-          <Link href="/verify-agent" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+          <Link
+            href="/verify-agent"
+            className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]"
+          >
             Verify Agent
           </Link>
-          <Link href="/about" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+          <Link
+            href="/about"
+            className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]"
+          >
             About
           </Link>
-          <Link href="/services" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+          <Link
+            href="/services"
+            className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]"
+          >
             Services
           </Link>
-          <Link href="/contact" className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]">
+          <Link
+            href="/contact"
+            className="rounded-full px-3 py-2 hover:bg-[var(--mache-bg-2)] hover:text-[var(--mache-text)]"
+          >
             Contact
           </Link>
         </div>
