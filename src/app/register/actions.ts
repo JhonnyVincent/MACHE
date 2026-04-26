@@ -15,14 +15,15 @@ export async function registerAction(formData: FormData) {
 
   const supabase = await createSupabaseServerClient();
 
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || "https://mache-two.vercel.app"
+  ).replace(/\/$/, "");
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${siteUrl}/auth/callback`,
       data: {
         full_name: fullName,
         role
