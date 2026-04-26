@@ -30,5 +30,5 @@ export async function registerAction(formData: FormData) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect("/register/success");
+  redirect("/register/success?test=new-code");
 }
