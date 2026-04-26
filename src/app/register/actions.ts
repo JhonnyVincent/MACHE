@@ -15,16 +15,16 @@ export async function registerAction(formData: FormData) {
 
   const supabase = await createSupabaseServerClient();
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        full_name: fullName,
-        role
-      }
+ const { error } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+    data: {
+      full_name: fullName,
+      role
     }
-  });
+  }
+});
 
   if (error) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`);
