@@ -40,11 +40,13 @@ export async function createProductAction(formData: FormData) {
     description,
     price,
     category,
-    status: "draft",
+    status: "draft"
   });
 
   if (error) {
-    redirect(`/dashboard/seller/products/new?error=${encodeURIComponent(error.message)}`);
+    redirect(
+      `/dashboard/seller/products/new?error=${encodeURIComponent(error.message)}`
+    );
   }
 
   redirect("/dashboard/seller/products?success=product_created");
