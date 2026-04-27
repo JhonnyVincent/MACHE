@@ -19,16 +19,17 @@ export async function loginAction(formData: FormData) {
   });
 
   if (error || !data.user) {
-    redirect(`/login?error=${encodeURIComponent(error?.message || "login_failed")}`);
+    // 🔴 Message clair pour user
+    redirect("/login?error=invalid_credentials");
   }
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from("users")
     .select("role")
     .eq("id", data.user.id)
     .single();
 
-  if (profileError || !profile) {
+  if (!profile) {
     redirect("/login?error=profile_not_found");
   }
 
