@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
-  const password = String(formData.get("password") || "").trim();
+  const password = String(formData.get("password") || "");
 
   if (!email || !password) {
     redirect("/login?error=missing_fields");
@@ -13,17 +13,15 @@ export async function loginAction(formData: FormData) {
 
   const supabase = await createSupabaseServerClient();
 
-  // 🔐 LOGIN
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password
   });
 
-  if (error) {
-    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+  if (error || !data.user) {
+    redirect(`/login?error=${encodeURIComponent(error?.message || "login_failed")}`);
   }
 
-  // 🧠 RÉCUPÉRER LE PROFIL
   const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("role")
@@ -34,26 +32,17 @@ export async function loginAction(formData: FormData) {
     redirect("/login?error=profile_not_found");
   }
 
-  // 🚀 REDIRECTION PAR RÔLE
-  if (profile.role === "buyer") {
-    redirect("/buyer/dashboard");
-  }
+  if (profile.role === "buyer") redirect("/dashboard/buyer");
 
   if (
     profile.role === "seller_individual" ||
     profile.role === "seller_business"
   ) {
-    redirect("/seller/dashboard");
+    redirect("/dashboard/seller");
   }
 
-  if (profile.role === "agent") {
-    redirect("/agent/dashboard");
-  }
+  if (profile.role === "agent") redirect("/dashboard/agent");
+  if (profile.role === "admin") redirect("/dashboard/admin");
 
-  if (profile.role === "admin") {
-    redirect("/admin/dashboard");
-  }
-
-  // fallback
   redirect("/");
 }
