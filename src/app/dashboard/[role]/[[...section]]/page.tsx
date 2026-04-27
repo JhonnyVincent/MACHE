@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { createProductAction } from "./actions";
 
 type RouteKey = "buyer" | "seller" | "agent" | "admin";
 
@@ -92,6 +93,7 @@ const dashboardConfig: Record<
       }
     }
   },
+
   seller: {
     label: "Dashboard Seller",
     nav: [
@@ -125,6 +127,7 @@ const dashboardConfig: Record<
       shipping: { title: "Shipping", type: "seller_shipping" }
     }
   },
+
   agent: {
     label: "Dashboard Agent",
     nav: [
@@ -152,6 +155,7 @@ const dashboardConfig: Record<
       }
     }
   },
+
   admin: {
     label: "Dashboard Admin",
     nav: [
@@ -200,68 +204,64 @@ const dashboardConfig: Record<
 };
 
 function SellerSection({ type }: { type?: string }) {
-  if (type === "seller_home") {
+  if (type === "seller_ai_form") {
     return (
       <div className="space-y-6">
-        <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="card p-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-sm font-bold">Commandes récentes</h3>
-              <span className="text-xs text-[var(--mache-primary)]">Voir tout</span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="border-b">
-                  <tr className="text-xs uppercase tracking-wide text-[var(--mache-muted)]">
-                    <th className="px-2 py-3">Commande</th>
-                    <th className="px-2 py-3">Client</th>
-                    <th className="px-2 py-3">Total</th>
-                    <th className="px-2 py-3">Statut</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    ["#MCH-2031", "Jean Pierre", "$120", "Livrée"],
-                    ["#MCH-2030", "Marie B.", "$84", "En transit"],
-                    ["#MCH-2029", "Carlos R.", "$210", "En attente"]
-                  ].map((row) => (
-                    <tr key={row[0]} className="border-b last:border-0">
-                      {row.map((cell, i) => (
-                        <td key={cell} className={`px-2 py-3 ${i === 0 ? "font-semibold" : ""}`}>
-                          {cell}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="card p-6">
-              <h3 className="text-sm font-bold">Revenus — 7 jours</h3>
-              <div className="mt-4 flex h-28 items-end gap-2">
-                {[38, 60, 45, 80, 72, 90, 68].map((v, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 rounded-t-md bg-[var(--mache-primary)]/80"
-                    style={{ height: `${v}%` }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="card p-6">
-              <h3 className="text-sm font-bold">Top produits</h3>
-              <div className="mt-4 space-y-3 text-sm">
-                <div className="flex justify-between"><span>Robe artisanale</span><strong>$1,240</strong></div>
-                <div className="flex justify-between"><span>Café premium</span><strong>$980</strong></div>
-                <div className="flex justify-between"><span>Sac cuir Caraïbe</span><strong>$760</strong></div>
-              </div>
-            </div>
-          </div>
+        <div className="rounded-2xl border border-[rgba(232,66,10,.2)] bg-[var(--mache-dark)] p-6 text-white">
+          <h3 className="text-sm font-bold">Ajouter un produit</h3>
+          <p className="mt-2 text-sm text-white/50">
+            Crée un produit réel dans Supabase. Le produit sera enregistré en statut draft.
+          </p>
         </div>
+
+        <form action={createProductAction} className="card p-6">
+          <h3 className="mb-4 text-sm font-bold">Formulaire produit</h3>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <input
+              name="title"
+              className="input"
+              placeholder="Nom produit"
+              required
+            />
+
+            <input
+              name="price"
+              className="input"
+              placeholder="Prix"
+              type="number"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <select name="category" className="input">
+              <option value="Mode">Mode</option>
+              <option value="Épicerie">Épicerie</option>
+              <option value="Accessoires">Accessoires</option>
+              <option value="Maison">Maison</option>
+              <option value="Beauté">Beauté</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+
+          <textarea
+            name="description"
+            className="input mt-4 min-h-28"
+            placeholder="Description produit"
+          />
+
+          <div className="mt-4 flex gap-3">
+            <button type="submit" className="btn-primary">
+              Enregistrer le produit
+            </button>
+
+            <a href="/dashboard/seller/products" className="btn-secondary">
+              Annuler
+            </a>
+          </div>
+        </form>
       </div>
     );
   }
@@ -287,217 +287,13 @@ function SellerSection({ type }: { type?: string }) {
     );
   }
 
-  if (type === "seller_ai_form") {
-    return (
-      <div className="space-y-6">
-        <div className="rounded-2xl border border-[rgba(232,66,10,.2)] bg-[var(--mache-dark)] p-6 text-white">
-          <h3 className="text-sm font-bold">Rédacteur IA</h3>
-          <p className="mt-2 text-sm text-white/50">
-            Génère un titre et une description à partir de quelques infos produit.
-          </p>
-          <textarea
-            className="mt-4 min-h-24 w-full rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-sm text-white outline-none"
-            placeholder="Ex: robe batik rouge, coton haïtien artisanal..."
-          />
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button className="btn-primary">Générer la description</button>
-            <button className="btn-secondary">Suggérer un titre</button>
-          </div>
-        </div>
-
-        <div className="card p-6">
-          <h3 className="mb-4 text-sm font-bold">Formulaire produit</h3>
-          <div className="grid gap-4 md:grid-cols-2">
-            <input className="input" placeholder="Nom produit" />
-            <input className="input" placeholder="Prix" type="number" />
-          </div>
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
-            <select className="input">
-              <option>Mode</option>
-              <option>Épicerie</option>
-              <option>Accessoires</option>
-            </select>
-            <input className="input" placeholder="Stock" type="number" />
-            <input className="input" placeholder="Prix barré" type="number" />
-          </div>
-          <textarea className="input mt-4 min-h-28" placeholder="Description produit" />
-          <div className="mt-4 flex gap-3">
-            <button className="btn-primary">Publier le produit</button>
-            <button className="btn-secondary">Annuler</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "seller_orders") {
-    return (
-      <div className="card p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b">
-              <tr className="text-xs uppercase tracking-wide text-[var(--mache-muted)]">
-                <th className="px-4 py-3">Commande</th>
-                <th className="px-4 py-3">Client</th>
-                <th className="px-4 py-3">Produit</th>
-                <th className="px-4 py-3">Montant</th>
-                <th className="px-4 py-3">Statut</th>
-                <th className="px-4 py-3">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ["#MCH-2031", "Jean Pierre", "Robe artisanale", "$120", "Livrée", "12/04"],
-                ["#MCH-2030", "Marie Beauchamp", "Café premium", "$84", "En transit", "11/04"],
-                ["#MCH-2029", "Carlos Rodriguez", "Sac cuir", "$210", "En attente", "10/04"]
-              ].map((row) => (
-                <tr key={row[0]} className="border-b last:border-0">
-                  {row.map((cell, i) => (
-                    <td key={cell} className={`px-4 py-3 ${i === 0 ? "font-semibold" : ""}`}>
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "seller_wallet") {
-    return (
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="card p-6"><p className="text-sm text-[var(--mache-muted)]">Pending balance</p><p className="mt-3 text-2xl font-bold">$1,240</p></div>
-        <div className="card p-6"><p className="text-sm text-[var(--mache-muted)]">Available balance</p><p className="mt-3 text-2xl font-bold">$3,920</p></div>
-        <div className="card p-6"><p className="text-sm text-[var(--mache-muted)]">Reserved balance</p><p className="mt-3 text-2xl font-bold">$540</p></div>
-      </div>
-    );
-  }
-
-  if (type === "seller_payouts") {
-    return (
-      <div className="space-y-4">
-        <div className="card p-6">
-          <h3 className="text-sm font-bold">Payout schedule</h3>
-          <p className="mt-2 text-sm text-[var(--mache-muted)]">
-            Prévu à J+7 ou J+15 selon conformité, litiges et score de risque.
-          </p>
-        </div>
-        <div className="card p-6">
-          <div className="flex justify-between text-sm"><span>Dernier payout</span><strong>$680</strong></div>
-          <div className="mt-3 flex justify-between text-sm"><span>Statut</span><span>Paid</span></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "seller_store") {
-    return (
-      <div className="space-y-4">
-        <input className="input" placeholder="Nom de la boutique" />
-        <textarea className="input min-h-28" placeholder="Description boutique" />
-        <button className="btn-primary">Sauvegarder</button>
-      </div>
-    );
-  }
-
-  if (type === "seller_promotions") {
-    return (
-      <div className="grid gap-4 md:grid-cols-2">
-        <div className="card p-6"><h3 className="font-bold">Promotion active</h3><p className="mt-2 text-sm text-[var(--mache-muted)]">-20% sur collection mode</p></div>
-        <div className="card p-6"><h3 className="font-bold">Produit boosté</h3><p className="mt-2 text-sm text-[var(--mache-muted)]">Mise en avant homepage prévue</p></div>
-      </div>
-    );
-  }
-
-  if (type === "seller_reviews") {
-    return (
-      <div className="space-y-4">
-        {["Très bon produit", "Livraison correcte", "Belle qualité"].map((review) => (
-          <div key={review} className="rounded-2xl border p-4">
-            <p className="font-semibold">⭐ 5/5</p>
-            <p className="mt-2 text-sm text-[var(--mache-muted)]">{review}</p>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (type === "seller_clients") {
-    return (
-      <div className="card p-0">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b">
-              <tr className="text-xs uppercase tracking-wide text-[var(--mache-muted)]">
-                <th className="px-4 py-3">Client</th>
-                <th className="px-4 py-3">Email</th>
-                <th className="px-4 py-3">Commandes</th>
-                <th className="px-4 py-3">Total</th>
-                <th className="px-4 py-3">Pays</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                ["Jean Pierre", "jean@email.com", "5", "$625", "Haïti"],
-                ["Marie Beauchamp", "marie.b@gmail.com", "3", "$280", "France"],
-                ["Carlos Rodriguez", "carlos@email.com", "8", "$950", "R. Dom."]
-              ].map((row) => (
-                <tr key={row[0]} className="border-b last:border-0">
-                  {row.map((cell, i) => (
-                    <td key={cell} className={`px-4 py-3 ${i === 0 ? "font-semibold" : ""}`}>
-                      {cell}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "seller_settings") {
-    return (
-      <div className="space-y-4">
-        <div className="card p-6">
-          <h3 className="mb-4 text-sm font-bold">Informations boutique</h3>
-          <div className="grid gap-4 md:grid-cols-2">
-            <input className="input" defaultValue="Mache Store" />
-            <input className="input" defaultValue="store@mache.market" type="email" />
-          </div>
-          <textarea
-            className="input mt-4 min-h-24"
-            defaultValue="Boutique marketplace premium centrée sur Haïti et la diaspora."
-          />
-          <button className="btn-primary mt-4">Sauvegarder</button>
-        </div>
-      </div>
-    );
-  }
-
-  if (type === "seller_verification") {
-    return (
-      <div className="space-y-4">
-        <div className="card p-6"><h3 className="font-bold">Documents</h3><p className="mt-2 text-sm text-[var(--mache-muted)]">Identité, documents business, conformité et revue.</p></div>
-        <div className="card p-6"><h3 className="font-bold">Statut</h3><p className="mt-2 text-sm text-[var(--mache-muted)]">Vérification en attente / approuvée selon contrôle.</p></div>
-      </div>
-    );
-  }
-
-  if (type === "seller_shipping") {
-    return (
-      <div className="space-y-4">
-        <div className="card p-6"><h3 className="font-bold">Zones d’expédition</h3><p className="mt-2 text-sm text-[var(--mache-muted)]">Haïti, USA, Canada, France, diaspora.</p></div>
-        <div className="card p-6"><h3 className="font-bold">Délais</h3><p className="mt-2 text-sm text-[var(--mache-muted)]">National, régional et international selon destination.</p></div>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className="card p-6">
+      <p className="text-sm text-[var(--mache-muted)]">
+        Section vendeur prête à connecter.
+      </p>
+    </div>
+  );
 }
 
 export default async function DashboardRoute({
@@ -529,6 +325,7 @@ export default async function DashboardRoute({
           <span className="badge">{dashboardConfig[safeRole].label}</span>
           <h1 className="mt-3 text-3xl font-bold">{page.title}</h1>
         </div>
+
         <a href="/shop" className="btn-secondary">
           Retour boutique
         </a>
@@ -553,7 +350,9 @@ export default async function DashboardRoute({
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label} className="card p-6">
-                <p className="text-sm text-[var(--mache-muted)]">{stat.label}</p>
+                <p className="text-sm text-[var(--mache-muted)]">
+                  {stat.label}
+                </p>
                 <p className="mt-3 text-2xl font-bold">{stat.value}</p>
               </div>
             ))}
