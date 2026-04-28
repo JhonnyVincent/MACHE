@@ -72,11 +72,20 @@ export function Header() {
                     <div className="mb-2 text-xs font-extrabold uppercase text-[var(--mache-muted)]">
                       Accès rapide
                     </div>
+
                     <div className="grid gap-1 text-sm">
-                      <Link onClick={closeMenu} href="/shop?sort=best" className="rounded-lg px-3 py-2 hover:bg-white">🔥 Meilleures ventes</Link>
-                      <Link onClick={closeMenu} href="/shop?sort=new" className="rounded-lg px-3 py-2 hover:bg-white">✨ Nouveautés</Link>
-                      <Link onClick={closeMenu} href="/shop?promo=true" className="rounded-lg px-3 py-2 hover:bg-white">🏷️ Promotions</Link>
-                      <Link onClick={closeMenu} href="/shop" className="rounded-lg px-3 py-2 hover:bg-white">🛍️ Tout le catalogue</Link>
+                      <Link onClick={closeMenu} href="/shop?sort=best" className="rounded-lg px-3 py-2 hover:bg-white">
+                        🔥 Meilleures ventes
+                      </Link>
+                      <Link onClick={closeMenu} href="/shop?sort=new" className="rounded-lg px-3 py-2 hover:bg-white">
+                        ✨ Nouveautés
+                      </Link>
+                      <Link onClick={closeMenu} href="/shop?promo=true" className="rounded-lg px-3 py-2 hover:bg-white">
+                        🏷️ Promotions
+                      </Link>
+                      <Link onClick={closeMenu} href="/shop" className="rounded-lg px-3 py-2 hover:bg-white">
+                        🛍️ Tout le catalogue
+                      </Link>
                     </div>
                   </div>
 
@@ -84,6 +93,7 @@ export function Header() {
                     <div className="mb-2 text-xs font-extrabold uppercase text-[var(--mache-muted)]">
                       Catégories
                     </div>
+
                     <div className="grid gap-1 text-sm">
                       <Link onClick={closeMenu} href="/shop?category=vetements" className="rounded-lg px-3 py-2 hover:bg-[var(--mache-bg-2)]">Vêtements</Link>
                       <Link onClick={closeMenu} href="/shop?category=bijoux" className="rounded-lg px-3 py-2 hover:bg-[var(--mache-bg-2)]">Bijoux</Link>
@@ -99,6 +109,7 @@ export function Header() {
                     <div className="mb-2 text-xs font-extrabold uppercase text-[var(--mache-muted)]">
                       Trier / Filtrer
                     </div>
+
                     <div className="grid gap-1 text-sm">
                       <Link onClick={closeMenu} href="/shop?sort=price-asc" className="rounded-lg px-3 py-2 hover:bg-[var(--mache-bg-2)]">Prix croissant</Link>
                       <Link onClick={closeMenu} href="/shop?sort=price-desc" className="rounded-lg px-3 py-2 hover:bg-[var(--mache-bg-2)]">Prix décroissant</Link>
@@ -128,8 +139,13 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Link href="/login" className="btn-secondary">Login</Link>
-            <Link href="/register" className="btn-primary">Register</Link>
+            <Link href="/login" className="btn-secondary">
+              Login
+            </Link>
+
+            <Link href="/register" className="btn-primary">
+              Register
+            </Link>
 
             <button onClick={openCart} className="btn-secondary relative">
               Panier
