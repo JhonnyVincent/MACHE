@@ -1,4 +1,4 @@
-"use client";
+src/app/globals.css"use client";
 
 import { useState } from "react";
 import Link from "next/link";
