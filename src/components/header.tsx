@@ -18,13 +18,7 @@ const translations = {
     promotions: "Promotions",
     catalog: "Tout le catalogue",
     sellers: "Vendeurs",
-    brands: "Marques",
-    handmade: "Artisanat",
-    beauty: "Beauté",
-    home: "Maison",
-    fashion: "Mode",
-    flavors: "Saveurs",
-    more: "& Plus"
+    brands: "Marques"
   },
   ht: {
     delivery: "Livrezon toupatou an Ayiti",
@@ -39,13 +33,7 @@ const translations = {
     promotions: "Pwomosyon",
     catalog: "Tout katalòg la",
     sellers: "Vandè",
-    brands: "Mak",
-    handmade: "Atizana",
-    beauty: "Bote",
-    home: "Kay",
-    fashion: "Mòd",
-    flavors: "Gou Ayiti",
-    more: "& Plis"
+    brands: "Mak"
   }
 };
 
@@ -71,7 +59,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-white">
+    <header className="sticky top-0 z-50 border-b bg-white">
       <div className="border-b bg-[#fafafa] text-sm font-semibold text-[#071f3d]">
         <div className="container-page flex h-10 items-center justify-between">
           <div>🚚 {t.delivery}</div>
@@ -105,6 +93,7 @@ export function Header() {
             alt="Logo Maché"
             className="h-20 w-20 object-contain"
           />
+
           <div>
             <div className="text-5xl font-black leading-none tracking-[-0.06em] text-[#071f3d]">
               Maché
@@ -156,17 +145,6 @@ export function Header() {
           <Link href="/shop">▦ {t.catalog}</Link>
           <Link href="/legal/vendors">🏪 {t.sellers}</Link>
           <Link href="/shop?brands=true">🏅 {t.brands}</Link>
-        </div>
-      </nav>
-
-      <nav className="border-b bg-white">
-        <div className="container-page flex h-20 items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-lg font-bold text-[#071f3d]">
-          <Link href="/shop?category=artisanat">🧺 {t.handmade}</Link>
-          <Link href="/shop?category=beaute">🌺 {t.beauty}</Link>
-          <Link href="/shop?category=maison">🪑 {t.home}</Link>
-          <Link href="/shop?category=mode">👕 {t.fashion}</Link>
-          <Link href="/shop?category=saveurs">🍲 {t.flavors}</Link>
-          <Link href="/shop">🔵 {t.more}</Link>
         </div>
       </nav>
     </header>
