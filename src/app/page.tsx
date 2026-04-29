@@ -24,6 +24,7 @@ export default function HomePage() {
     <main className="bg-[#fffaf6]">
       <HomeTicker />
 
+      {/* CATEGORIES MENU */}
       <section className="border-b bg-white">
         <div className="container-page flex flex-wrap items-center justify-center gap-4 py-5 md:justify-between">
           {categories.map((category) => (
@@ -39,8 +40,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* HERO */}
       <section className="container-page pt-8">
         <div className="grid items-center gap-8 rounded-3xl bg-[#f6eadf] px-8 py-12 shadow-sm lg:grid-cols-[0.9fr_1.1fr] lg:px-16">
+          
+          {/* TEXTE */}
           <div>
             <p className="mb-4 text-sm font-extrabold uppercase tracking-[0.25em] text-[#d20a1e]">
               Marketplace haïtienne
@@ -54,8 +58,7 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-6 max-w-md text-xl font-medium leading-relaxed text-[#23344d]">
-              Des produits authentiques, des vendeurs locaux, une fierté
-              nationale.
+              Des produits authentiques, des vendeurs locaux, une fierté nationale.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-4">
@@ -68,18 +71,23 @@ export default function HomePage() {
             </div>
           </div>
 
+          {/* IMAGE HAITI */}
           <div className="flex justify-center">
             <img
-              src="/images/haiti-mache.png"
-              alt="Carte d’Haïti illustrée avec des produits haïtiens"
+              src="/images/carte-haiti-mache.png"
+              alt="Carte d’Haïti Maché"
               className="max-h-[470px] w-full object-contain"
             />
           </div>
         </div>
 
+        {/* AVANTAGES */}
         <div className="mx-auto -mt-5 grid max-w-6xl gap-4 rounded-2xl bg-white p-5 shadow-lg md:grid-cols-4">
           {advantages.map(([icon, title, text]) => (
-            <div key={title} className="flex items-center gap-4 border-slate-200 md:border-r md:last:border-r-0">
+            <div
+              key={title}
+              className="flex items-center gap-4 border-slate-200 md:border-r md:last:border-r-0"
+            >
               <div className="text-3xl">{icon}</div>
               <div>
                 <div className="font-bold text-[#071f3d]">{title}</div>
@@ -90,6 +98,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* CATEGORIES SECTION */}
       <section className="container-page py-12">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
@@ -105,15 +114,24 @@ export default function HomePage() {
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {categories.slice(0, 5).map((category) => (
-            <Link key={category.title} href={category.href} className="card p-6 text-center transition hover:-translate-y-1 hover:shadow-lg">
+            <Link
+              key={category.title}
+              href={category.href}
+              className="card p-6 text-center transition hover:-translate-y-1 hover:shadow-lg"
+            >
               <div className="text-5xl">{category.icon}</div>
-              <h3 className="mt-4 font-bold text-[#071f3d]">{category.title}</h3>
-              <p className="mt-1 text-sm text-slate-500">Produits d’Haïti</p>
+              <h3 className="mt-4 font-bold text-[#071f3d]">
+                {category.title}
+              </h3>
+              <p className="mt-1 text-sm text-slate-500">
+                Produits d’Haïti
+              </p>
             </Link>
           ))}
         </div>
       </section>
 
+      {/* PRODUITS */}
       <section className="container-page py-4">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
@@ -134,6 +152,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* SELLER CTA */}
       <section className="container-page py-12">
         <div className="rounded-3xl bg-[#071f3d] p-8 text-white md:flex md:items-center md:justify-between md:p-10">
           <div>
@@ -144,13 +163,15 @@ export default function HomePage() {
               Vendez vos produits sur Maché
             </h2>
             <p className="mt-2 max-w-2xl text-white/75">
-              Aujourd’hui, Maché démarre avec sa propre équipe. Demain, les
-              vendeurs vérifiés pourront publier leurs produits et toucher plus
-              de clients.
+              Aujourd’hui, Maché démarre avec sa propre équipe. Demain, les vendeurs
+              pourront publier leurs produits et toucher plus de clients.
             </p>
           </div>
 
-          <Link href="/sell" className="mt-6 inline-flex rounded-xl bg-[#d20a1e] px-6 py-4 font-bold text-white md:mt-0">
+          <Link
+            href="/sell"
+            className="mt-6 inline-flex rounded-xl bg-[#d20a1e] px-6 py-4 font-bold text-white md:mt-0"
+          >
             Rejoindre Maché
           </Link>
         </div>
