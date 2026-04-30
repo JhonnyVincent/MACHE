@@ -2,8 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { featuredProducts } from "@/lib/mock-data";
+import { Product } from "@/types";
 import { ProductCard } from "@/components/product-card";
+
+type VendorCard = {
+  name: string;
+  category: string;
+  location: string;
+  href: string;
+};
 
 const content = {
   mainCategories: [
@@ -13,12 +20,9 @@ const content = {
     { title: "Mode", icon: "👕", href: "/shop?category=mode" },
     { title: "Saveurs", icon: "🍲", href: "/shop?category=saveurs" }
   ],
-
   moreButton: "Plus",
   moreTitle: "Toutes les catégories",
   catalogButton: "Voir le catalogue",
-  bestSalesButton: "Voir tous les produits",
-
   advantages: [
     {
       icon: "🚚",
@@ -45,7 +49,6 @@ const content = {
       href: "/contact"
     }
   ],
-
   slides: [
     {
       badge: "Marketplace haïtienne",
@@ -88,7 +91,6 @@ const content = {
       type: "news"
     }
   ],
-
   moreCategories: [
     "En vedette",
     "Maison et Cuisine",
@@ -119,8 +121,7 @@ const content = {
     "Livres et médias",
     "Meubles"
   ],
-
-  vendors: [
+  fallbackVendors: [
     {
       name: "Boutique Lakay",
       category: "Mode & accessoires",
@@ -140,7 +141,6 @@ const content = {
       href: "/shop?vendor=saveurs-haiti"
     }
   ],
-
   sections: {
     best: {
       badge: "Sélection Maché",
@@ -157,6 +157,11 @@ const content = {
       title: "Promotions du moment",
       text: "Des offres à ne pas manquer sur les produits populaires."
     },
+    vendors: {
+      badge: "Boutiques",
+      title: "Nouveaux vendeurs",
+      text: "Découvrez les dernières boutiques arrivées sur Maché."
+    },
     recommended: {
       badge: "Pour vous",
       title: "Vous pourriez aimer",
@@ -166,11 +171,6 @@ const content = {
       badge: "Reprendre",
       title: "Continuer vos achats",
       text: "Retrouvez rapidement les produits que vous avez consultés."
-    },
-    vendors: {
-      badge: "Boutiques",
-      title: "Nouveaux vendeurs",
-      text: "Découvrez les dernières boutiques arrivées sur Maché."
     }
   }
 };
@@ -186,8 +186,10 @@ function ProductSection({
   title: string;
   text: string;
   href: string;
-  products: typeof featuredProducts;
+  products: Product[];
 }) {
+  if (products.length === 0) return null;
+
   return (
     <section className="container-page py-10">
       <div className="mb-7 flex items-end justify-between gap-4">
@@ -223,16 +225,30 @@ function ProductSection({
   );
 }
 
-export default function HomePage() {
+export function HomePageClient({
+  products,
+  vendors
+}: {
+  products: Product[];
+  vendors: VendorCard[];
+}) {
   const [active, setActive] = useState(0);
   const [showMoreCategories, setShowMoreCategories] = useState(false);
   const slide = content.slides[active];
 
-  const bestSellingProducts = featuredProducts;
-  const newProducts = featuredProducts.slice().reverse();
-  const promoProducts = featuredProducts.slice(0, 3);
-  const recommendedProducts = featuredProducts.slice(1);
-  const recentlyViewedProducts = featuredProducts.slice(0, 3);
+  const allProducts = products;
+
+  const bestSellingProducts = allProducts.slice(0, 6);
+  const newProducts = [...allProducts].slice(0, 6);
+  const promoProducts = allProducts
+    .filter((product) => product.compareAtPrice)
+    .slice(0, 6);
+
+  const recommendedProducts = allProducts.slice(1, 7);
+  const recentlyViewedProducts = allProducts.slice(0, 3);
+
+  const displayedVendors =
+    vendors.length > 0 ? vendors : content.fallbackVendors;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -305,7 +321,7 @@ export default function HomePage() {
 
             {slide.type === "products" && (
               <div className="grid gap-5 sm:grid-cols-2">
-                {featuredProducts.slice(0, 2).map((product) => (
+                {allProducts.slice(0, 2).map((product) => (
                   <div
                     key={product.id}
                     className="transition-all duration-300 hover:-translate-y-2"
@@ -504,7 +520,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          {content.vendors.map((vendor) => (
+          {displayedVendors.map((vendor) => (
             <Link
               key={vendor.name}
               href={vendor.href}
