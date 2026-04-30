@@ -13,15 +13,39 @@ const content = {
     { title: "Mode", icon: "👕", href: "/shop?category=mode" },
     { title: "Saveurs", icon: "🍲", href: "/shop?category=saveurs" }
   ],
+
   moreButton: "Plus",
+  moreTitle: "Toutes les catégories",
   catalogButton: "Voir le catalogue",
   bestSalesButton: "Voir tous les produits",
+
   advantages: [
-    ["🚚", "Livraison rapide", "Partout en Haïti"],
-    ["🛡️", "Paiement sécurisé", "Transactions protégées"],
-    ["✅", "Produits authentiques", "Sélectionnés avec soin"],
-    ["🎧", "Support client", "Toujours à votre écoute"]
+    {
+      icon: "🚚",
+      title: "Suivre une livraison",
+      text: "Voir l’état de votre colis",
+      href: "/track-order"
+    },
+    {
+      icon: "💳",
+      title: "Paiement en ligne",
+      text: "Méthodes de paiement disponibles",
+      href: "/checkout"
+    },
+    {
+      icon: "✅",
+      title: "Vérifier un agent",
+      text: "Confirmer un agent Maché",
+      href: "/verify-agent"
+    },
+    {
+      icon: "🎧",
+      title: "Support client",
+      text: "Contactez notre équipe",
+      href: "/contact"
+    }
   ],
+
   slides: [
     {
       badge: "Marketplace haïtienne",
@@ -64,6 +88,7 @@ const content = {
       type: "news"
     }
   ],
+
   moreCategories: [
     "En vedette",
     "Maison et Cuisine",
@@ -94,6 +119,7 @@ const content = {
     "Livres et médias",
     "Meubles"
   ],
+
   section: {
     badge: "Sélection Maché",
     title: "Meilleures ventes",
@@ -103,6 +129,7 @@ const content = {
 
 export default function HomePage() {
   const [active, setActive] = useState(0);
+  const [showMoreCategories, setShowMoreCategories] = useState(false);
   const slide = content.slides[active];
 
   useEffect(() => {
@@ -114,7 +141,10 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="bg-[#f5f6f8]">
+    <main
+      className="bg-[#f5f6f8]"
+      onClick={() => setShowMoreCategories(false)}
+    >
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-white to-[#fff1f1]">
         <img
           src="/images/logo-haiti-mache-hibiscus.png"
@@ -236,7 +266,10 @@ export default function HomePage() {
             {content.slides.map((item, index) => (
               <button
                 key={item.badge}
-                onClick={() => setActive(index)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActive(index);
+                }}
                 className={`h-3 rounded-full transition-all ${
                   active === index ? "w-12 bg-[#d20a1e]" : "w-3 bg-slate-300"
                 }`}
@@ -249,23 +282,27 @@ export default function HomePage() {
 
       <section className="relative z-10 bg-white shadow-sm">
         <div className="container-page grid gap-4 py-5 md:grid-cols-4">
-          {content.advantages.map(([icon, title, text]) => (
-            <div
-              key={title}
-              className="flex items-center gap-4 rounded-2xl border bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+          {content.advantages.map((item) => (
+            <Link
+              key={item.title}
+              href={item.href}
+              className="flex items-center gap-4 rounded-2xl border bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-[#d20a1e] hover:shadow-lg"
             >
-              <div className="text-4xl">{icon}</div>
+              <div className="text-4xl">{item.icon}</div>
               <div>
-                <div className="font-black text-[#071f3d]">{title}</div>
-                <div className="text-sm text-slate-500">{text}</div>
+                <div className="font-black text-[#071f3d]">{item.title}</div>
+                <div className="text-sm text-slate-500">{item.text}</div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
 
-      <section className="border-y bg-white">
-        <div className="container-page flex h-24 items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-lg font-black text-[#071f3d]">
+      <section className="relative border-y bg-white">
+        <div
+          className="container-page flex h-24 items-center justify-between gap-4 whitespace-nowrap text-lg font-black text-[#071f3d]"
+          onClick={(e) => e.stopPropagation()}
+        >
           {content.mainCategories.map((category) => (
             <Link
               key={category.title}
@@ -277,26 +314,54 @@ export default function HomePage() {
             </Link>
           ))}
 
-          <details className="group relative">
-            <summary className="cursor-pointer list-none rounded-full bg-black px-5 py-3 text-white transition-all duration-300 hover:bg-[#d20a1e]">
-              ••• {content.moreButton}
-            </summary>
+          <button
+            type="button"
+            onClick={() => setShowMoreCategories((value) => !value)}
+            className="rounded-full bg-black px-6 py-4 text-white transition-all duration-300 hover:bg-[#d20a1e]"
+          >
+            ••• {content.moreButton}
+          </button>
+        </div>
 
-            <div className="absolute right-0 z-30 mt-4 grid w-[760px] grid-cols-3 gap-2 rounded-2xl border bg-white p-6 text-sm font-semibold text-[#071f3d] shadow-2xl">
+        {showMoreCategories && (
+          <div
+            className="fixed left-1/2 top-[210px] z-[999] w-[92%] max-w-6xl -translate-x-1/2 rounded-[2rem] border bg-white p-8 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-6 flex items-center justify-between border-b pb-4">
+              <div>
+                <div className="text-2xl font-black text-[#071f3d]">
+                  {content.moreTitle}
+                </div>
+                <p className="mt-1 text-sm text-slate-500">
+                  Explorez toutes les catégories disponibles sur Maché.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowMoreCategories(false)}
+                className="rounded-full bg-slate-100 px-4 py-2 text-xl font-black text-slate-500 transition-all hover:bg-black hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid max-h-[430px] grid-cols-2 gap-3 overflow-y-auto pr-2 md:grid-cols-3 lg:grid-cols-4">
               {content.moreCategories.map((item) => (
                 <Link
                   key={item}
                   href={`/shop?category=${encodeURIComponent(
                     item.toLowerCase()
                   )}`}
-                  className="rounded-lg px-3 py-2 hover:bg-[#fff1f1] hover:text-[#d20a1e]"
+                  className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-bold text-[#071f3d] transition-all duration-200 hover:border-[#d20a1e] hover:bg-[#fff1f1] hover:text-[#d20a1e]"
                 >
                   {item}
                 </Link>
               ))}
             </div>
-          </details>
-        </div>
+          </div>
+        )}
       </section>
 
       <section className="container-page py-14">
