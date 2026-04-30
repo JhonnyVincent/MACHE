@@ -60,6 +60,9 @@ const translations = {
 
 type Lang = keyof typeof translations;
 
+const navLinkClass =
+  "relative inline-flex items-center transition-all duration-300 hover:scale-105 after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:transition-all after:duration-300 hover:after:w-full";
+
 export function Header() {
   const { count, openCart } = useCart();
   const [lang, setLang] = useState<Lang>("fr");
@@ -81,8 +84,6 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white">
-
-      {/* TICKER ROUGE */}
       <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-wide text-white">
         <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
           {[...tickerTranslations[lang], ...tickerTranslations[lang]].map(
@@ -92,7 +93,7 @@ export function Header() {
                 href={tickerLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline"
+                className="transition-all duration-300 hover:text-black hover:underline"
               >
                 ✦ {item}
               </a>
@@ -101,7 +102,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* LIGNE LIVRAISON → NOIRE */}
       <div className="border-b bg-black text-base font-semibold text-white">
         <div className="container-page flex h-10 items-center justify-between">
           <div>🚚 {t.delivery}</div>
@@ -122,13 +122,17 @@ export function Header() {
               <option>CAD</option>
             </select>
 
-            <Link href="/login">{t.login}</Link>
-            <Link href="/register">{t.register}</Link>
+            <Link href="/login" className="transition-all duration-300 hover:text-[#d20a1e]">
+              {t.login}
+            </Link>
+
+            <Link href="/register" className="transition-all duration-300 hover:text-[#d20a1e]">
+              {t.register}
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* LOGO + SEARCH */}
       <div className="bg-white">
         <div className="container-page grid min-h-[120px] grid-cols-[260px_1fr_280px] items-center gap-8 py-5">
           <Link href="/" className="flex items-center gap-4">
@@ -149,29 +153,38 @@ export function Header() {
           </Link>
 
           <div className="hidden md:flex">
-            <div className="flex w-full overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm">
+            <div className="flex w-full overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm transition-all duration-300 focus-within:border-[#d20a1e] focus-within:shadow-lg">
               <input
                 className="flex-1 px-6 py-4 text-sm text-[#071f3d] outline-none"
                 placeholder={t.searchPlaceholder}
               />
-              <button className="bg-[#d20a1e] px-7 text-2xl text-white">
+              <button className="bg-[#d20a1e] px-7 text-2xl text-white transition-all duration-300 hover:bg-black hover:scale-105">
                 🔍
               </button>
             </div>
           </div>
 
           <div className="hidden items-center justify-end gap-7 text-center font-bold text-[#071f3d] md:flex">
-            <Link href="/dashboard/user" className="text-sm">
+            <Link
+              href="/dashboard/user"
+              className="text-sm transition-all duration-300 hover:scale-105 hover:text-[#d20a1e]"
+            >
               <div className="text-3xl">👤</div>
               {t.account}
             </Link>
 
-            <Link href="/favorites" className="text-sm">
+            <Link
+              href="/favorites"
+              className="text-sm transition-all duration-300 hover:scale-105 hover:text-[#d20a1e]"
+            >
               <div className="text-3xl">♡</div>
               {t.favorites}
             </Link>
 
-            <button onClick={openCart} className="relative text-sm">
+            <button
+              onClick={openCart}
+              className="relative text-sm transition-all duration-300 hover:scale-105 hover:text-[#d20a1e]"
+            >
               <div className="text-3xl">🛍️</div>
               {t.cart}
               <span className="absolute -right-3 -top-2 rounded-full bg-[#d20a1e] px-2 py-0.5 text-xs text-white">
@@ -182,15 +195,49 @@ export function Header() {
         </div>
       </div>
 
-      {/* MENU → NOIR + TEXTE AGRANDI */}
       <nav className="bg-black text-white">
-        <div className="container-page flex h-16 items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-base font-black uppercase">
-          <Link href="/shop?sort=best">🔥 {t.bestSellers}</Link>
-          <Link href="/shop?sort=new">🟢 {t.newArrivals}</Link>
-          <Link href="/shop?promo=true">🏷️ {t.promotions}</Link>
-          <Link href="/shop">▦ {t.catalog}</Link>
-          <Link href="/legal/vendors">🏪 {t.sellers}</Link>
-          <Link href="/shop?brands=true">🏅 {t.brands}</Link>
+        <div className="container-page flex h-16 items-center justify-between gap-6 overflow-x-auto whitespace-nowrap text-base font-black uppercase">
+          <Link
+            href="/shop?sort=best"
+            className={`${navLinkClass} hover:text-red-500 after:bg-red-500`}
+          >
+            🔥 {t.bestSellers}
+          </Link>
+
+          <Link
+            href="/shop?sort=new"
+            className={`${navLinkClass} hover:text-green-400 after:bg-green-400`}
+          >
+            🟢 {t.newArrivals}
+          </Link>
+
+          <Link
+            href="/shop?promo=true"
+            className={`${navLinkClass} hover:text-yellow-400 after:bg-yellow-400`}
+          >
+            🏷️ {t.promotions}
+          </Link>
+
+          <Link
+            href="/shop"
+            className={`${navLinkClass} hover:text-blue-400 after:bg-blue-400`}
+          >
+            ▦ {t.catalog}
+          </Link>
+
+          <Link
+            href="/legal/vendors"
+            className={`${navLinkClass} hover:text-purple-400 after:bg-purple-400`}
+          >
+            🏪 {t.sellers}
+          </Link>
+
+          <Link
+            href="/shop?brands=true"
+            className={`${navLinkClass} hover:text-pink-400 after:bg-pink-400`}
+          >
+            🏅 {t.brands}
+          </Link>
         </div>
       </nav>
     </header>
