@@ -1,7 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { featuredProducts } from "@/lib/mock-data";
 import { ProductCard } from "@/components/product-card";
-import { HomeTicker } from "@/components/home-ticker";
 
 const mainCategories = [
   { title: "Artisanat", icon: "🧺", href: "/shop?category=artisanat" },
@@ -21,7 +23,6 @@ const moreCategories = [
   "Vêtements homme",
   "Chaussures homme",
   "Grandes tailles homme",
-  "Pyjamas et Sous-vêtements homme",
   "Sports et Activités d'extérieur",
   "Bijoux et Accessoires",
   "Beauté et Santé",
@@ -31,21 +32,15 @@ const moreCategories = [
   "Chaussures enfant",
   "Bébé et Maternité",
   "Sacs et Bagages",
-  "Pelouses et Jardins",
   "Arts, Artisanat et Couture",
   "Électroniques",
-  "Commerce, Industrie et Science",
   "Outillage et Amélioration de l'habitat",
   "Électroménagers",
   "Fournitures de bureau et scolaires",
-  "Ménage et Santé",
   "Accessoires animaux",
   "Téléphones et Accessoires",
-  "Maison intelligente",
-  "Instruments de musique",
   "Alimentation et Épicerie",
   "Livres et médias",
-  "Vêtements de plage",
   "Meubles"
 ];
 
@@ -56,88 +51,171 @@ const advantages = [
   ["🎧", "Support client", "Toujours à votre écoute"]
 ];
 
-const homeSlides = [
+const slides = [
   {
     badge: "Image officielle",
     title: "Tout Ayiti. Tout en un seul Maché.",
     text: "Des produits authentiques, des vendeurs locaux, une fierté nationale.",
-    href: "/shop",
     cta: "Découvrir",
-    image: "/images/carte-haiti-mache.png",
-    fixed: true
+    href: "/shop",
+    type: "haiti"
   },
   {
     badge: "Produit du mois",
     title: "Les produits les plus vendus du moment",
-    text: "Une sélection qui pourra évoluer automatiquement selon les ventes, les vues et les tendances.",
+    text: "Plus tard, cette section viendra automatiquement de Supabase selon les ventes, vues et tendances.",
+    cta: "Voir les meilleures ventes",
     href: "/shop?sort=best",
-    cta: "Voir les meilleures ventes"
+    type: "products"
   },
   {
-    badge: "Partenaire",
+    badge: "Partenaire export",
     title: "PHARE accompagne l’importation et l’exportation",
-    text: "Un espace pourra mettre en avant les partenaires logistiques, export, import et diaspora.",
+    text: "Un espace pour connecter Haïti, la diaspora, les exportateurs et les importateurs.",
+    cta: "Découvrir PHARE",
     href: "/services",
-    cta: "Découvrir PHARE"
+    type: "phare"
   },
   {
     badge: "Financement",
     title: "Bawon soutient les projets et entreprises",
-    text: "Maché pourra présenter des partenaires qui financent ou accompagnent les vendeurs et entreprises.",
-    href: "/services",
-    cta: "Voir les solutions"
+    text: "Financement, accompagnement, investissement et croissance des entreprises haïtiennes.",
+    cta: "Trouver un financement",
+    href: "https://bawon-eta.vercel.app/",
+    type: "bawon"
   },
   {
-    badge: "Newsletter",
-    title: "Les nouvelles du pays et du marché",
-    text: "Actualités, promotions, nouveaux contrats, produits populaires et annonces importantes.",
-    href: "/newsletter",
-    cta: "Lire la newsletter"
+    badge: "Newsletter & vendeurs",
+    title: "Les dernières infos du pays et du marché",
+    text: "Nouveaux vendeurs, promotions, contrats, annonces et opportunités à soutenir.",
+    cta: "Voir les nouveautés",
+    href: "/shop?sort=new",
+    type: "news"
   }
 ];
 
 export default function HomePage() {
-  const firstSlide = homeSlides[0];
+  const [active, setActive] = useState(0);
+  const slide = slides[active];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActive((current) => (current + 1) % slides.length);
+    }, 8000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <main className="bg-[#fffaf6]">
-      <HomeTicker />
-
-      {/* HERO PRINCIPAL - image fixe numéro 1 */}
+    <main className="bg-white">
       <section className="container-page pt-8">
-        <div className="grid items-center gap-8 rounded-3xl bg-[#f6eadf] px-8 py-12 shadow-sm lg:grid-cols-[0.9fr_1.1fr] lg:px-16">
-          <div>
-            <p className="mb-4 text-sm font-extrabold uppercase tracking-[0.25em] text-[#d20a1e]">
-              {firstSlide.badge}
-            </p>
+        <div className="relative overflow-hidden rounded-3xl border bg-white p-8 shadow-sm lg:p-14">
+          <img
+            src="/images/logo-haiti-mache-hibiscus.png"
+            alt=""
+            className="pointer-events-none absolute -right-16 -top-24 h-[520px] w-[520px] opacity-[0.04]"
+          />
 
-            <h1 className="text-5xl font-black leading-tight text-[#071f3d] md:text-7xl">
-              Tout Ayiti.
-              <br />
-              Tout en un seul{" "}
-              <span className="text-[#d20a1e]">Maché.</span>
-            </h1>
+          <div className="relative grid items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <p className="mb-4 text-sm font-extrabold uppercase tracking-[0.25em] text-[#d20a1e]">
+                {slide.badge}
+              </p>
 
-            <p className="mt-6 max-w-md text-xl font-medium leading-relaxed text-[#23344d]">
-              {firstSlide.text}
-            </p>
+              <h1 className="text-5xl font-black leading-tight text-[#071f3d] md:text-7xl">
+                {slide.title.includes("Maché") ? (
+                  <>
+                    Tout Ayiti.
+                    <br />
+                    Tout en un seul{" "}
+                    <span className="text-[#d20a1e]">Maché.</span>
+                  </>
+                ) : (
+                  slide.title
+                )}
+              </h1>
 
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link href="/shop" className="btn-primary">
-                Découvrir
-              </Link>
-              <Link href="/shop" className="btn-secondary">
-                Voir le catalogue
-              </Link>
+              <p className="mt-6 max-w-xl text-xl font-medium leading-relaxed text-[#23344d]">
+                {slide.text}
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link href={slide.href} className="btn-primary">
+                  {slide.cta}
+                </Link>
+                <Link href="/shop" className="btn-secondary">
+                  Voir le catalogue
+                </Link>
+              </div>
+            </div>
+
+            <div className="min-h-[360px]">
+              {slide.type === "haiti" && (
+                <img
+                  src="/images/carte-haiti-mache.png"
+                  alt="Carte d’Haïti Maché"
+                  className="mx-auto max-h-[440px] w-full object-contain"
+                />
+              )}
+
+              {slide.type === "products" && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {featuredProducts.slice(0, 2).map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              )}
+
+              {slide.type === "phare" && (
+                <div className="flex h-full min-h-[360px] items-center justify-center rounded-3xl bg-[#071f3d] p-10 text-center text-white">
+                  <div>
+                    <div className="text-6xl font-black">PHARE</div>
+                    <p className="mt-4 text-white/75">
+                      Exportation • Importation • Diaspora • Logistique
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {slide.type === "bawon" && (
+                <div className="flex h-full min-h-[360px] items-center justify-center rounded-3xl bg-[#d20a1e] p-10 text-center text-white">
+                  <div>
+                    <div className="text-6xl font-black">Bawon</div>
+                    <p className="mt-4 text-white/80">
+                      Financement • Investissement • Entreprises
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {slide.type === "news" && (
+                <div className="grid gap-4">
+                  {["Nouveaux vendeurs", "Dernières promotions", "Produits populaires", "Actualités du marché"].map(
+                    (item) => (
+                      <div key={item} className="rounded-2xl border bg-white p-6 shadow-sm">
+                        <div className="font-black text-[#071f3d]">{item}</div>
+                        <p className="mt-2 text-sm text-slate-500">
+                          Cette donnée pourra venir automatiquement de Supabase.
+                        </p>
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="flex justify-center">
-            <img
-              src={firstSlide.image}
-              alt="Carte d’Haïti Maché"
-              className="max-h-[470px] w-full object-contain"
-            />
+          <div className="relative mt-8 flex justify-center gap-2">
+            {slides.map((item, index) => (
+              <button
+                key={item.badge}
+                onClick={() => setActive(index)}
+                className={`h-3 rounded-full transition-all ${
+                  active === index ? "w-10 bg-[#d20a1e]" : "w-3 bg-slate-300"
+                }`}
+                aria-label={`Afficher ${item.badge}`}
+              />
+            ))}
           </div>
         </div>
 
@@ -157,7 +235,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* MENU CATEGORIES APRES HERO */}
       <section className="border-y bg-white">
         <div className="container-page flex h-20 items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-lg font-bold text-[#071f3d]">
           {mainCategories.map((category) => (
@@ -187,70 +264,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FUTURS SLIDES DYNAMIQUES */}
-      <section className="container-page py-12">
-        <div className="mb-6">
-          <h2 className="section-title">À la une sur Maché</h2>
-          <p className="section-subtitle">
-            Cette zone pourra venir de Supabase : pubs, partenaires, produits du mois,
-            newsletters, contrats et meilleures ventes.
-          </p>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-4">
-          {homeSlides.slice(1).map((slide) => (
-            <Link
-              key={slide.title}
-              href={slide.href}
-              className="rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="text-xs font-black uppercase tracking-[0.2em] text-[#d20a1e]">
-                {slide.badge}
-              </div>
-              <h3 className="mt-3 text-xl font-black text-[#071f3d]">
-                {slide.title}
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-slate-600">
-                {slide.text}
-              </p>
-              <div className="mt-5 font-bold text-[#d20a1e]">{slide.cta} →</div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* CATEGORIES SECTION */}
-      <section className="container-page py-4">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <h2 className="section-title">Nos incontournables</h2>
-            <p className="section-subtitle">
-              Les premières grandes catégories de Maché.
-            </p>
-          </div>
-          <Link href="/shop" className="font-bold text-[#d20a1e]">
-            Voir toutes les catégories →
-          </Link>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {mainCategories.map((category) => (
-            <Link
-              key={category.title}
-              href={category.href}
-              className="card p-6 text-center transition hover:-translate-y-1 hover:shadow-lg"
-            >
-              <div className="text-5xl">{category.icon}</div>
-              <h3 className="mt-4 font-bold text-[#071f3d]">
-                {category.title}
-              </h3>
-              <p className="mt-1 text-sm text-slate-500">Produits d’Haïti</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* PRODUITS */}
       <section className="container-page py-12">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
@@ -269,32 +282,6 @@ export default function HomePage() {
           {featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
-        </div>
-      </section>
-
-      {/* SELLER CTA */}
-      <section className="container-page py-12">
-        <div className="rounded-3xl bg-[#071f3d] p-8 text-white md:flex md:items-center md:justify-between md:p-10">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#f5b01b]">
-              Devenir vendeur
-            </p>
-            <h2 className="mt-2 text-3xl font-black">
-              Vendez vos produits sur Maché
-            </h2>
-            <p className="mt-2 max-w-2xl text-white/75">
-              Aujourd’hui, Maché démarre avec sa propre équipe. Demain, les vendeurs
-              pourront publier leurs produits, acheter de la visibilité et toucher plus
-              de clients.
-            </p>
-          </div>
-
-          <Link
-            href="/sell"
-            className="mt-6 inline-flex rounded-xl bg-[#d20a1e] px-6 py-4 font-bold text-white md:mt-0"
-          >
-            Rejoindre Maché
-          </Link>
         </div>
       </section>
     </main>
