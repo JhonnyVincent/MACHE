@@ -19,21 +19,26 @@ export async function loginAction(formData: FormData) {
   });
 
   if (error || !data.user) {
-    // 🔴 Message clair pour user
+    console.error("LOGIN ERROR:", error);
     redirect("/login?error=invalid_credentials");
   }
 
-  const { data: profile } = await supabase
+  // 🔥 IMPORTANT : vérifie si profil existe
+  const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("role")
     .eq("id", data.user.id)
-    .single();
+    .maybeSingle(); // ✅ au lieu de .single()
 
-  if (!profile) {
-    redirect("/login?error=profile_not_found");
+  // ✅ Si pas de profil → client par défaut
+  if (!profile || profileError) {
+    redirect("/dashboard/buyer");
   }
 
-  if (profile.role === "buyer") redirect("/dashboard/buyer");
+  // 🎯 REDIRECTIONS PAR ROLE
+  if (profile.role === "buyer") {
+    redirect("/dashboard/buyer");
+  }
 
   if (
     profile.role === "seller_individual" ||
@@ -42,8 +47,14 @@ export async function loginAction(formData: FormData) {
     redirect("/dashboard/seller");
   }
 
-  if (profile.role === "agent") redirect("/dashboard/agent");
-  if (profile.role === "admin") redirect("/dashboard/admin");
+  if (profile.role === "agent") {
+    redirect("/dashboard/agent");
+  }
 
+  if (profile.role === "admin") {
+    redirect("/dashboard/admin");
+  }
+
+  // fallback
   redirect("/");
 }
