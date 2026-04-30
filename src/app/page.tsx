@@ -120,17 +120,119 @@ const content = {
     "Meubles"
   ],
 
-  section: {
-    badge: "Sélection Maché",
-    title: "Meilleures ventes",
-    text: "Pour l’instant, les produits viennent de l’équipe Maché. Plus tard, cette section pourra se mettre à jour automatiquement avec Supabase."
+  vendors: [
+    {
+      name: "Boutique Lakay",
+      category: "Mode & accessoires",
+      location: "Port-au-Prince",
+      href: "/shop?vendor=boutique-lakay"
+    },
+    {
+      name: "Atelye Kreyòl",
+      category: "Artisanat local",
+      location: "Jacmel",
+      href: "/shop?vendor=atelye-kreyol"
+    },
+    {
+      name: "Saveurs d’Haïti",
+      category: "Épicerie & produits locaux",
+      location: "Cap-Haïtien",
+      href: "/shop?vendor=saveurs-haiti"
+    }
+  ],
+
+  sections: {
+    best: {
+      badge: "Sélection Maché",
+      title: "Meilleures ventes",
+      text: "Les produits qui attirent le plus les clients actuellement."
+    },
+    new: {
+      badge: "Nouveautés",
+      title: "Nouveaux produits",
+      text: "Les derniers produits ajoutés par les vendeurs."
+    },
+    promo: {
+      badge: "Offres limitées",
+      title: "Promotions du moment",
+      text: "Des offres à ne pas manquer sur les produits populaires."
+    },
+    recommended: {
+      badge: "Pour vous",
+      title: "Vous pourriez aimer",
+      text: "Des suggestions basées sur les tendances et les catégories populaires."
+    },
+    continueShopping: {
+      badge: "Reprendre",
+      title: "Continuer vos achats",
+      text: "Retrouvez rapidement les produits que vous avez consultés."
+    },
+    vendors: {
+      badge: "Boutiques",
+      title: "Nouveaux vendeurs",
+      text: "Découvrez les dernières boutiques arrivées sur Maché."
+    }
   }
 };
+
+function ProductSection({
+  badge,
+  title,
+  text,
+  href,
+  products
+}: {
+  badge: string;
+  title: string;
+  text: string;
+  href: string;
+  products: typeof featuredProducts;
+}) {
+  return (
+    <section className="container-page py-10">
+      <div className="mb-7 flex items-end justify-between gap-4">
+        <div>
+          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
+            {badge}
+          </p>
+          <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
+            {title}
+          </h2>
+          <p className="mt-3 max-w-2xl text-base text-slate-500">{text}</p>
+        </div>
+
+        <Link
+          href={href}
+          className="hidden rounded-xl bg-black px-5 py-3 font-black text-white transition-all duration-300 hover:bg-[#d20a1e] md:inline-flex"
+        >
+          Voir plus →
+        </Link>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => (
+          <div
+            key={product.id}
+            className="transition-all duration-300 hover:-translate-y-2"
+          >
+            <ProductCard product={product} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function HomePage() {
   const [active, setActive] = useState(0);
   const [showMoreCategories, setShowMoreCategories] = useState(false);
   const slide = content.slides[active];
+
+  const bestSellingProducts = featuredProducts;
+  const newProducts = featuredProducts.slice().reverse();
+  const promoProducts = featuredProducts.slice(0, 3);
+  const recommendedProducts = featuredProducts.slice(1);
+  const recentlyViewedProducts = featuredProducts.slice(0, 3);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -364,39 +466,83 @@ export default function HomePage() {
         )}
       </section>
 
-      <section className="container-page py-14">
-        <div className="mb-7 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
-              {content.section.badge}
-            </p>
-            <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
-              {content.section.title}
-            </h2>
-            <p className="mt-3 max-w-2xl text-base text-slate-500">
-              {content.section.text}
-            </p>
-          </div>
+      <ProductSection
+        badge={content.sections.best.badge}
+        title={content.sections.best.title}
+        text={content.sections.best.text}
+        href="/shop?sort=best"
+        products={bestSellingProducts}
+      />
 
-          <Link
-            href="/shop"
-            className="hidden rounded-xl bg-black px-5 py-3 font-black text-white transition-all duration-300 hover:bg-[#d20a1e] md:inline-flex"
-          >
-            {content.bestSalesButton} →
-          </Link>
+      <ProductSection
+        badge={content.sections.new.badge}
+        title={content.sections.new.title}
+        text={content.sections.new.text}
+        href="/shop?sort=new"
+        products={newProducts}
+      />
+
+      <ProductSection
+        badge={content.sections.promo.badge}
+        title={content.sections.promo.title}
+        text={content.sections.promo.text}
+        href="/shop?promo=true"
+        products={promoProducts}
+      />
+
+      <section className="container-page py-10">
+        <div className="mb-7">
+          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
+            {content.sections.vendors.badge}
+          </p>
+          <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
+            {content.sections.vendors.title}
+          </h2>
+          <p className="mt-3 max-w-2xl text-base text-slate-500">
+            {content.sections.vendors.text}
+          </p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="transition-all duration-300 hover:-translate-y-2"
+        <div className="grid gap-6 md:grid-cols-3">
+          {content.vendors.map((vendor) => (
+            <Link
+              key={vendor.name}
+              href={vendor.href}
+              className="rounded-3xl border bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-[#d20a1e] hover:shadow-xl"
             >
-              <ProductCard product={product} />
-            </div>
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff1f1] text-3xl">
+                🏪
+              </div>
+              <h3 className="text-2xl font-black text-[#071f3d]">
+                {vendor.name}
+              </h3>
+              <p className="mt-2 font-semibold text-slate-500">
+                {vendor.category}
+              </p>
+              <p className="mt-1 text-sm text-slate-400">{vendor.location}</p>
+              <div className="mt-5 font-black text-[#d20a1e]">
+                Voir la boutique →
+              </div>
+            </Link>
           ))}
         </div>
       </section>
+
+      <ProductSection
+        badge={content.sections.recommended.badge}
+        title={content.sections.recommended.title}
+        text={content.sections.recommended.text}
+        href="/shop?recommended=true"
+        products={recommendedProducts}
+      />
+
+      <ProductSection
+        badge={content.sections.continueShopping.badge}
+        title={content.sections.continueShopping.title}
+        text={content.sections.continueShopping.text}
+        href="/shop?recent=true"
+        products={recentlyViewedProducts}
+      />
     </main>
   );
 }
