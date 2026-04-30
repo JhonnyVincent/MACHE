@@ -13,22 +13,42 @@ export async function registerAction(formData: FormData) {
     redirect("/register?error=missing_fields");
   }
 
+  const allowedRoles = [
+    "buyer",
+    "seller_individual",
+    "seller_business",
+    "agent"
+  ];
+
+  const safeRole = allowedRoles.includes(role) ? role : "buyer";
+
   const supabase = await createSupabaseServerClient();
 
- const { error } = await supabase.auth.signUp({
-  email,
-  password,
-  options: {
-    data: {
-      full_name: fullName,
-      role
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        role: safeRole
+      },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
     }
-  }
-});
+  });
 
   if (error) {
     redirect(`/register?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect("/register/success?test=new-code");
+  if (data.user) {
+    await supabase.from("users").upsert({
+      id: data.user.id,
+      full_name: fullName,
+      email,
+      role: safeRole,
+      created_at: new Date().toISOString()
+    });
+  }
+
+  redirect("/register/success");
 }
