@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "./cart-provider";
 
+const tickerItems = [
+  "Trouver un exportateur / importateur",
+  "Trouver un financement",
+  "Se faire accompagner pour créer son entreprise",
+  "Investir dans des projets",
+  "Paiement sécurisé",
+  "Développer son entreprise"
+];
+
+const tickerLink = "https://bawon-eta.vercel.app/";
+
 const translations = {
   fr: {
     delivery: "Livraison partout en Haïti",
@@ -60,6 +71,22 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white">
+      <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-wide text-white">
+        <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
+          {[...tickerItems, ...tickerItems].map((item, index) => (
+            <a
+              key={`${item}-${index}`}
+              href={tickerLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              ✦ {item}
+            </a>
+          ))}
+        </div>
+      </div>
+
       <div className="border-b bg-[#fafafa] text-sm font-semibold text-[#071f3d]">
         <div className="container-page flex h-10 items-center justify-between">
           <div>🚚 {t.delivery}</div>
