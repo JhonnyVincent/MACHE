@@ -81,6 +81,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white">
+
+      {/* TICKER ROUGE */}
       <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-wide text-white">
         <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
           {[...tickerTranslations[lang], ...tickerTranslations[lang]].map(
@@ -99,7 +101,8 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-b bg-[#fafafa] text-sm font-semibold text-[#071f3d]">
+      {/* LIGNE LIVRAISON → NOIRE */}
+      <div className="border-b bg-black text-base font-semibold text-white">
         <div className="container-page flex h-10 items-center justify-between">
           <div>🚚 {t.delivery}</div>
 
@@ -107,13 +110,13 @@ export function Header() {
             <select
               value={lang}
               onChange={(e) => changeLang(e.target.value as Lang)}
-              className="bg-transparent font-bold text-[#071f3d] outline-none"
+              className="bg-transparent font-bold text-white outline-none"
             >
               <option value="fr">FR</option>
               <option value="ht">HT</option>
             </select>
 
-            <select className="bg-transparent font-bold text-[#071f3d] outline-none">
+            <select className="bg-transparent font-bold text-white outline-none">
               <option>HTG</option>
               <option>USD</option>
               <option>CAD</option>
@@ -125,6 +128,7 @@ export function Header() {
         </div>
       </div>
 
+      {/* LOGO + SEARCH */}
       <div className="bg-white">
         <div className="container-page grid min-h-[120px] grid-cols-[260px_1fr_280px] items-center gap-8 py-5">
           <Link href="/" className="flex items-center gap-4">
@@ -178,8 +182,9 @@ export function Header() {
         </div>
       </div>
 
-      <nav className="bg-[#071f3d] text-white">
-        <div className="container-page flex h-16 items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-sm font-black uppercase">
+      {/* MENU → NOIR + TEXTE AGRANDI */}
+      <nav className="bg-black text-white">
+        <div className="container-page flex h-16 items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-base font-black uppercase">
           <Link href="/shop?sort=best">🔥 {t.bestSellers}</Link>
           <Link href="/shop?sort=new">🟢 {t.newArrivals}</Link>
           <Link href="/shop?promo=true">🏷️ {t.promotions}</Link>
