@@ -1,7 +1,7 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { featuredProducts } from "@/lib/mock-data";
-import { Product } from "@/types";
 import { HomePageClient } from "@/components/home-page-client";
+import { featuredProducts } from "@/lib/mock-data";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { Product } from "@/types";
 
 function mapProduct(row: any): Product {
   return {
@@ -45,15 +45,17 @@ export default async function HomePage() {
       : featuredProducts;
 
   const vendors =
-    vendorsData?.map((vendor) => ({
-      name: vendor.full_name ?? "Nouveau vendeur",
-      category:
-        vendor.role === "seller_business"
-          ? "Boutique professionnelle"
-          : "Vendeur individuel",
-      location: "Maché",
-      href: `/shop?seller=${vendor.id}`
-    })) ?? [];
+    vendorsData && vendorsData.length > 0
+      ? vendorsData.map((vendor) => ({
+          name: vendor.full_name ?? "Nouveau vendeur",
+          category:
+            vendor.role === "seller_business"
+              ? "Boutique professionnelle"
+              : "Vendeur individuel",
+          location: "Maché",
+          href: `/shop?seller=${vendor.id}`
+        }))
+      : [];
 
   return <HomePageClient products={products} vendors={vendors} />;
 }
