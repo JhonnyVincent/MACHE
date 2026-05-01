@@ -1,4 +1,5 @@
-import { forgotPasswordAction } from "./actions";
+import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function ForgotPasswordPage({
   searchParams
@@ -6,6 +7,28 @@ export default async function ForgotPasswordPage({
   searchParams: Promise<{ error?: string; success?: string }>;
 }) {
   const { error, success } = await searchParams;
+
+  async function forgotPasswordAction(formData: FormData) {
+    "use server";
+
+    const email = String(formData.get("email") || "").trim();
+
+    if (!email) {
+      redirect("/forgot-password?error=missing_email");
+    }
+
+    const supabase = await createSupabaseServerClient();
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password`
+    });
+
+    if (error) {
+      redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
+    }
+
+    redirect("/forgot-password?success=check_email");
+  }
 
   return (
     <main className="container-page py-12">
