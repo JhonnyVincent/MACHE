@@ -4,7 +4,9 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const next = requestUrl.searchParams.get("next") || "/";
+  const next = requestUrl.searchParams.get("next");
+
+  const redirectPath = next ? `/${next.replace(/^\/+/, "")}` : "/";
 
   if (!code) {
     return NextResponse.redirect(
@@ -13,7 +15,6 @@ export async function GET(request: Request) {
   }
 
   const supabase = await createSupabaseServerClient();
-
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
@@ -22,5 +23,5 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.redirect(new URL(next, requestUrl.origin));
+  return NextResponse.redirect(new URL(redirectPath, requestUrl.origin));
 }
