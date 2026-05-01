@@ -1,7 +1,16 @@
 import { notFound } from "next/navigation";
 import { createProductAction } from "./actions";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type RouteKey = "buyer" | "seller" | "agent" | "admin";
+
+type SellerProduct = {
+  id: string;
+  title: string;
+  price: number;
+  category: string | null;
+  status: string | null;
+};
 
 const dashboardStats = {
   buyer: [
@@ -11,10 +20,10 @@ const dashboardStats = {
     { label: "Notifications", value: "14" }
   ],
   seller: [
-    { label: "Ventes 30j", value: "$12,840" },
-    { label: "Commandes", value: "96" },
-    { label: "Balance disponible", value: "$3,920" },
-    { label: "Produits actifs", value: "41" }
+    { label: "Ventes 30j", value: "$0" },
+    { label: "Commandes", value: "0" },
+    { label: "Balance disponible", value: "$0" },
+    { label: "Produits actifs", value: "0" }
   ],
   agent: [
     { label: "Vérifications", value: "24" },
@@ -203,7 +212,13 @@ const dashboardConfig: Record<
   }
 };
 
-function SellerSection({ type }: { type?: string }) {
+function SellerSection({
+  type,
+  products = []
+}: {
+  type?: string;
+  products?: SellerProduct[];
+}) {
   if (type === "seller_ai_form") {
     return (
       <div className="space-y-6">
@@ -218,12 +233,7 @@ function SellerSection({ type }: { type?: string }) {
           <h3 className="mb-4 text-sm font-bold">Formulaire produit</h3>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <input
-              name="title"
-              className="input"
-              placeholder="Nom produit"
-              required
-            />
+            <input name="title" className="input" placeholder="Nom produit" required />
 
             <input
               name="price"
@@ -267,22 +277,57 @@ function SellerSection({ type }: { type?: string }) {
   }
 
   if (type === "seller_products") {
+    if (products.length === 0) {
+      return (
+        <div className="card p-6">
+          <p className="text-sm text-[var(--mache-muted)]">
+            Tu n’as pas encore ajouté de produit.
+          </p>
+
+          <a href="/dashboard/seller/products/new" className="btn-primary mt-4 inline-flex">
+            Ajouter mon premier produit
+          </a>
+        </div>
+      );
+    }
+
     return (
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {[
-          ["Robe artisanale", "Mode", "$79", "Actif"],
-          ["Café premium", "Épicerie", "$18", "Actif"],
-          ["Sac cuir Caraïbe", "Accessoires", "$120", "Stock bas"]
-        ].map((p) => (
-          <div key={p[0]} className="rounded-2xl border p-4">
+        {products.map((p) => (
+          <div key={p.id} className="rounded-2xl border p-4">
             <div className="mb-3 flex items-center justify-between">
-              <span className="badge">{p[1]}</span>
-              <span className="text-xs text-[var(--mache-muted)]">{p[3]}</span>
+              <span className="badge">{p.category || "Autre"}</span>
+              <span className="text-xs text-[var(--mache-muted)]">
+                {p.status || "draft"}
+              </span>
             </div>
-            <h3 className="font-semibold">{p[0]}</h3>
-            <p className="mt-2 text-lg font-bold">{p[2]}</p>
+
+            <h3 className="font-semibold">{p.title}</h3>
+            <p className="mt-2 text-lg font-bold">${p.price}</p>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (type === "seller_home") {
+    return (
+      <div className="card p-6">
+        <h3 className="text-lg font-bold">Bienvenue dans ton espace vendeur</h3>
+        <p className="mt-2 text-sm text-[var(--mache-muted)]">
+          Ici, tu peux gérer ta boutique, ajouter tes produits, suivre tes commandes
+          et préparer tes ventes.
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <a href="/dashboard/seller/products/new" className="btn-primary">
+            Ajouter un produit
+          </a>
+
+          <a href="/dashboard/seller/products" className="btn-secondary">
+            Voir mes produits
+          </a>
+        </div>
       </div>
     );
   }
@@ -316,7 +361,33 @@ export default async function DashboardRoute({
     path: `/dashboard/${safeRole}${item.slug ? `/${item.slug}` : ""}`
   }));
 
-  const stats = dashboardStats[safeRole];
+  let sellerProducts: SellerProduct[] = [];
+
+  if (safeRole === "seller") {
+    const supabase = await createSupabaseServerClient();
+
+    const { data: userData } = await supabase.auth.getUser();
+
+    if (userData.user) {
+      const { data } = await supabase
+        .from("products")
+        .select("id,title,price,category,status")
+        .eq("seller_id", userData.user.id)
+        .order("created_at", { ascending: false });
+
+      sellerProducts = data || [];
+    }
+  }
+
+  const stats =
+    safeRole === "seller"
+      ? [
+          { label: "Ventes 30j", value: "$0" },
+          { label: "Commandes", value: "0" },
+          { label: "Balance disponible", value: "$0" },
+          { label: "Produits actifs", value: String(sellerProducts.length) }
+        ]
+      : dashboardStats[safeRole];
 
   return (
     <main className="container-page py-10">
@@ -350,16 +421,14 @@ export default async function DashboardRoute({
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label} className="card p-6">
-                <p className="text-sm text-[var(--mache-muted)]">
-                  {stat.label}
-                </p>
+                <p className="text-sm text-[var(--mache-muted)]">{stat.label}</p>
                 <p className="mt-3 text-2xl font-bold">{stat.value}</p>
               </div>
             ))}
           </div>
 
           {safeRole === "seller" && page.type ? (
-            <SellerSection type={page.type} />
+            <SellerSection type={page.type} products={sellerProducts} />
           ) : (
             <div className="card p-6">
               <div className="space-y-4">
