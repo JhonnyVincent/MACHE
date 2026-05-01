@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { HomePageClient } from "@/components/home-page-client";
 import { featuredProducts } from "@/lib/mock-data";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
