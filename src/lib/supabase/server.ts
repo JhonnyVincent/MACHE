@@ -1,10 +1,11 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import type { CookieOptions } from "@supabase/ssr";
 
 type CookieToSet = {
   name: string;
   value: string;
-  options?: Parameters<ReturnType<typeof cookies>["set"]>[2];
+  options?: CookieOptions;
 };
 
 export async function createSupabaseServerClient() {
@@ -24,7 +25,7 @@ export async function createSupabaseServerClient() {
               cookieStore.set(name, value, options);
             });
           } catch {
-            // Ignoré quand les cookies ne peuvent pas être écrits
+            // Ignore si Next.js ne permet pas d'écrire les cookies ici
           }
         }
       }
