@@ -7,7 +7,9 @@ export async function GET(request: Request) {
   const next = requestUrl.searchParams.get("next") || "/";
 
   if (!code) {
-    return NextResponse.redirect(new URL("/login?error=missing_code", requestUrl.origin));
+    return NextResponse.redirect(
+      new URL("/login?error=missing_code", requestUrl.origin)
+    );
   }
 
   const supabase = await createSupabaseServerClient();
