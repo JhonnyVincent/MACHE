@@ -1,3 +1,4 @@
+import { forgotPasswordAction } from "./actions";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
