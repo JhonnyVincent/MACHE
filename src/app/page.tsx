@@ -63,14 +63,15 @@ export default async function HomePage() {
         }))
       : [];
 
-return (
-  <>
-    <div className="bg-yellow-100 p-4 text-sm font-bold text-black">
-      Produits Supabase trouvés : {productsData?.length ?? 0}
-      <br />
-      Erreur Supabase : {productsError ? productsError.message : "aucune"}
-    </div>
+  return (
+    <>
+      <div className="bg-yellow-100 p-4 text-sm font-bold text-black">
+        Produits Supabase trouvés : {productsData?.length ?? 0}
+        <br />
+        Erreur Supabase : {productsError ? productsError.message : "aucune"}
+      </div>
 
-    <HomePageClient products={products} vendors={vendors} />
-  </>
-);
+      <HomePageClient products={products} vendors={vendors} />
+    </>
+  );
+}
