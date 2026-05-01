@@ -1,12 +1,14 @@
 import { createBrowserClient } from "@supabase/ssr";
 
 export function createSupabaseBrowserClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-  if (!url || !anonKey) {
-    throw new Error("Variables Supabase manquantes.");
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase config manquante côté client");
   }
 
-  return createBrowserClient(url, anonKey);
+  return createBrowserClient(supabaseUrl, supabaseKey);
 }
