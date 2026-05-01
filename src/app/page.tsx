@@ -25,19 +25,25 @@ function mapProduct(row: any): Product {
 export default async function HomePage() {
   const supabase = await createSupabaseServerClient();
 
-  const { data: productsData } = await supabase
+  const { data: productsData, error: productsError } = await supabase
     .from("products")
     .select("*, users:seller_id(full_name)")
     .eq("status", "active")
     .order("created_at", { ascending: false })
     .limit(24);
 
-  const { data: vendorsData } = await supabase
+  console.log("PRODUCTS ERROR:", productsError);
+  console.log("PRODUCTS DATA:", productsData);
+
+  const { data: vendorsData, error: vendorsError } = await supabase
     .from("users")
     .select("id, full_name, role, created_at")
     .in("role", ["seller_individual", "seller_business"])
     .order("created_at", { ascending: false })
     .limit(3);
+
+  console.log("VENDORS ERROR:", vendorsError);
+  console.log("VENDORS DATA:", vendorsData);
 
   const products =
     productsData && productsData.length > 0
