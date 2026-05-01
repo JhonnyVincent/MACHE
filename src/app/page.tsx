@@ -1,4 +1,5 @@
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 import { HomePageClient } from "@/components/home-page-client";
 import { featuredProducts } from "@/lib/mock-data";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
