@@ -1,27 +1,24 @@
-import { NextResponse } from "next/server";
+"use server";
+
+import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function GET(request: Request) {
-  const requestUrl = new URL(request.url);
-  const code = requestUrl.searchParams.get("code");
-  const next = requestUrl.searchParams.get("next") || "";
+export async function forgotPasswordAction(formData: FormData) {
+  const email = String(formData.get("email") || "").trim();
 
-  if (!code) {
-    return NextResponse.redirect(
-      new URL("/login?error=missing_code", requestUrl.origin)
-    );
+  if (!email) {
+    redirect("/forgot-password?error=missing_email");
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/reset-password`
+  });
 
   if (error) {
-    return NextResponse.redirect(
-      new URL(`/login?error=${encodeURIComponent(error.message)}`, requestUrl.origin)
-    );
+    redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
   }
 
-  return NextResponse.redirect(
-    new URL(next ? `/${next}` : "/", requestUrl.origin)
-  );
+  redirect("/forgot-password?success=check_email");
 }
