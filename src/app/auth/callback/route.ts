@@ -12,6 +12,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = await createSupabaseServerClient();
+
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
@@ -20,5 +21,7 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.redirect(new URL("/reset-password", requestUrl.origin));
+  return NextResponse.redirect(
+    new URL("/reset-password", requestUrl.origin)
+  );
 }
