@@ -41,10 +41,10 @@ export default async function RegisterPage({
           />
 
           <select className="input" name="role" defaultValue="buyer">
-            <option value="buyer">buyer</option>
-            <option value="seller_individual">seller_individual</option>
-            <option value="seller_business">seller_business</option>
-            <option value="agent">agent</option>
+            <option value="buyer">Acheteur / Client</option>
+            <option value="seller_individual">Vendeur particulier</option>
+            <option value="seller_business">Business / Fournisseur</option>
+            <option value="agent">Agent</option>
           </select>
 
           <input
