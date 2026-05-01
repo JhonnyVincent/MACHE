@@ -23,55 +23,44 @@ function mapProduct(row: any): Product {
 }
 
 export default async function HomePage() {
-  const supabase = await createSupabaseServerClient();
+  let products: Product[] = featuredProducts;
+  let vendors: any[] = [];
 
-  const { data: productsData, error: productsError } = await supabase
-    .from("products")
-    .select("*, users:seller_id(full_name)")
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(24);
+  try {
+    const supabase = await createSupabaseServerClient();
 
-  console.log("PRODUCTS ERROR:", productsError);
-  console.log("PRODUCTS DATA:", productsData);
+    const { data: productsData, error: productsError } = await supabase
+      .from("products")
+      .select("*, users:seller_id(full_name)")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(24);
 
-  const { data: vendorsData, error: vendorsError } = await supabase
-    .from("users")
-    .select("id, full_name, role, created_at")
-    .in("role", ["seller_individual", "seller_business"])
-    .order("created_at", { ascending: false })
-    .limit(3);
+    if (!productsError && productsData && productsData.length > 0) {
+      products = productsData.map(mapProduct);
+    }
 
-  console.log("VENDORS ERROR:", vendorsError);
-  console.log("VENDORS DATA:", vendorsData);
+    const { data: vendorsData, error: vendorsError } = await supabase
+      .from("users")
+      .select("id, full_name, role, created_at")
+      .in("role", ["seller_individual", "seller_business"])
+      .order("created_at", { ascending: false })
+      .limit(3);
 
-  const products =
-    productsData && productsData.length > 0
-      ? productsData.map(mapProduct)
-      : featuredProducts;
+    if (!vendorsError && vendorsData) {
+      vendors = vendorsData.map((vendor) => ({
+        name: vendor.full_name ?? "Nouveau vendeur",
+        category:
+          vendor.role === "seller_business"
+            ? "Boutique professionnelle"
+            : "Vendeur individuel",
+        location: "Maché",
+        href: `/shop?seller=${vendor.id}`
+      }));
+    }
+  } catch (error) {
+    console.error("HOME SUPABASE ERROR:", error);
+  }
 
-  const vendors =
-    vendorsData && vendorsData.length > 0
-      ? vendorsData.map((vendor) => ({
-          name: vendor.full_name ?? "Nouveau vendeur",
-          category:
-            vendor.role === "seller_business"
-              ? "Boutique professionnelle"
-              : "Vendeur individuel",
-          location: "Maché",
-          href: `/shop?seller=${vendor.id}`
-        }))
-      : [];
-
-  return (
-    <>
-      <div className="bg-yellow-100 p-4 text-sm font-bold text-black">
-        Produits Supabase trouvés : {productsData?.length ?? 0}
-        <br />
-        Erreur Supabase : {productsError ? productsError.message : "aucune"}
-      </div>
-
-      <HomePageClient products={products} vendors={vendors} />
-    </>
-  );
+  return <HomePageClient products={products} vendors={vendors} />;
 }
