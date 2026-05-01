@@ -1,24 +1,27 @@
-"use server";
-
-import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function forgotPasswordAction(formData: FormData) {
-  const email = String(formData.get("email") || "").trim().toLowerCase();
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get("code");
+  const next = requestUrl.searchParams.get("next") || "";
 
-  if (!email) {
-    redirect("/forgot-password?error=missing_email");
+  if (!code) {
+    return NextResponse.redirect(
+      new URL("/login?error=missing_code", requestUrl.origin)
+    );
   }
 
   const supabase = await createSupabaseServerClient();
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "https://mache-two.vercel.app/reset-password"
-  });
+  const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
+    return NextResponse.redirect(
+      new URL(`/login?error=${encodeURIComponent(error.message)}`, requestUrl.origin)
+    );
   }
 
-  redirect("/forgot-password?success=1");
+  return NextResponse.redirect(
+    new URL(next ? `/${next}` : "/", requestUrl.origin)
+  );
 }
