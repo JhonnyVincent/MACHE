@@ -142,6 +142,16 @@ const content = {
     }
   ],
   sections: {
+    internal: {
+      badge: "Sélection prioritaire",
+      title: "Nos produits mis en avant",
+      text: "Une sélection spéciale de produits recommandés par Maché."
+    },
+    sponsored: {
+      badge: "Publicité",
+      title: "Produits sponsorisés",
+      text: "Des produits proposés par nos vendeurs partenaires."
+    },
     best: {
       badge: "Sélection Maché",
       title: "Meilleures ventes",
@@ -238,8 +248,20 @@ export function HomePageClient({
 
   const allProducts = products;
 
-  const bestSellingProducts = allProducts.slice(0, 6);
+  const internalProducts = allProducts
+    .filter((product) => product.featured)
+    .slice(0, 6);
+
+  const sponsoredProducts = allProducts
+    .filter((product) => product.isSponsored)
+    .slice(0, 6);
+
+  const bestSellingProducts = allProducts
+    .filter((product) => !product.featured && !product.isSponsored)
+    .slice(0, 6);
+
   const newProducts = [...allProducts].slice(0, 6);
+
   const promoProducts = allProducts
     .filter((product) => product.compareAtPrice)
     .slice(0, 6);
@@ -481,6 +503,22 @@ export function HomePageClient({
           </div>
         )}
       </section>
+
+      <ProductSection
+        badge={content.sections.internal.badge}
+        title={content.sections.internal.title}
+        text={content.sections.internal.text}
+        href="/shop?featured=true"
+        products={internalProducts}
+      />
+
+      <ProductSection
+        badge={content.sections.sponsored.badge}
+        title={content.sections.sponsored.title}
+        text={content.sections.sponsored.text}
+        href="/shop?sponsored=true"
+        products={sponsoredProducts}
+      />
 
       <ProductSection
         badge={content.sections.best.badge}
