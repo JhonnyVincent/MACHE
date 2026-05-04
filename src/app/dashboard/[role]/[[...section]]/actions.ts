@@ -38,8 +38,20 @@ export async function createProductAction(formData: FormData) {
   const price = Number(formData.get("price"));
   const category = String(formData.get("category") || "").trim();
 
-  if (!title || !price || price <= 0) {
+  const stock = Number(formData.get("stock") || 0);
+  const shippingMethod = String(formData.get("shipping_method") || "seller").trim();
+  const shippingNote = String(formData.get("shipping_note") || "").trim();
+
+  const imageUrls = Array.from({ length: 10 })
+    .map((_, i) => String(formData.get(`image_${i + 1}`) || "").trim())
+    .filter((url) => url.length > 0);
+
+  if (!title || !price || price <= 0 || imageUrls.length === 0) {
     redirect("/dashboard/seller/products/new?error=missing_fields");
+  }
+
+  if (imageUrls.length > 10) {
+    redirect("/dashboard/seller/products/new?error=too_many_images");
   }
 
   const { supabase, userId } = await getSellerUser();
@@ -51,6 +63,13 @@ export async function createProductAction(formData: FormData) {
     price,
     category,
     status: "draft",
+
+    image_url: imageUrls[0],
+    image_urls: imageUrls,
+    stock,
+    shipping_method: shippingMethod,
+    shipping_note: shippingNote,
+
     featured_priority: 0,
     is_sponsored: false,
     sales_count: 0
