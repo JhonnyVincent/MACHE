@@ -60,9 +60,6 @@ const translations = {
 
 type Lang = keyof typeof translations;
 
-const navLinkClass =
-  "relative inline-flex items-center transition-all duration-300 hover:scale-105 after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 after:transition-all after:duration-300 hover:after:w-full";
-
 export function Header() {
   const { count, openCart } = useCart();
   const [lang, setLang] = useState<Lang>("fr");
@@ -74,7 +71,9 @@ export function Header() {
       .find((row) => row.startsWith("mache_locale="))
       ?.split("=")[1] as Lang | undefined;
 
-    if (saved && translations[saved]) setLang(saved);
+    if (saved && translations[saved]) {
+      setLang(saved);
+    }
   }, []);
 
   function changeLang(newLang: Lang) {
@@ -84,8 +83,6 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white">
-
-      {/* 🔴 TICKER */}
       <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-wide text-white">
         <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
           {[...tickerTranslations[lang], ...tickerTranslations[lang]].map(
@@ -104,7 +101,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* 🔵 TOP BAR */}
       <div className="border-b bg-black text-white">
         <div className="container-page flex h-10 items-center justify-between">
           <div>🚚 {t.delivery}</div>
@@ -113,7 +109,7 @@ export function Header() {
             <select
               value={lang}
               onChange={(e) => changeLang(e.target.value as Lang)}
-              className="bg-transparent text-white"
+              className="bg-transparent text-white outline-none"
             >
               <option value="fr">FR</option>
               <option value="ht">HT</option>
@@ -125,16 +121,14 @@ export function Header() {
         </div>
       </div>
 
-      {/* 🔷 MAIN HEADER */}
       <div className="container-page grid grid-cols-[260px_1fr_280px] items-center gap-8 py-5">
-
-        {/* LOGO */}
         <Link href="/" className="flex items-center gap-4">
           <img
             src="/images/logo-haiti-mache-hibiscus.png"
             alt="Logo Maché"
             className="h-20 w-20"
           />
+
           <div>
             <div className="text-5xl font-black text-[#071f3d]">Maché</div>
             <div className="text-xs font-black uppercase text-[#071f3d]">
@@ -143,7 +137,6 @@ export function Header() {
           </div>
         </Link>
 
-        {/* SEARCH */}
         <div className="hidden md:flex">
           <input
             className="w-full rounded-xl border px-6 py-4"
@@ -151,11 +144,8 @@ export function Header() {
           />
         </div>
 
-        {/* ACTIONS */}
         <div className="flex justify-end gap-7 text-center">
-
-          {/* ✅ FIX ICI */}
-          <Link href="/dashboard/seller">
+          <Link href="/dashboard">
             <div>👤</div>
             {t.account}
           </Link>
@@ -171,9 +161,8 @@ export function Header() {
         </div>
       </div>
 
-      {/* 🔻 NAV */}
       <nav className="bg-black text-white">
-        <div className="container-page flex h-16 items-center gap-6">
+        <div className="container-page flex h-16 items-center gap-6 overflow-x-auto whitespace-nowrap">
           <Link href="/shop?sort=best">🔥 {t.bestSellers}</Link>
           <Link href="/shop?sort=new">🟢 {t.newArrivals}</Link>
           <Link href="/shop?promo=true">🏷️ {t.promotions}</Link>
