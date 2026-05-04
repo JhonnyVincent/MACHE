@@ -31,5 +31,6 @@ export default async function DashboardRedirectPage() {
     redirect("/dashboard/admin");
   }
 
+  // ✅ FIX ICI
   redirect("/dashboard/buyer");
 }
