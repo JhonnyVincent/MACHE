@@ -84,6 +84,8 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white">
+
+      {/* 🔴 TICKER */}
       <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-wide text-white">
         <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
           {[...tickerTranslations[lang], ...tickerTranslations[lang]].map(
@@ -93,7 +95,7 @@ export function Header() {
                 href={tickerLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="transition-all duration-300 hover:text-black hover:underline"
+                className="hover:text-black hover:underline"
               >
                 ✦ {item}
               </a>
@@ -102,7 +104,8 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-b bg-black text-base font-semibold text-white">
+      {/* 🔵 TOP BAR */}
+      <div className="border-b bg-black text-white">
         <div className="container-page flex h-10 items-center justify-between">
           <div>🚚 {t.delivery}</div>
 
@@ -110,134 +113,73 @@ export function Header() {
             <select
               value={lang}
               onChange={(e) => changeLang(e.target.value as Lang)}
-              className="bg-transparent font-bold text-white outline-none"
+              className="bg-transparent text-white"
             >
               <option value="fr">FR</option>
               <option value="ht">HT</option>
             </select>
 
-            <select className="bg-transparent font-bold text-white outline-none">
-              <option>HTG</option>
-              <option>USD</option>
-              <option>CAD</option>
-            </select>
-
-            <Link href="/login" className="transition-all duration-300 hover:text-[#d20a1e]">
-              {t.login}
-            </Link>
-
-            <Link href="/register" className="transition-all duration-300 hover:text-[#d20a1e]">
-              {t.register}
-            </Link>
+            <Link href="/login">{t.login}</Link>
+            <Link href="/register">{t.register}</Link>
           </div>
         </div>
       </div>
 
-      <div className="bg-white">
-        <div className="container-page grid min-h-[120px] grid-cols-[260px_1fr_280px] items-center gap-8 py-5">
-          <Link href="/" className="flex items-center gap-4">
-            <img
-              src="/images/logo-haiti-mache-hibiscus.png"
-              alt="Logo Maché"
-              className="h-20 w-20 object-contain"
-            />
+      {/* 🔷 MAIN HEADER */}
+      <div className="container-page grid grid-cols-[260px_1fr_280px] items-center gap-8 py-5">
 
-            <div>
-              <div className="text-5xl font-black leading-none tracking-[-0.06em] text-[#071f3d]">
-                Maché
-              </div>
-              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.08em] text-[#071f3d]">
-                Tout Ayiti. Tout en un seul Maché.
-              </div>
+        {/* LOGO */}
+        <Link href="/" className="flex items-center gap-4">
+          <img
+            src="/images/logo-haiti-mache-hibiscus.png"
+            alt="Logo Maché"
+            className="h-20 w-20"
+          />
+          <div>
+            <div className="text-5xl font-black text-[#071f3d]">Maché</div>
+            <div className="text-xs font-black uppercase text-[#071f3d]">
+              Tout Ayiti. Tout en un seul Maché.
             </div>
+          </div>
+        </Link>
+
+        {/* SEARCH */}
+        <div className="hidden md:flex">
+          <input
+            className="w-full rounded-xl border px-6 py-4"
+            placeholder={t.searchPlaceholder}
+          />
+        </div>
+
+        {/* ACTIONS */}
+        <div className="flex justify-end gap-7 text-center">
+
+          {/* ✅ FIX ICI */}
+          <Link href="/dashboard/seller">
+            <div>👤</div>
+            {t.account}
           </Link>
 
-          <div className="hidden md:flex">
-            <div className="flex w-full overflow-hidden rounded-xl border border-slate-300 bg-white shadow-sm transition-all duration-300 focus-within:border-[#d20a1e] focus-within:shadow-lg">
-              <input
-                className="flex-1 px-6 py-4 text-sm text-[#071f3d] outline-none"
-                placeholder={t.searchPlaceholder}
-              />
-              <button className="bg-[#d20a1e] px-7 text-2xl text-white transition-all duration-300 hover:bg-black hover:scale-105">
-                🔍
-              </button>
-            </div>
-          </div>
+          <Link href="/favorites">
+            <div>♡</div>
+            {t.favorites}
+          </Link>
 
-          <div className="hidden items-center justify-end gap-7 text-center font-bold text-[#071f3d] md:flex">
-            <Link
-              href="/dashboard/user"
-              className="text-sm transition-all duration-300 hover:scale-105 hover:text-[#d20a1e]"
-            >
-              <div className="text-3xl">👤</div>
-              {t.account}
-            </Link>
-
-            <Link
-              href="/favorites"
-              className="text-sm transition-all duration-300 hover:scale-105 hover:text-[#d20a1e]"
-            >
-              <div className="text-3xl">♡</div>
-              {t.favorites}
-            </Link>
-
-            <button
-              onClick={openCart}
-              className="relative text-sm transition-all duration-300 hover:scale-105 hover:text-[#d20a1e]"
-            >
-              <div className="text-3xl">🛍️</div>
-              {t.cart}
-              <span className="absolute -right-3 -top-2 rounded-full bg-[#d20a1e] px-2 py-0.5 text-xs text-white">
-                {count}
-              </span>
-            </button>
-          </div>
+          <button onClick={openCart}>
+            🛍️ {t.cart} ({count})
+          </button>
         </div>
       </div>
 
+      {/* 🔻 NAV */}
       <nav className="bg-black text-white">
-        <div className="container-page flex h-16 items-center justify-between gap-6 overflow-x-auto whitespace-nowrap text-base font-black uppercase">
-          <Link
-            href="/shop?sort=best"
-            className={`${navLinkClass} hover:text-red-500 after:bg-red-500`}
-          >
-            🔥 {t.bestSellers}
-          </Link>
-
-          <Link
-            href="/shop?sort=new"
-            className={`${navLinkClass} hover:text-green-400 after:bg-green-400`}
-          >
-            🟢 {t.newArrivals}
-          </Link>
-
-          <Link
-            href="/shop?promo=true"
-            className={`${navLinkClass} hover:text-yellow-400 after:bg-yellow-400`}
-          >
-            🏷️ {t.promotions}
-          </Link>
-
-          <Link
-            href="/shop"
-            className={`${navLinkClass} hover:text-blue-400 after:bg-blue-400`}
-          >
-            ▦ {t.catalog}
-          </Link>
-
-          <Link
-            href="/legal/vendors"
-            className={`${navLinkClass} hover:text-purple-400 after:bg-purple-400`}
-          >
-            🏪 {t.sellers}
-          </Link>
-
-          <Link
-            href="/shop?brands=true"
-            className={`${navLinkClass} hover:text-pink-400 after:bg-pink-400`}
-          >
-            🏅 {t.brands}
-          </Link>
+        <div className="container-page flex h-16 items-center gap-6">
+          <Link href="/shop?sort=best">🔥 {t.bestSellers}</Link>
+          <Link href="/shop?sort=new">🟢 {t.newArrivals}</Link>
+          <Link href="/shop?promo=true">🏷️ {t.promotions}</Link>
+          <Link href="/shop">▦ {t.catalog}</Link>
+          <Link href="/legal/vendors">🏪 {t.sellers}</Link>
+          <Link href="/shop?brands=true">🏅 {t.brands}</Link>
         </div>
       </nav>
     </header>
