@@ -1,5 +1,10 @@
 import { notFound } from "next/navigation";
-import { createProductAction } from "./actions";
+import {
+  createProductAction,
+  deleteProductAction,
+  pauseProductAction,
+  publishProductAction
+} from "./actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type RouteKey = "buyer" | "seller" | "agent" | "admin";
@@ -225,7 +230,7 @@ function SellerSection({
         <div className="rounded-2xl border border-[rgba(232,66,10,.2)] bg-[var(--mache-dark)] p-6 text-white">
           <h3 className="text-sm font-bold">Ajouter un produit</h3>
           <p className="mt-2 text-sm text-white/50">
-            Crée un produit réel dans Supabase. Le produit sera enregistré en statut draft.
+            Crée un produit réel dans Supabase. Il sera enregistré en brouillon.
           </p>
         </div>
 
@@ -304,6 +309,41 @@ function SellerSection({
 
             <h3 className="font-semibold">{p.title}</h3>
             <p className="mt-2 text-lg font-bold">${p.price}</p>
+
+            <div className="mt-4 grid gap-2">
+              {p.status !== "active" ? (
+                <form action={publishProductAction}>
+                  <input type="hidden" name="product_id" value={p.id} />
+                  <button type="submit" className="btn-primary w-full">
+                    Publier
+                  </button>
+                </form>
+              ) : (
+                <form action={pauseProductAction}>
+                  <input type="hidden" name="product_id" value={p.id} />
+                  <button type="submit" className="btn-secondary w-full">
+                    Mettre en pause
+                  </button>
+                </form>
+              )}
+
+              <a
+                href={`/product/${p.id}`}
+                className="btn-secondary w-full justify-center text-center"
+              >
+                Voir la fiche
+              </a>
+
+              <form action={deleteProductAction}>
+                <input type="hidden" name="product_id" value={p.id} />
+                <button
+                  type="submit"
+                  className="w-full rounded-xl border border-red-200 px-4 py-3 text-sm font-bold text-red-600 transition hover:bg-red-50"
+                >
+                  Supprimer
+                </button>
+              </form>
+            </div>
           </div>
         ))}
       </div>
@@ -312,21 +352,36 @@ function SellerSection({
 
   if (type === "seller_home") {
     return (
-      <div className="card p-6">
-        <h3 className="text-lg font-bold">Bienvenue dans ton espace vendeur</h3>
-        <p className="mt-2 text-sm text-[var(--mache-muted)]">
-          Ici, tu peux gérer ta boutique, ajouter tes produits, suivre tes commandes
-          et préparer tes ventes.
-        </p>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="card p-6">
+          <h3 className="text-lg font-bold">Bienvenue dans ton espace vendeur</h3>
+          <p className="mt-2 text-sm text-[var(--mache-muted)]">
+            Gère ta boutique, tes produits, tes commandes, ta livraison, ton wallet
+            et tes documents.
+          </p>
 
-        <div className="mt-6 flex flex-wrap gap-3">
-          <a href="/dashboard/seller/products/new" className="btn-primary">
-            Ajouter un produit
-          </a>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href="/dashboard/seller/products/new" className="btn-primary">
+              Ajouter un produit
+            </a>
 
-          <a href="/dashboard/seller/products" className="btn-secondary">
-            Voir mes produits
-          </a>
+            <a href="/dashboard/seller/products" className="btn-secondary">
+              Voir mes produits
+            </a>
+          </div>
+        </div>
+
+        <div className="card p-6">
+          <h3 className="text-lg font-bold">Prochaines sections</h3>
+          <div className="mt-4 grid gap-3 text-sm text-[var(--mache-muted)]">
+            <p>📦 Stock et variantes</p>
+            <p>🚚 Livraison Maché / partenaire / vendeur</p>
+            <p>💳 Portefeuille et virements</p>
+            <p>📄 Factures</p>
+            <p>📢 Publicité produits</p>
+            <p>🏪 Personnalisation boutique</p>
+            <p>✅ Documents et vérification</p>
+          </div>
         </div>
       </div>
     );
@@ -379,13 +434,15 @@ export default async function DashboardRoute({
     }
   }
 
+  const activeProducts = sellerProducts.filter((p) => p.status === "active");
+
   const stats =
     safeRole === "seller"
       ? [
           { label: "Ventes 30j", value: "$0" },
           { label: "Commandes", value: "0" },
           { label: "Balance disponible", value: "$0" },
-          { label: "Produits actifs", value: String(sellerProducts.length) }
+          { label: "Produits actifs", value: String(activeProducts.length) }
         ]
       : dashboardStats[safeRole];
 
