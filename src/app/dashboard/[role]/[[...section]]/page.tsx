@@ -15,6 +15,8 @@ type SellerProduct = {
   price: number;
   category: string | null;
   status: string | null;
+  stock: number | null;
+  shipping_method: string | null;
 };
 
 const dashboardStats = {
@@ -217,6 +219,12 @@ const dashboardConfig: Record<
   }
 };
 
+function getShippingLabel(method: string | null) {
+  if (method === "mache") return "Livraison Maché";
+  if (method === "partner") return "Livraison partenaire";
+  return "Livraison vendeur";
+}
+
 function SellerSection({
   type,
   products = []
@@ -230,7 +238,8 @@ function SellerSection({
         <div className="rounded-2xl border border-[rgba(232,66,10,.2)] bg-[var(--mache-dark)] p-6 text-white">
           <h3 className="text-sm font-bold">Ajouter un produit</h3>
           <p className="mt-2 text-sm text-white/50">
-            Crée un produit réel dans Supabase. Il sera enregistré en brouillon.
+            Crée un produit réel dans Supabase avec images, stock et livraison.
+            Il sera enregistré en brouillon.
           </p>
         </div>
 
@@ -238,7 +247,12 @@ function SellerSection({
           <h3 className="mb-4 text-sm font-bold">Formulaire produit</h3>
 
           <div className="grid gap-4 md:grid-cols-2">
-            <input name="title" className="input" placeholder="Nom produit" required />
+            <input
+              name="title"
+              className="input"
+              placeholder="Nom produit"
+              required
+            />
 
             <input
               name="price"
@@ -250,7 +264,7 @@ function SellerSection({
             />
           </div>
 
-          <div className="mt-4 grid gap-4 md:grid-cols-3">
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
             <select name="category" className="input">
               <option value="Mode">Mode</option>
               <option value="Épicerie">Épicerie</option>
@@ -259,6 +273,16 @@ function SellerSection({
               <option value="Beauté">Beauté</option>
               <option value="Autre">Autre</option>
             </select>
+
+            <input
+              name="stock"
+              className="input"
+              placeholder="Stock disponible"
+              type="number"
+              min="0"
+              defaultValue="1"
+              required
+            />
           </div>
 
           <textarea
@@ -267,7 +291,54 @@ function SellerSection({
             placeholder="Description produit"
           />
 
-          <div className="mt-4 flex gap-3">
+          <div className="mt-6 rounded-2xl border p-4">
+            <h4 className="text-sm font-bold">Images du produit</h4>
+            <p className="mt-1 text-xs text-[var(--mache-muted)]">
+              Minimum 1 image, maximum 10 images. Colle les URLs des images.
+            </p>
+
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <input
+                name="image_1"
+                className="input"
+                placeholder="Image principale URL obligatoire"
+                required
+              />
+
+              {Array.from({ length: 9 }).map((_, index) => (
+                <input
+                  key={index}
+                  name={`image_${index + 2}`}
+                  className="input"
+                  placeholder={`Image ${index + 2} URL optionnelle`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-2xl border p-4">
+            <h4 className="text-sm font-bold">Livraison</h4>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <select
+                name="shipping_method"
+                className="input"
+                defaultValue="seller"
+              >
+                <option value="mache">Livraison par Maché</option>
+                <option value="partner">Livraison par partenaire</option>
+                <option value="seller">Livraison par le vendeur</option>
+              </select>
+
+              <input
+                name="shipping_note"
+                className="input"
+                placeholder="Note livraison optionnelle"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 flex gap-3">
             <button type="submit" className="btn-primary">
               Enregistrer le produit
             </button>
@@ -289,7 +360,10 @@ function SellerSection({
             Tu n’as pas encore ajouté de produit.
           </p>
 
-          <a href="/dashboard/seller/products/new" className="btn-primary mt-4 inline-flex">
+          <a
+            href="/dashboard/seller/products/new"
+            className="btn-primary mt-4 inline-flex"
+          >
             Ajouter mon premier produit
           </a>
         </div>
@@ -309,6 +383,11 @@ function SellerSection({
 
             <h3 className="font-semibold">{p.title}</h3>
             <p className="mt-2 text-lg font-bold">${p.price}</p>
+
+            <div className="mt-3 grid gap-1 text-xs text-[var(--mache-muted)]">
+              <p>Stock : {p.stock ?? 0}</p>
+              <p>{getShippingLabel(p.shipping_method)}</p>
+            </div>
 
             <div className="mt-4 grid gap-2">
               {p.status !== "active" ? (
@@ -426,7 +505,7 @@ export default async function DashboardRoute({
     if (userData.user) {
       const { data } = await supabase
         .from("products")
-        .select("id,title,price,category,status")
+        .select("id,title,price,category,status,stock,shipping_method")
         .eq("seller_id", userData.user.id)
         .order("created_at", { ascending: false });
 
