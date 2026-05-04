@@ -16,21 +16,25 @@ export default async function DashboardRedirectPage() {
     .eq("id", userData.user.id)
     .single();
 
+  const role = String(profile?.role || "buyer").toLowerCase().trim();
+
   if (
-    profile?.role === "seller_individual" ||
-    profile?.role === "seller_business"
+    role === "seller" ||
+    role === "seller_individual" ||
+    role === "seller_business" ||
+    role.includes("seller") ||
+    role.includes("vendeur")
   ) {
     redirect("/dashboard/seller");
   }
 
-  if (profile?.role === "agent") {
+  if (role === "agent") {
     redirect("/dashboard/agent");
   }
 
-  if (profile?.role === "admin") {
+  if (role === "admin") {
     redirect("/dashboard/admin");
   }
 
-  // ✅ FIX ICI
   redirect("/dashboard/buyer");
 }
