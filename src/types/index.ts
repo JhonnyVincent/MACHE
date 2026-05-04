@@ -41,7 +41,11 @@ export interface Product {
   rating: number;
   reviewCount: number;
   status: ProductStatus;
-  featured?: boolean;
+
+  // 🔥 NOUVEAU (important pour ton système)
+  featured?: boolean;        // produit prioritaire interne
+  isSponsored?: boolean;     // produit publicité
+
   variants?: Array<{ id: string; name: string; value: string }>;
 }
 
