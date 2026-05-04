@@ -10,7 +10,15 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <div className="group card overflow-hidden p-0 transition hover:-translate-y-1">
       <Link href={`/product/${product.slug}`}>
-        <div className="aspect-[4/3] overflow-hidden">
+        <div className="relative aspect-[4/3] overflow-hidden">
+          
+          {/* 🔥 BADGE PUBLICITÉ */}
+          {product.isSponsored && (
+            <span className="absolute left-2 top-2 z-10 rounded bg-black/70 px-2 py-1 text-[10px] text-white">
+              publicité
+            </span>
+          )}
+
           <img
             src={product.images[0]}
             alt={product.title}
@@ -22,11 +30,15 @@ export function ProductCard({ product }: { product: Product }) {
       <div className="p-5">
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className="badge">{product.category}</span>
-          <span className="text-xs text-[var(--mache-muted)]">{product.vendorName}</span>
+          <span className="text-xs text-[var(--mache-muted)]">
+            {product.vendorName}
+          </span>
         </div>
 
         <Link href={`/product/${product.slug}`}>
-          <h3 className="line-clamp-2 text-lg font-semibold">{product.title}</h3>
+          <h3 className="line-clamp-2 text-lg font-semibold">
+            {product.title}
+          </h3>
         </Link>
 
         <div className="mt-3 flex items-center gap-2">
@@ -45,9 +57,13 @@ export function ProductCard({ product }: { product: Product }) {
         </p>
 
         <div className="mt-4 flex gap-2">
-          <Link href={`/product/${product.slug}`} className="btn-secondary flex-1 justify-center">
+          <Link
+            href={`/product/${product.slug}`}
+            className="btn-secondary flex-1 justify-center"
+          >
             Voir
           </Link>
+
           <button
             onClick={() => addToCart(product.id, 1)}
             className="btn-primary flex-1 justify-center"
