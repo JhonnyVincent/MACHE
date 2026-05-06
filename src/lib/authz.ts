@@ -1,7 +1,58 @@
 import { UserRole } from "@/types";
 
-export function canAccessDashboard(role: UserRole, dashboardRole: string) {
-  if (role === "admin") return true;
+export type AppRole =
+  | "super_admin"
+  | "admin"
+  | "buyer"
+  | "seller_individual"
+  | "seller_business"
+  | "agent"
+  | "partner";
+
+export type AdminPermission =
+  | "manage_users"
+  | "manage_admins"
+  | "manage_permissions"
+  | "manage_vendors"
+  | "manage_partners"
+  | "manage_agents"
+  | "manage_products"
+  | "manage_orders"
+  | "manage_widgets"
+  | "manage_theme"
+  | "manage_banners"
+  | "approve_accounts"
+  | "ban_users"
+  | "view_reports";
+
+export const SUPER_ADMIN_LIMIT = 2;
+
+export function isSuperAdmin(role?: string | null) {
+  return role === "super_admin";
+}
+
+export function isAdmin(role?: string | null) {
+  return role === "admin" || role === "super_admin";
+}
+
+export function isSeller(role?: string | null) {
+  return role === "seller_individual" || role === "seller_business";
+}
+
+export function isPartner(role?: string | null) {
+  return role === "partner";
+}
+
+export function isAgent(role?: string | null) {
+  return role === "agent";
+}
+
+export function canAccessDashboard(role: UserRole | AppRole, dashboardRole: string) {
+  if (role === "super_admin") return true;
+
+  if (role === "admin") {
+    return dashboardRole === "admin";
+  }
 
   if (dashboardRole === "buyer") return role === "buyer";
 
@@ -11,7 +62,20 @@ export function canAccessDashboard(role: UserRole, dashboardRole: string) {
 
   if (dashboardRole === "agent") return role === "agent";
 
+  if (dashboardRole === "partner") return role === "partner";
+
   return false;
+}
+
+export function canAccessAdminSection(params: {
+  role?: string | null;
+  permissions?: string[];
+  required: AdminPermission;
+}) {
+  if (params.role === "super_admin") return true;
+  if (params.role !== "admin") return false;
+
+  return params.permissions?.includes(params.required) ?? false;
 }
 
 export function computeProductPublicationStatus(input: {
