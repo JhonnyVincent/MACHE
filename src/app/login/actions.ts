@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
+  const next = String(formData.get("next") || "").trim();
 
   if (!email || !password) {
     redirect("/login?error=missing_fields");
@@ -15,7 +16,7 @@ export async function loginAction(formData: FormData) {
 
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password
+    password,
   });
 
   if (error || !data.user) {
@@ -23,27 +24,33 @@ export async function loginAction(formData: FormData) {
     redirect("/login?error=invalid_credentials");
   }
 
-  // 🔥 IMPORTANT : vérifie si profil existe
   const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("role")
     .eq("id", data.user.id)
-    .maybeSingle(); // ✅ au lieu de .single()
+    .maybeSingle();
 
-  // ✅ Si pas de profil → client par défaut
   if (!profile || profileError) {
     redirect("/dashboard/buyer");
   }
 
-  // 🎯 REDIRECTIONS PAR ROLE
+  const isSeller =
+    profile.role === "seller_individual" ||
+    profile.role === "seller_business";
+
+  if (next === "/dashboard/seller" && isSeller) {
+    redirect("/dashboard/seller");
+  }
+
+  if (next === "/dashboard/seller" && !isSeller) {
+    redirect("/login?error=Ce compte n'est pas un compte vendeur.");
+  }
+
   if (profile.role === "buyer") {
     redirect("/dashboard/buyer");
   }
 
-  if (
-    profile.role === "seller_individual" ||
-    profile.role === "seller_business"
-  ) {
+  if (isSeller) {
     redirect("/dashboard/seller");
   }
 
@@ -55,6 +62,5 @@ export async function loginAction(formData: FormData) {
     redirect("/dashboard/admin");
   }
 
-  // fallback
   redirect("/");
 }
