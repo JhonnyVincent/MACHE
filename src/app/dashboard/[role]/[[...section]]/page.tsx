@@ -4,7 +4,10 @@ import {
   createProductAction,
   deleteProductAction,
   pauseProductAction,
-  publishProductAction
+  publishProductAction,
+  createWidgetAction,
+  toggleWidgetAction,
+  deleteWidgetAction
 } from "./actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { canAccessDashboard } from "@/lib/authz";
@@ -27,6 +30,20 @@ type AdminStats = {
   widgets: number;
   vendors: number;
   partners: number;
+};
+
+type SiteWidget = {
+  id: string;
+  page: string;
+  zone: string;
+  type: string;
+  title: string | null;
+  subtitle: string | null;
+  description: string | null;
+  button_text: string | null;
+  button_href: string | null;
+  position: number | null;
+  is_active: boolean | null;
 };
 
 const dashboardConfig: Record<
@@ -159,7 +176,7 @@ function SellerSection({
 
               <form action={deleteProductAction}>
                 <input type="hidden" name="product_id" value={p.id} />
-                <button className="text-red-500">Supprimer</button>
+                <button className="font-bold text-red-500">Supprimer</button>
               </form>
             </div>
           </div>
@@ -174,7 +191,11 @@ function SellerSection({
         <input name="title" placeholder="Nom produit" className="input" />
         <input name="price" placeholder="Prix" type="number" className="input" />
         <input name="category" placeholder="Catégorie" className="input" />
-        <input name="image_1" placeholder="URL image principale" className="input" />
+        <input
+          name="image_1"
+          placeholder="URL image principale"
+          className="input"
+        />
         <button className="btn-primary">Créer</button>
       </form>
     );
@@ -186,11 +207,13 @@ function SellerSection({
 function AdminSection({
   type,
   stats,
-  isSuperAdmin
+  isSuperAdmin,
+  widgets = []
 }: {
   type?: string;
   stats: AdminStats;
   isSuperAdmin: boolean;
+  widgets?: SiteWidget[];
 }) {
   if (type === "admin_home") {
     return (
@@ -238,12 +261,140 @@ function AdminSection({
 
   if (type === "admin_widgets") {
     return (
-      <div className="card p-6">
-        <h3 className="text-xl font-black">Widgets du site</h3>
-        <p className="mt-2 text-slate-500">
-          Ici on va gérer les sections de l’accueil, boutique, vendeurs,
-          partenaires, bannières, sliders, newsletter et blocs saisonniers.
-        </p>
+      <div className="grid gap-6">
+        <form action={createWidgetAction} className="card grid gap-4 p-6">
+          <h3 className="text-xl font-black">Créer un widget</h3>
+
+          <div className="grid gap-3 md:grid-cols-3">
+            <input
+              name="page"
+              placeholder="page: home"
+              defaultValue="home"
+              className="input"
+            />
+            <input
+              name="zone"
+              placeholder="zone: hero, newsletter..."
+              className="input"
+            />
+            <input
+              name="type"
+              placeholder="type: banner, cta_block..."
+              className="input"
+            />
+          </div>
+
+          <input name="title" placeholder="Titre" className="input" />
+          <input name="subtitle" placeholder="Sous-titre" className="input" />
+
+          <textarea
+            name="description"
+            placeholder="Description"
+            className="input min-h-28"
+          />
+
+          <input name="image_url" placeholder="URL image" className="input" />
+
+          <div className="grid gap-3 md:grid-cols-3">
+            <input
+              name="button_text"
+              placeholder="Texte bouton"
+              className="input"
+            />
+            <input
+              name="button_href"
+              placeholder="Lien bouton"
+              className="input"
+            />
+            <input
+              name="position"
+              type="number"
+              placeholder="Position"
+              className="input"
+            />
+          </div>
+
+          <button className="btn-primary w-fit">Créer le widget</button>
+        </form>
+
+        <div className="grid gap-4">
+          {widgets.length === 0 && (
+            <div className="card p-6 text-slate-500">
+              Aucun widget pour le moment.
+            </div>
+          )}
+
+          {widgets.map((widget) => (
+            <div key={widget.id} className="card p-5">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div className="flex flex-wrap gap-2">
+                    <span className="rounded-full bg-[#fff1f1] px-3 py-1 text-xs font-black text-[#d20a1e]">
+                      {widget.page}
+                    </span>
+
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+                      {widget.zone}
+                    </span>
+
+                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+                      {widget.type}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-3 text-xl font-black text-[#071f3d]">
+                    {widget.title || "Sans titre"}
+                  </h3>
+
+                  {widget.subtitle && (
+                    <p className="mt-1 font-bold text-slate-600">
+                      {widget.subtitle}
+                    </p>
+                  )}
+
+                  {widget.description && (
+                    <p className="mt-2 text-sm text-slate-500">
+                      {widget.description}
+                    </p>
+                  )}
+
+                  {widget.button_text && (
+                    <p className="mt-2 text-sm font-bold text-[#d20a1e]">
+                      Bouton : {widget.button_text} →{" "}
+                      {widget.button_href || "aucun lien"}
+                    </p>
+                  )}
+
+                  <p className="mt-3 text-xs text-slate-400">
+                    Position : {widget.position ?? 0} — Statut :{" "}
+                    {widget.is_active ? "Actif" : "Inactif"}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <form action={toggleWidgetAction}>
+                    <input type="hidden" name="widget_id" value={widget.id} />
+                    <input
+                      type="hidden"
+                      name="is_active"
+                      value={String(Boolean(widget.is_active))}
+                    />
+                    <button className="btn-secondary">
+                      {widget.is_active ? "Désactiver" : "Activer"}
+                    </button>
+                  </form>
+
+                  <form action={deleteWidgetAction}>
+                    <input type="hidden" name="widget_id" value={widget.id} />
+                    <button className="font-bold text-red-500">
+                      Supprimer
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -413,6 +564,20 @@ export default async function DashboardRoute({
     };
   }
 
+  let widgets: SiteWidget[] = [];
+
+  if (safeRole === "admin" && page.type === "admin_widgets") {
+    const { data } = await supabase
+      .from("site_widgets")
+      .select(
+        "id,page,zone,type,title,subtitle,description,button_text,button_href,position,is_active"
+      )
+      .order("page", { ascending: true })
+      .order("position", { ascending: true });
+
+    widgets = data || [];
+  }
+
   return (
     <main className="container-page py-10">
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -459,6 +624,7 @@ export default async function DashboardRoute({
           type={page.type}
           stats={adminStats}
           isSuperAdmin={profile.role === "super_admin"}
+          widgets={widgets}
         />
       )}
 
