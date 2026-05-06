@@ -11,10 +11,31 @@ const footerShopLinks = [
 
 const footerSellLinks = [
   { label: "Devenir vendeur", href: "/sell" },
-  { label: "Dashboard vendeur", href: "/dashboard/seller" },
-  { label: "Services", href: "/services" },
-  { label: "Guide vendeur", href: "/legal/vendors" },
-  { label: "Support vendeur", href: "/contact" }
+
+  {
+    label: "Créer ma boutique",
+    href: "/register?role=seller"
+  },
+
+  {
+    label: "Dashboard vendeur",
+    href: "/login?next=/dashboard/seller"
+  },
+
+  {
+    label: "Marketplace + SaaS",
+    href: "/sell"
+  },
+
+  {
+    label: "Guide vendeur",
+    href: "/sell#guide-vendeur"
+  },
+
+  {
+    label: "Support vendeur",
+    href: "/contact"
+  }
 ];
 
 const footerHelpLinks = [
@@ -46,12 +67,15 @@ export function Footer() {
               <span className="rounded-md border border-white/10 px-3 py-1 text-[10px] text-white/55">
                 🇫🇷 FR
               </span>
+
               <span className="rounded-md border border-white/10 px-3 py-1 text-[10px] text-white/55">
                 🇺🇸 EN
               </span>
+
               <span className="rounded-md border border-white/10 px-3 py-1 text-[10px] text-white/55">
                 🇭🇹 HT
               </span>
+
               <span className="rounded-md border border-white/10 px-3 py-1 text-[10px] text-white/55">
                 🇩🇴 ES
               </span>
@@ -70,7 +94,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 text-[13px] font-[700]">Acheter</h4>
+            <h4 className="mb-4 text-[13px] font-[700]">
+              Acheter
+            </h4>
+
             <div className="space-y-2">
               {footerShopLinks.map((item) => (
                 <Link
@@ -85,7 +112,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 text-[13px] font-[700]">Vendre</h4>
+            <h4 className="mb-4 text-[13px] font-[700]">
+              Vendre
+            </h4>
+
             <div className="space-y-2">
               {footerSellLinks.map((item) => (
                 <Link
@@ -100,7 +130,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 text-[13px] font-[700]">Aide</h4>
+            <h4 className="mb-4 text-[13px] font-[700]">
+              Aide
+            </h4>
+
             <div className="space-y-2">
               {footerHelpLinks.map((item) => (
                 <Link
@@ -116,8 +149,13 @@ export function Footer() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-[11px] text-white/30">
-          <div>© 2026 Mache — Tous droits réservés.</div>
-          <div>Pensé pour les Caraïbes, ouvert au monde.</div>
+          <div>
+            © 2026 Mache — Tous droits réservés.
+          </div>
+
+          <div>
+            Pensé pour les Caraïbes, ouvert au monde.
+          </div>
         </div>
       </div>
     </footer>
