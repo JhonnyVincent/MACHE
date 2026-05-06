@@ -38,7 +38,7 @@ const translations = {
     newArrivals: "Nouveautés",
     promotions: "Promotions",
     catalog: "Tout le catalogue",
-    sellers: "Vendeurs",
+    sellers: "Vendre sur Maché",
     brands: "Marques"
   },
   ht: {
@@ -53,7 +53,7 @@ const translations = {
     newArrivals: "Nouvo pwodwi",
     promotions: "Pwomosyon",
     catalog: "Tout katalòg la",
-    sellers: "Vandè",
+    sellers: "Vann sou Maché",
     brands: "Mak"
   }
 };
@@ -62,7 +62,9 @@ type Lang = keyof typeof translations;
 
 export function Header() {
   const { count, openCart } = useCart();
+
   const [lang, setLang] = useState<Lang>("fr");
+
   const t = translations[lang];
 
   useEffect(() => {
@@ -78,6 +80,7 @@ export function Header() {
 
   function changeLang(newLang: Lang) {
     document.cookie = `mache_locale=${newLang}; path=/; max-age=31536000`;
+
     setLang(newLang);
   }
 
@@ -115,8 +118,13 @@ export function Header() {
               <option value="ht">HT</option>
             </select>
 
-            <Link href="/login">{t.login}</Link>
-            <Link href="/register">{t.register}</Link>
+            <Link href="/login">
+              {t.login}
+            </Link>
+
+            <Link href="/register">
+              {t.register}
+            </Link>
           </div>
         </div>
       </div>
@@ -130,7 +138,10 @@ export function Header() {
           />
 
           <div>
-            <div className="text-5xl font-black text-[#071f3d]">Maché</div>
+            <div className="text-5xl font-black text-[#071f3d]">
+              Maché
+            </div>
+
             <div className="text-xs font-black uppercase text-[#071f3d]">
               Tout Ayiti. Tout en un seul Maché.
             </div>
@@ -163,12 +174,29 @@ export function Header() {
 
       <nav className="bg-black text-white">
         <div className="container-page flex h-16 items-center gap-6 overflow-x-auto whitespace-nowrap">
-          <Link href="/shop?sort=best">🔥 {t.bestSellers}</Link>
-          <Link href="/shop?sort=new">🟢 {t.newArrivals}</Link>
-          <Link href="/shop?promo=true">🏷️ {t.promotions}</Link>
-          <Link href="/shop">▦ {t.catalog}</Link>
-          <Link href="/legal/vendors">🏪 {t.sellers}</Link>
-          <Link href="/shop?brands=true">🏅 {t.brands}</Link>
+          <Link href="/shop?sort=best">
+            🔥 {t.bestSellers}
+          </Link>
+
+          <Link href="/shop?sort=new">
+            🟢 {t.newArrivals}
+          </Link>
+
+          <Link href="/shop?promo=true">
+            🏷️ {t.promotions}
+          </Link>
+
+          <Link href="/shop">
+            ▦ {t.catalog}
+          </Link>
+
+          <Link href="/sell">
+            🏪 {t.sellers}
+          </Link>
+
+          <Link href="/shop?brands=true">
+            🏅 {t.brands}
+          </Link>
         </div>
       </nav>
     </header>
