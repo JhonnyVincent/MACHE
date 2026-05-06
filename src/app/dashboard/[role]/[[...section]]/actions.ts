@@ -149,3 +149,105 @@ export async function deleteProductAction(formData: FormData) {
 
   redirect("/dashboard/seller/products?success=product_deleted");
 }
+
+async function getAdminUser() {
+  const supabase = await createSupabaseServerClient();
+
+  const { data: userData } = await supabase.auth.getUser();
+
+  if (!userData.user) {
+    redirect("/login");
+  }
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", userData.user.id)
+    .single();
+
+  if (!profile || !["admin", "super_admin"].includes(profile.role)) {
+    redirect("/");
+  }
+
+  return {
+    supabase,
+    userId: userData.user.id,
+    role: profile.role
+  };
+}
+
+export async function createWidgetAction(formData: FormData) {
+  const page = String(formData.get("page") || "home").trim();
+  const zone = String(formData.get("zone") || "").trim();
+  const type = String(formData.get("type") || "text_block").trim();
+  const title = String(formData.get("title") || "").trim();
+  const subtitle = String(formData.get("subtitle") || "").trim();
+  const description = String(formData.get("description") || "").trim();
+  const imageUrl = String(formData.get("image_url") || "").trim();
+  const buttonText = String(formData.get("button_text") || "").trim();
+  const buttonHref = String(formData.get("button_href") || "").trim();
+  const position = Number(formData.get("position") || 0);
+
+  const { supabase, userId } = await getAdminUser();
+
+  const { error } = await supabase.from("site_widgets").insert({
+    page,
+    zone,
+    type,
+    title,
+    subtitle,
+    description,
+    image_url: imageUrl || null,
+    button_text: buttonText || null,
+    button_href: buttonHref || null,
+    position,
+    is_active: true,
+    created_by: userId,
+    updated_by: userId
+  });
+
+  if (error) {
+    redirect(`/dashboard/admin/widgets?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/dashboard/admin/widgets?success=widget_created");
+}
+
+export async function toggleWidgetAction(formData: FormData) {
+  const widgetId = String(formData.get("widget_id") || "").trim();
+  const isActive = String(formData.get("is_active")) === "true";
+
+  const { supabase, userId } = await getAdminUser();
+
+  const { error } = await supabase
+    .from("site_widgets")
+    .update({
+      is_active: !isActive,
+      updated_by: userId,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", widgetId);
+
+  if (error) {
+    redirect(`/dashboard/admin/widgets?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/dashboard/admin/widgets?success=widget_updated");
+}
+
+export async function deleteWidgetAction(formData: FormData) {
+  const widgetId = String(formData.get("widget_id") || "").trim();
+
+  const { supabase } = await getAdminUser();
+
+  const { error } = await supabase
+    .from("site_widgets")
+    .delete()
+    .eq("id", widgetId);
+
+  if (error) {
+    redirect(`/dashboard/admin/widgets?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/dashboard/admin/widgets?success=widget_deleted");
+}
