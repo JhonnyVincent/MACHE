@@ -49,6 +49,28 @@ const content = {
       href: "/contact"
     }
   ],
+  whyChooseUs: [
+    {
+      icon: "🇭🇹",
+      title: "Produits locaux",
+      text: "Découvrez des produits haïtiens, des artisans et des boutiques d’ici."
+    },
+    {
+      icon: "🛡️",
+      title: "Vendeurs fiables",
+      text: "Maché met en avant des vendeurs sérieux et des boutiques vérifiées."
+    },
+    {
+      icon: "⚡",
+      title: "Achat simple",
+      text: "Trouvez, comparez et commandez rapidement depuis votre téléphone."
+    },
+    {
+      icon: "🤝",
+      title: "Pour tous les vendeurs",
+      text: "Petits vendeurs, entreprises, agents et partenaires peuvent rejoindre Maché."
+    }
+  ],
   slides: [
     {
       badge: "Marketplace haïtienne",
@@ -176,11 +198,6 @@ const content = {
       badge: "Pour vous",
       title: "Vous pourriez aimer",
       text: "Des suggestions basées sur les tendances et les catégories populaires."
-    },
-    continueShopping: {
-      badge: "Reprendre",
-      title: "Continuer vos achats",
-      text: "Retrouvez rapidement les produits que vous avez consultés."
     }
   }
 };
@@ -235,6 +252,134 @@ function ProductSection({
   );
 }
 
+function WhyChooseUsSection() {
+  return (
+    <section className="bg-white py-14">
+      <div className="container-page">
+        <div className="mb-8 text-center">
+          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
+            Pourquoi nous choisir
+          </p>
+
+          <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
+            Une marketplace pensée pour Haïti
+          </h2>
+
+          <p className="mx-auto mt-3 max-w-2xl text-base text-slate-500">
+            Maché connecte les clients, les vendeurs, les agents et les
+            partenaires dans une expérience simple, locale et fiable.
+          </p>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {content.whyChooseUs.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-3xl border bg-[#f8fafc] p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-[#d20a1e] hover:bg-white hover:shadow-xl"
+            >
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff1f1] text-3xl">
+                {item.icon}
+              </div>
+
+              <h3 className="text-xl font-black text-[#071f3d]">
+                {item.title}
+              </h3>
+
+              <p className="mt-3 text-sm leading-relaxed text-slate-500">
+                {item.text}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VendorCtaSection() {
+  return (
+    <section className="container-page py-10">
+      <div className="overflow-hidden rounded-[2rem] bg-[#071f3d] p-8 text-white shadow-xl md:p-12">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+          <div>
+            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#ffcc33]">
+              Rejoindre Maché
+            </p>
+
+            <h2 className="mt-3 text-4xl font-black tracking-[-0.03em] md:text-5xl">
+              Vendez, représentez ou collaborez avec nous.
+            </h2>
+
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/75">
+              Maché accompagne les vendeurs, les agents et les partenaires qui
+              veulent développer le commerce haïtien en ligne.
+            </p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <Link
+              href="/sell"
+              className="rounded-2xl bg-[#d20a1e] px-6 py-4 text-center font-black text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:text-[#071f3d]"
+            >
+              Devenir vendeur
+            </Link>
+
+            <Link
+              href="/verify-agent"
+              className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-center font-black text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:text-[#071f3d]"
+            >
+              Vérifier un agent
+            </Link>
+
+            <Link
+              href="/contact"
+              className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-center font-black text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:text-[#071f3d]"
+            >
+              Devenir partenaire
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function NewsletterSection() {
+  return (
+    <section className="container-page py-10">
+      <div className="rounded-[2rem] border bg-white p-8 text-center shadow-sm md:p-12">
+        <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
+          Newsletter
+        </p>
+
+        <h2 className="mt-3 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
+          Recevez les nouveautés et promotions
+        </h2>
+
+        <p className="mx-auto mt-3 max-w-2xl text-base text-slate-500">
+          Abonnez-vous pour recevoir les nouveaux produits, les vendeurs à
+          découvrir et les offres importantes.
+        </p>
+
+        <form className="mx-auto mt-7 flex max-w-xl flex-col gap-3 sm:flex-row">
+          <input
+            type="email"
+            placeholder="Votre adresse email"
+            className="min-h-14 flex-1 rounded-xl border px-5 font-semibold outline-none transition-all focus:border-[#d20a1e] focus:ring-4 focus:ring-red-100"
+          />
+
+          <button
+            type="submit"
+            className="min-h-14 rounded-xl bg-[#d20a1e] px-7 font-black text-white transition-all duration-300 hover:bg-black"
+          >
+            S’abonner
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
 export function HomePageClient({
   products,
   vendors
@@ -267,7 +412,6 @@ export function HomePageClient({
     .slice(0, 6);
 
   const recommendedProducts = allProducts.slice(1, 7);
-  const recentlyViewedProducts = allProducts.slice(0, 3);
 
   const displayedVendors =
     vendors.length > 0 ? vendors : content.fallbackVendors;
@@ -438,6 +582,8 @@ export function HomePageClient({
         </div>
       </section>
 
+      <WhyChooseUsSection />
+
       <section className="relative border-y bg-[#fff1f1]">
         <div
           className="container-page flex min-h-24 items-center gap-3 overflow-x-auto py-4 text-base font-black text-[#071f3d] md:justify-between md:gap-4 md:text-lg"
@@ -582,6 +728,8 @@ export function HomePageClient({
         </div>
       </section>
 
+      <VendorCtaSection />
+
       <ProductSection
         badge={content.sections.recommended.badge}
         title={content.sections.recommended.title}
@@ -590,13 +738,7 @@ export function HomePageClient({
         products={recommendedProducts}
       />
 
-      <ProductSection
-        badge={content.sections.continueShopping.badge}
-        title={content.sections.continueShopping.title}
-        text={content.sections.continueShopping.text}
-        href="/shop?recent=true"
-        products={recentlyViewedProducts}
-      />
+      <NewsletterSection />
     </main>
   );
 }
