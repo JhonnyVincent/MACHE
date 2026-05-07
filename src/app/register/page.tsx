@@ -4,6 +4,34 @@ const errorMessages: Record<string, string> = {
   missing_fields: "Veuillez remplir tous les champs obligatoires.",
 };
 
+const roleLabels: Record<string, string> = {
+  buyer: "Acheteur / Client",
+  seller_individual: "Vendeur particulier",
+  seller_business: "Business / Boutique",
+  supplier: "Fournisseur / Grossiste",
+  official_brand: "Marque officielle",
+  agent: "Agent",
+};
+
+function getDefaultRole(role?: string) {
+  if (!role) return "buyer";
+
+  if (role === "seller") return "seller_individual";
+
+  if (
+    role === "buyer" ||
+    role === "seller_individual" ||
+    role === "seller_business" ||
+    role === "supplier" ||
+    role === "official_brand" ||
+    role === "agent"
+  ) {
+    return role;
+  }
+
+  return "buyer";
+}
+
 export default async function RegisterPage({
   searchParams,
 }: {
@@ -13,20 +41,33 @@ export default async function RegisterPage({
 
   const safeError = error ? decodeURIComponent(error) : "";
   const message = errorMessages[safeError] || safeError;
+  const defaultRole = getDefaultRole(role);
 
-  const defaultRole =
-    role === "seller" ? "seller_individual" : "buyer";
+  const isProAccount =
+    defaultRole === "seller_individual" ||
+    defaultRole === "seller_business" ||
+    defaultRole === "supplier" ||
+    defaultRole === "official_brand" ||
+    defaultRole === "agent";
 
   return (
     <main className="container-page py-12">
       <div className="card mx-auto max-w-md p-6">
         <h1 className="text-2xl font-bold">Créer un compte</h1>
 
-        {role === "seller" ? (
+        {isProAccount ? (
           <p className="mt-2 text-sm text-neutral-500">
-            Vous créez un compte vendeur Maché.
+            Vous créez un compte professionnel Maché :{" "}
+            <span className="font-semibold text-neutral-900">
+              {roleLabels[defaultRole]}
+            </span>
+            .
           </p>
-        ) : null}
+        ) : (
+          <p className="mt-2 text-sm text-neutral-500">
+            Créez un compte client pour acheter sur Maché.
+          </p>
+        )}
 
         {message ? (
           <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -53,7 +94,9 @@ export default async function RegisterPage({
           <select className="input" name="role" defaultValue={defaultRole}>
             <option value="buyer">Acheteur / Client</option>
             <option value="seller_individual">Vendeur particulier</option>
-            <option value="seller_business">Business / Fournisseur</option>
+            <option value="seller_business">Business / Boutique</option>
+            <option value="supplier">Fournisseur / Grossiste</option>
+            <option value="official_brand">Marque officielle</option>
             <option value="agent">Agent</option>
           </select>
 
