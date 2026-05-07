@@ -3,6 +3,13 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+const sellerRoles = [
+  "seller_individual",
+  "seller_business",
+  "supplier",
+  "official_brand",
+];
+
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
   const password = String(formData.get("password") || "");
@@ -34,9 +41,7 @@ export async function loginAction(formData: FormData) {
     redirect("/dashboard/buyer");
   }
 
-  const isSeller =
-    profile.role === "seller_individual" ||
-    profile.role === "seller_business";
+  const isSeller = sellerRoles.includes(profile.role);
 
   if (next === "/dashboard/seller" && isSeller) {
     redirect("/dashboard/seller");
@@ -58,7 +63,7 @@ export async function loginAction(formData: FormData) {
     redirect("/dashboard/agent");
   }
 
-  if (profile.role === "admin") {
+  if (profile.role === "admin" || profile.role === "super_admin") {
     redirect("/dashboard/admin");
   }
 
