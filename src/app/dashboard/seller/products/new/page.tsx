@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { createProductAction } from "./actions";
 
 export default function NewSellerProductPage() {
   const [images, setImages] = useState<FileList | null>(null);
@@ -28,7 +29,10 @@ export default function NewSellerProductPage() {
         </Link>
       </div>
 
-      <form className="mt-10 grid gap-8 lg:grid-cols-[1fr_0.4fr]">
+      <form
+        action={createProductAction}
+        className="mt-10 grid gap-8 lg:grid-cols-[1fr_0.4fr]"
+      >
         <section className="space-y-6">
           <div className="card p-6">
             <h2 className="text-xl font-black">
@@ -43,6 +47,8 @@ export default function NewSellerProductPage() {
 
                 <input
                   type="text"
+                  name="name"
+                  required
                   placeholder="Ex: Chemise premium"
                   className="mt-2 w-full rounded-2xl border p-4 outline-none focus:border-[var(--mache-primary)]"
                 />
@@ -55,6 +61,8 @@ export default function NewSellerProductPage() {
 
                 <textarea
                   rows={5}
+                  name="description"
+                  required
                   placeholder="Décrivez votre produit..."
                   className="mt-2 w-full rounded-2xl border p-4 outline-none focus:border-[var(--mache-primary)]"
                 />
@@ -68,6 +76,8 @@ export default function NewSellerProductPage() {
 
                   <input
                     type="number"
+                    name="price"
+                    required
                     placeholder="2500"
                     className="mt-2 w-full rounded-2xl border p-4 outline-none focus:border-[var(--mache-primary)]"
                   />
@@ -80,6 +90,8 @@ export default function NewSellerProductPage() {
 
                   <input
                     type="number"
+                    name="stock"
+                    required
                     placeholder="10"
                     className="mt-2 w-full rounded-2xl border p-4 outline-none focus:border-[var(--mache-primary)]"
                   />
@@ -91,13 +103,17 @@ export default function NewSellerProductPage() {
                   Catégorie *
                 </label>
 
-                <select className="mt-2 w-full rounded-2xl border p-4 outline-none focus:border-[var(--mache-primary)]">
-                  <option>Mode</option>
-                  <option>Beauté</option>
-                  <option>Maison</option>
-                  <option>Accessoires</option>
-                  <option>Artisanat</option>
-                  <option>Technologie</option>
+                <select
+                  name="category"
+                  required
+                  className="mt-2 w-full rounded-2xl border p-4 outline-none focus:border-[var(--mache-primary)]"
+                >
+                  <option value="Mode">Mode</option>
+                  <option value="Beauté">Beauté</option>
+                  <option value="Maison">Maison</option>
+                  <option value="Accessoires">Accessoires</option>
+                  <option value="Artisanat">Artisanat</option>
+                  <option value="Technologie">Technologie</option>
                 </select>
               </div>
             </div>
@@ -115,7 +131,9 @@ export default function NewSellerProductPage() {
             <div className="mt-5 rounded-3xl border-2 border-dashed p-8 text-center">
               <input
                 type="file"
+                name="images"
                 multiple
+                required
                 accept="image/*"
                 capture="environment"
                 onChange={(e) => setImages(e.target.files)}
@@ -159,6 +177,7 @@ export default function NewSellerProductPage() {
 
             <input
               type="file"
+              name="document"
               accept=".pdf,.doc,.docx"
               className="mt-5 block w-full rounded-2xl border p-4"
             />
