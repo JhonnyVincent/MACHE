@@ -33,7 +33,14 @@ const products = [
   },
 ];
 
-const categories = ["Tous", "Mode", "Accessoires", "Maison", "Beauté", "Promos"];
+const categories = [
+  "Tous",
+  "Mode",
+  "Accessoires",
+  "Maison",
+  "Beauté",
+  "Promos",
+];
 
 const stats = [
   ["4.8/5", "note vendeur"],
@@ -64,7 +71,10 @@ export default function StorePage({
         </div>
 
         <div className="container-page relative py-12">
-          <Link href="/sell" className="text-sm font-bold text-white/70 hover:text-white">
+          <Link
+            href="/sell"
+            className="text-sm font-bold text-white/70 hover:text-white"
+          >
             ← Devenir vendeur
           </Link>
 
@@ -95,13 +105,17 @@ export default function StorePage({
                   </div>
 
                   <p className="mt-2 max-w-2xl text-white/70">
-                    Boutique officielle sur Maché · Produits disponibles en Haïti · Livraison selon zone.
+                    Boutique officielle sur Maché · Produits disponibles en
+                    Haïti · Livraison selon zone.
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-3 pb-2">
-                <Link href="/contact" className="btn-secondary bg-white text-[#071f3d]">
+                <Link
+                  href="/contact"
+                  className="btn-secondary bg-white text-[#071f3d]"
+                >
                   Contacter
                 </Link>
 
@@ -113,7 +127,10 @@ export default function StorePage({
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {stats.map(([value, label]) => (
-                <div key={label} className="rounded-2xl border border-white/10 bg-white/10 p-4">
+                <div
+                  key={label}
+                  className="rounded-2xl border border-white/10 bg-white/10 p-4"
+                >
                   <p className="text-2xl font-black">{value}</p>
                   <p className="text-sm text-white/65">{label}</p>
                 </div>
@@ -127,11 +144,14 @@ export default function StorePage({
         <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr]">
           <aside className="space-y-5">
             <div className="card p-6">
-              <h2 className="text-xl font-black">À propos de la boutique</h2>
+              <h2 className="text-xl font-black">
+                À propos de la boutique
+              </h2>
 
               <p className="mt-3 text-sm leading-7 text-neutral-500">
-                {storeName} vend des produits sélectionnés sur Maché avec une attention particulière
-                à la qualité, au service client et à la disponibilité locale.
+                {storeName} vend des produits sélectionnés sur Maché avec une
+                attention particulière à la qualité, au service client et à la
+                disponibilité locale.
               </p>
 
               <div className="mt-5 space-y-3 text-sm">
@@ -168,7 +188,10 @@ export default function StorePage({
                   "Temps de réponse rapide",
                   "Support Maché disponible",
                 ].map((item) => (
-                  <div key={item} className="rounded-2xl bg-neutral-50 p-4 text-sm font-bold">
+                  <div
+                    key={item}
+                    className="rounded-2xl bg-neutral-50 p-4 text-sm font-bold"
+                  >
                     ✓ {item}
                   </div>
                 ))}
@@ -229,11 +252,17 @@ export default function StorePage({
                     </p>
 
                     <div className="mt-4 flex gap-2">
-                      <Link href="/shop" className="btn-primary flex-1 text-center">
+                      <Link
+                        href="/shop"
+                        className="btn-primary flex-1 text-center"
+                      >
                         Voir
                       </Link>
 
-                      <Link href="/contact" className="btn-secondary flex-1 text-center">
+                      <Link
+                        href="/contact"
+                        className="btn-secondary flex-1 text-center"
+                      >
                         Contact
                       </Link>
                     </div>
@@ -258,17 +287,23 @@ export default function StorePage({
               </h2>
 
               <p className="mt-5 max-w-2xl leading-8 text-white/75">
-                Lancez votre espace vendeur, publiez vos produits et développez votre activité avec
-                la marketplace + les outils SaaS Maché.
+                Lancez votre espace vendeur, publiez vos produits et développez
+                votre activité avec la marketplace + les outils SaaS Maché.
               </p>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-              <Link href="/register?role=seller" className="btn-primary">
+              <Link
+                href="/register?role=seller_business"
+                className="btn-primary"
+              >
                 Devenir vendeur
               </Link>
 
-              <Link href="/sell" className="btn-secondary bg-white text-[#071f3d]">
+              <Link
+                href="/sell"
+                className="btn-secondary bg-white text-[#071f3d]"
+              >
                 En savoir plus
               </Link>
             </div>
