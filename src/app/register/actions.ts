@@ -1,11 +1,14 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function createSlug(value: string) {
   return value
     .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
@@ -16,11 +19,25 @@ export async function registerAction(formData: FormData) {
   const password = String(formData.get("password") || "").trim();
   const role = String(formData.get("role") || "buyer").trim();
 
+  if (!fullName || !email || !password) {
+    redirect("/register?error=missing_fields");
+  }
+
+  const headersList = await headers();
+  const origin = headersList.get("origin") || "https://mache-two.vercel.app";
+
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
+    options: {
+      emailRedirectTo: `${origin}/auth/callback?next=/register/success`,
+      data: {
+        full_name: fullName,
+        role,
+      },
+    },
   });
 
   if (error || !data.user) {
@@ -39,7 +56,7 @@ export async function registerAction(formData: FormData) {
     role === "seller_business";
 
   if (isSeller) {
-    const slug = createSlug(fullName);
+    const slug = createSlug(fullName || email.split("@")[0]);
 
     await supabase.from("stores").upsert({
       owner_id: data.user.id,
