@@ -44,7 +44,6 @@ export async function registerAction(formData: FormData) {
         full_name: fullName,
         role: safeRole,
       },
-       emailRedirectTo: "https://mache-two.vercel.app/auth/callback",
     },
   });
 
