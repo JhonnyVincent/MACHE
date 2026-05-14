@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -10,10 +11,13 @@ export async function forgotPasswordAction(formData: FormData) {
     redirect("/forgot-password?error=missing_email");
   }
 
+  const headersList = await headers();
+  const origin = headersList.get("origin") || "https://mache-two.vercel.app";
+
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "https://mache-two.vercel.app/auth/callback",
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
   });
 
   if (error) {
