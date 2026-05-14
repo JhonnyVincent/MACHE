@@ -22,7 +22,7 @@ export async function resetPasswordAction(formData: FormData) {
   const supabase = await createSupabaseServerClient();
 
   const { error } = await supabase.auth.updateUser({
-    password
+    password,
   });
 
   if (error) {
