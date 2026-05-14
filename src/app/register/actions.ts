@@ -44,7 +44,7 @@ export async function registerAction(formData: FormData) {
         full_name: fullName,
         role: safeRole,
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+       emailRedirectTo: "https://mache-two.vercel.app/auth/callback",
     },
   });
 
