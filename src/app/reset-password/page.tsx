@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -11,7 +11,26 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function checkSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        setMessage(
+          "Session de réinitialisation introuvable. Redemandez un nouveau lien."
+        );
+      }
+
+      setReady(true);
+    }
+
+    checkSession();
+  }, [supabase]);
 
   async function handleResetPassword(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,7 +54,7 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     const { error } = await supabase.auth.updateUser({
-      password
+      password,
     });
 
     setLoading(false);
@@ -63,29 +82,37 @@ export default function ResetPasswordPage() {
           </div>
         ) : null}
 
-        <form onSubmit={handleResetPassword} className="mt-6 space-y-4">
-          <input
-            className="input"
-            type="password"
-            placeholder="Nouveau mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+        {!ready ? (
+          <p className="mt-6 text-sm text-neutral-500">Chargement...</p>
+        ) : (
+          <form onSubmit={handleResetPassword} className="mt-6 space-y-4">
+            <input
+              className="input"
+              type="password"
+              placeholder="Nouveau mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
-          <input
-            className="input"
-            type="password"
-            placeholder="Confirmer le mot de passe"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
+            <input
+              className="input"
+              type="password"
+              placeholder="Confirmer le mot de passe"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
 
-          <button className="btn-primary w-full" type="submit" disabled={loading}>
-            {loading ? "Modification..." : "Modifier le mot de passe"}
-          </button>
-        </form>
+            <button
+              className="btn-primary w-full"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Modification..." : "Modifier le mot de passe"}
+            </button>
+          </form>
+        )}
       </div>
     </main>
   );
