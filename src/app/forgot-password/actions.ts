@@ -14,7 +14,7 @@ export async function forgotPasswordAction(formData: FormData) {
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo:
-      "https://mache-two.vercel.app/auth/callback?next=/reset-password",
+      "https://mache-two.vercel.app/auth/callback?next=%2Freset-password",
   });
 
   if (error) {
