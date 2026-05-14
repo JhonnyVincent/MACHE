@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const next = requestUrl.searchParams.get("next") || "/dashboard/buyer";
 
   if (!code) {
     return NextResponse.redirect(
@@ -21,5 +22,5 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.redirect(new URL("/reset-password", requestUrl.origin));
+  return NextResponse.redirect(new URL(next, requestUrl.origin));
 }
