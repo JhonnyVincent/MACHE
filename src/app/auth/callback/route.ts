@@ -5,9 +5,10 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
 
   const code = requestUrl.searchParams.get("code");
-  const next = requestUrl.searchParams.get("next");
 
-  // Si pas de code → erreur login
+  const next =
+    requestUrl.searchParams.get("next") || "/reset-password";
+
   if (!code) {
     return NextResponse.redirect(
       new URL("/login?error=missing_code", requestUrl.origin)
@@ -16,7 +17,6 @@ export async function GET(request: Request) {
 
   const supabase = await createSupabaseServerClient();
 
-  // Échange code → session utilisateur
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
@@ -28,15 +28,10 @@ export async function GET(request: Request) {
     );
   }
 
-  // 🔥 IMPORTANT : redirection intelligente
-  if (next) {
-    return NextResponse.redirect(
-      new URL(next.startsWith("/") ? next : `/${next}`, requestUrl.origin)
-    );
-  }
-
-  // fallback (par défaut)
   return NextResponse.redirect(
-    new URL("/reset-password", requestUrl.origin)
+    new URL(
+      next.startsWith("/") ? next : `/${next}`,
+      requestUrl.origin
+    )
   );
 }
