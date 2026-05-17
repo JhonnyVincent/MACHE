@@ -23,7 +23,7 @@ export async function registerAction(formData: FormData) {
   }
 
   const headersList = await headers();
-  const origin = headersList.get("origin") || "https://mache-two.vercel.app";
+  const origin = process.env.NEXT_PUBLIC_SITE_URL || headersList.get("origin") || "https://mache-two.vercel.app";
 
   const supabase = await createSupabaseServerClient();
 
