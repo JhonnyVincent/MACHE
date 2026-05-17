@@ -1,5 +1,4 @@
 "use server";
-
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -28,11 +27,13 @@ export async function registerAction(formData: FormData) {
 
   const supabase = await createSupabaseServerClient();
 
+  // ✅ FIX : encoder le paramètre next pour éviter "Invalid path in request URL"
+  const nextPath = encodeURIComponent("/register/success");
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?next=/register/success`,
+      emailRedirectTo: `${origin}/auth/callback?next=${nextPath}`,
       data: {
         full_name: fullName,
         role,
@@ -53,11 +54,11 @@ export async function registerAction(formData: FormData) {
 
   const isSeller =
     role === "seller_individual" ||
-    role === "seller_business";
+    role === "seller_business" ||
+    role === "official_brand";
 
   if (isSeller) {
     const slug = createSlug(fullName || email.split("@")[0]);
-
     await supabase.from("stores").upsert({
       owner_id: data.user.id,
       name: fullName,
