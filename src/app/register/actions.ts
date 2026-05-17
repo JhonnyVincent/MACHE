@@ -23,17 +23,18 @@ export async function registerAction(formData: FormData) {
   }
 
   const headersList = await headers();
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || headersList.get("origin") || "https://mache-two.vercel.app";
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    headersList.get("origin") ||
+    "https://mache-two.vercel.app";
 
   const supabase = await createSupabaseServerClient();
 
-  // ✅ FIX : encoder le paramètre next pour éviter "Invalid path in request URL"
-  const nextPath = encodeURIComponent("/register/success");
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?next=${nextPath}`,
+      emailRedirectTo: `${origin}/auth/callback`,
       data: {
         full_name: fullName,
         role,
@@ -69,5 +70,5 @@ export async function registerAction(formData: FormData) {
     });
   }
 
-  redirect("/login?message=account_created");
+  redirect("/register/success");
 }
