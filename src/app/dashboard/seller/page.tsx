@@ -6,19 +6,17 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
-const SELLER_ROLES = ["seller_individual", "seller_business", "supplier", "official_brand"];
+const SELLER_ROLES = ["seller_individual", "seller_business", "official_brand"];
 
 const ROLE_LABELS: Record<string, string> = {
   seller_individual: "Vendeur particulier",
   seller_business:   "Vendeur business",
-  supplier:          "Fournisseur",
   official_brand:    "Marque officielle",
 };
 
 const PLAN_LIMITS: Record<string, { maxStores: number; maxArticlesPerStore: number }> = {
   seller_individual: { maxStores: 1, maxArticlesPerStore: 3 },
   seller_business:   { maxStores: 2, maxArticlesPerStore: 5 },
-  supplier:          { maxStores: 2, maxArticlesPerStore: 5 },
   official_brand:    { maxStores: 5, maxArticlesPerStore: 7 },
 };
 
@@ -49,7 +47,6 @@ const PLANS = [
 const ROLE_PLAN_KEY: Record<string, string> = {
   seller_individual: "free",
   seller_business:   "business",
-  supplier:          "business",
   official_brand:    "premium",
 };
 
