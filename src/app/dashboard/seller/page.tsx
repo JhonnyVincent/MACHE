@@ -1,5 +1,3 @@
-"use client";
-
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -55,11 +53,9 @@ const ROLE_PLAN_KEY: Record<string, string> = {
 export default async function SellerDashboardPage() {
   const supabase = await createSupabaseServerClient();
 
-  // Auth
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) redirect("/login?next=/dashboard/seller");
 
-  // Profil
   const { data: profile } = await supabase
     .from("users")
     .select("role, full_name, email, phone, address_verified")
@@ -87,13 +83,7 @@ export default async function SellerDashboardPage() {
   const storeCount = stores?.length ?? 0;
   const storeLimitReached = storeCount >= limits.maxStores;
 
-  // ── Produits ──
-  const { count: totalProducts } = await supabase
-    .from("products").select("*", { count: "exact", head: true }).eq("seller_id", uid);
-  const { count: activeProducts } = await supabase
-    .from("products").select("*", { count: "exact", head: true }).eq("seller_id", uid).eq("status", "active");
-
-  // Produits par store
+  // ── Produits par store ──
   const storeProductCounts: Record<string, number> = {};
   if (stores) {
     for (const s of stores) {
@@ -106,12 +96,12 @@ export default async function SellerDashboardPage() {
   // ── Commandes ──
   const { data: allOrders } = await supabase
     .from("orders")
-    .select("id, status, total_price, created_at, delivery_status, store_id")
+    .select("id, status, total_price, created_at, store_id")
     .eq("seller_id", uid)
     .order("created_at", { ascending: false });
 
-  const totalOrders    = allOrders?.length ?? 0;
-  const pendingOrders  = allOrders?.filter((o) => o.status === "pending").length ?? 0;
+  const totalOrders     = allOrders?.length ?? 0;
+  const pendingOrders   = allOrders?.filter((o) => o.status === "pending").length ?? 0;
   const completedOrders = allOrders?.filter((o) => o.status === "completed").length ?? 0;
 
   // ── Revenus ──
@@ -126,28 +116,24 @@ export default async function SellerDashboardPage() {
     ?.filter((o) => o.status === "completed" && o.created_at >= startOfMonth)
     .reduce((s, o) => s + (o.total_price ?? 0), 0) ?? 0;
 
-  const netRevenue = Math.round(totalRevenue * 0.95);
-
-  // Revenus par store
+  // Revenus & commandes par store
   const storeRevenues: Record<string, number> = {};
-  const storeOrders: Record<string, number> = {};
+  const storeOrderCounts: Record<string, number> = {};
   if (stores) {
     for (const s of stores) {
       storeRevenues[s.id] = allOrders
         ?.filter((o) => o.status === "completed" && o.store_id === s.id)
         .reduce((acc, o) => acc + (o.total_price ?? 0), 0) ?? 0;
-      storeOrders[s.id] = allOrders?.filter((o) => o.store_id === s.id).length ?? 0;
+      storeOrderCounts[s.id] = allOrders?.filter((o) => o.store_id === s.id).length ?? 0;
     }
   }
 
-  // ── Avis moyens par store (si table ratings existe) ──
+  // ── Avis par store ──
   const storeRatings: Record<string, { avg: number; count: number }> = {};
   if (stores) {
     for (const s of stores) {
       const { data: ratings } = await supabase
-        .from("store_ratings")
-        .select("rating")
-        .eq("store_id", s.id);
+        .from("store_ratings").select("rating").eq("store_id", s.id);
       if (ratings && ratings.length > 0) {
         const avg = ratings.reduce((acc, r) => acc + r.rating, 0) / ratings.length;
         storeRatings[s.id] = { avg: Math.round(avg * 10) / 10, count: ratings.length };
@@ -157,15 +143,12 @@ export default async function SellerDashboardPage() {
     }
   }
 
-  // Expire date forfait (placeholder — à brancher sur ta table subscriptions)
-  const planExpiry = "15 juin 2026"; // TODO: récupérer depuis subscriptions
-
-  // ─── Rendu ────────────────────────────────────────────────────────────────
+  const planExpiry = "15 juin 2026";
 
   return (
     <main className="min-h-screen bg-[#f5f5f0]">
 
-      {/* ══════════ HEADER ══════════ */}
+      {/* HEADER */}
       <div className="bg-[#081c37]">
         <div className="container-page py-5">
           <div className="flex items-start justify-between gap-4">
@@ -175,14 +158,12 @@ export default async function SellerDashboardPage() {
               <p className="text-sm text-[#8ab0cc]">Merci de faire partie de la famille Maché.</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
-              {/* Forfait */}
               <div className="bg-white/7 border border-white/10 rounded-xl px-4 py-3 text-center hidden sm:block">
                 <p className="text-[10px] text-[#5a8ab8] mb-0.5">Forfait</p>
                 <p className="text-sm font-semibold text-white">{plan.name}</p>
                 <p className="text-[10px] text-[#f9c84a] mt-1">Expire {planExpiry}</p>
-                <p className="text-[10px] text-[#5ed49a] mt-0.5">✓ Harris vérifié</p>
+                <p className="text-[10px] text-[#5ed49a] mt-0.5">✓ {displayName} vérifié</p>
               </div>
-              {/* Déconnexion */}
               <form action="/auth/signout" method="post">
                 <button
                   type="submit"
@@ -195,45 +176,31 @@ export default async function SellerDashboardPage() {
             </div>
           </div>
         </div>
-        {/* Barre rouge Maché */}
         <div className="h-[3px] bg-[#d2162c]" />
       </div>
 
       <div className="container-page py-6 space-y-6">
 
-        {/* ══════════ ALERTES ══════════ */}
-        {(pendingOrders > 0 || true) && (
+        {/* ALERTES */}
+        {pendingOrders > 0 && (
           <div className="bg-[#fdf0f1] border border-[#f5b8be] rounded-2xl p-4">
             <p className="text-xs font-semibold text-[#d2162c] mb-3 flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
               À traiter
             </p>
             <div className="space-y-2.5">
-              {pendingOrders > 0 && (
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-[#d2162c] shrink-0" />
-                  <p className="flex-1 text-sm font-medium text-[#081c37]">{pendingOrders} commande{pendingOrders > 1 ? "s" : ""} en attente</p>
-                  <Link href="/dashboard/seller/orders" className="text-xs text-[#d2162c] bg-white border border-[#f5b8be] rounded-lg px-3 py-1 hover:bg-[#fdf0f1] transition shrink-0">Voir →</Link>
-                </div>
-              )}
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#f0a030] shrink-0" />
-                <p className="flex-1 text-sm font-medium text-[#081c37]">Forfait expire dans 25 jours</p>
-                <Link href="/dashboard/seller/subscription" className="text-xs text-[#854f0b] bg-[#fffaf0] border border-[#f5c88a] rounded-lg px-3 py-1 hover:bg-[#faeeda] transition shrink-0">Renouveler →</Link>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#3b82f6] shrink-0" />
-                <p className="flex-1 text-sm font-medium text-[#081c37]">1 message de l'équipe Maché</p>
-                <Link href="/dashboard/seller/support" className="text-xs text-[#185fa5] bg-[#f0f6ff] border border-[#b5d4f4] rounded-lg px-3 py-1 hover:bg-[#e6f1fb] transition shrink-0">Lire →</Link>
+                <div className="w-2 h-2 rounded-full bg-[#d2162c] shrink-0" />
+                <p className="flex-1 text-sm font-medium text-[#081c37]">{pendingOrders} commande{pendingOrders > 1 ? "s" : ""} en attente</p>
+                <Link href="/dashboard/seller/orders" className="text-xs text-[#d2162c] bg-white border border-[#f5b8be] rounded-lg px-3 py-1 hover:bg-[#fdf0f1] transition shrink-0">Voir →</Link>
               </div>
             </div>
           </div>
         )}
 
-        {/* ══════════ MES BOUTIQUES ══════════ */}
+        {/* MES BOUTIQUES */}
         <div>
           <p className="text-base font-semibold text-[#081c37] mb-3">Mes boutiques</p>
-
           <div className="space-y-3">
             {(!stores || stores.length === 0) ? (
               <div className="bg-white border border-dashed border-gray-300 rounded-2xl p-10 text-center">
@@ -248,13 +215,12 @@ export default async function SellerDashboardPage() {
               stores.map((store) => {
                 const articleCount = storeProductCounts[store.id] ?? 0;
                 const rev = storeRevenues[store.id] ?? 0;
-                const orders = storeOrders[store.id] ?? 0;
+                const orders = storeOrderCounts[store.id] ?? 0;
                 const rating = storeRatings[store.id];
                 const articleLimitReached = articleCount >= limits.maxArticlesPerStore;
 
                 return (
                   <div key={store.id} className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center gap-4">
-                    {/* Avatar */}
                     {store.logo_url ? (
                       <img src={store.logo_url} alt={store.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
                     ) : (
@@ -262,26 +228,18 @@ export default async function SellerDashboardPage() {
                         {store.name.charAt(0).toUpperCase()}
                       </div>
                     )}
-
-                    {/* Infos */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <p className="text-[15px] font-semibold text-[#081c37]">{store.name}</p>
-                        {/* Badge par boutique — indépendant */}
                         {store.is_verified ? (
-                          <span className="inline-flex items-center gap-1 bg-[#eaf3de] text-[#3b6d11] text-[11px] font-medium px-2 py-0.5 rounded-full">
-                            ✓ Boutique vérifiée
-                          </span>
+                          <span className="inline-flex items-center gap-1 bg-[#eaf3de] text-[#3b6d11] text-[11px] font-medium px-2 py-0.5 rounded-full">✓ Boutique vérifiée</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 bg-[#faeeda] text-[#854f0b] text-[11px] font-medium px-2 py-0.5 rounded-full">
-                            ⏳ Vérification en attente
-                          </span>
+                          <span className="inline-flex items-center gap-1 bg-[#faeeda] text-[#854f0b] text-[11px] font-medium px-2 py-0.5 rounded-full">⏳ Vérification en attente</span>
                         )}
                         {store.category && (
                           <span className="bg-[#e6f1fb] text-[#185fa5] text-[11px] px-2 py-0.5 rounded-full">{store.category}</span>
                         )}
                       </div>
-                      {/* Étoiles */}
                       {rating && rating.count > 0 && (
                         <div className="flex items-center gap-1 mb-1">
                           {[1,2,3,4,5].map((star) => (
@@ -294,8 +252,6 @@ export default async function SellerDashboardPage() {
                       )}
                       <p className="text-xs text-gray-400">mache.ht/store/{store.slug}</p>
                     </div>
-
-                    {/* Stats */}
                     <div className="hidden sm:flex gap-2 shrink-0">
                       <div className="bg-[#f5f5f0] rounded-xl px-3 py-2 text-center min-w-[60px]">
                         <p className="text-[10px] text-gray-500">Produits</p>
@@ -310,8 +266,6 @@ export default async function SellerDashboardPage() {
                         <p className="text-base font-semibold text-[#0a6e4a]">{rev.toLocaleString()} HTG</p>
                       </div>
                     </div>
-
-                    {/* Bouton Gérer */}
                     <Link
                       href={`/dashboard/seller/stores/${store.id}`}
                       className="bg-[#d2162c] text-white rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-[#b81226] transition shrink-0 whitespace-nowrap"
@@ -323,7 +277,6 @@ export default async function SellerDashboardPage() {
               })
             )}
 
-            {/* + Nouvelle boutique — inline */}
             {!storeLimitReached && (
               <Link
                 href="/dashboard/seller/stores/new"
@@ -365,18 +318,18 @@ export default async function SellerDashboardPage() {
           </div>
         </div>
 
-        {/* ══════════ QUE VOULEZ-VOUS FAIRE ══════════ */}
+        {/* QUE VOULEZ-VOUS FAIRE */}
         <div>
           <p className="text-base font-semibold text-[#081c37] mb-3">Que voulez-vous faire ?</p>
           <div className="grid grid-cols-2 gap-2.5">
             {[
-              { label: "Mes employés",         sub: "Gérer votre équipe",                  href: "/dashboard/seller/employees",   bg: "#fbeaec", iconColor: "#d2162c",  locked: !isBusiness,
+              { label: "Mes employés",           sub: "Gérer votre équipe",         href: "/dashboard/seller/employees",    bg: "#fbeaec", iconColor: "#d2162c", locked: !isBusiness,
                 icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
-              { label: "Changer de forfait",   sub: "Voir les plans",                       href: "/dashboard/seller/subscription", bg: "#eeedfe", iconColor: "#534ab7", locked: false,
+              { label: "Changer de forfait",     sub: "Voir les plans",              href: "/dashboard/seller/subscription", bg: "#eeedfe", iconColor: "#534ab7", locked: false,
                 icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> },
-              { label: "Trouver un financement", sub: "Micro-crédit & partenaires",         href: "/dashboard/seller/financing",   bg: "#eaf3de", iconColor: "#3b6d11",  locked: false,
+              { label: "Trouver un financement", sub: "Micro-crédit & partenaires",  href: "/dashboard/seller/financing",    bg: "#eaf3de", iconColor: "#3b6d11", locked: false,
                 icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> },
-              { label: "Messagerie support",   sub: "1 nouveau message",                    href: "/dashboard/seller/support",     bg: "#e6f1fb", iconColor: "#185fa5",  locked: false, alert: true,
+              { label: "Messagerie support",     sub: "Contacter l'équipe Maché",    href: "/dashboard/seller/support",      bg: "#e6f1fb", iconColor: "#185fa5", locked: false,
                 icon: <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> },
             ].map((item) => (
               <Link
@@ -389,14 +342,13 @@ export default async function SellerDashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-semibold text-[#081c37]">{item.label}</p>
-                  <p className={`text-[11px] ${item.alert ? "text-[#d2162c] font-medium" : "text-gray-500"}`}>{item.sub}</p>
+                  <p className="text-[11px] text-gray-500">{item.sub}</p>
                   {item.locked && <p className="text-[10px] text-gray-400">Plan Business requis</p>}
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bbb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
               </Link>
             ))}
 
-            {/* Partenaires — pleine largeur */}
             <Link
               href="/dashboard/seller/partners"
               className="col-span-2 bg-white border border-gray-200 rounded-2xl p-3 flex items-center gap-3 hover:border-gray-300 transition"
@@ -413,11 +365,11 @@ export default async function SellerDashboardPage() {
           </div>
         </div>
 
-        {/* ══════════ DOCUMENTS & VÉRIFICATION ══════════ */}
+        {/* DOCUMENTS & VÉRIFICATION */}
         <div>
           <p className="text-base font-semibold text-[#081c37] mb-3">Documents & vérification</p>
 
-          {/* Bloc 1 — Documents personnels */}
+          {/* Personnels */}
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden mb-3">
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Documents personnels</p>
@@ -426,31 +378,25 @@ export default async function SellerDashboardPage() {
             <div className="divide-y divide-gray-100">
               {[
                 {
-                  label: "Pièce d'identité",
-                  sub: "CIN, passeport ou permis de conduire",
-                  status: "approved",
+                  label: "Pièce d'identité", sub: "CIN, passeport ou permis de conduire", status: "approved",
                   icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>,
                   iconBg: "#eaf3de", iconColor: "#3b6d11",
                 },
                 {
-                  label: "Adresse personnelle",
-                  sub: "Confidentielle · Vérification par lettre recommandée ou agence Maché",
+                  label: "Adresse personnelle", sub: "Confidentielle · Vérification par lettre recommandée ou agence Maché",
                   status: profile.address_verified ? "approved" : "pending_letter",
                   icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>,
                   iconBg: profile.address_verified ? "#eaf3de" : "#faeeda",
                   iconColor: profile.address_verified ? "#3b6d11" : "#854f0b",
                 },
                 {
-                  label: "Numéro de téléphone",
-                  sub: "Pour recevoir les notifications et alertes",
+                  label: "Numéro de téléphone", sub: "Pour recevoir les notifications et alertes",
                   status: profile.phone ? "approved" : "missing",
                   icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.24h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
                   iconBg: "#eaf3de", iconColor: "#3b6d11",
                 },
                 {
-                  label: "Permis de conduire",
-                  sub: "Optionnel · renforce la confiance",
-                  status: "optional",
+                  label: "Permis de conduire", sub: "Optionnel · renforce la confiance", status: "optional",
                   icon: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>,
                   iconBg: "#faeeda", iconColor: "#854f0b",
                 },
@@ -463,35 +409,23 @@ export default async function SellerDashboardPage() {
                     <p className="text-sm font-medium text-[#081c37]">{doc.label}</p>
                     <p className="text-xs text-gray-500">{doc.sub}</p>
                   </div>
-                  {doc.status === "approved" && (
-                    <span className="text-[11px] font-medium bg-[#eaf3de] text-[#3b6d11] px-2.5 py-1 rounded-full shrink-0">Approuvé</span>
-                  )}
-                  {doc.status === "pending_letter" && (
-                    <span className="text-[11px] font-medium bg-[#faeeda] text-[#854f0b] px-2.5 py-1 rounded-full shrink-0">Lettre envoyée</span>
-                  )}
-                  {doc.status === "missing" && (
-                    <Link href="/dashboard/seller/settings" className="text-[11px] text-[#d2162c] bg-white border border-[#f5b8be] rounded-lg px-2.5 py-1 shrink-0">Ajouter</Link>
-                  )}
-                  {doc.status === "optional" && (
-                    <button className="text-[11px] text-[#854f0b] bg-[#fffaf0] border border-[#f5c88a] rounded-lg px-2.5 py-1 shrink-0">
-                      Envoyer
-                    </button>
-                  )}
+                  {doc.status === "approved" && <span className="text-[11px] font-medium bg-[#eaf3de] text-[#3b6d11] px-2.5 py-1 rounded-full shrink-0">Approuvé</span>}
+                  {doc.status === "pending_letter" && <span className="text-[11px] font-medium bg-[#faeeda] text-[#854f0b] px-2.5 py-1 rounded-full shrink-0">Lettre envoyée</span>}
+                  {doc.status === "missing" && <Link href="/dashboard/seller/settings/profile" className="text-[11px] text-[#d2162c] bg-white border border-[#f5b8be] rounded-lg px-2.5 py-1 shrink-0">Ajouter</Link>}
+                  {doc.status === "optional" && <button className="text-[11px] text-[#854f0b] bg-[#fffaf0] border border-[#f5c88a] rounded-lg px-2.5 py-1 shrink-0">Envoyer</button>}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Bloc 2 — Documents par boutique */}
+          {/* Par boutique */}
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
             <div className="px-4 py-3 border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Par boutique</p>
-              <p className="text-xs text-gray-400 mt-0.5">Document légal requis pour obtenir le badge vérifié</p>
+              <p className="text-xs text-gray-400 mt-0.5">Document légal recommandé pour obtenir le badge vérifié</p>
             </div>
             {(!stores || stores.length === 0) ? (
-              <div className="p-4 text-center">
-                <p className="text-sm text-gray-400">Aucune boutique créée</p>
-              </div>
+              <div className="p-4 text-center"><p className="text-sm text-gray-400">Aucune boutique créée</p></div>
             ) : (
               <div className="divide-y divide-gray-100">
                 {stores.map((store) => (
@@ -499,7 +433,7 @@ export default async function SellerDashboardPage() {
                     <p className="text-xs font-semibold text-[#081c37] mb-2">{store.name}</p>
                     <div className="flex items-center gap-3">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${store.legal_doc_url ? "bg-[#eaf3de]" : "bg-[#fdf0f1]"}`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={store.legal_doc_url ? "#3b6d11" : "#d2162c"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={store.legal_doc_url ? "#3b6d11" : "#d2162c"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-[#081c37]">Document légal de la boutique</p>
@@ -508,11 +442,7 @@ export default async function SellerDashboardPage() {
                       {store.legal_doc_url ? (
                         <span className="text-[11px] font-medium bg-[#eaf3de] text-[#3b6d11] px-2.5 py-1 rounded-full shrink-0">Approuvé</span>
                       ) : (
-                        <Link
-                          href={`/dashboard/seller/stores/${store.id}/documents`}
-                          className="text-[11px] text-[#d2162c] bg-white border border-[#f5b8be] rounded-lg px-2.5 py-1 shrink-0 flex items-center gap-1"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                        <Link href={`/dashboard/seller/stores/${store.id}/documents`} className="text-[11px] text-[#d2162c] bg-white border border-[#f5b8be] rounded-lg px-2.5 py-1 shrink-0">
                           Envoyer
                         </Link>
                       )}
@@ -524,18 +454,18 @@ export default async function SellerDashboardPage() {
           </div>
         </div>
 
-        {/* ══════════ PARAMÈTRES DU COMPTE ══════════ */}
+        {/* PARAMÈTRES DU COMPTE */}
         <div>
           <p className="text-base font-semibold text-[#081c37] mb-3">Paramètres du compte</p>
           <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
             {[
-              { label: "Nom complet",          sub: profile.full_name || "Non renseigné",          href: "/dashboard/seller/settings/profile" },
-              { label: "Email",                sub: profile.email || userData.user.email || "—",    href: "/dashboard/seller/settings/profile" },
-              { label: "Mot de passe",         sub: "Modifier votre mot de passe",                  href: "/dashboard/seller/settings/password" },
-              { label: "Téléphone",            sub: profile.phone || "Non renseigné",               href: "/dashboard/seller/settings/profile" },
-              { label: "Paiements & retraits", sub: "MonCash · compte bancaire",                    href: "/dashboard/seller/settings/payment" },
-              { label: "Notifications",        sub: "SMS, email, application",                      href: "/dashboard/seller/settings/notifications" },
-              { label: "Langue",               sub: "Français · Kreyòl · English · Español",        href: "/dashboard/seller/settings/language" },
+              { label: "Nom complet",          sub: profile.full_name || "Non renseigné",        href: "/dashboard/seller/settings/profile" },
+              { label: "Email",                sub: profile.email || userData.user.email || "—",  href: "/dashboard/seller/settings/profile" },
+              { label: "Mot de passe",         sub: "Modifier votre mot de passe",                href: "/dashboard/seller/settings/password" },
+              { label: "Téléphone",            sub: profile.phone || "Non renseigné",             href: "/dashboard/seller/settings/profile" },
+              { label: "Paiements & retraits", sub: "MonCash · compte bancaire",                  href: "/dashboard/seller/settings/payment" },
+              { label: "Notifications",        sub: "SMS, email, application",                    href: "/dashboard/seller/settings/notifications" },
+              { label: "Langue",               sub: "Français · Kreyòl · English · Español",      href: "/dashboard/seller/settings/language" },
             ].map((item, i, arr) => (
               <Link
                 key={item.label}
@@ -554,7 +484,7 @@ export default async function SellerDashboardPage() {
           </div>
         </div>
 
-        {/* ══════════ ZONE SENSIBLE ══════════ */}
+        {/* ZONE SENSIBLE */}
         <div>
           <p className="text-base font-semibold text-[#d2162c] mb-3">Zone sensible</p>
           <div className="space-y-2">
@@ -568,7 +498,6 @@ export default async function SellerDashboardPage() {
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d2162c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </Link>
-
             <Link href="/dashboard/seller/settings/transfer" className="flex items-center gap-3 p-3.5 bg-[#fdf0f1] border border-[#f5b8be] rounded-2xl hover:bg-[#fce8ea] transition">
               <div className="w-9 h-9 rounded-xl bg-[#fdf0f1] flex items-center justify-center shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#d2162c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -579,7 +508,6 @@ export default async function SellerDashboardPage() {
               </div>
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#d2162c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </Link>
-
             <Link href="/dashboard/seller/settings/delete" className="flex items-center gap-3 p-3.5 bg-[#fdf0f1] border border-[#f5b8be] rounded-2xl hover:bg-[#fce8ea] transition">
               <div className="w-9 h-9 rounded-xl bg-[#fdf0f1] flex items-center justify-center shrink-0">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#d2162c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
@@ -593,7 +521,7 @@ export default async function SellerDashboardPage() {
           </div>
         </div>
 
-        {/* ══════════ FOOTER SIMPLIFIÉ (dashboard) ══════════ */}
+        {/* FOOTER */}
         <footer className="bg-[#081c37] rounded-2xl px-5 py-4 mt-4">
           <div className="flex flex-wrap gap-x-5 gap-y-2 mb-3">
             {[
