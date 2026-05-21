@@ -3,19 +3,16 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const SELLER_ROLES = ["seller_individual", "seller_business", "official_brand"];
-
 const ROLE_LABELS: Record<string, string> = {
   seller_individual: "Vendeur particulier",
   seller_business:   "Vendeur Business",
   official_brand:    "Marque officielle",
 };
-
 const PLAN_LIMITS: Record<string, { maxStores: number; maxArticlesPerStore: number }> = {
   seller_individual: { maxStores: 1,  maxArticlesPerStore: 50    },
   seller_business:   { maxStores: 2,  maxArticlesPerStore: 500   },
   official_brand:    { maxStores: 10, maxArticlesPerStore: 10000 },
 };
-
 const ROLE_PLAN_KEY: Record<string, string> = {
   seller_individual: "Gratuit",
   seller_business:   "Business",
@@ -28,7 +25,6 @@ function formatHTG(value: number) {
 
 export default async function SellerDashboardPage() {
   const supabase = await createSupabaseServerClient();
-
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) redirect("/login?next=/dashboard/seller");
 
@@ -50,7 +46,6 @@ export default async function SellerDashboardPage() {
   const planName    = ROLE_PLAN_KEY[role];
   const limits      = PLAN_LIMITS[role];
 
-  // ── Stores ──
   const { data: stores } = await supabase
     .from("stores")
     .select("id, slug, name, is_verified, logo_url, category, legal_doc_url, created_at")
@@ -60,7 +55,6 @@ export default async function SellerDashboardPage() {
   const storeCount        = stores?.length ?? 0;
   const storeLimitReached = storeCount >= limits.maxStores;
 
-  // ── Commandes ──
   const { data: allOrders } = await supabase
     .from("orders")
     .select("id, status, total_price, created_at, store_id")
@@ -73,7 +67,6 @@ export default async function SellerDashboardPage() {
     ?.filter(o => o.status === "completed")
     .reduce((s, o) => s + (o.total_price ?? 0), 0) ?? 0;
 
-  // ── Stats par store ──
   const storeProductCounts: Record<string, number> = {};
   const storeRevenues:      Record<string, number> = {};
   const storeOrderCounts:   Record<string, number> = {};
@@ -102,30 +95,131 @@ export default async function SellerDashboardPage() {
   const bestStore  = sortedByRev[0];
   const worstStore = sortedByRev[sortedByRev.length - 1];
 
+  // Icônes SVG réutilisables
+  const SvgGrid = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+    </svg>
+  );
+  const SvgStore = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+    </svg>
+  );
+  const SvgDoc = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/>
+    </svg>
+  );
+  const SvgMoney = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+    </svg>
+  );
+  const SvgChart = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+    </svg>
+  );
+  const SvgCart = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+      <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.73L21 4H6"/>
+    </svg>
+  );
+  const SvgTruck = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+      <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
+    </svg>
+  );
+  const SvgPeople = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+    </svg>
+  );
+  const SvgScreen = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+    </svg>
+  );
+  const SvgGlobe = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 010 20"/>
+    </svg>
+  );
+  const SvgBell = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+    </svg>
+  );
+  const SvgSettings = () => (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>
+    </svg>
+  );
+
+  const navSections = [
+    {
+      title: "Principal",
+      items: [
+        { label: "Vue globale", href: "/dashboard/seller",      active: true,  icon: <SvgGrid /> },
+        { label: "Mes stores",  href: "/dashboard/seller/stores", active: false, icon: <SvgStore /> },
+      ],
+    },
+    {
+      title: "Gestion",
+      items: [
+        { label: "Documents",         href: "/dashboard/seller/documents",    active: false, icon: <SvgDoc />,   badge: totalMissingDocs, badgeRed: true },
+        { label: "Finances globales",  href: "/dashboard/seller/finance",      active: false, icon: <SvgMoney /> },
+        { label: "Analyse & Rapports", href: "/dashboard/seller/analytics",    active: false, icon: <SvgChart /> },
+        { label: "Commandes",          href: "/dashboard/seller/orders",       active: false, icon: <SvgCart />,  badge: pendingOrders, badgeRed: true },
+        { label: "Livraisons",         href: "/dashboard/seller/deliveries",   active: false, icon: <SvgTruck /> },
+      ],
+    },
+    {
+      title: "Croissance",
+      items: [
+        { label: "Accompagnement", href: "/dashboard/seller/support",   active: false, icon: <SvgPeople /> },
+        { label: "Financement",    href: "/dashboard/seller/financing", active: false, icon: <SvgScreen /> },
+        { label: "Partenaires",    href: "/dashboard/seller/partners",  active: false, icon: <SvgGlobe /> },
+      ],
+    },
+    {
+      title: "Compte",
+      items: [
+        { label: "Notifications", href: "/dashboard/seller/notifications", active: false, icon: <SvgBell />,     badge: 5 },
+        { label: "Paramètres",    href: "/dashboard/seller/settings",      active: false, icon: <SvgSettings /> },
+      ],
+    },
+  ];
+
   return (
     <main className="flex h-screen overflow-hidden bg-[#f0f2f5]" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* ══════════ SIDEBAR ══════════ */}
-      <aside className="hidden lg:flex w-[230px] flex-col flex-shrink-0 relative overflow-hidden"
-        style={{ background: "#0a0a0a" }}>
+      <aside className="hidden lg:flex w-[230px] flex-col flex-shrink-0 bg-[#0a0a0a] relative overflow-hidden">
 
-        {/* Logo Mache en fond */}
+        {/* Logo Mache en fond sidebar */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className="absolute inset-0 pointer-events-none z-0"
           style={{
             backgroundImage: "url('/images/logo-haiti-mache-hibiscus.png')",
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "center 72%",
-            backgroundSize: "200px",
-            opacity: 0.08,
+            backgroundPosition: "center 75%",
+            backgroundSize: "180px",
+            opacity: 0.07,
           }}
         />
 
-        {/* Contenu sidebar */}
-        <div className="relative flex flex-col h-full z-10">
+        <div className="relative z-10 flex flex-col h-full">
 
-          {/* Logo texte */}
-          <div className="px-5 py-5 border-b border-white/[0.06]">
+          {/* Logo */}
+          <div className="px-5 py-5 border-b border-white/[0.07]">
             <div className="flex items-center gap-2.5 mb-1">
               <div className="w-7 h-7 bg-[#d2162c] rounded-[7px] flex items-center justify-center flex-shrink-0">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -136,94 +230,44 @@ export default async function SellerDashboardPage() {
               </div>
               <span className="text-[16px] font-extrabold tracking-widest text-white">MACHE</span>
             </div>
-            <p className="text-[10px] text-white/25 ml-[37px] tracking-wider uppercase">Espace vendeur</p>
+            <p className="text-[10px] text-white/30 ml-[37px] tracking-wider uppercase">Espace vendeur</p>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
-
-            <p className="text-[9px] font-bold tracking-[0.12em] uppercase text-white/20 px-3 pt-2 pb-1.5">Principal</p>
-            {[
-              { label: "Vue globale", href: "/dashboard/seller", active: true },
-              { label: "Mes stores",  href: "/dashboard/seller/stores" },
-            ].map(item => (
-              <Link key={item.label} href={item.href}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all ${
-                  item.active
-                    ? "bg-[#d2162c] text-white"
-                    : "text-white/50 hover:bg-white/[0.07] hover:text-white/90"
-                }`}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  {item.active
-                    ? <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>
-                    : <><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></>
-                  }
-                </svg>
-                {item.label}
-              </Link>
-            ))}
-
-            <p className="text-[9px] font-bold tracking-[0.12em] uppercase text-white/20 px-3 pt-3 pb-1.5">Gestion</p>
-            {[
-              { label: "Documents",        href: "/dashboard/seller/documents",    badge: totalMissingDocs, badgeRed: true },
-              { label: "Finances globales", href: "/dashboard/seller/finance" },
-              { label: "Analyse & Rapports", href: "/dashboard/seller/analytics" },
-              { label: "Commandes",         href: "/dashboard/seller/orders",      badge: pendingOrders, badgeRed: true },
-              { label: "Livraisons",         href: "/dashboard/seller/deliveries" },
-            ].map(item => (
-              <Link key={item.label} href={item.href}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-white/50 hover:bg-white/[0.07] hover:text-white/90 transition-all">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="7" height="7" rx="1"/>
-                </svg>
-                <span className="flex-1">{item.label}</span>
-                {item.badge !== undefined && item.badge > 0 && (
-                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
-                    item.badgeRed ? "bg-[#d2162c] text-white" : "bg-white/10 text-white/60"
-                  }`}>{item.badge}</span>
-                )}
-              </Link>
-            ))}
-
-            <p className="text-[9px] font-bold tracking-[0.12em] uppercase text-white/20 px-3 pt-3 pb-1.5">Croissance</p>
-            {[
-              { label: "Accompagnement", href: "/dashboard/seller/support"  },
-              { label: "Financement",    href: "/dashboard/seller/financing" },
-              { label: "Partenaires",    href: "/dashboard/seller/partners"  },
-            ].map(item => (
-              <Link key={item.label} href={item.href}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-white/50 hover:bg-white/[0.07] hover:text-white/90 transition-all">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5"/>
-                </svg>
-                {item.label}
-              </Link>
-            ))}
-
-            <p className="text-[9px] font-bold tracking-[0.12em] uppercase text-white/20 px-3 pt-3 pb-1.5">Compte</p>
-            {[
-              { label: "Notifications", href: "/dashboard/seller/notifications", badge: 5 },
-              { label: "Paramètres",    href: "/dashboard/seller/settings" },
-            ].map(item => (
-              <Link key={item.label} href={item.href}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium text-white/50 hover:bg-white/[0.07] hover:text-white/90 transition-all">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-                <span className="flex-1">{item.label}</span>
-                {item.badge && item.badge > 0 && (
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-white/10 text-white/60 leading-none">{item.badge}</span>
-                )}
-              </Link>
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto py-2 px-2">
+            {navSections.map(section => (
+              <div key={section.title}>
+                <p className="text-[9px] font-bold tracking-[0.14em] uppercase text-white/25 px-3 pt-4 pb-1.5">
+                  {section.title}
+                </p>
+                {section.items.map(item => (
+                  <Link key={item.label} href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all mb-0.5 ${
+                      item.active
+                        ? "bg-[#d2162c] text-white"
+                        : "text-white/70 hover:bg-white/[0.08] hover:text-white"
+                    }`}>
+                    <span className={item.active ? "text-white" : "text-white/50"}>
+                      {item.icon}
+                    </span>
+                    <span className="flex-1">{item.label}</span>
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
+                        item.badgeRed ? "bg-[#d2162c] text-white" : "bg-white/15 text-white/70"
+                      }`}>{item.badge}</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
             ))}
           </nav>
 
           {/* Aide */}
-          <div className="mx-3 mb-2.5 bg-white/[0.04] border border-white/[0.06] rounded-xl p-4">
+          <div className="mx-3 mb-2.5 bg-white/[0.05] border border-white/[0.07] rounded-xl p-4">
             <p className="text-[13px] font-semibold text-white mb-1">Besoin d'aide ?</p>
-            <p className="text-[11px] text-white/30 mb-3">Contactez un conseiller Mache.</p>
+            <p className="text-[11px] text-white/35 mb-3">Contactez un conseiller Mache.</p>
             <Link href="/dashboard/seller/support"
-              className="flex items-center justify-center gap-2 w-full bg-white/[0.07] border border-white/[0.09] text-white/65 hover:text-white rounded-lg py-2 text-[12px] font-medium transition">
+              className="flex items-center justify-center gap-2 w-full bg-white/[0.08] border border-white/[0.1] text-white/70 hover:text-white rounded-lg py-2 text-[12px] font-semibold transition">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 13a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 2.24h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
               </svg>
@@ -235,7 +279,7 @@ export default async function SellerDashboardPage() {
           <div className="px-3 pb-4">
             <form action="/auth/signout" method="post">
               <button type="submit"
-                className="flex items-center justify-center gap-2 w-full bg-red-500/[0.08] text-red-400 border border-red-400/20 rounded-lg py-2 text-[12px] font-medium hover:bg-red-500/[0.15] transition">
+                className="flex items-center justify-center gap-2 w-full bg-red-500/[0.08] text-red-400 border border-red-400/20 rounded-lg py-2 text-[12px] font-semibold hover:bg-red-500/[0.15] transition">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
                   <polyline points="16 17 21 12 16 7"/>
@@ -245,477 +289,474 @@ export default async function SellerDashboardPage() {
               </button>
             </form>
           </div>
-
         </div>
       </aside>
 
       {/* ══════════ MAIN ══════════ */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
 
-        {/* Topbar */}
-        <header className="bg-white border-b border-gray-200 h-[54px] flex items-center px-6 gap-4 flex-shrink-0">
-          <span className="text-[14px] font-bold text-gray-900">Vue globale</span>
-          <div className="flex-1 max-w-[400px] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[12px] text-gray-400 flex items-center gap-2">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            Rechercher un store, un produit, une commande...
-          </div>
-          <div className="ml-auto flex items-center gap-3">
-            <button className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-lg px-3 py-2 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>
+        {/* Logo Mache en fond de la page principale */}
+        <div
+          className="absolute inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage: "url('/images/logo-haiti-mache-hibiscus.png')",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 40px bottom 40px",
+            backgroundSize: "320px",
+            opacity: 0.04,
+          }}
+        />
+
+        <div className="relative z-10 flex flex-col h-full overflow-hidden">
+
+          {/* Topbar */}
+          <header className="bg-white border-b border-gray-200 h-[54px] flex items-center px-6 gap-4 flex-shrink-0">
+            <span className="text-[14px] font-bold text-gray-900">Vue globale</span>
+            <div className="flex-1 max-w-[400px] bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-[12px] text-gray-400 flex items-center gap-2">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
-              Mode simple
-            </button>
-            <div className="relative w-9 h-9 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                <path d="M13.73 21a2 2 0 01-3.46 0"/>
-              </svg>
-              {pendingOrders > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#d2162c] text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
-                  {pendingOrders}
-                </span>
-              )}
+              Rechercher un store, un produit, une commande...
             </div>
-            <div className="flex items-center gap-2.5 cursor-pointer">
-              <div className="w-8 h-8 rounded-full bg-[#d2162c] flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0">
-                {firstName.charAt(0).toUpperCase()}
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-[13px] font-semibold text-gray-900 leading-tight">{firstName}</p>
-                <p className="text-[11px] text-gray-400 leading-tight">{roleLabel}</p>
-              </div>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="6 9 12 15 18 9"/>
-              </svg>
-            </div>
-          </div>
-        </header>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
-
-          {/* ── Header + Revenus ── */}
-          <div className="flex items-start gap-5">
-            <div className="flex-1">
-              <h1 className="text-[24px] font-extrabold text-gray-900 tracking-tight leading-tight">
-                Bonjour, {firstName}
-              </h1>
-              <p className="text-[13px] text-gray-500 mt-1">
-                Voici la vue d'ensemble de votre activité sur MACHE.
-              </p>
-              <div className="flex items-center gap-6 mt-5">
-                {[
-                  { label: "Stores actifs",      value: storeCount,    bg: "#eff6ff", color: "#1d4ed8" },
-                  { label: "Produits au total",  value: totalProducts, bg: "#f0fdf4", color: "#15803d" },
-                  { label: "Commandes en cours", value: totalOrders,   bg: "#fffbeb", color: "#b45309" },
-                ].map(s => (
-                  <div key={s.label} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: s.bg }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={s.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-[22px] font-extrabold text-gray-900 leading-none">{s.value}</p>
-                      <p className="text-[11px] text-gray-400 mt-0.5">{s.label}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Revenus card */}
-            <div className="bg-[#0a0a0a] rounded-2xl px-6 py-5 text-white min-w-[280px] flex-shrink-0 relative overflow-hidden">
-              <div className="absolute -right-8 -bottom-8 w-36 h-36 rounded-full border-2 border-white/[0.03]" />
-              <div className="absolute -right-2 -bottom-2 w-20 h-20 rounded-full border-2 border-white/[0.03]" />
-              <p className="text-[10px] font-semibold tracking-widest uppercase text-white/35 mb-2">
-                Revenus estimés (ce mois)
-              </p>
-              <div className="flex items-center gap-3 mb-1">
-                <p className="text-[20px] font-extrabold tracking-tight">{formatHTG(monthRevenue)}</p>
-                <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-full">
-                  +18.6%
-                </span>
-              </div>
-              <p className="text-[11px] text-white/25 mb-4">vs mois dernier</p>
-              <div className="flex justify-end">
-                <Link href="/dashboard/seller/finance"
-                  className="text-[12px] font-semibold text-[#d2162c]/80 hover:text-[#d2162c] transition">
-                  Voir le rapport →
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Mes stores ── */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[15px] font-bold text-gray-900">Mes stores</p>
-              <Link href="/dashboard/seller/stores"
-                className="text-[12px] font-semibold text-[#d2162c] hover:underline">
-                Voir tous mes stores →
-              </Link>
-            </div>
-            <div className="flex gap-3">
-              {stores?.map(store => {
-                const rev      = storeRevenues[store.id] ?? 0;
-                const orders   = storeOrderCounts[store.id] ?? 0;
-                const products = storeProductCounts[store.id] ?? 0;
-                const lowStock = Math.max(0, Math.round(products * 0.12));
-                const initials = store.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
-                return (
-                  <div key={store.id} className="flex-1 bg-white border border-gray-200 rounded-xl overflow-hidden min-w-0">
-                    <div className="h-[82px] bg-gradient-to-br from-[#0a0a0a] via-[#111827] to-[#1e3a5f] flex items-end px-3 pb-2.5">
-                      <div className="w-10 h-10 rounded-full border-2 border-white bg-[#d2162c] flex items-center justify-center text-[11px] font-extrabold text-white flex-shrink-0">
-                        {store.logo_url
-                          ? <img src={store.logo_url} alt={store.name} className="w-full h-full rounded-full object-cover" />
-                          : initials}
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <div className="flex items-start justify-between gap-2 mb-2.5">
-                        <div className="min-w-0">
-                          <p className="text-[13px] font-bold text-gray-900 truncate">{store.name}</p>
-                          <p className="text-[10px] text-gray-400 truncate">mache.ht/store/{store.slug}</p>
-                        </div>
-                        <span className={`text-[9px] font-bold px-2 py-1 rounded-full flex-shrink-0 ${
-                          store.is_verified
-                            ? "bg-green-50 text-green-700"
-                            : "bg-amber-50 text-amber-700"
-                        }`}>
-                          {store.is_verified ? "Actif" : "En attente"}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-1.5 mb-3">
-                        <div className="bg-gray-50 rounded-lg p-2 text-center">
-                          <p className="text-[9px] text-gray-400 leading-tight">Ventes</p>
-                          <p className="text-[10px] font-bold text-gray-800 leading-tight mt-0.5">{formatHTG(rev)}</p>
-                        </div>
-                        <div className="bg-gray-50 rounded-lg p-2 text-center">
-                          <p className="text-[9px] text-gray-400 leading-tight">Commandes</p>
-                          <p className="text-[13px] font-extrabold text-gray-800 leading-tight mt-0.5">{orders}</p>
-                        </div>
-                        <div className="bg-gray-50 rounded-lg p-2 text-center">
-                          <p className="text-[9px] text-gray-400 leading-tight">Stock faible</p>
-                          <p className={`text-[13px] font-extrabold leading-tight mt-0.5 ${lowStock > 0 ? "text-red-500" : "text-gray-800"}`}>
-                            {lowStock}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-1.5">
-                        <Link href={`/dashboard/seller/stores/${store.id}`}
-                          className="flex-1 bg-[#0a0a0a] text-white text-center text-[11px] font-bold py-2 rounded-lg hover:bg-gray-800 transition">
-                          Entrer dans le store →
-                        </Link>
-                        <Link href={`/dashboard/seller/stores/${store.id}/settings`}
-                          className="w-8 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-200 transition">
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>
-                          </svg>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {!storeLimitReached && (
-                <Link href="/dashboard/seller/stores/new"
-                  className="flex-1 min-w-[160px] bg-white border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-3 p-5 hover:border-[#d2162c] hover:bg-red-50/40 transition group cursor-pointer text-center">
-                  <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-red-100 transition">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:stroke-[#d2162c]">
-                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-bold text-gray-700 group-hover:text-[#d2162c]">Ajouter un store</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5">
-                      {limits.maxStores - storeCount} emplacement{limits.maxStores - storeCount > 1 ? "s" : ""} restant{limits.maxStores - storeCount > 1 ? "s" : ""}
-                    </p>
-                  </div>
-                  <span className="text-[11px] font-semibold text-gray-600 border border-gray-200 rounded-lg px-3 py-1.5 bg-white">
-                    Créer un store
-                  </span>
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {/* ── Documents + Alertes ── */}
-          <div className="grid grid-cols-3 gap-4">
-
-            {/* Documents entreprise */}
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
-                    <polyline points="13 2 13 9 20 9"/>
-                  </svg>
-                  <p className="text-[12px] font-semibold text-gray-800">Documents de l'entreprise</p>
-                </div>
-                {missingGlobalDocs > 0 && (
-                  <span className="text-[10px] font-bold bg-red-50 text-red-600 px-2 py-0.5 rounded-full">
-                    {missingGlobalDocs} à compléter
+            <div className="ml-auto flex items-center gap-3">
+              <button className="flex items-center gap-1.5 bg-white border border-gray-200 rounded-lg px-3 py-2 text-[12px] font-medium text-gray-600 hover:bg-gray-50 transition">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>
+                </svg>
+                Mode simple
+              </button>
+              <div className="relative w-9 h-9 bg-gray-50 border border-gray-200 rounded-lg flex items-center justify-center cursor-pointer">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                </svg>
+                {pendingOrders > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-[#d2162c] text-white text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">
+                    {pendingOrders}
                   </span>
                 )}
               </div>
-              <div className="px-4">
-                {[
-                  { label: "Pièce d'identité",           ok: true,                       date: "12/05/2025" },
-                  { label: "Extrait d'immatriculation",   ok: true,                       date: "12/05/2025" },
-                  { label: "Déclaration fiscale",         ok: false,                      date: "Téléverser" },
-                  { label: "Relevé d'identité bancaire",  ok: true,                       date: "11/05/2025" },
-                  { label: "Contrat marketplace MACHE",   ok: true,                       date: "10/05/2025" },
-                  { label: "Adresse personnelle",         ok: !!profile.address_verified, date: profile.address_verified ? "Confirmée" : "À vérifier" },
-                ].map(doc => (
-                  <div key={doc.label} className="flex items-center gap-2.5 py-2.5 border-b border-gray-50 last:border-0">
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${doc.ok ? "bg-green-100" : "bg-amber-100"}`}>
-                      {doc.ok
-                        ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                      }
-                    </div>
-                    <span className="flex-1 text-[11px] font-medium text-gray-700">{doc.label}</span>
-                    <span className={`text-[10px] font-semibold ${doc.ok ? "text-green-600" : "text-amber-600"}`}>
-                      {doc.ok ? "Validé" : doc.date}
-                    </span>
-                  </div>
-                ))}
+              <div className="flex items-center gap-2.5 cursor-pointer">
+                <div className="w-8 h-8 rounded-full bg-[#d2162c] flex items-center justify-center text-[12px] font-bold text-white flex-shrink-0">
+                  {firstName.charAt(0).toUpperCase()}
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-[13px] font-semibold text-gray-900 leading-tight">{firstName}</p>
+                  <p className="text-[11px] text-gray-400 leading-tight">{roleLabel}</p>
+                </div>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
               </div>
-              <div className="px-4 py-2.5 border-t border-gray-100 text-center">
-                <Link href="/dashboard/seller/documents" className="text-[11px] font-semibold text-[#d2162c] hover:underline">
-                  Voir tous les documents →
-                </Link>
+            </div>
+          </header>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+
+            {/* ── Header + Revenus ── */}
+            <div className="flex items-start gap-5">
+              <div className="flex-1">
+                <h1 className="text-[26px] font-extrabold text-gray-900 tracking-tight leading-tight">
+                  Bonjour, {firstName}
+                </h1>
+                <p className="text-[13px] text-gray-500 mt-1.5">
+                  Voici la vue d'ensemble de votre activité sur MACHE.
+                </p>
+                <div className="flex items-center gap-8 mt-5">
+                  {[
+                    { label: "Stores actifs",      value: storeCount,    bg: "#eff6ff", color: "#1d4ed8",
+                      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> },
+                    { label: "Produits au total",  value: totalProducts, bg: "#f0fdf4", color: "#15803d",
+                      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg> },
+                    { label: "Commandes en cours", value: totalOrders,   bg: "#fffbeb", color: "#b45309",
+                      icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.73L21 4H6"/></svg> },
+                  ].map(s => (
+                    <div key={s.label} className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: s.bg }}>
+                        {s.icon}
+                      </div>
+                      <div>
+                        <p className="text-[24px] font-extrabold text-gray-900 leading-none">{s.value}</p>
+                        <p className="text-[11px] text-gray-400 mt-1">{s.label}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Revenus card */}
+              <div className="bg-[#0a0a0a] rounded-2xl px-6 py-5 text-white min-w-[280px] flex-shrink-0 relative overflow-hidden">
+                <div className="absolute -right-6 -bottom-6 w-32 h-32 rounded-full border border-white/[0.04]" />
+                <div className="absolute right-4 bottom-4 w-16 h-16 rounded-full border border-white/[0.04]" />
+                <p className="text-[10px] font-bold tracking-widest uppercase text-white/35 mb-2">
+                  Revenus estimés (ce mois)
+                </p>
+                <div className="flex items-center gap-3 mb-1.5">
+                  <p className="text-[22px] font-extrabold tracking-tight">{formatHTG(monthRevenue)}</p>
+                  <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                    +18.6%
+                  </span>
+                </div>
+                <p className="text-[11px] text-white/25 mb-4">vs mois dernier</p>
+                <div className="flex justify-end">
+                  <Link href="/dashboard/seller/finance" className="text-[12px] font-bold text-[#d2162c]/80 hover:text-[#d2162c] transition">
+                    Voir le rapport →
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* Documents par store */}
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
-                    <polyline points="13 2 13 9 20 9"/>
-                  </svg>
-                  <p className="text-[12px] font-semibold text-gray-800">Documents par store</p>
-                </div>
-                {missingStoreDocs > 0 && (
-                  <span className="text-[10px] font-bold bg-red-50 text-red-600 px-2 py-0.5 rounded-full">
-                    {missingStoreDocs} à compléter
-                  </span>
-                )}
+            {/* ── Mes stores ── */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[18px] font-extrabold text-gray-900 tracking-tight">Mes stores</h2>
+                <Link href="/dashboard/seller/stores" className="text-[12px] font-semibold text-[#d2162c] hover:underline">
+                  Voir tous mes stores →
+                </Link>
               </div>
-              <div className="px-4 py-1">
+              <div className="flex gap-3">
                 {stores?.map(store => {
-                  const completed = store.legal_doc_url ? 3 : 1;
-                  const total     = 5;
-                  const pct       = Math.round((completed / total) * 100);
-                  const color     = pct >= 60 ? "#22c55e" : pct >= 30 ? "#f59e0b" : "#ef4444";
+                  const rev      = storeRevenues[store.id] ?? 0;
+                  const orders   = storeOrderCounts[store.id] ?? 0;
+                  const products = storeProductCounts[store.id] ?? 0;
+                  const lowStock = Math.max(0, Math.round(products * 0.12));
+                  const initials = store.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
                   return (
-                    <div key={store.id} className="py-3 border-b border-gray-50 last:border-0">
-                      <div className="flex items-center gap-2.5 mb-2">
-                        <div className="w-7 h-7 rounded-full bg-[#0a0a0a] flex items-center justify-center text-[9px] font-extrabold text-white flex-shrink-0">
-                          {store.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
+                    <div key={store.id} className="flex-1 bg-white border border-gray-200 rounded-xl overflow-hidden min-w-0">
+                      <div className="h-[84px] bg-gradient-to-br from-[#0a0a0a] via-[#111827] to-[#1e3a5f] flex items-end px-3 pb-3">
+                        <div className="w-11 h-11 rounded-full border-2 border-white bg-[#d2162c] flex items-center justify-center text-[12px] font-extrabold text-white flex-shrink-0">
+                          {store.logo_url
+                            ? <img src={store.logo_url} alt={store.name} className="w-full h-full rounded-full object-cover" />
+                            : initials}
                         </div>
-                        <div className="flex-1 flex items-center justify-between">
-                          <span className="text-[12px] font-semibold text-gray-800">{store.name}</span>
-                          <span className="text-[10px] text-gray-400">{completed} / {total}</span>
-                        </div>
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="9 18 15 12 9 6"/>
-                        </svg>
                       </div>
-                      <div className="h-[5px] bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
+                      <div className="p-3.5">
+                        <div className="flex items-start justify-between gap-2 mb-3">
+                          <div className="min-w-0">
+                            <p className="text-[14px] font-bold text-gray-900 truncate">{store.name}</p>
+                            <p className="text-[10px] text-gray-400 truncate">mache.ht/store/{store.slug}</p>
+                          </div>
+                          <span className={`text-[9px] font-bold px-2 py-1 rounded-full flex-shrink-0 ${
+                            store.is_verified ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"
+                          }`}>
+                            {store.is_verified ? "Actif" : "En attente"}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 mb-3.5">
+                          {[
+                            { label: "Ventes",     value: formatHTG(rev) },
+                            { label: "Commandes",  value: String(orders) },
+                            { label: "Stock bas",  value: String(lowStock), red: lowStock > 0 },
+                          ].map(st => (
+                            <div key={st.label} className="bg-gray-50 rounded-lg p-2 text-center">
+                              <p className="text-[9px] text-gray-400">{st.label}</p>
+                              <p className={`text-[12px] font-extrabold mt-0.5 ${st.red ? "text-red-500" : "text-gray-800"}`}>
+                                {st.value}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          <Link href={`/dashboard/seller/stores/${store.id}`}
+                            className="flex-1 bg-[#0a0a0a] text-white text-center text-[11px] font-bold py-2.5 rounded-lg hover:bg-gray-800 transition">
+                            Entrer dans le store →
+                          </Link>
+                          <Link href={`/dashboard/seller/stores/${store.id}/settings`}
+                            className="w-9 bg-gray-100 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-200 transition">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="3"/>
+                              <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 2v2M12 20v2M2 12h2M20 12h2"/>
+                            </svg>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
-                {(!stores || stores.length === 0) && (
-                  <p className="text-[12px] text-gray-400 text-center py-6">Aucun store créé</p>
+                {!storeLimitReached && (
+                  <Link href="/dashboard/seller/stores/new"
+                    className="flex-1 min-w-[170px] bg-white border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center gap-3 p-5 hover:border-[#d2162c] hover:bg-red-50/40 transition group text-center">
+                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-red-100 transition">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:stroke-[#d2162c]">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-[13px] font-bold text-gray-700 group-hover:text-[#d2162c]">Ajouter un store</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">
+                        {limits.maxStores - storeCount} emplacement{limits.maxStores - storeCount > 1 ? "s" : ""} restant{limits.maxStores - storeCount > 1 ? "s" : ""}
+                      </p>
+                    </div>
+                    <span className="text-[11px] font-semibold text-gray-600 border border-gray-200 rounded-lg px-3 py-1.5 bg-white group-hover:border-[#d2162c] group-hover:text-[#d2162c] transition">
+                      Créer un store
+                    </span>
+                  </Link>
                 )}
               </div>
-              <div className="px-4 py-2.5 border-t border-gray-100 text-center">
-                <Link href="/dashboard/seller/documents" className="text-[11px] font-semibold text-[#d2162c] hover:underline">
-                  Gérer les documents par store →
-                </Link>
-              </div>
             </div>
 
-            {/* Alertes */}
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                  <path d="M13.73 21a2 2 0 01-3.46 0"/>
-                </svg>
-                <p className="text-[12px] font-semibold text-gray-800">Alertes importantes</p>
-              </div>
-              <div className="px-4">
-                {[
-                  { label: `${lowStockCount} produits en stock faible`,  sub: "Répartis sur vos stores",  bg: "#fffbeb", stroke: "#d97706" },
-                  { label: `${missingStoreDocs} documents manquants`,     sub: "Dans vos stores",          bg: "#fef2f2", stroke: "#ef4444" },
-                  { label: `${pendingOrders} commandes urgentes`,         sub: "À traiter rapidement",     bg: "#fef2f2", stroke: "#ef4444" },
-                ].map(alert => (
-                  <div key={alert.label} className="flex items-start gap-3 py-3 border-b border-gray-50 last:border-0">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{ background: alert.bg }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={alert.stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/>
-                        <line x1="12" y1="17" x2="12.01" y2="17"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-[12px] font-semibold text-gray-800">{alert.label}</p>
-                      <p className="text-[11px] text-gray-400">{alert.sub}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="px-4 py-2.5 border-t border-gray-100 text-center">
-                <Link href="/dashboard/seller/alerts" className="text-[11px] font-semibold text-[#d2162c] hover:underline">
-                  Voir toutes les alertes →
-                </Link>
-              </div>
-            </div>
-          </div>
+            {/* ── Documents + Alertes ── */}
+            <div className="grid grid-cols-3 gap-4">
 
-          {/* ── Analyse + Accompagnement + Financement ── */}
-          <div className="grid grid-cols-3 gap-4">
-
-            {/* Analyse */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="20" x2="18" y2="10"/>
-                  <line x1="12" y1="20" x2="12" y2="4"/>
-                  <line x1="6" y1="20" x2="6" y2="14"/>
-                </svg>
-                <p className="text-[13px] font-semibold text-gray-800">Analyse globale de vos stores</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2.5">
-                <div className="bg-green-50 rounded-xl p-3">
-                  <p className="text-[10px] text-gray-500 mb-1.5">Performance globale</p>
-                  <p className="text-[20px] font-extrabold text-green-700 leading-none">+18.6%</p>
-                  <p className="text-[10px] text-green-600 mt-1">vs mois dernier</p>
+              {/* Documents personnels */}
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-100">
+                  <h3 className="text-[14px] font-bold text-gray-900">Documents personnels</h3>
+                  {missingGlobalDocs > 0 && (
+                    <span className="text-[10px] font-bold bg-red-50 text-red-600 px-2.5 py-1 rounded-full">
+                      {missingGlobalDocs} à compléter
+                    </span>
+                  )}
                 </div>
-                <div className="bg-amber-50 rounded-xl p-3">
-                  <p className="text-[10px] text-gray-500 mb-1.5">Store le plus performant</p>
-                  <p className="text-[12px] font-bold text-gray-800">{bestStore?.name ?? "—"}</p>
-                  <p className="text-[10px] text-green-600 mt-1">+24.5%</p>
-                </div>
-                <div className="bg-red-50 rounded-xl p-3">
-                  <p className="text-[10px] text-gray-500 mb-1.5">Store en difficulté</p>
-                  <p className="text-[12px] font-bold text-gray-800">{worstStore?.name ?? "—"}</p>
-                  <p className="text-[10px] text-red-500 mt-1">-8.2%</p>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-[10px] text-gray-500 mb-1.5">Produits à surveiller</p>
-                  <p className="text-[20px] font-extrabold text-gray-800 leading-none">{lowStockCount}</p>
-                  <p className="text-[10px] text-amber-600 mt-1">Stock critique</p>
-                </div>
-              </div>
-              <div className="mt-3 text-center">
-                <Link href="/dashboard/seller/analytics" className="text-[11px] font-semibold text-[#d2162c] hover:underline">
-                  Voir l'analyse complète →
-                </Link>
-              </div>
-            </div>
-
-            {/* Accompagnement */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-                </svg>
-                <p className="text-[13px] font-semibold text-gray-800">Accompagnement & ressources</p>
-              </div>
-              <div className="space-y-2">
-                {[
-                  { label: "Centre d'aide",     sub: "Guides, vidéos et conseils" },
-                  { label: "Formation vendeur", sub: "Booster vos ventes" },
-                  { label: "Assistance vocale", sub: "Écouter et gérer plus facilement" },
-                ].map(item => (
-                  <Link key={item.label} href="/dashboard/seller/support"
-                    className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2.5 hover:bg-gray-100 transition group">
-                    <div>
-                      <p className="text-[12px] font-semibold text-gray-800">{item.label}</p>
-                      <p className="text-[11px] text-gray-400">{item.sub}</p>
+                <div className="px-4">
+                  {[
+                    { label: "Pièce d'identité",           ok: true,                       date: "12/05/2025" },
+                    { label: "Extrait d'immatriculation",   ok: true,                       date: "12/05/2025" },
+                    { label: "Déclaration fiscale",         ok: false,                      action: "Téléverser" },
+                    { label: "Relevé d'identité bancaire",  ok: true,                       date: "11/05/2025" },
+                    { label: "Contrat marketplace MACHE",   ok: true,                       date: "10/05/2025" },
+                    { label: "Adresse personnelle",         ok: !!profile.address_verified, date: profile.address_verified ? "Confirmée" : undefined, action: !profile.address_verified ? "À vérifier" : undefined },
+                  ].map(doc => (
+                    <div key={doc.label} className="flex items-center gap-2.5 py-2.5 border-b border-gray-50 last:border-0">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${doc.ok ? "bg-green-100" : "bg-amber-100"}`}>
+                        {doc.ok
+                          ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                          : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        }
+                      </div>
+                      <span className="flex-1 text-[12px] font-medium text-gray-700">{doc.label}</span>
+                      <span className={`text-[11px] font-semibold ${doc.ok ? "text-green-600" : "text-amber-600"}`}>
+                        {doc.ok ? (doc.date ?? "Validé") : (doc.action ?? "À compléter")}
+                      </span>
                     </div>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:stroke-[#d2162c] transition">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
+                  ))}
+                </div>
+                <div className="px-4 py-3 border-t border-gray-100 text-center">
+                  <Link href="/dashboard/seller/documents" className="text-[12px] font-semibold text-[#d2162c] hover:underline">
+                    Voir tous les documents →
                   </Link>
-                ))}
+                </div>
+              </div>
+
+              {/* Documents par store */}
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-100">
+                  <h3 className="text-[14px] font-bold text-gray-900">Documents par store</h3>
+                  {missingStoreDocs > 0 && (
+                    <span className="text-[10px] font-bold bg-red-50 text-red-600 px-2.5 py-1 rounded-full">
+                      {missingStoreDocs} à compléter
+                    </span>
+                  )}
+                </div>
+                <div className="px-4 py-1">
+                  {stores?.map(store => {
+                    const completed = store.legal_doc_url ? 3 : 1;
+                    const total     = 5;
+                    const pct       = Math.round((completed / total) * 100);
+                    const barColor  = pct >= 60 ? "#22c55e" : pct >= 30 ? "#f59e0b" : "#ef4444";
+                    return (
+                      <div key={store.id} className="py-3.5 border-b border-gray-50 last:border-0">
+                        <div className="flex items-center gap-2.5 mb-2">
+                          <div className="w-7 h-7 rounded-full bg-[#0a0a0a] flex items-center justify-center text-[9px] font-extrabold text-white flex-shrink-0">
+                            {store.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()}
+                          </div>
+                          <div className="flex-1 flex items-center justify-between">
+                            <span className="text-[13px] font-semibold text-gray-800">{store.name}</span>
+                            <span className="text-[11px] text-gray-400">{completed} / {total}</span>
+                          </div>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="9 18 15 12 9 6"/>
+                          </svg>
+                        </div>
+                        <div className="h-[5px] bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: barColor }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {(!stores || stores.length === 0) && (
+                    <p className="text-[12px] text-gray-400 text-center py-8">Aucun store créé</p>
+                  )}
+                </div>
+                <div className="px-4 py-3 border-t border-gray-100 text-center">
+                  <Link href="/dashboard/seller/documents" className="text-[12px] font-semibold text-[#d2162c] hover:underline">
+                    Gérer les documents par store →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Alertes */}
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3.5 border-b border-gray-100">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 01-3.46 0"/>
+                  </svg>
+                  <h3 className="text-[14px] font-bold text-gray-900">Alertes importantes</h3>
+                </div>
+                <div className="px-4">
+                  {[
+                    { label: `${lowStockCount} produits en stock faible`, sub: "Répartis sur vos stores",  bg: "#fffbeb", stroke: "#d97706" },
+                    { label: `${missingStoreDocs} documents manquants`,    sub: "Dans vos stores",          bg: "#fef2f2", stroke: "#ef4444" },
+                    { label: `${pendingOrders} commandes urgentes`,        sub: "À traiter rapidement",     bg: "#fef2f2", stroke: "#ef4444" },
+                  ].map(alert => (
+                    <div key={alert.label} className="flex items-start gap-3 py-3.5 border-b border-gray-50 last:border-0">
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: alert.bg }}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={alert.stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                          <line x1="12" y1="9" x2="12" y2="13"/>
+                          <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-semibold text-gray-800">{alert.label}</p>
+                        <p className="text-[11px] text-gray-400 mt-0.5">{alert.sub}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-4 py-3 border-t border-gray-100 text-center">
+                  <Link href="/dashboard/seller/alerts" className="text-[12px] font-semibold text-[#d2162c] hover:underline">
+                    Voir toutes les alertes →
+                  </Link>
+                </div>
               </div>
             </div>
 
-            {/* Financement */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-1.5">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2"/>
-                  <line x1="8" y1="21" x2="16" y2="21"/>
-                  <line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-                <p className="text-[13px] font-semibold text-gray-800">Financement & croissance</p>
-              </div>
-              <p className="text-[11px] text-gray-400 mb-4">Développez votre activité avec nos partenaires.</p>
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                {[
-                  { label: "Financement",    sub: "Obtenez des fonds",     bg: "#eff6ff", color: "#1d4ed8" },
-                  { label: "Fournisseurs",   sub: "Fiables & certifiés",   bg: "#fffbeb", color: "#b45309" },
-                  { label: "Services pro",   sub: "Mktg, compta...",       bg: "#f0fdf4", color: "#15803d" },
-                ].map(item => (
-                  <div key={item.label} className="rounded-xl p-3 text-center" style={{ background: item.bg }}>
-                    <div className="flex justify-center mb-2">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={item.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="12" y1="1" x2="12" y2="23"/>
-                        <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-                      </svg>
-                    </div>
-                    <p className="text-[10px] font-bold text-gray-700">{item.label}</p>
-                    <p className="text-[9px] text-gray-400">{item.sub}</p>
+            {/* ── Analyse + Accompagnement + Financement ── */}
+            <div className="grid grid-cols-3 gap-4">
+
+              {/* Analyse */}
+              <div className="bg-white border border-gray-200 rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                  <h3 className="text-[14px] font-bold text-gray-900">Analyse globale de vos stores</h3>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-green-50 rounded-xl p-3.5">
+                    <p className="text-[10px] text-gray-500 mb-1.5">Performance globale</p>
+                    <p className="text-[22px] font-extrabold text-green-700 leading-none">+18.6%</p>
+                    <p className="text-[11px] text-green-600 mt-1.5">vs mois dernier</p>
                   </div>
-                ))}
+                  <div className="bg-amber-50 rounded-xl p-3.5">
+                    <p className="text-[10px] text-gray-500 mb-1.5">Store le plus performant</p>
+                    <p className="text-[13px] font-bold text-gray-800">{bestStore?.name ?? "—"}</p>
+                    <p className="text-[11px] text-green-600 mt-1.5">+24.5%</p>
+                  </div>
+                  <div className="bg-red-50 rounded-xl p-3.5">
+                    <p className="text-[10px] text-gray-500 mb-1.5">Store en difficulté</p>
+                    <p className="text-[13px] font-bold text-gray-800">{worstStore?.name ?? "—"}</p>
+                    <p className="text-[11px] text-red-500 mt-1.5">-8.2%</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-xl p-3.5">
+                    <p className="text-[10px] text-gray-500 mb-1.5">Produits à surveiller</p>
+                    <p className="text-[22px] font-extrabold text-gray-800 leading-none">{lowStockCount}</p>
+                    <p className="text-[11px] text-amber-600 mt-1.5">Stock critique</p>
+                  </div>
+                </div>
+                <div className="mt-4 text-center">
+                  <Link href="/dashboard/seller/analytics" className="text-[12px] font-semibold text-[#d2162c] hover:underline">
+                    Voir l'analyse complète →
+                  </Link>
+                </div>
               </div>
-              <Link href="/dashboard/seller/financing"
-                className="block w-full bg-[#0a0a0a] text-white text-center text-[12px] font-bold py-2.5 rounded-xl hover:bg-gray-800 transition">
-                Voir les offres disponibles →
+
+              {/* Accompagnement */}
+              <div className="bg-white border border-gray-200 rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                  </svg>
+                  <h3 className="text-[14px] font-bold text-gray-900">Accompagnement & ressources</h3>
+                </div>
+                <div className="space-y-2.5">
+                  {[
+                    { label: "Centre d'aide",     sub: "Guides, vidéos et conseils",        icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> },
+                    { label: "Formation vendeur", sub: "Apprendre à booster vos ventes",    icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> },
+                    { label: "Assistance vocale", sub: "Écouter et gérer plus facilement",  icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> },
+                  ].map(item => (
+                    <Link key={item.label} href="/dashboard/seller/support"
+                      className="flex items-center justify-between bg-gray-50 rounded-xl px-3.5 py-3 hover:bg-gray-100 transition group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-white rounded-lg border border-gray-200 flex items-center justify-center flex-shrink-0 group-hover:border-[#d2162c]/30 transition">
+                          {item.icon}
+                        </div>
+                        <div>
+                          <p className="text-[12px] font-semibold text-gray-800">{item.label}</p>
+                          <p className="text-[11px] text-gray-400">{item.sub}</p>
+                        </div>
+                      </div>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:stroke-[#d2162c] transition flex-shrink-0">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Financement & croissance */}
+              <div className="bg-white border border-gray-200 rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                  </svg>
+                  <h3 className="text-[14px] font-bold text-gray-900">Financement & croissance</h3>
+                </div>
+                <p className="text-[12px] text-gray-400 mb-4">Développez votre activité avec nos partenaires.</p>
+                <div className="grid grid-cols-3 gap-2.5 mb-4">
+                  {[
+                    {
+                      label: "Financement",    sub: "Obtenez des fonds",    bg: "#eff6ff",
+                      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                    },
+                    {
+                      label: "Partenaires stock", sub: "Fournisseurs fiables", bg: "#fffbeb",
+                      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                    },
+                    {
+                      label: "Services pro",   sub: "Marketing, compta",    bg: "#f0fdf4",
+                      icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+                    },
+                  ].map(item => (
+                    <div key={item.label} className="rounded-xl p-3 text-center" style={{ background: item.bg }}>
+                      <div className="flex justify-center mb-2">{item.icon}</div>
+                      <p className="text-[11px] font-bold text-gray-800">{item.label}</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">{item.sub}</p>
+                    </div>
+                  ))}
+                </div>
+                <Link href="/dashboard/seller/financing"
+                  className="block w-full bg-[#0a0a0a] text-white text-center text-[12px] font-bold py-3 rounded-xl hover:bg-gray-800 transition">
+                  Voir les offres disponibles →
+                </Link>
+              </div>
+            </div>
+
+            {/* ── Banner ── */}
+            <div className="rounded-2xl px-6 py-5 flex items-center justify-between gap-6"
+              style={{ background: "linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%)" }}>
+              <div>
+                <p className="text-[16px] font-extrabold text-white mb-1.5">
+                  Besoin d'un accompagnement personnalisé ?
+                </p>
+                <p className="text-[13px] text-white/70">
+                  Nos experts MACHE sont là pour vous aider à faire grandir votre business.
+                </p>
+              </div>
+              <Link href="/dashboard/seller/support"
+                className="flex-shrink-0 flex items-center gap-2.5 bg-white/15 hover:bg-white/25 border border-white/25 text-white px-6 py-3 rounded-xl text-[13px] font-bold transition whitespace-nowrap">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 13a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 2.24h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                </svg>
+                Parler à un conseiller
               </Link>
             </div>
-          </div>
 
-          {/* ── Banner accompagnement ── */}
-          <div className="rounded-2xl px-6 py-5 flex items-center justify-between gap-6"
-            style={{ background: "linear-gradient(135deg, #6366f1, #a855f7, #ec4899)" }}>
-            <div>
-              <p className="text-[15px] font-extrabold text-white mb-1">
-                Besoin d'un accompagnement personnalisé ?
-              </p>
-              <p className="text-[12px] text-white/70">
-                Nos experts MACHE sont là pour vous aider à faire grandir votre business.
-              </p>
-            </div>
-            <Link href="/dashboard/seller/support"
-              className="flex-shrink-0 flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/20 text-white px-5 py-2.5 rounded-xl text-[13px] font-bold transition whitespace-nowrap">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 014.69 13a19.79 19.79 0 01-3.07-8.67A2 2 0 013.6 2.24h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-              </svg>
-              Parler à un conseiller
-            </Link>
           </div>
-
         </div>
       </div>
     </main>
