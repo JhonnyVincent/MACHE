@@ -253,7 +253,7 @@ export default async function SellerDashboardPage() {
                     <span className="flex-1">{item.label}</span>
                     {item.badge !== undefined && item.badge > 0 && (
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none ${
-                        item.badgeRed ? "bg-[#d2162c] text-white" : "bg-white/15 text-white/70"
+                        (item as any).badgeRed ? "bg-[#d2162c] text-white" : "bg-white/15 text-white/70"
                       }`}>{item.badge}</span>
                     )}
                   </Link>
