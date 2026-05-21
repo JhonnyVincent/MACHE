@@ -285,7 +285,7 @@ export default async function StoreDashboardPage({
                       key={item.label}
                       href={item.href}
                       className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold transition ${
-                        item.active
+                        "active" in item && item.active
                           ? "bg-[#e31837] text-white shadow-lg shadow-red-900/20"
                           : "text-white/80 hover:bg-white/10 hover:text-white"
                       }`}
@@ -297,7 +297,7 @@ export default async function StoreDashboardPage({
                         {item.label}
                       </span>
 
-                      {item.badge ? (
+                      {"badge" in item && item.badge ? (
                         <span className="rounded-full bg-[#e31837] px-2 py-1 text-[11px] text-white">
                           {item.badge}
                         </span>
