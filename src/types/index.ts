@@ -1,9 +1,28 @@
+/*
+  FICHIER : Types globaux MACHÉ
+
+  Sert à :
+  - Définir les types principaux utilisés dans tout le projet
+  - Éviter les erreurs TypeScript
+  - Garder une structure propre pour UserRole, Product, AgentProfile, etc.
+  - Permettre au site de comprendre les produits venant :
+    1. de l’ancien système avec "images"
+    2. du nouveau système Supabase avec "image_urls"
+
+  Important :
+  - "images" = ancien format utilisé dans mock-data
+  - "image_urls" = nouveau format Supabase pour plusieurs images produit
+*/
+
 export type UserRole =
   | "buyer"
   | "seller_individual"
   | "seller_business"
+  | "supplier"
+  | "official_brand"
   | "agent"
-  | "admin";
+  | "admin"
+  | "super_admin";
 
 export type ProductStatus =
   | "draft"
@@ -34,7 +53,13 @@ export interface Product {
   compareAtPrice?: number;
   currency: string;
   stock: number;
+
+  // Ancien système : utilisé par les produits mock/local
   images: string[];
+
+  // Nouveau système : utilisé par Supabase pour plusieurs images produit
+  image_urls?: string[];
+
   vendorName: string;
   category: string;
   description: string;
@@ -42,9 +67,9 @@ export interface Product {
   reviewCount: number;
   status: ProductStatus;
 
-  // 🔥 NOUVEAU (important pour ton système)
-  featured?: boolean;        // produit prioritaire interne
-  isSponsored?: boolean;     // produit publicité
+  // Produit prioritaire / sponsorisé
+  featured?: boolean;
+  isSponsored?: boolean;
 
   variants?: Array<{ id: string; name: string; value: string }>;
 }
