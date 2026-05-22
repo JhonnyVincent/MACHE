@@ -154,9 +154,9 @@ export default async function StoreProductsPage({
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-4">
                         <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-gray-100">
-                          {product.image_url ? (
+                          {product.image_urls?.[0] ? (
                             <img
-                              src={product.image_url}
+                              src={product.image_urls[0]}
                               alt={product.title}
                               className="h-full w-full object-cover"
                             />
