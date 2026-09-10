@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const supabase = createSupabaseBrowserClient();
+
+  // Le client Supabase est créé à la demande, jamais pendant le rendu :
+  // sinon le prerender du build échoue (aucune variable NEXT_PUBLIC_*
+  // disponible) et l'objet recréé à chaque rendu relance l'effet en boucle.
+  const getSupabase = useCallback(() => createSupabaseBrowserClient(), []);
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,22 +19,37 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function checkSession() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      try {
+        const {
+          data: { session },
+        } = await getSupabase().auth.getSession();
 
-      if (!session) {
+        if (cancelled) return;
+
+        if (!session) {
+          setMessage(
+            "Session de réinitialisation introuvable. Redemandez un nouveau lien."
+          );
+        }
+      } catch (error) {
+        if (cancelled) return;
         setMessage(
-          "Session de réinitialisation introuvable. Redemandez un nouveau lien."
+          error instanceof Error ? error.message : "Erreur de configuration."
         );
+      } finally {
+        if (!cancelled) setReady(true);
       }
-
-      setReady(true);
     }
 
     checkSession();
-  }, [supabase]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [getSupabase]);
 
   async function handleResetPassword(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -53,7 +72,7 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
 
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await getSupabase().auth.updateUser({
       password,
     });
 

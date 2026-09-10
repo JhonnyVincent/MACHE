@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import {
+  getSupabaseCredentials,
+  missingSupabaseEnvMessage
+} from "@/lib/supabase/env";
 
 type CookieToSet = {
   name: string;
@@ -9,6 +13,8 @@ type CookieToSet = {
 
 const locales = ["fr", "en", "es", "ar", "ht"];
 const defaultLocale = "fr";
+
+let warnedAboutMissingEnv = false;
 
 function detectLocale(request: NextRequest) {
   const savedLocale = request.cookies.get("mache_locale")?.value;
@@ -39,14 +45,22 @@ export async function middleware(request: NextRequest) {
     sameSite: "lax"
   });
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const credentials = getSupabaseCredentials();
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!credentials) {
+    // Sans session rafraîchie ici, auth.getUser() renvoie null dans les
+    // Server Components : les pages protégées renvoient vers /login, qui
+    // renvoie vers le dashboard -> boucle de redirection. On le signale
+    // au lieu de sortir en silence.
+    if (!warnedAboutMissingEnv) {
+      warnedAboutMissingEnv = true;
+      console.warn(`[middleware] ${missingSupabaseEnvMessage("middleware")}`);
+    }
+
     return response;
   }
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+  const supabase = createServerClient(credentials.url, credentials.key, {
     cookies: {
       getAll() {
         return request.cookies.getAll();

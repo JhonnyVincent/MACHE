@@ -168,7 +168,7 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(233, 30, 58, 0.12);
 }
 
-header {
+header:not([data-chrome="app"]) {
   box-shadow: 0 2px 18px rgba(16, 24, 32, 0.06);
 }
 
@@ -192,26 +192,32 @@ header .border-t a:hover {
   transform: translateY(-1px);
 }
 
-aside {
+/*
+  Ces règles visent la sidebar claire du site public.
+  Elles sont exclues des sidebars sombres des dashboards
+  (aside[data-chrome="dark"]) : le fond rose en !important repeignait
+  les liens de la sidebar noire au survol.
+*/
+aside:not([data-chrome="dark"]) {
   background:
     radial-gradient(circle at top left, rgba(233, 30, 58, 0.14), transparent 34%),
     #ffffff;
 }
 
-aside a {
+aside:not([data-chrome="dark"]) a {
   font-weight: 750;
   color: var(--mache-text);
   border: 1px solid transparent;
 }
 
-aside a:hover {
+aside:not([data-chrome="dark"]) a:hover {
   transform: translateX(6px) scale(1.02);
   background: var(--mache-primary-soft) !important;
   color: var(--mache-primary);
   border-color: rgba(233, 30, 58, 0.18);
 }
 
-aside a:active {
+aside:not([data-chrome="dark"]) a:active {
   transform: scale(0.98);
 }
 
@@ -673,4 +679,30 @@ aside a:active {
 
 .mache-ticker:hover {
   animation-play-state: paused;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Dashboard
+   --------------------------------------------------------------------------- */
+
+/* Chiffres à chasse fixe : les KPI ne "sautent" plus quand ils changent. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Masque les scrollbars de la navigation latérale sans bloquer le scroll. */
+.scrollbar-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.scrollbar-slim::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-slim::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
 }
