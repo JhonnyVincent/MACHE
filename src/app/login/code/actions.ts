@@ -61,7 +61,10 @@ export async function requestCodeAction(formData: FormData) {
       // Cette page sert à se connecter, pas à s'inscrire : une adresse
       // inconnue ne doit pas créer un compte au passage.
       shouldCreateUser: false,
-      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(
+      // `flow=code` marque l'origine : en cas d'échec, le callback renvoie
+      // vers la connexion par code et non vers le formulaire de mot de
+      // passe, que la personne cherchait précisément à éviter.
+      emailRedirectTo: `${origin}/auth/callback?flow=code&next=${encodeURIComponent(
         destination
       )}`,
     },

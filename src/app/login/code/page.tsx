@@ -23,6 +23,10 @@ const errorMessages: Record<string, string> = {
     "Trop de demandes en peu de temps. Patientez une minute avant de redemander un code.",
   code_invalid: "Code incorrect. Vérifiez les 6 chiffres reçus.",
   code_expired: "Ce code a expiré. Demandez-en un nouveau.",
+  link_other_browser:
+    "Le lien reçu ne fonctionne pas depuis votre boîte mail. Redemandez un code ci-dessous : c'est le code à recopier, et non le lien, qui fonctionne partout.",
+  link_expired: "Ce lien a expiré. Redemandez un code ci-dessous.",
+  link_invalid: "Ce lien n'est pas valide. Redemandez un code ci-dessous.",
 };
 
 export default async function LoginWithCodePage({
@@ -38,7 +42,13 @@ export default async function LoginWithCodePage({
   const { error, email, next, sent } = await searchParams;
 
   const message = error ? errorMessages[error] || error : "";
-  const codeSent = sent === "1";
+
+  const linkFailed =
+    error === "link_other_browser" ||
+    error === "link_expired" ||
+    error === "link_invalid";
+
+  const codeSent = sent === "1" && !linkFailed;
 
   return (
     <main className="container-page py-12">
