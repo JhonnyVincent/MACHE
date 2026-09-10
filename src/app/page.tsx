@@ -2,52 +2,47 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { HomePageClient } from "@/components/home-page-client";
-import { featuredProducts } from "@/lib/mock-data";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { fetchProducts, type CatalogProduct } from "@/lib/catalog";
 import { Product } from "@/types";
 
-function mapProduct(row: any): Product {
+/*
+  Le catalogue passe par `lib/catalog`, comme /shop et les fiches produit :
+  une seule requête de référence, sans dépendre de colonnes optionnelles
+  (`featured_priority`, `is_sponsored`, `sales_count`) dont l'absence
+  faisait échouer la requête en silence.
+
+  Le repli sur les produits de démonstration a été retiré. Il donnait
+  l'illusion d'un catalogue fourni, et depuis que la fiche produit lit la
+  base, ces articles fictifs menaient à une page introuvable.
+*/
+function toCardProduct(product: CatalogProduct): Product {
   return {
-    id: row.id,
-    slug: row.id,
-    title: row.title,
-    price: Number(row.price ?? 0),
-    currency: "USD",
-    stock: 99,
-    images: row.image_url ? [row.image_url] : [],
-    vendorName: row.users?.full_name ?? "Vendeur Maché",
-    category: row.category ?? "Catalogue",
-    description: row.description ?? "",
-    rating: 4.8,
-    reviewCount: Number(row.sales_count ?? 0),
-    status: row.status ?? "active",
-    featured: Number(row.featured_priority ?? 0) > 0,
-    isSponsored: Boolean(row.is_sponsored)
+    id: product.id,
+    slug: product.handle,
+    title: product.title,
+    price: product.price,
+    currency: "HTG",
+    stock: product.stock,
+    images: product.images,
+    vendorName: product.storeName,
+    category: product.category,
+    description: product.description,
+    rating: 0,
+    reviewCount: 0,
+    status: "active",
   };
 }
 
 export default async function HomePage() {
-  let products: Product[] = featuredProducts;
+  let products: Product[] = [];
   let vendors: any[] = [];
 
   try {
+    const { products: catalog } = await fetchProducts({ limit: 24 });
+    products = catalog.map(toCardProduct);
+
     const supabase = await createSupabaseServerClient();
-
-    const { data: productsData, error: productsError } = await supabase
-      .from("products")
-      .select(
-        "id,title,description,price,category,image_url,status,created_at,featured_priority,is_sponsored,sales_count, users:seller_id(full_name)"
-      )
-      .eq("status", "active")
-      .order("featured_priority", { ascending: false })
-      .order("is_sponsored", { ascending: false })
-      .order("sales_count", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(24);
-
-    if (!productsError && productsData && productsData.length > 0) {
-      products = productsData.map(mapProduct);
-    }
 
     const { data: vendorsData, error: vendorsError } = await supabase
       .from("users")

@@ -109,7 +109,20 @@ export function ProductCard({ product }: { product: Product }) {
 
           {/* AJOUT PANIER */}
           <button
-            onClick={() => addToCart(product.id, 1)}
+            onClick={() =>
+              addToCart(
+                {
+                  id: product.id,
+                  handle: product.slug,
+                  title: product.title,
+                  price: product.price,
+                  image: productImage,
+                  storeName: product.vendorName,
+                  stock: product.stock,
+                },
+                1
+              )
+            }
             className="btn-primary flex-1 justify-center"
           >
             Ajouter

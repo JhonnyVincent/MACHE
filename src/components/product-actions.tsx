@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useCart } from "./cart-provider";
+import { useCart, type CartProduct } from "./cart-provider";
 import { useRouter } from "next/navigation";
 
-export function ProductActions({
-  productId
-}: {
-  productId: string;
-}) {
+/*
+  Le composant reçoit l'instantané complet du produit, et non son seul
+  identifiant : le panier conserve le prix et le titre affichés au moment
+  de l'ajout.
+*/
+export function ProductActions({ product }: { product: CartProduct }) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const router = useRouter();
@@ -21,13 +22,15 @@ export function ProductActions({
     setQuantity((prev) => prev + 1);
   }
 
+  const outOfStock = typeof product.stock === "number" && product.stock <= 0;
+
   function add() {
-    addToCart(productId, quantity);
+    addToCart(product, quantity);
   }
 
   function buyNow() {
-    addToCart(productId, quantity);
-    router.push("/checkout/pending");
+    addToCart(product, quantity);
+    router.push("/cart");
   }
 
   return (
@@ -48,15 +51,21 @@ export function ProductActions({
         <span className="text-[13px] text-[var(--mache-muted)]">Quantité</span>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <button onClick={add} className="btn-primary">
-          Ajouter au panier
-        </button>
-        <button onClick={buyNow} className="btn-secondary">
-          Acheter maintenant
-        </button>
-        <button className="btn-secondary">Ajouter à la wishlist</button>
-      </div>
+      {outOfStock ? (
+        <p className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-bg)] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
+          Ce produit est en rupture de stock. Il ne peut pas être commandé
+          pour le moment.
+        </p>
+      ) : (
+        <div className="flex flex-wrap gap-3">
+          <button onClick={add} className="btn-primary">
+            Ajouter au panier
+          </button>
+          <button onClick={buyNow} className="btn-secondary">
+            Acheter maintenant
+          </button>
+        </div>
+      )}
     </div>
   );
 }
