@@ -1,4 +1,5 @@
 import { forgotPasswordAction } from "./actions";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -20,8 +21,14 @@ export default async function ForgotPasswordPage({
 
     const supabase = await createSupabaseServerClient();
 
+    const headersList = await headers();
+    const origin =
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      headersList.get("origin") ||
+      `https://${headersList.get("host")}`;
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password`
+      redirectTo: `${origin}/auth/callback?next=/reset-password`
     });
 
     if (error) {

@@ -2,13 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-const sellerRoles = [
-  "seller_individual",
-  "seller_business",
-  "supplier",
-  "official_brand",
-];
+import { isSellerRole } from "@/lib/authz";
 
 export async function loginAction(formData: FormData) {
   const email = String(formData.get("email") || "").trim().toLowerCase();
@@ -37,11 +31,20 @@ export async function loginAction(formData: FormData) {
     .eq("id", data.user.id)
     .maybeSingle();
 
-  if (!profile || profileError) {
-    redirect("/dashboard/buyer");
+  if (profileError) {
+    console.error("LOGIN PROFILE ERROR:", profileError.message);
   }
 
-  const isSeller = sellerRoles.includes(profile.role);
+  /*
+    Le profil illisible envoyait l'utilisateur dans l'espace acheteur sans
+    rien dire : un vendeur se retrouvait au mauvais endroit sans savoir
+    pourquoi. On délègue à /dashboard, qui sait expliquer ce qui bloque.
+  */
+  if (!profile) {
+    redirect("/dashboard");
+  }
+
+  const isSeller = isSellerRole(profile.role);
 
   if (next === "/dashboard/seller" && isSeller) {
     redirect("/dashboard/seller");

@@ -6,8 +6,32 @@ export type AppRole =
   | "buyer"
   | "seller_individual"
   | "seller_business"
+  | "supplier"
+  | "official_brand"
   | "agent"
   | "partner";
+
+/*
+  Liste de référence des rôles vendeurs.
+
+  Elle était dupliquée dans trois fichiers avec trois contenus différents :
+  login/actions.ts acceptait `supplier`, le dashboard vendeur non, et
+  l'aiguillage /dashboard reconnaissait les rôles contenant "seller" —
+  donc ni `supplier` ni `official_brand`. Selon la page atteinte, un même
+  compte était vendeur ou ne l'était pas.
+*/
+export const SELLER_ROLES = [
+  "seller_individual",
+  "seller_business",
+  "supplier",
+  "official_brand",
+] as const;
+
+export type SellerRole = (typeof SELLER_ROLES)[number];
+
+export function isSellerRole(role?: string | null): role is SellerRole {
+  return (SELLER_ROLES as readonly string[]).includes(String(role || "").trim());
+}
 
 export type AdminPermission =
   | "manage_users"
@@ -36,7 +60,7 @@ export function isAdmin(role?: string | null) {
 }
 
 export function isSeller(role?: string | null) {
-  return role === "seller_individual" || role === "seller_business";
+  return isSellerRole(role);
 }
 
 export function isPartner(role?: string | null) {
@@ -57,7 +81,7 @@ export function canAccessDashboard(role: UserRole | AppRole, dashboardRole: stri
   if (dashboardRole === "buyer") return role === "buyer";
 
   if (dashboardRole === "seller") {
-    return role === "seller_individual" || role === "seller_business";
+    return isSellerRole(role);
   }
 
   if (dashboardRole === "agent") return role === "agent";

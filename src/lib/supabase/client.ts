@@ -1,14 +1,29 @@
 import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseCredentials, missingSupabaseEnvMessage } from "./env";
 
+let browserClient: SupabaseClient | null = null;
+
+/*
+  Client navigateur paresseux (singleton).
+
+  À n'appeler que depuis un effet ou un gestionnaire d'évènement : appelé
+  pendant le rendu, il faisait échouer le prerender de /reset-password au
+  build ("Supabase config manquante côté client") et recréait un client à
+  chaque rendu, ce qui relançait en boucle les effets qui en dépendent.
+*/
 export function createSupabaseBrowserClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Supabase config manquante côté client");
+  if (browserClient) {
+    return browserClient;
   }
 
-  return createBrowserClient(supabaseUrl, supabaseKey);
+  const credentials = getSupabaseCredentials();
+
+  if (!credentials) {
+    throw new Error(missingSupabaseEnvMessage("client"));
+  }
+
+  browserClient = createBrowserClient(credentials.url, credentials.key);
+
+  return browserClient;
 }
