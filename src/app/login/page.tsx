@@ -58,7 +58,25 @@ export default async function LoginPage({
           </div>
         ) : null}
 
-        <form action={loginAction} className="mt-6 space-y-4">
+        {/*
+          Connexion sans mot de passe, mise en avant : elle ne dépend
+          d'aucun lien ni d'aucun stockage de navigateur, donc elle
+          fonctionne même quand l'e-mail est ouvert ailleurs.
+        */}
+        <Link
+          href={`/login/code${next ? `?next=${encodeURIComponent(next)}` : ""}`}
+          className="btn-secondary mt-6 w-full"
+        >
+          Recevoir un code par e-mail
+        </Link>
+
+        <div className="mt-5 flex items-center gap-3 text-xs text-neutral-400">
+          <span className="h-px flex-1 bg-neutral-200" />
+          ou avec un mot de passe
+          <span className="h-px flex-1 bg-neutral-200" />
+        </div>
+
+        <form action={loginAction} className="mt-5 space-y-4">
           <input type="hidden" name="next" value={next || ""} />
 
           <input
