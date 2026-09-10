@@ -4,7 +4,22 @@ import { loginAction } from "./actions";
 const errorMessages: Record<string, string> = {
   missing_fields: "Veuillez remplir tous les champs.",
   invalid_credentials: "Email ou mot de passe incorrect.",
+  link_expired:
+    "Ce lien a expiré ou a déjà été utilisé. Demandez-en un nouveau ci-dessous.",
+  link_invalid:
+    "Ce lien de connexion n'est pas valide. Demandez-en un nouveau ci-dessous.",
+  link_other_browser:
+    "Ce lien doit être ouvert dans le navigateur qui a fait la demande. Demandez-en un nouveau ci-dessous, puis ouvrez-le sur le même appareil.",
+  missing_code: "Lien incomplet. Demandez un nouveau lien ci-dessous.",
 };
+
+// Les erreurs de lien e-mail proposent toutes la même action : en redemander un.
+const linkErrors = new Set([
+  "link_expired",
+  "link_invalid",
+  "link_other_browser",
+  "missing_code",
+]);
 
 export default async function LoginPage({
   searchParams,
@@ -15,6 +30,7 @@ export default async function LoginPage({
 
   const safeError = error ? decodeURIComponent(error) : "";
   const message = errorMessages[safeError] || safeError;
+  const showLinkHelp = linkErrors.has(safeError);
 
   return (
     <main className="container-page py-12">
@@ -29,7 +45,16 @@ export default async function LoginPage({
 
         {message ? (
           <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {message}
+            <p>{message}</p>
+
+            {showLinkHelp ? (
+              <Link
+                href="/forgot-password"
+                className="mt-2 inline-block font-bold underline"
+              >
+                Recevoir un nouveau lien
+              </Link>
+            ) : null}
           </div>
         ) : null}
 

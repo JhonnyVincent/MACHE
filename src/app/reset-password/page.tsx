@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [expired, setExpired] = useState(false);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -30,8 +32,9 @@ export default function ResetPasswordPage() {
         if (cancelled) return;
 
         if (!session) {
+          setExpired(true);
           setMessage(
-            "Session de réinitialisation introuvable. Redemandez un nouveau lien."
+            "Lien de réinitialisation expiré ou déjà utilisé. Demandez-en un nouveau."
           );
         }
       } catch (error) {
@@ -97,13 +100,22 @@ export default function ResetPasswordPage() {
 
         {message ? (
           <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {message}
+            <p>{message}</p>
+
+            {expired ? (
+              <Link
+                href="/forgot-password"
+                className="mt-2 inline-block font-bold underline"
+              >
+                Recevoir un nouveau lien
+              </Link>
+            ) : null}
           </div>
         ) : null}
 
         {!ready ? (
           <p className="mt-6 text-sm text-neutral-500">Chargement...</p>
-        ) : (
+        ) : expired ? null : (
           <form onSubmit={handleResetPassword} className="mt-6 space-y-4">
             <input
               className="input"
