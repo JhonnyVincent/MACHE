@@ -200,51 +200,54 @@ const content = {
   }
 };
 
+/*
+  Rangée de produits.
+
+  Registre d'un site de commerce : le rayon prime sur son titre. L'en-tête
+  tient sur une ligne, la grille descend jusqu'à six colonnes sur grand
+  écran, et l'accroche marketing disparaît — elle poussait les produits
+  sous la ligne de flottaison.
+*/
 function ProductSection({
   badge,
   title,
-  text,
   href,
   products
 }: {
   badge: string;
   title: string;
-  text: string;
+  text?: string;
   href: string;
   products: Product[];
 }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="container-page py-10">
-      <div className="mb-7 flex items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
-            {badge}
-          </p>
-          <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
-            {title}
-          </h2>
-          <p className="mt-3 max-w-2xl text-base text-slate-500">{text}</p>
+    <section className="container-page py-5">
+      <div className="rounded-[12px] border border-[var(--mache-line)] bg-white p-4 md:p-5">
+        <div className="mb-4 flex items-baseline justify-between gap-4 border-b border-[var(--mache-line)] pb-3">
+          <div className="min-w-0">
+            <h2 className="truncate text-[19px] font-[900] tracking-[-0.02em] text-[#071f3d] md:text-[22px]">
+              {title}
+            </h2>
+            <p className="mt-0.5 text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#d20a1e]">
+              {badge}
+            </p>
+          </div>
+
+          <Link
+            href={href}
+            className="shrink-0 whitespace-nowrap text-[13px] font-bold text-[#071f3d] underline-offset-2 hover:text-[#d20a1e] hover:underline"
+          >
+            Voir tout →
+          </Link>
         </div>
 
-        <Link
-          href={href}
-          className="hidden rounded-xl bg-black px-5 py-3 font-black text-white transition-all duration-300 hover:bg-[#d20a1e] md:inline-flex"
-        >
-          Voir plus →
-        </Link>
-      </div>
-
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <div
-            key={product.id}
-            className="transition-all duration-300 hover:-translate-y-2"
-          >
-            <ProductCard product={product} />
-          </div>
-        ))}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -252,40 +255,26 @@ function ProductSection({
 
 function WhyChooseUsSection() {
   return (
-    <section className="bg-white py-14">
-      <div className="container-page">
-        <div className="mb-8 text-center">
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
-            Pourquoi nous choisir
-          </p>
+    <section className="container-page py-5">
+      <div className="rounded-[12px] border border-[var(--mache-line)] bg-white p-4 md:p-5">
+        <h2 className="text-[19px] font-[900] tracking-[-0.02em] text-[#071f3d] md:text-[22px]">
+          Une marketplace pensée pour Haïti
+        </h2>
 
-          <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
-            Une marketplace pensée pour Haïti
-          </h2>
-
-          <p className="mx-auto mt-3 max-w-2xl text-base text-slate-500">
-            Maché connecte les clients, les vendeurs, les agents et les
-            partenaires dans une expérience simple, locale et fiable.
-          </p>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {content.whyChooseUs.map((item) => (
             <div
               key={item.title}
-              className="rounded-3xl border bg-[#f8fafc] p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-[#d20a1e] hover:bg-white hover:shadow-xl"
+              className="flex gap-3 rounded-[10px] border border-[var(--mache-line)] bg-[#fbfbfc] p-3.5"
             >
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff1f1] text-3xl">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] bg-[#fff1f1] text-[18px]">
                 {item.icon}
               </div>
 
-              <h3 className="text-xl font-black text-[#071f3d]">
-                {item.title}
-              </h3>
-
-              <p className="mt-3 text-sm leading-relaxed text-slate-500">
-                {item.text}
-              </p>
+              <div className="min-w-0">
+                <h3 className="text-[13.5px] font-[800] text-[#071f3d]">{item.title}</h3>
+                <p className="mt-1 text-[12px] leading-[1.6] text-slate-500">{item.text}</p>
+              </div>
             </div>
           ))}
         </div>
@@ -296,42 +285,42 @@ function WhyChooseUsSection() {
 
 function VendorCtaSection() {
   return (
-    <section className="container-page py-10">
-      <div className="overflow-hidden rounded-[2rem] bg-[#071f3d] p-8 text-white shadow-xl md:p-12">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+    <section className="container-page py-5">
+      <div className="overflow-hidden rounded-[12px] bg-[#071f3d] px-5 py-6 text-white md:px-8 md:py-7">
+        <div className="grid gap-5 lg:grid-cols-[1.3fr_0.7fr] lg:items-center">
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#ffcc33]">
+            <p className="text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#ffcc33]">
               Rejoindre Maché
             </p>
 
-            <h2 className="mt-3 text-4xl font-black tracking-[-0.03em] md:text-5xl">
+            <h2 className="mt-2 text-[22px] font-[900] tracking-[-0.02em] md:text-[27px]">
               Vendez, représentez ou collaborez avec nous.
             </h2>
 
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-white/75">
+            <p className="mt-2 max-w-2xl text-[13px] leading-[1.7] text-white/70">
               Maché accompagne les vendeurs, les agents et les partenaires qui
               veulent développer le commerce haïtien en ligne.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+          <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
             <Link
               href="/sell"
-              className="rounded-2xl bg-[#d20a1e] px-6 py-4 text-center font-black text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:text-[#071f3d]"
+              className="rounded-[8px] bg-[#d20a1e] px-4 py-2.5 text-center text-[13px] font-bold text-white transition-colors hover:bg-white hover:text-[#071f3d]"
             >
               Devenir vendeur
             </Link>
 
             <Link
               href="/verify-agent"
-              className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-center font-black text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:text-[#071f3d]"
+              className="rounded-[8px] border border-white/20 bg-white/10 px-4 py-2.5 text-center text-[13px] font-bold text-white transition-colors hover:bg-white hover:text-[#071f3d]"
             >
               Vérifier un agent
             </Link>
 
             <Link
               href="/contact"
-              className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-center font-black text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:text-[#071f3d]"
+              className="rounded-[8px] border border-white/20 bg-white/10 px-4 py-2.5 text-center text-[13px] font-bold text-white transition-colors hover:bg-white hover:text-[#071f3d]"
             >
               Devenir partenaire
             </Link>
@@ -344,35 +333,34 @@ function VendorCtaSection() {
 
 function NewsletterSection() {
   return (
-    <section className="container-page py-10">
-      <div className="rounded-[2rem] border bg-white p-8 text-center shadow-sm md:p-12">
-        <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
-          Newsletter
-        </p>
+    <section className="container-page py-5 pb-10">
+      <div className="rounded-[12px] border border-[var(--mache-line)] bg-white p-5 md:p-6">
+        <div className="grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+          <div>
+            <h2 className="text-[18px] font-[900] tracking-[-0.02em] text-[#071f3d]">
+              Recevez les nouveautés et les promotions
+            </h2>
+            <p className="mt-1 text-[13px] text-slate-500">
+              Nouveaux produits, boutiques à découvrir et offres importantes.
+            </p>
+          </div>
 
-        <h2 className="mt-3 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
-          Recevez les nouveautés et promotions
-        </h2>
+          <form className="flex w-full max-w-md gap-2">
+            <input
+              type="email"
+              placeholder="Votre adresse e-mail"
+              aria-label="Votre adresse e-mail"
+              className="h-11 min-w-0 flex-1 rounded-[8px] border border-[var(--mache-line)] px-3.5 text-[13px] outline-none transition-all focus:border-[#d20a1e] focus:ring-4 focus:ring-red-100"
+            />
 
-        <p className="mx-auto mt-3 max-w-2xl text-base text-slate-500">
-          Abonnez-vous pour recevoir les nouveaux produits, les vendeurs à
-          découvrir et les offres importantes.
-        </p>
-
-        <form className="mx-auto mt-7 flex max-w-xl flex-col gap-3 sm:flex-row">
-          <input
-            type="email"
-            placeholder="Votre adresse email"
-            className="min-h-14 flex-1 rounded-xl border px-5 font-semibold outline-none transition-all focus:border-[#d20a1e] focus:ring-4 focus:ring-red-100"
-          />
-
-          <button
-            type="submit"
-            className="min-h-14 rounded-xl bg-[#d20a1e] px-7 font-black text-white transition-all duration-300 hover:bg-black"
-          >
-            S’abonner
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="h-11 shrink-0 rounded-[8px] bg-[#d20a1e] px-5 text-[13px] font-bold text-white transition-colors hover:bg-black"
+            >
+              S’abonner
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   );
@@ -427,20 +415,25 @@ export function HomePageClient({
       className="bg-[#f5f6f8]"
       onClick={() => setShowMoreCategories(false)}
     >
-      <section className="relative overflow-hidden bg-gradient-to-br from-white via-white to-[#fff1f1]">
+      {/*
+        Bandeau d'accueil resserré. Il occupait plus d'un écran de haut avec
+        un titre en 8xl : sur un site de commerce, les produits doivent être
+        visibles sans faire défiler la page.
+      */}
+      <section className="relative overflow-hidden border-b border-[var(--mache-line)] bg-gradient-to-br from-white via-white to-[#fff1f1]">
         <img
           src="/images/logo-haiti-mache-hibiscus.png"
           alt=""
-          className="pointer-events-none absolute -right-32 -top-40 h-[650px] w-[650px] opacity-[0.04]"
+          className="pointer-events-none absolute -right-24 -top-28 h-[420px] w-[420px] opacity-[0.04]"
         />
 
-        <div className="container-page grid min-h-[620px] items-center gap-12 py-14 lg:grid-cols-[1fr_1fr]">
+        <div className="container-page grid items-center gap-8 py-8 md:py-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
-            <p className="mb-5 inline-flex rounded-full bg-[#d20a1e] px-5 py-2 text-sm font-black uppercase tracking-[0.2em] text-white shadow-lg">
+            <p className="mb-3 inline-flex rounded-[4px] bg-[#d20a1e] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-white">
               {slide.badge}
             </p>
 
-            <h1 className="max-w-3xl text-6xl font-black leading-[0.92] tracking-[-0.05em] text-[#071f3d] md:text-8xl">
+            <h1 className="max-w-2xl text-[clamp(28px,4.2vw,46px)] font-[900] leading-[1.05] tracking-[-0.035em] text-[#071f3d]">
               {slide.title.includes("Maché") ? (
                 <>
                   Tout Ayiti.
@@ -453,54 +446,49 @@ export function HomePageClient({
               )}
             </h1>
 
-            <p className="mt-7 max-w-2xl text-xl font-medium leading-relaxed text-[#23344d]">
+            <p className="mt-3.5 max-w-xl text-[14.5px] leading-[1.75] text-[#23344d]">
               {slide.text}
             </p>
 
-            <div className="mt-9 flex flex-wrap gap-4">
+            <div className="mt-5 flex flex-wrap gap-2.5">
               <Link
                 href={slide.href}
-                className="rounded-xl bg-[#d20a1e] px-8 py-4 text-base font-black text-white shadow-xl shadow-red-200 transition-all duration-300 hover:-translate-y-1 hover:bg-black"
+                className="rounded-[8px] bg-[#d20a1e] px-5 py-2.5 text-[13.5px] font-bold text-white transition-colors hover:bg-black"
               >
                 {slide.cta}
               </Link>
 
               <Link
                 href="/shop"
-                className="rounded-xl border border-slate-300 bg-white px-8 py-4 text-base font-black text-[#071f3d] transition-all duration-300 hover:-translate-y-1 hover:border-[#d20a1e] hover:text-[#d20a1e]"
+                className="rounded-[8px] border border-slate-300 bg-white px-5 py-2.5 text-[13.5px] font-bold text-[#071f3d] transition-colors hover:border-[#d20a1e] hover:text-[#d20a1e]"
               >
                 {content.catalogButton}
               </Link>
             </div>
           </div>
 
-          <div className="min-h-[460px]">
+          <div className="min-h-[240px]">
             {slide.type === "haiti" && (
               <img
                 src="/images/carte-haiti-mache.png"
                 alt="Carte d’Haïti Maché"
-                className="mx-auto max-h-[520px] w-full object-contain drop-shadow-2xl"
+                className="mx-auto max-h-[300px] w-full object-contain drop-shadow-xl"
               />
             )}
 
             {slide.type === "products" && (
-              <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 {allProducts.slice(0, 2).map((product) => (
-                  <div
-                    key={product.id}
-                    className="transition-all duration-300 hover:-translate-y-2"
-                  >
-                    <ProductCard product={product} />
-                  </div>
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             )}
 
             {slide.type === "phare" && (
-              <div className="flex min-h-[460px] items-center justify-center rounded-[2rem] bg-[#071f3d] p-10 text-center text-white shadow-xl">
+              <div className="flex min-h-[240px] items-center justify-center rounded-[12px] bg-[#071f3d] p-8 text-center text-white">
                 <div>
-                  <div className="text-7xl font-black">PHARE</div>
-                  <p className="mt-4 text-lg text-white/80">
+                  <div className="text-[44px] font-[900] tracking-[-0.03em]">PHARE</div>
+                  <p className="mt-2 text-[13px] text-white/80">
                     Exportation • Importation • Diaspora • Logistique
                   </p>
                 </div>
@@ -508,10 +496,10 @@ export function HomePageClient({
             )}
 
             {slide.type === "bawon" && (
-              <div className="flex min-h-[460px] items-center justify-center rounded-[2rem] bg-[#d20a1e] p-10 text-center text-white shadow-xl">
+              <div className="flex min-h-[240px] items-center justify-center rounded-[12px] bg-[#d20a1e] p-8 text-center text-white">
                 <div>
-                  <div className="text-7xl font-black">Bawon</div>
-                  <p className="mt-4 text-lg text-white/85">
+                  <div className="text-[44px] font-[900] tracking-[-0.03em]">Bawon</div>
+                  <p className="mt-2 text-[13px] text-white/85">
                     Financement • Investissement • Entreprises
                   </p>
                 </div>
@@ -519,32 +507,29 @@ export function HomePageClient({
             )}
 
             {slide.type === "news" && (
-              <div className="grid gap-4">
+              <div className="grid gap-2.5 sm:grid-cols-2">
                 {[
-                  "Nouveaux vendeurs",
-                  "Dernières promotions",
-                  "Produits populaires",
-                  "Actualités du marché"
-                ].map((item) => (
-                  <div
+                  ["Nouveaux vendeurs", "/shop"],
+                  ["Dernières promotions", "/shop?promo=true"],
+                  ["Produits populaires", "/shop?sort=best"],
+                  ["Actualités du marché", "/shop?sort=new"]
+                ].map(([item, href]) => (
+                  <Link
                     key={item}
-                    className="rounded-2xl border bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                    href={href}
+                    className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4 transition-colors hover:border-[#d20a1e]"
                   >
-                    <div className="text-xl font-black text-[#071f3d]">
-                      {item}
-                    </div>
-                    <p className="mt-2 text-sm text-slate-500">
-                      Cette donnée pourra venir automatiquement de Supabase.
-                    </p>
-                  </div>
+                    <div className="text-[14px] font-[800] text-[#071f3d]">{item}</div>
+                    <div className="mt-1 text-[12px] text-[#d20a1e]">Découvrir →</div>
+                  </Link>
                 ))}
               </div>
             )}
           </div>
         </div>
 
-        <div className="container-page pb-8">
-          <div className="flex justify-center gap-2">
+        <div className="container-page pb-4">
+          <div className="flex justify-center gap-1.5">
             {content.slides.map((item, index) => (
               <button
                 key={item.badge}
@@ -552,8 +537,8 @@ export function HomePageClient({
                   e.stopPropagation();
                   setActive(index);
                 }}
-                className={`h-3 rounded-full transition-all ${
-                  active === index ? "w-12 bg-[#d20a1e]" : "w-3 bg-slate-300"
+                className={`h-1.5 rounded-full transition-all ${
+                  active === index ? "w-7 bg-[#d20a1e]" : "w-1.5 bg-slate-300"
                 }`}
                 aria-label={`Afficher ${item.badge}`}
               />
@@ -562,38 +547,38 @@ export function HomePageClient({
         </div>
       </section>
 
-      <section className="relative z-10 bg-white shadow-sm">
-        <div className="container-page grid gap-4 py-5 md:grid-cols-4">
+      <section className="relative z-10 border-b border-[var(--mache-line)] bg-white">
+        <div className="container-page grid gap-2 py-3 sm:grid-cols-2 md:grid-cols-4">
           {content.advantages.map((item) => (
             <Link
               key={item.title}
               href={item.href}
-              className="flex items-center gap-4 rounded-2xl border bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-[#d20a1e] hover:shadow-lg"
+              className="flex items-center gap-2.5 rounded-[8px] px-2.5 py-2 transition-colors hover:bg-[#fbfbfc]"
             >
-              <div className="text-4xl">{item.icon}</div>
-              <div>
-                <div className="font-black text-[#071f3d]">{item.title}</div>
-                <div className="text-sm text-slate-500">{item.text}</div>
+              <div className="text-[20px]">{item.icon}</div>
+              <div className="min-w-0">
+                <div className="truncate text-[13px] font-[800] text-[#071f3d]">
+                  {item.title}
+                </div>
+                <div className="truncate text-[11.5px] text-slate-500">{item.text}</div>
               </div>
             </Link>
           ))}
         </div>
       </section>
 
-      <WhyChooseUsSection />
-
       <section className="relative border-y bg-[#fff1f1]">
         <div
-          className="container-page flex min-h-24 items-center gap-3 overflow-x-auto py-4 text-base font-black text-[#071f3d] md:justify-between md:gap-4 md:text-lg"
+          className="container-page flex items-center gap-1.5 overflow-x-auto py-2.5 text-[13.5px] font-[800] text-[#071f3d] md:justify-between md:gap-2"
           onClick={(e) => e.stopPropagation()}
         >
           {content.mainCategories.map((category) => (
             <Link
               key={category.title}
               href={category.href}
-              className="flex shrink-0 items-center rounded-xl px-4 py-3 transition-all duration-300 hover:bg-white hover:text-[#d20a1e] hover:shadow-sm"
+              className="flex shrink-0 items-center rounded-[8px] px-3 py-2 transition-colors hover:bg-white hover:text-[#d20a1e]"
             >
-              <span className="mr-2 text-3xl">{category.icon}</span>
+              <span className="mr-1.5 text-[18px]">{category.icon}</span>
               {category.title}
             </Link>
           ))}
@@ -601,7 +586,7 @@ export function HomePageClient({
           <button
             type="button"
             onClick={() => setShowMoreCategories((value) => !value)}
-            className="shrink-0 rounded-full bg-black px-5 py-3 text-sm text-white transition-all duration-300 hover:bg-[#d20a1e] md:px-6 md:py-4 md:text-base"
+            className="shrink-0 rounded-[8px] bg-black px-3.5 py-2 text-[12.5px] font-bold text-white transition-colors hover:bg-[#d20a1e]"
           >
             ••• {content.moreButton}
           </button>
@@ -688,43 +673,56 @@ export function HomePageClient({
         products={promoProducts}
       />
 
-      <section className="container-page py-10">
-        <div className="mb-7">
-          <p className="text-sm font-black uppercase tracking-[0.25em] text-[#d20a1e]">
-            {content.sections.vendors.badge}
-          </p>
-          <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] text-[#071f3d]">
-            {content.sections.vendors.title}
-          </h2>
-          <p className="mt-3 max-w-2xl text-base text-slate-500">
-            {content.sections.vendors.text}
-          </p>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {displayedVendors.map((vendor) => (
-            <Link
-              key={vendor.name}
-              href={vendor.href}
-              className="rounded-3xl border bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-[#d20a1e] hover:shadow-xl"
-            >
-              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fff1f1] text-3xl">
-                🏪
-              </div>
-              <h3 className="text-2xl font-black text-[#071f3d]">
-                {vendor.name}
-              </h3>
-              <p className="mt-2 font-semibold text-slate-500">
-                {vendor.category}
+      <section className="container-page py-5">
+        <div className="rounded-[12px] border border-[var(--mache-line)] bg-white p-4 md:p-5">
+          <div className="mb-4 flex items-baseline justify-between gap-4 border-b border-[var(--mache-line)] pb-3">
+            <div className="min-w-0">
+              <h2 className="truncate text-[19px] font-[900] tracking-[-0.02em] text-[#071f3d] md:text-[22px]">
+                {content.sections.vendors.title}
+              </h2>
+              <p className="mt-0.5 text-[11.5px] font-bold uppercase tracking-[0.1em] text-[#d20a1e]">
+                {content.sections.vendors.badge}
               </p>
-              <p className="mt-1 text-sm text-slate-400">{vendor.location}</p>
-              <div className="mt-5 font-black text-[#d20a1e]">
-                Voir la boutique →
-              </div>
+            </div>
+
+            <Link
+              href="/shop"
+              className="shrink-0 whitespace-nowrap text-[13px] font-bold text-[#071f3d] underline-offset-2 hover:text-[#d20a1e] hover:underline"
+            >
+              Voir tout →
             </Link>
-          ))}
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {displayedVendors.map((vendor) => (
+              <Link
+                key={vendor.name}
+                href={vendor.href}
+                className="flex items-center gap-3 rounded-[10px] border border-[var(--mache-line)] bg-[#fbfbfc] p-3.5 transition-colors hover:border-[#d20a1e] hover:bg-white"
+              >
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[8px] bg-[#fff1f1] text-[20px]">
+                  🏪
+                </div>
+
+                <div className="min-w-0">
+                  <h3 className="truncate text-[14px] font-[900] text-[#071f3d]">
+                    {vendor.name}
+                  </h3>
+                  <p className="truncate text-[12px] text-slate-500">{vendor.category}</p>
+                  <p className="truncate text-[11.5px] text-slate-400">{vendor.location}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/*
+        Argumentaire placé après les rayons : sur un site de commerce, les
+        produits passent avant le discours. Il séparait auparavant le
+        bandeau d'accueil du premier rayon.
+      */}
+      <WhyChooseUsSection />
 
       <VendorCtaSection />
 
