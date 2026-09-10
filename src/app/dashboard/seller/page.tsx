@@ -36,21 +36,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-/*
-  Rôles vendeurs.
-  Doit rester aligné avec `sellerRoles` dans src/app/login/actions.ts :
-  un rôle accepté à la connexion mais absent ici renvoyait l'utilisateur
-  vers /login, qui le renvoyait vers /dashboard/seller -> boucle infinie.
-*/
-const SELLER_ROLES = [
-  "seller_individual",
-  "seller_business",
-  "supplier",
-  "official_brand",
-] as const;
-
-type SellerRole = (typeof SELLER_ROLES)[number];
+import { isSellerRole, type SellerRole } from "@/lib/authz";
 
 const ROLE_LABELS: Record<SellerRole, string> = {
   seller_individual: "Vendeur particulier",
@@ -79,10 +65,6 @@ const DEFAULT_LIMITS: PlanLimits = {
 };
 
 const LOW_STOCK_THRESHOLD = 5;
-
-function isSellerRole(role: string): role is SellerRole {
-  return (SELLER_ROLES as readonly string[]).includes(role);
-}
 
 const htgFormatter = new Intl.NumberFormat("fr-FR", {
   maximumFractionDigits: 0,
