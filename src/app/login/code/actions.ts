@@ -11,6 +11,7 @@
   a plus rien à retrouver dans le stockage du navigateur.
 */
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -37,12 +38,32 @@ export async function requestCodeAction(formData: FormData) {
 
   const supabase = await createSupabaseServerClient();
 
+  /*
+    `emailRedirectTo` sert de filet de sécurité.
+
+    Tant que le template Magic Link n'affiche pas {{ .Token }}, Supabase
+    envoie un lien plutôt qu'un code. Sans cette option, ce lien retombe
+    sur la Site URL — l'accueil — et la personne ne comprend pas ce qui
+    s'est passé. En le pointant vers /auth/callback, le lien ouvre bien
+    une session et arrive sur le tableau de bord.
+  */
+  const headersList = await headers();
+  const origin =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    headersList.get("origin") ||
+    `https://${headersList.get("host")}`;
+
+  const destination = next || "/dashboard";
+
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       // Cette page sert à se connecter, pas à s'inscrire : une adresse
       // inconnue ne doit pas créer un compte au passage.
       shouldCreateUser: false,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(
+        destination
+      )}`,
     },
   });
 

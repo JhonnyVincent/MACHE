@@ -47,7 +47,7 @@ export default async function LoginWithCodePage({
 
         <p className="mt-2 text-sm leading-relaxed text-neutral-500">
           {codeSent
-            ? "Un code à 6 chiffres vient d'être envoyé à votre adresse. Il est valable quelques minutes."
+            ? "Un e-mail vient de vous être envoyé. Il est valable quelques minutes."
             : "Entrez votre adresse e-mail : vous recevrez un code à saisir ici. Aucun mot de passe n'est nécessaire."}
         </p>
 
@@ -79,8 +79,10 @@ export default async function LoginWithCodePage({
                   autoFocus
                   required
                 />
-                <p className="mt-2 text-xs text-neutral-500">
-                  Envoyé à {email}
+                <p className="mt-2 text-xs leading-relaxed text-neutral-500">
+                  Envoyé à {email}. Si l&apos;e-mail contient un lien au lieu
+                  d&apos;un code, cliquez simplement sur le lien : il vous
+                  connecte aussi.
                 </p>
               </div>
 
