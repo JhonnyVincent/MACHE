@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { allProducts } from "@/lib/mock-data";
 import { useCart } from "./cart-provider";
+import { formatPrice } from "@/lib/format";
 
 export function CartDrawer() {
   const {
@@ -15,16 +15,13 @@ export function CartDrawer() {
     removeItem
   } = useCart();
 
-  const shipping = subtotal >= 100 ? 0 : items.length ? 8 : 0;
-  const total = subtotal + shipping;
-
-  const cartProducts = items
-    .map((item) => {
-      const product = allProducts.find((p) => p.id === item.id);
-      if (!product) return null;
-      return { ...product, quantity: item.quantity };
-    })
-    .filter(Boolean);
+  /*
+    Les frais de livraison ne sont pas encore calculés : ils dépendront du
+    transporteur et de la zone. Ils sont annoncés comme tels plutôt que
+    devinés, pour ne pas afficher un total que le client ne paiera pas.
+  */
+  const cartProducts = items;
+  const total = subtotal;
 
   return (
     <div
@@ -77,7 +74,7 @@ export function CartDrawer() {
                   >
                     <div className="h-[68px] w-[68px] overflow-hidden rounded-[10px] bg-[var(--mache-bg)]">
                       <img
-                        src={product.images[0]}
+                        src={product.image || "/placeholder-product.png"}
                         alt={product.title}
                         className="h-full w-full object-cover"
                       />
@@ -86,7 +83,7 @@ export function CartDrawer() {
                     <div>
                       <div className="text-[12px] font-[700]">{product.title}</div>
                       <div className="mt-1 text-[11px] text-[var(--mache-muted)]">
-                        {product.currency} {product.price}
+                        {formatPrice(product.price)}
                       </div>
 
                       <div className="mt-3 flex items-center gap-2">
@@ -115,7 +112,7 @@ export function CartDrawer() {
                     </div>
 
                     <div className="text-[13px] font-[800]">
-                      {product.currency} {product.price * product.quantity}
+                      {formatPrice(product.price * product.quantity)}
                     </div>
                   </div>
                 );
@@ -129,27 +126,21 @@ export function CartDrawer() {
             <>
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--mache-muted)]">Sous-total</span>
-                <span>USD {subtotal}</span>
+                <span>{formatPrice(subtotal)}</span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span className="text-[var(--mache-muted)]">Livraison</span>
-                <span>
-                  {shipping === 0 ? (
-                    <span className="text-[var(--mache-success)]">Gratuite</span>
-                  ) : (
-                    `USD ${shipping}`
-                  )}
-                </span>
+                <span className="text-[var(--mache-muted)]">Calculée à la commande</span>
               </div>
 
               <div className="flex justify-between text-[18px] font-[900] tracking-[-0.02em]">
                 <span>Total</span>
-                <span>USD {total}</span>
+                <span>{formatPrice(total)}</span>
               </div>
 
               <Link
-                href="/checkout/pending"
+                href="/cart"
                 onClick={closeCart}
                 className="btn-primary w-full justify-center"
               >

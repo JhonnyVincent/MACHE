@@ -46,14 +46,22 @@ function defaultNextFor(type: EmailOtpType | null) {
   on évite ainsi d'afficher le message brut de Supabase, en anglais et
   incompréhensible pour l'utilisateur.
 */
-function failure(origin: string, reason: string) {
-  return NextResponse.redirect(new URL(`/login?error=${reason}`, origin));
+function failure(origin: string, reason: string, flow?: string | null) {
+  /*
+    Une personne venue de la connexion par code ne doit pas être déposée
+    sur le formulaire de mot de passe quand le lien échoue : c'est ce
+    qu'elle cherchait à éviter. On la ramène là où elle était.
+  */
+  const page = flow === "code" ? "/login/code" : "/login";
+
+  return NextResponse.redirect(new URL(`${page}?error=${reason}`, origin));
 }
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const params = requestUrl.searchParams;
   const origin = requestUrl.origin;
+  const flow = params.get("flow");
 
   // Supabase renvoie ses propres erreurs en query string, par exemple
   // quand le lien a expiré ou a déjà servi.
@@ -73,7 +81,7 @@ export async function GET(request: Request) {
 
     const expired = /expired|used/i.test(details);
 
-    return failure(origin, expired ? "link_expired" : "link_invalid");
+    return failure(origin, expired ? "link_expired" : "link_invalid", flow);
   }
 
   const rawType = params.get("type");
@@ -97,7 +105,7 @@ export async function GET(request: Request) {
 
       const expired = /expired|invalid/i.test(error.message);
 
-      return failure(origin, expired ? "link_expired" : "link_invalid");
+      return failure(origin, expired ? "link_expired" : "link_invalid", flow);
     }
 
     return NextResponse.redirect(new URL(next, origin));
@@ -112,14 +120,14 @@ export async function GET(request: Request) {
       // Le verifier PKCE est absent : le lien a été ouvert dans un autre
       // navigateur que celui qui a fait la demande.
       if (/code verifier/i.test(error.message)) {
-        return failure(origin, "link_other_browser");
+        return failure(origin, "link_other_browser", flow);
       }
 
-      return failure(origin, "link_invalid");
+      return failure(origin, "link_invalid", flow);
     }
 
     return NextResponse.redirect(new URL(next, origin));
   }
 
-  return failure(origin, "link_invalid");
+  return failure(origin, "link_invalid", flow);
 }
