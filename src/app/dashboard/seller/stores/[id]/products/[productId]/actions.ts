@@ -1,133 +1,118 @@
 "use server";
 
 /*
-  ACTIONS : CMS produit vendeur
+  ACTIONS : modification et suppression d'un produit.
 
-  Sert à :
-  - Modifier un produit existant
-  - Supprimer un produit
-  - Vérifier que le vendeur connecté possède bien le store
-  - Sauvegarder titre, slug, prix, stock, catégorie, description, statut, images
+  Mêmes colonnes et même décision de statut qu'à la création : voir
+  src/lib/products.ts. Un vendeur exprime une intention — en ligne, en
+  pause, brouillon — et le serveur en déduit le statut réel. Le formulaire
+  ne peut pas imposer `active` et contourner un examen.
 */
 
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function createSlug(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
-}
-
-function parseImageUrls(value: string) {
-  return value
-    .split(/\n|,/)
-    .map((url) => url.trim())
-    .filter(Boolean);
-}
-
-async function verifyStoreOwner(storeId: string) {
-  const supabase = await createSupabaseServerClient();
-
-  const { data: userData } = await supabase.auth.getUser();
-
-  if (!userData.user) {
-    redirect(`/login?next=/dashboard/seller/stores/${storeId}`);
-  }
-
-  const { data: store } = await supabase
-    .from("stores")
-    .select("id, owner_id")
-    .eq("id", storeId)
-    .eq("owner_id", userData.user.id)
-    .single();
-
-  if (!store) {
-    redirect("/dashboard/seller/stores?error=store_introuvable");
-  }
-
-  return {
-    supabase,
-    userId: userData.user.id,
-    store,
-  };
-}
+import { revalidatePath } from "next/cache";
+import {
+  requireOwnedStoreForWrite, readProductForm, validateProductForm,
+  resolveStatusFor, productColumns,
+} from "@/lib/products";
 
 export async function updateProductAction(formData: FormData) {
   const storeId = String(formData.get("store_id") || "");
   const productId = String(formData.get("product_id") || "");
 
-  const title = String(formData.get("title") || "").trim();
-  const slugInput = String(formData.get("slug") || "").trim();
-  const description = String(formData.get("description") || "").trim();
-  const category = String(formData.get("category") || "").trim();
-  const status = String(formData.get("status") || "draft").trim();
+  const backTo = `/dashboard/seller/stores/${storeId}/products/${productId}`;
 
-  const price = Number(formData.get("price") || 0);
-  const stock = Number(formData.get("stock") || 0);
-  const imageUrlsText = String(formData.get("image_urls") || "");
-  const image_urls = parseImageUrls(imageUrlsText);
-
-  if (!storeId || !productId || !title) {
-    redirect(`/dashboard/seller/stores/${storeId}/products/${productId}?error=missing_fields`);
+  if (!storeId || !productId) {
+    redirect(`/dashboard/seller/stores/${storeId}/products?error=produit_inconnu`);
   }
 
-  const { supabase, userId } = await verifyStoreOwner(storeId);
+  const { supabase, store, uid } = await requireOwnedStoreForWrite(storeId, backTo);
 
-  const slug = slugInput || createSlug(title);
+  const values = readProductForm(formData);
+  const problem = validateProductForm(values);
 
-  const { error } = await supabase
+  if (problem) {
+    redirect(`${backTo}?error=${encodeURIComponent(problem)}`);
+  }
+
+  const status = await resolveStatusFor(values, store);
+
+  /*
+    Les trois filtres sont cumulés à dessein : un identifiant de produit
+    venu du formulaire ne prouve rien, et un produit ne se modifie que
+    dans la boutique et par le vendeur auxquels il appartient.
+  */
+  const { data: updated, error } = await supabase
     .from("products")
-    .update({
-      title,
-      slug,
-      description,
-      category,
-      price,
-      stock,
-      status,
-      image_urls,
-      seller_id: userId,
-      store_id: storeId,
-    })
+    .update(productColumns(values, status))
     .eq("id", productId)
     .eq("store_id", storeId)
-    .eq("seller_id", userId);
+    .eq("seller_id", uid)
+    .select("id")
+    .maybeSingle();
 
   if (error) {
-    redirect(
-      `/dashboard/seller/stores/${storeId}/products/${productId}?error=${encodeURIComponent(
-        error.message
-      )}`
-    );
+    redirect(`${backTo}?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect(`/dashboard/seller/stores/${storeId}/products/${productId}?success=updated`);
+  if (!updated) {
+    redirect(`${backTo}?error=${encodeURIComponent("Ce produit ne vous appartient pas.")}`);
+  }
+
+  revalidatePath(`/dashboard/seller/stores/${storeId}`, "layout");
+  redirect(`${backTo}?success=updated`);
 }
 
 export async function deleteProductAction(formData: FormData) {
   const storeId = String(formData.get("store_id") || "");
   const productId = String(formData.get("product_id") || "");
 
+  const backTo = `/dashboard/seller/stores/${storeId}/products/${productId}`;
+
   if (!storeId || !productId) {
-    redirect(`/dashboard/seller/stores/${storeId}/products?error=missing_product`);
+    redirect(`/dashboard/seller/stores/${storeId}/products?error=produit_inconnu`);
   }
 
-  const { supabase, userId } = await verifyStoreOwner(storeId);
+  const { supabase, uid } = await requireOwnedStoreForWrite(storeId, backTo);
+
+  /*
+    Un produit déjà commandé n'est pas supprimé : les lignes de commande
+    en gardent une copie du titre et du prix, mais l'acheteur suit encore
+    son colis et peut déposer un avis. Il est archivé, ce qui le retire du
+    site public sans effacer l'historique.
+  */
+  const { count: orderedLines } = await supabase
+    .from("order_items")
+    .select("id", { count: "exact", head: true })
+    .eq("product_id", productId);
+
+  if ((orderedLines ?? 0) > 0) {
+    const { error: archiveError } = await supabase
+      .from("products")
+      .update({ status: "archived", updated_at: new Date().toISOString() })
+      .eq("id", productId)
+      .eq("store_id", storeId)
+      .eq("seller_id", uid);
+
+    if (archiveError) {
+      redirect(`${backTo}?error=${encodeURIComponent(archiveError.message)}`);
+    }
+
+    revalidatePath(`/dashboard/seller/stores/${storeId}`, "layout");
+    redirect(`/dashboard/seller/stores/${storeId}/products?success=archived`);
+  }
 
   const { error } = await supabase
     .from("products")
     .delete()
     .eq("id", productId)
     .eq("store_id", storeId)
-    .eq("seller_id", userId);
+    .eq("seller_id", uid);
 
   if (error) {
-    redirect(`/dashboard/seller/stores/${storeId}/products?error=${encodeURIComponent(error.message)}`);
+    redirect(`${backTo}?error=${encodeURIComponent(error.message)}`);
   }
 
+  revalidatePath(`/dashboard/seller/stores/${storeId}`, "layout");
   redirect(`/dashboard/seller/stores/${storeId}/products?success=deleted`);
 }

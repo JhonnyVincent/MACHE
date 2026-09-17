@@ -167,10 +167,18 @@ export default function SellPage() {
                 ))}
               </div>
 
+              {/*
+                Cet encart affichait « ⭐ 4.8 / 5 · Temps de réponse rapide » :
+                une note inventée, présentée à de futurs vendeurs comme un
+                résultat obtenu. Il montre désormais ce qu'une boutique gagne
+                réellement à être vérifiée.
+              */}
               <div className="mt-5 flex items-center justify-between rounded-2xl border p-4">
                 <div>
-                  <p className="font-black">⭐ 4.8 / 5</p>
-                  <p className="text-sm text-neutral-500">Temps de réponse rapide</p>
+                  <p className="font-black">Badge vérifié</p>
+                  <p className="text-sm text-neutral-500">
+                    Accordé après contrôle de vos documents
+                  </p>
                 </div>
 
                 <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-black text-[var(--mache-primary)]">

@@ -1,82 +1,52 @@
 "use server";
 
+/*
+  ACTION : création d'un produit dans une boutique.
+
+  Toute la logique — colonnes écrites, validation, décision de statut —
+  vit dans src/lib/products.ts, partagée avec la modification. Cette
+  action ne fait que l'enchaîner et router.
+*/
+
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { resolvePublicationStatus } from "@/lib/moderation";
+import { revalidatePath } from "next/cache";
+import {
+  requireOwnedStoreForWrite, readProductForm, validateProductForm,
+  resolveStatusFor, productColumns,
+} from "@/lib/products";
 
 export async function createStoreProductAction(storeId: string, formData: FormData) {
-  const title = String(formData.get("title") || "").trim();
-  const description = String(formData.get("description") || "").trim();
-  const category = String(formData.get("category") || "").trim();
-  const imageUrl = String(formData.get("image_url") || "").trim();
+  const backTo = `/dashboard/seller/stores/${storeId}/products/new`;
 
-  const price = Number(formData.get("price") || 0);
-  const stock = Number(formData.get("stock") || 0);
+  const { supabase, store, uid } = await requireOwnedStoreForWrite(storeId, backTo);
 
-  if (!title || !category || price <= 0) {
-    redirect(`/dashboard/seller/stores/${storeId}/products/new?error=missing_fields`);
+  const values = readProductForm(formData);
+  const problem = validateProductForm(values);
+
+  if (problem) {
+    redirect(`${backTo}?error=${encodeURIComponent(problem)}`);
   }
 
-  const supabase = await createSupabaseServerClient();
+  const status = await resolveStatusFor(values, store);
 
-  const { data: userData } = await supabase.auth.getUser();
-
-  if (!userData.user) {
-    redirect(`/login?next=/dashboard/seller/stores/${storeId}/products/new`);
-  }
-
-  const uid = userData.user.id;
-
-  const { data: store } = await supabase
-    .from("stores")
-    .select("id, owner_id")
-    .eq("id", storeId)
-    .eq("owner_id", uid)
+  const { data: created, error } = await supabase
+    .from("products")
+    .insert({
+      ...productColumns(values, status),
+      seller_id: uid,
+      store_id: store.id,
+      submitted_at: new Date().toISOString(),
+    })
+    .select("id")
     .single();
 
-  if (!store) {
-    redirect("/dashboard/seller/stores?error=store_introuvable");
+  if (error || !created) {
+    redirect(`${backTo}?error=${encodeURIComponent(error?.message || "Création impossible.")}`);
   }
 
-  /*
-    Le statut de publication est décidé côté serveur, jamais par le
-    formulaire : un vendeur ne doit pas pouvoir contourner une validation
-    quand MACHÉ l'impose (réglage require_product_review).
-  */
-  const { data: storeRow } = await supabase
-    .from("stores")
-    .select("is_verified, legal_doc_url")
-    .eq("id", store.id)
-    .maybeSingle();
+  revalidatePath(`/dashboard/seller/stores/${storeId}`, "layout");
 
-  const status = await resolvePublicationStatus({
-    vendorVerified: Boolean(storeRow?.is_verified),
-    documentsValid: Boolean(storeRow?.legal_doc_url),
-    categoryAllowed: Boolean(category),
-    requiredFieldsComplete: Boolean(title && price > 0),
-    anomalyDetected: false,
-  });
-
-  const { error } = await supabase.from("products").insert({
-    seller_id: uid,
-    store_id: store.id,
-    title,
-    description,
-    category,
-    price,
-    stock,
-    image_url: imageUrl || null,
-    status,
-    submitted_at: new Date().toISOString(),
-  });
-
-  if (error) {
-    redirect(
-      `/dashboard/seller/stores/${storeId}/products/new?error=${encodeURIComponent(
-        error.message
-      )}`
-    );
-  }
-
-  redirect(`/dashboard/seller/stores/${storeId}`);
+  redirect(
+    `/dashboard/seller/stores/${storeId}/products/${created.id}?success=created`
+  );
 }

@@ -50,7 +50,7 @@ export type CatalogStore = {
 };
 
 const PRODUCT_COLUMNS =
-  "id, title, slug, description, category, price, stock, status, image_url, store_id, created_at, rating_average, rating_count";
+  "id, title, slug, description, category, price, stock, status, image_url, image_urls, store_id, created_at, rating_average, rating_count";
 
 const STORE_COLUMNS =
   "id, slug, name, description, category, logo_url, is_verified, created_at";
@@ -66,10 +66,32 @@ function number(value: unknown) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+/*
+  Deux colonnes portent les images d'un produit : `image_urls` (tableau,
+  format du projet) et `image_url` (une seule, plus ancienne). Le
+  formulaire de création écrivait l'une, celui de modification l'autre, et
+  les pages publiques ne lisaient que la seconde : changer la photo d'un
+  produit ne changeait rien côté client.
+
+  Les deux sont désormais lues ici, le tableau en premier, et les actions
+  d'écriture tiennent les deux à jour. Rien n'est supprimé en base : les
+  produits déjà enregistrés sous l'un ou l'autre format s'affichent.
+*/
+function imagesOf(row: ProductRow): string[] {
+  const list = Array.isArray(row.image_urls)
+    ? row.image_urls.map((value) => text(value)).filter(Boolean)
+    : [];
+
+  if (list.length > 0) return list;
+
+  const single = text(row.image_url);
+
+  return single ? [single] : [];
+}
+
 function mapProduct(row: ProductRow, stores: Map<string, CatalogStore>): CatalogProduct {
   const storeId = text(row.store_id) || null;
   const store = storeId ? stores.get(storeId) : undefined;
-  const image = text(row.image_url);
 
   return {
     id: String(row.id),
@@ -80,7 +102,7 @@ function mapProduct(row: ProductRow, stores: Map<string, CatalogStore>): Catalog
     stock: number(row.stock),
     category: categoryLabel(text(row.category)),
     categorySlug: categorySlug(text(row.category)),
-    images: image ? [image] : [],
+    images: imagesOf(row),
     status: text(row.status, "active"),
     ratingAverage: number(row.rating_average),
     ratingCount: number(row.rating_count),
