@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Product } from "@/types";
 import { ProductCard } from "@/components/product-card";
+import { ALL_CATEGORIES, FEATURED_CATEGORIES } from "@/lib/categories";
 
 type VendorCard = {
   name: string;
@@ -13,13 +14,16 @@ type VendorCard = {
 };
 
 const content = {
-  mainCategories: [
-    { title: "Artisanat", icon: "🎨", href: "/shop?category=artisanat" },
-    { title: "Beauté", icon: "🌺", href: "/shop?category=beaute" },
-    { title: "Maison", icon: "🏠", href: "/shop?category=maison" },
-    { title: "Mode", icon: "👕", href: "/shop?category=mode" },
-    { title: "Saveurs", icon: "🍲", href: "/shop?category=saveurs" }
-  ],
+  /*
+    Les catégories viennent de src/lib/categories.ts : mêmes slugs que les
+    filtres de /shop. Les liens passaient auparavant un libellé en minuscules
+    qui ne correspondait à aucune valeur en base.
+  */
+  mainCategories: FEATURED_CATEGORIES.map((category) => ({
+    title: category.label,
+    icon: category.icon,
+    href: `/shop?category=${category.slug}`
+  })),
   moreButton: "Plus",
   moreTitle: "Toutes les catégories",
   catalogButton: "Voir le catalogue",
@@ -113,34 +117,9 @@ const content = {
       type: "news"
     }
   ],
-  moreCategories: [
-    "En vedette",
-    "Maison et Cuisine",
-    "Vêtements femme",
-    "Chaussures femme",
-    "Lingerie et Pyjamas",
-    "Vêtements homme",
-    "Chaussures homme",
-    "Sports et Activités d'extérieur",
-    "Bijoux et Accessoires",
-    "Beauté et Santé",
-    "Jouets et Jeux",
-    "Automobile",
-    "Mode Enfant",
-    "Chaussures enfant",
-    "Bébé et Maternité",
-    "Sacs et Bagages",
-    "Arts, Artisanat et Couture",
-    "Électroniques",
-    "Outillage et Amélioration de l'habitat",
-    "Électroménagers",
-    "Fournitures de bureau et scolaires",
-    "Accessoires animaux",
-    "Téléphones et Accessoires",
-    "Alimentation et Épicerie",
-    "Livres et médias",
-    "Meubles"
-  ],
+  /* Toutes les catégories navigables, parents et sous-catégories. */
+  moreCategories: ALL_CATEGORIES,
+
   fallbackVendors: [
     {
       name: "Boutique Lakay",
@@ -619,13 +598,16 @@ export function HomePageClient({
             <div className="grid max-h-[430px] grid-cols-2 gap-3 overflow-y-auto pr-2 md:grid-cols-3 lg:grid-cols-4">
               {content.moreCategories.map((item) => (
                 <Link
-                  key={item}
-                  href={`/shop?category=${encodeURIComponent(
-                    item.toLowerCase()
-                  )}`}
-                  className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-bold text-[#071f3d] transition-all duration-200 hover:border-[#d20a1e] hover:bg-[#fff1f1] hover:text-[#d20a1e]"
+                  key={item.slug}
+                  href={`/shop?category=${item.slug}`}
+                  className={`rounded-xl border px-3.5 py-2.5 text-[13px] transition-all duration-200 hover:border-[#d20a1e] hover:bg-[#fff1f1] hover:text-[#d20a1e] ${
+                    item.parentSlug
+                      ? "border-slate-100 bg-white font-medium text-slate-600"
+                      : "border-slate-200 bg-slate-50 font-bold text-[#071f3d]"
+                  }`}
                 >
-                  {item}
+                  {item.icon ? `${item.icon} ` : ""}
+                  {item.label}
                 </Link>
               ))}
             </div>

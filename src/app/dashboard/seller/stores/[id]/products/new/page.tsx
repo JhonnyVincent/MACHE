@@ -1,18 +1,7 @@
 import Link from "next/link";
 import { createStoreProductAction } from "./actions";
+import { CATEGORY_OPTIONS } from "@/lib/categories";
 
-const categories = [
-  "Vêtements",
-  "Beauté",
-  "Alimentation",
-  "Artisanat",
-  "Maison",
-  "Électronique",
-  "Bijoux",
-  "Chaussures",
-  "Accessoires",
-  "Services",
-];
 
 export default async function NewStoreProductPage({
   params,
@@ -70,9 +59,12 @@ export default async function NewStoreProductPage({
                   className="mt-2 w-full rounded-2xl border bg-white px-4 py-4 text-sm outline-none focus:border-[#d2162c]"
                 >
                   <option value="">Choisir une catégorie</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
+                  {/* Options issues de src/lib/categories.ts : la même
+                      référence alimente les filtres publics, ce qui garantit
+                      qu'un produit publié est retrouvable. */}
+                  {CATEGORY_OPTIONS.map((category) => (
+                    <option key={category.slug} value={category.value}>
+                      {category.label}
                     </option>
                   ))}
                 </select>

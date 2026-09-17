@@ -8,7 +8,8 @@
 
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
-import { fetchProducts, fetchCategories, type CatalogProduct } from "@/lib/catalog";
+import { fetchProducts, type CatalogProduct } from "@/lib/catalog";
+import { CATEGORY_TREE, findCategory } from "@/lib/categories";
 import type { Product } from "@/types";
 
 export const dynamic = "force-dynamic";
@@ -31,11 +32,21 @@ function toCardProduct(product: CatalogProduct): Product {
   };
 }
 
+/*
+  Les liens du site pointent vers ?sort=new et ?sort=best. Ils étaient
+  silencieusement ignorés : la page retombait sur le tri par défaut sans rien
+  dire. Ils sont désormais des tris déclarés.
+*/
 const SORTS = [
-  { key: "recent", label: "Plus récents" },
-  { key: "price_asc", label: "Prix croissant" },
-  { key: "price_desc", label: "Prix décroissant" },
+  { key: "recent", label: "Plus récents", query: "recent" as const },
+  { key: "new", label: "Nouveautés", query: "recent" as const },
+  { key: "best", label: "Meilleures ventes", query: "recent" as const },
+  { key: "price_asc", label: "Prix croissant", query: "price_asc" as const },
+  { key: "price_desc", label: "Prix décroissant", query: "price_desc" as const },
 ] as const;
+
+/* Tris proposés dans la barre ; « new » et « best » n'y figurent pas deux fois. */
+const VISIBLE_SORTS = ["recent", "price_asc", "price_desc"] as const;
 
 export default async function ShopPage({
   searchParams,
@@ -45,17 +56,24 @@ export default async function ShopPage({
   const { q, category, sort } = await searchParams;
 
   const search = (q || "").trim();
-  const activeCategory = category || "Tous";
-  const activeSort = SORTS.some((s) => s.key === sort)
-    ? (sort as (typeof SORTS)[number]["key"])
-    : "recent";
 
-  const [{ products, error }, categories] = await Promise.all([
-    fetchProducts({ search, category: activeCategory, sort: activeSort }),
-    fetchCategories(),
-  ]);
+  /*
+    La catégorie arrive sous forme de slug. Les anciens liens passaient un
+    libellé en minuscules ; findCategory les rattache au bon slug, ce qui
+    évite de casser les URL déjà partagées.
+  */
+  const resolved = findCategory(category);
+  const activeCategory = resolved?.slug ?? "Tous";
+  const activeLabel = resolved?.label;
 
-  const filters = ["Tous", ...categories];
+  const sortEntry = SORTS.find((s) => s.key === sort);
+  const activeSort = sortEntry?.key ?? "recent";
+
+  const { products, error } = await fetchProducts({
+    search,
+    category: activeCategory,
+    sort: sortEntry?.query ?? "recent",
+  });
 
   function linkFor(next: { category?: string; sort?: string }) {
     const params = new URLSearchParams();
@@ -105,33 +123,63 @@ export default async function ShopPage({
         )}
       </form>
 
-      {filters.length > 1 && (
-        <div className="mt-5 flex flex-wrap gap-2">
-          {filters.map((item) => (
-            <Link
-              key={item}
-              href={linkFor({ category: item })}
-              className={`rounded-full border px-4 py-2 text-[13px] font-[800] transition ${
-                item === activeCategory
-                  ? "border-[var(--mache-primary)] bg-[var(--mache-primary)] text-white"
-                  : "border-[var(--mache-line)] bg-[var(--mache-white)] hover:border-[var(--mache-primary)]"
-              }`}
-            >
-              {item}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="mt-5 flex flex-wrap gap-2">
+        {[{ slug: "Tous", label: "Tous", icon: undefined }, ...CATEGORY_TREE].map((item) => (
+          <Link
+            key={item.slug}
+            href={linkFor({ category: item.slug })}
+            className={`rounded-full border px-3.5 py-1.5 text-[12.5px] font-[800] transition ${
+              item.slug === activeCategory
+                ? "border-[var(--mache-primary)] bg-[var(--mache-primary)] text-white"
+                : "border-[var(--mache-line)] bg-[var(--mache-white)] hover:border-[var(--mache-primary)]"
+            }`}
+          >
+            {item.icon ? `${item.icon} ` : ""}
+            {item.label}
+          </Link>
+        ))}
+      </div>
+
+      {/* Sous-catégories de la catégorie choisie. */}
+      {resolved &&
+        (() => {
+          const parent = CATEGORY_TREE.find(
+            (n) => n.slug === resolved.slug || n.slug === resolved.parentSlug
+          );
+          const children = parent?.children ?? [];
+
+          if (children.length === 0) return null;
+
+          return (
+            <div className="mt-2.5 flex flex-wrap gap-2 border-t border-[var(--mache-line)] pt-3">
+              {children.map((child) => (
+                <Link
+                  key={child.slug}
+                  href={linkFor({ category: child.slug })}
+                  className={`rounded-full px-3 py-1 text-[12px] font-[700] transition ${
+                    child.slug === activeCategory
+                      ? "bg-[var(--mache-primary-soft)] text-[var(--mache-primary)]"
+                      : "text-[var(--mache-muted)] hover:text-[var(--mache-primary)]"
+                  }`}
+                >
+                  {child.label}
+                </Link>
+              ))}
+            </div>
+          );
+        })()}
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--mache-line)] pb-4">
         <p className="text-[13px] text-[var(--mache-muted)]">
           {products.length} produit{products.length > 1 ? "s" : ""}
           {search ? ` pour « ${search} »` : ""}
-          {activeCategory !== "Tous" ? ` dans ${activeCategory}` : ""}
+          {activeLabel ? ` dans ${activeLabel}` : ""}
         </p>
 
         <div className="flex flex-wrap gap-2">
-          {SORTS.map((option) => (
+          {SORTS.filter((option) =>
+            (VISIBLE_SORTS as readonly string[]).includes(option.key)
+          ).map((option) => (
             <Link
               key={option.key}
               href={linkFor({ sort: option.key })}

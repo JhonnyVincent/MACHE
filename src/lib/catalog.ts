@@ -17,6 +17,7 @@
 */
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { categoryLabel, categoryMatchValues, categorySlug } from "@/lib/categories";
 
 export type CatalogProduct = {
   id: string;
@@ -26,6 +27,7 @@ export type CatalogProduct = {
   price: number;
   stock: number;
   category: string;
+  categorySlug?: string;
   images: string[];
   status: string;
   storeId: string | null;
@@ -74,7 +76,8 @@ function mapProduct(row: ProductRow, stores: Map<string, CatalogStore>): Catalog
     description: text(row.description),
     price: number(row.price),
     stock: number(row.stock),
-    category: text(row.category, "Divers"),
+    category: categoryLabel(text(row.category)),
+    categorySlug: categorySlug(text(row.category)),
     images: image ? [image] : [],
     status: text(row.status, "active"),
     storeId,
@@ -138,8 +141,14 @@ export async function fetchProducts(options: ProductQuery = {}) {
     query = query.eq("store_id", options.storeId);
   }
 
+  /*
+    Le filtre reçoit un slug d'URL. Une simple égalité ne suffit pas : la même
+    catégorie existe en base sous plusieurs écritures — « Mode », « mode »,
+    « Vêtements » pour l'ancienne liste — et une catégorie parente doit
+    ramener les produits de ses sous-catégories.
+  */
   if (options.category && options.category !== "Tous") {
-    query = query.eq("category", options.category);
+    query = query.in("category", categoryMatchValues(options.category));
   }
 
   if (options.search) {
