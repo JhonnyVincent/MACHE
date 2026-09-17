@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { resolvePublicationStatus } from "@/lib/moderation";
 
 export async function createStoreProductAction(storeId: string, formData: FormData) {
   const title = String(formData.get("title") || "").trim();
@@ -37,6 +38,25 @@ export async function createStoreProductAction(storeId: string, formData: FormDa
     redirect("/dashboard/seller/stores?error=store_introuvable");
   }
 
+  /*
+    Le statut de publication est décidé côté serveur, jamais par le
+    formulaire : un vendeur ne doit pas pouvoir contourner une validation
+    quand MACHÉ l'impose (réglage require_product_review).
+  */
+  const { data: storeRow } = await supabase
+    .from("stores")
+    .select("is_verified, legal_doc_url")
+    .eq("id", store.id)
+    .maybeSingle();
+
+  const status = await resolvePublicationStatus({
+    vendorVerified: Boolean(storeRow?.is_verified),
+    documentsValid: Boolean(storeRow?.legal_doc_url),
+    categoryAllowed: Boolean(category),
+    requiredFieldsComplete: Boolean(title && price > 0),
+    anomalyDetected: false,
+  });
+
   const { error } = await supabase.from("products").insert({
     seller_id: uid,
     store_id: store.id,
@@ -46,7 +66,8 @@ export async function createStoreProductAction(storeId: string, formData: FormDa
     price,
     stock,
     image_url: imageUrl || null,
-    status: "active",
+    status,
+    submitted_at: new Date().toISOString(),
   });
 
   if (error) {

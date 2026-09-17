@@ -11,6 +11,8 @@ import {
 } from "./actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { canAccessDashboard } from "@/lib/authz";
+import { fetchModerationQueue, PENDING_STATUSES, type ModerationProduct } from "@/lib/moderation";
+import { ModerationQueue } from "@/components/admin/moderation-queue";
 
 type RouteKey = "buyer" | "seller" | "agent" | "admin" | "partner";
 
@@ -208,12 +210,20 @@ function AdminSection({
   type,
   stats,
   isSuperAdmin,
-  widgets = []
+  widgets = [],
+  moderation
 }: {
   type?: string;
   stats: AdminStats;
   isSuperAdmin: boolean;
   widgets?: SiteWidget[];
+  moderation?: {
+    products: ModerationProduct[];
+    counts: Record<string, number>;
+    activeStatus: string;
+    message?: string;
+    error?: string;
+  };
 }) {
   if (type === "admin_home") {
     return (
@@ -449,13 +459,13 @@ function AdminSection({
 
   if (type === "admin_products") {
     return (
-      <div className="card p-6">
-        <h3 className="text-xl font-black">Gestion produits</h3>
-        <p className="mt-2 text-slate-500">
-          Ici on pourra approuver, mettre en avant, sponsoriser, masquer ou
-          supprimer des produits.
-        </p>
-      </div>
+      <ModerationQueue
+        products={moderation?.products ?? []}
+        counts={moderation?.counts ?? {}}
+        activeStatus={moderation?.activeStatus ?? "manual_review"}
+        message={moderation?.message}
+        error={moderation?.error}
+      />
     );
   }
 
@@ -463,9 +473,11 @@ function AdminSection({
 }
 
 export default async function DashboardRoute({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{ role: string; section?: string[] }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { role, section = [] } = await params;
   const safeRole = role as RouteKey;
@@ -524,6 +536,38 @@ export default async function DashboardRoute({
       .order("created_at", { ascending: false });
 
     sellerProducts = data || [];
+  }
+
+  /*
+    File de modération, chargée uniquement sur la section concernée : la
+    requête est lourde (compteurs par statut) et inutile ailleurs.
+  */
+  let moderation:
+    | {
+        products: ModerationProduct[];
+        counts: Record<string, number>;
+        activeStatus: string;
+        message?: string;
+        error?: string;
+      }
+    | undefined;
+
+  if (safeRole === "admin" && page.type === "admin_products") {
+    const query = searchParams ? await searchParams : {};
+    const requested = typeof query.status === "string" ? query.status : "";
+    const activeStatus = requested || "manual_review";
+
+    const { products, counts } = await fetchModerationQueue(
+      requested ? [requested] : PENDING_STATUSES
+    );
+
+    moderation = {
+      products,
+      counts,
+      activeStatus,
+      message: typeof query.done === "string" ? query.done : undefined,
+      error: typeof query.error === "string" ? query.error : undefined,
+    };
   }
 
   let adminStats: AdminStats = {
@@ -625,6 +669,7 @@ export default async function DashboardRoute({
           stats={adminStats}
           isSuperAdmin={profile.role === "super_admin"}
           widgets={widgets}
+          moderation={moderation}
         />
       )}
 
