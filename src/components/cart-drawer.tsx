@@ -140,11 +140,19 @@ export function CartDrawer() {
               </div>
 
               <Link
-                href="/cart"
+                href="/checkout"
                 onClick={closeCart}
                 className="btn-primary w-full justify-center"
               >
                 Passer la commande
+              </Link>
+
+              <Link
+                href="/cart"
+                onClick={closeCart}
+                className="btn-secondary w-full justify-center"
+              >
+                Voir mon panier
               </Link>
 
               <button onClick={closeCart} className="btn-secondary w-full justify-center">

@@ -7,9 +7,9 @@
   avec un champ quantité et un bouton « Retirer » qui ne faisaient rien.
   Elle reflète maintenant le panier réel.
 
-  Le passage de commande reste annoncé comme indisponible : aucune commande
-  n'est encore enregistrée en base et aucun paiement n'est raccordé. Mieux
-  vaut le dire au client que le laisser croire à un achat qui n'aura pas lieu.
+  Le passage de commande mène au tunnel d'achat, qui enregistre réellement
+  la commande (phase 2). Le paiement en ligne n'est pas raccordé : le tunnel
+  propose le paiement à la livraison et ne simule aucun encaissement.
 */
 
 import Link from "next/link";
@@ -136,15 +136,15 @@ export default function CartPage() {
             </div>
           </div>
 
-          <div className="mt-5 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-[13px] leading-[1.7]">
-            <p className="font-[800]">Commande en ligne bientôt disponible</p>
-            <p className="mt-1 text-[var(--mache-muted)]">
-              Le paiement n&apos;est pas encore raccordé. Contactez directement
-              la boutique pour finaliser votre achat.
-            </p>
-          </div>
+          <Link href="/checkout" className="btn-primary mt-5 w-full justify-center py-3.5">
+            Passer la commande
+          </Link>
 
-          <Link href="/shop" className="btn-secondary mt-4 w-full justify-center">
+          <p className="mt-2 text-center text-[11.5px] leading-[1.6] text-[var(--mache-muted)]">
+            Paiement à la livraison. Aucun prélèvement en ligne.
+          </p>
+
+          <Link href="/shop" className="btn-secondary mt-3 w-full justify-center">
             Continuer mes achats
           </Link>
         </div>
