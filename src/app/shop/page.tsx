@@ -26,8 +26,8 @@ function toCardProduct(product: CatalogProduct): Product {
     vendorName: product.storeName,
     category: product.category,
     description: product.description,
-    rating: 0,
-    reviewCount: 0,
+    rating: product.ratingAverage,
+    reviewCount: product.ratingCount,
     status: "active",
   };
 }

@@ -30,6 +30,8 @@ export type CatalogProduct = {
   categorySlug?: string;
   images: string[];
   status: string;
+  ratingAverage: number;
+  ratingCount: number;
   storeId: string | null;
   storeName: string;
   storeSlug: string | null;
@@ -48,7 +50,7 @@ export type CatalogStore = {
 };
 
 const PRODUCT_COLUMNS =
-  "id, title, slug, description, category, price, stock, status, image_url, store_id, created_at";
+  "id, title, slug, description, category, price, stock, status, image_url, store_id, created_at, rating_average, rating_count";
 
 const STORE_COLUMNS =
   "id, slug, name, description, category, logo_url, is_verified, created_at";
@@ -80,6 +82,8 @@ function mapProduct(row: ProductRow, stores: Map<string, CatalogStore>): Catalog
     categorySlug: categorySlug(text(row.category)),
     images: image ? [image] : [],
     status: text(row.status, "active"),
+    ratingAverage: number(row.rating_average),
+    ratingCount: number(row.rating_count),
     storeId,
     storeName: store?.name || "Boutique MACHE",
     storeSlug: store?.slug || null,

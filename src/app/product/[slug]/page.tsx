@@ -11,6 +11,8 @@ import { notFound } from "next/navigation";
 import { ProductActions } from "@/components/product-actions";
 import { ProductCard } from "@/components/product-card";
 import { fetchProductByHandle, fetchProducts, formatPrice } from "@/lib/catalog";
+import { fetchProductReviews } from "@/lib/reviews";
+import { ReviewsSection } from "@/components/reviews-section";
 import type { Product } from "@/types";
 import type { CatalogProduct } from "@/lib/catalog";
 
@@ -29,8 +31,8 @@ function toCardProduct(product: CatalogProduct): Product {
     vendorName: product.storeName,
     category: product.category,
     description: product.description,
-    rating: 0,
-    reviewCount: 0,
+    rating: product.ratingAverage,
+    reviewCount: product.ratingCount,
     status: "active",
   };
 }
@@ -48,10 +50,10 @@ export default async function ProductPage({
     notFound();
   }
 
-  const { products: related } = await fetchProducts({
-    category: product.category,
-    limit: 5,
-  });
+  const [{ products: related }, { reviews, summary }] = await Promise.all([
+    fetchProducts({ category: product.categorySlug ?? product.category, limit: 5 }),
+    fetchProductReviews(product.id),
+  ]);
 
   const others = related.filter((item) => item.id !== product.id).slice(0, 4);
 
@@ -98,6 +100,21 @@ export default async function ProductPage({
             )}
           </p>
 
+          {product.ratingCount > 0 && (
+            <p className="mt-2.5 flex items-center gap-2 text-[13px]">
+              <span className="text-[#d4962a]">
+                {"★".repeat(Math.round(product.ratingAverage))}
+                <span className="text-[var(--mache-line)]">
+                  {"★".repeat(5 - Math.round(product.ratingAverage))}
+                </span>
+              </span>
+              <span className="font-[800]">{product.ratingAverage.toFixed(1)}</span>
+              <a href="#avis" className="text-[var(--mache-muted)] hover:underline">
+                {product.ratingCount} avis
+              </a>
+            </p>
+          )}
+
           <p className="mt-5 text-[30px] font-[950] tracking-[-0.03em] text-[var(--mache-primary)]">
             {formatPrice(product.price)}
           </p>
@@ -131,6 +148,10 @@ export default async function ProductPage({
             }}
           />
         </div>
+      </div>
+
+      <div id="avis">
+        <ReviewsSection reviews={reviews} summary={summary} />
       </div>
 
       {others.length > 0 && (

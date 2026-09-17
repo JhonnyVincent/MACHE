@@ -42,6 +42,7 @@ export default async function BuyerLayout({ children }: { children: React.ReactN
         { label: "Vue d'ensemble", href: "/dashboard/buyer" },
         { label: "Mes commandes", href: "/dashboard/buyer/orders", badge: openCount },
         { label: "Mes favoris", href: "/favorites", badge: favorites.count ?? 0 },
+        { label: "Mes avis", href: "/dashboard/buyer/reviews" },
       ],
     },
     {
