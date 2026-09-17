@@ -8,7 +8,12 @@
 */
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type {
+  ReactNode,
+  InputHTMLAttributes,
+  TextareaHTMLAttributes,
+  SelectHTMLAttributes,
+} from "react";
 
 /* -------------------------------------------------------------------------- */
 /* Structure de page                                                          */
@@ -361,4 +366,100 @@ export function Meter({
       <div className={`h-full ${color}`} style={{ width: `${percent}%` }} />
     </div>
   );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Formulaires                                                                */
+/* -------------------------------------------------------------------------- */
+
+/*
+  Les pages vendeur qui écrivent en base (boutique, apparence, documents)
+  partagent le même gabarit de champ : libellé au-dessus, aide en dessous,
+  contrôle au trait fin. Le définir ici évite que chaque formulaire
+  réinvente ses marges et que l'espace vendeur se mette à ressembler à
+  cinq applications différentes.
+*/
+export function Field({
+  label,
+  htmlFor,
+  hint,
+  required,
+  children,
+}: {
+  label: string;
+  htmlFor?: string;
+  hint?: string;
+  required?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="block text-[12px] font-semibold text-[#0f1111]"
+      >
+        {label}
+        {required && <span className="ml-1 text-[#b01124]">*</span>}
+      </label>
+      <div className="mt-1.5">{children}</div>
+      {hint && <p className="mt-1.5 text-[11px] leading-snug text-[#767676]">{hint}</p>}
+    </div>
+  );
+}
+
+const CONTROL_CLASS =
+  "w-full rounded-[3px] border border-[#8d9096] bg-white px-2.5 py-1.5 text-[12.5px] text-[#0f1111] outline-none transition-colors placeholder:text-[#9a9a9a] focus:border-[#d2162c] focus:ring-1 focus:ring-[#d2162c]/30 disabled:bg-[#f7f8f8] disabled:text-[#767676]";
+
+export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
+  const { className, ...rest } = props;
+  return <input {...rest} className={`${CONTROL_CLASS} ${className || ""}`} />;
+}
+
+export function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  const { className, ...rest } = props;
+  return (
+    <textarea {...rest} className={`${CONTROL_CLASS} leading-relaxed ${className || ""}`} />
+  );
+}
+
+export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
+  const { className, children, ...rest } = props;
+  return (
+    <select {...rest} className={`${CONTROL_CLASS} ${className || ""}`}>
+      {children}
+    </select>
+  );
+}
+
+/*
+  Bandeau de retour d'une action serveur. Les actions vendeur communiquent
+  par `?success=` / `?error=` : un seul composant les rend, sinon chaque
+  page invente son propre message.
+*/
+export function FormFeedback({
+  success,
+  error,
+  successMessages,
+}: {
+  success?: string;
+  error?: string;
+  successMessages?: Record<string, string>;
+}) {
+  if (error) {
+    return (
+      <Notice tone="danger" title="Modification refusée">
+        {decodeURIComponent(error)}
+      </Notice>
+    );
+  }
+
+  if (success) {
+    return (
+      <Notice tone="info" title="Enregistré">
+        {successMessages?.[success] || "Les modifications ont été enregistrées."}
+      </Notice>
+    );
+  }
+
+  return null;
 }

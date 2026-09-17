@@ -149,3 +149,37 @@ export async function requireSeller(nextPath = "/dashboard/seller") {
     firstName: displayName.split(" ")[0],
   };
 }
+
+
+/*
+  Garde d'accès à une boutique précise.
+
+  Toutes les pages de /dashboard/seller/stores/[id] doivent vérifier que la
+  boutique appartient bien au compte connecté. Le faire ici, une fois, évite
+  qu'une page oubliée devienne une fuite : un vendeur ne doit jamais voir les
+  commandes ni le stock d'un autre.
+
+  Le filtre owner_id est dans la requête, sans se reposer sur le RLS seul.
+*/
+export async function requireStoreOwner(storeId: string) {
+  const context = await requireSeller(`/dashboard/seller/stores/${storeId}`);
+
+  const { data: store, error } = await context.supabase
+    .from("stores")
+    .select(
+      "id, slug, name, description, category, keywords, logo_url, banner_url, is_active, is_verified, legal_doc_url, created_at, rating_average, rating_count"
+    )
+    .eq("id", storeId)
+    .eq("owner_id", context.uid)
+    .maybeSingle();
+
+  if (error) {
+    console.error("[seller] boutique:", error.message);
+  }
+
+  if (!store) {
+    redirect("/dashboard/seller/stores?error=boutique_introuvable");
+  }
+
+  return { ...context, store };
+}

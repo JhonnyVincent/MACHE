@@ -1,704 +1,447 @@
 /*
-  PAGE : Dashboard vendeur d’un store précis
-
-  Fichier :
-  src/app/dashboard/seller/stores/[id]/page.tsx
+  PAGE : Espace vendeur — tableau de bord d'une boutique
 
   Sert à :
-  - Afficher le tableau de bord d’une boutique précise du vendeur
-  - Vérifier que le vendeur connecté est bien propriétaire du store
-  - Afficher les infos du store : nom, logo, bannière, statut, catégorie
-  - Afficher les statistiques : produits, commandes, revenus, stock faible
-  - Afficher les produits récents du store
-  - Donner accès aux actions rapides : ajouter produit, commandes, ventes, paiements
-  - Afficher un sidebar complet vendeur
-  - Afficher un graphique au choix : courbe, barres, diagramme
-  - Afficher les CTA : boost ventes, vérification, abonnement, fournisseur
+  - donner en un écran l'état réel d'une boutique : catalogue, commandes,
+    argent, stock, avis ;
+  - tracer le chiffre d'affaires mois par mois à partir des ventes réelles ;
+  - ouvrir chacune des sections de la boutique.
+
+  Aucun chiffre n'est décoratif. Une variation n'est affichée que si les
+  deux périodes comparées existent réellement ; un indicateur qu'on ne sait
+  pas mesurer n'est pas affiché du tout. C'est la différence entre un
+  tableau de bord et une maquette.
 */
 
-import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import {
+  requireStoreOwner, formatHTG, formatNumber, formatDate, LOW_STOCK_THRESHOLD,
+} from "@/lib/seller";
+import { ORDER_STATUS_LABELS, ORDER_STATUS_TONES } from "@/lib/buyer";
+import {
+  PageHeader, Panel, Stat, StatRow, Table, Row, Cell, Badge, Button, EmptyState, Notice,
+} from "@/components/seller/ui";
 
-function formatHTG(value: number) {
-  return `${Number(value || 0).toLocaleString("fr-FR")} HTG`;
+export const dynamic = "force-dynamic";
+
+const MONTH_SHORT = new Intl.DateTimeFormat("fr-FR", { month: "short" });
+
+/*
+  Index des sections d'une boutique. Défini ici parce que c'est le
+  tableau de bord qui sert de point d'entrée : sans lui, plusieurs écrans
+  existants n'étaient atteignables par aucun lien.
+*/
+function sectionsOf(storeId: string) {
+  const base = `/dashboard/seller/stores/${storeId}`;
+
+  return [
+    {
+      group: "Vendre",
+      items: [
+        { label: "Produits", href: `${base}/products`, hint: "Ajouter et modifier le catalogue" },
+        { label: "Commandes", href: `${base}/orders`, hint: "Traiter ce qui a été acheté" },
+        { label: "Stock", href: `${base}/stock`, hint: "Ruptures et réassort" },
+        { label: "Livraisons", href: `${base}/deliveries`, hint: "Suivre les expéditions" },
+        { label: "Fournisseurs", href: `${base}/suppliers`, hint: "Marques et fournisseurs sur MACHÉ" },
+      ],
+    },
+    {
+      group: "Argent",
+      items: [
+        { label: "Ventes", href: `${base}/sales`, hint: "Chiffre d'affaires et meilleurs produits" },
+        { label: "Paiements", href: `${base}/payments`, hint: "Encaissé, en attente, versements" },
+        { label: "Relevés", href: `${base}/invoices`, hint: "Comptabilité mois par mois" },
+        { label: "Abonnement", href: `${base}/subscription`, hint: "Plan, limites et commission" },
+      ],
+    },
+    {
+      group: "Boutique",
+      items: [
+        { label: "Ma boutique", href: `${base}/store`, hint: "Nom, catégorie, description" },
+        { label: "Apparence", href: `${base}/customization`, hint: "Logo et bannière" },
+        { label: "Avis", href: `${base}/reviews`, hint: "Lire et répondre aux clients" },
+        { label: "Visibilité", href: `${base}/ads`, hint: "Ce qui fait remonter vos produits" },
+        { label: "Statistiques", href: `${base}/stats`, hint: "Évolution sur 30 jours" },
+        { label: "Documents", href: `${base}/documents`, hint: "Vérification de la boutique" },
+        { label: "Paramètres", href: `${base}/settings`, hint: "Adresse publique et ouverture" },
+      ],
+    },
+  ];
 }
-
-type SearchParams = {
-  chart?: string;
-  period?: string;
-};
 
 export default async function StoreDashboardPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<SearchParams>;
 }) {
   const { id } = await params;
-  const query = searchParams ? await searchParams : {};
+  const { supabase, store, limits, roleLabel } = await requireStoreOwner(id);
 
-  const chartType = query.chart || "line";
-  const period = query.period || "month";
-
-  const supabase = await createSupabaseServerClient();
-
-  const { data: userData } = await supabase.auth.getUser();
-
-  if (!userData.user) {
-    redirect(`/login?next=/dashboard/seller/stores/${id}`);
-  }
-
-  const uid = userData.user.id;
-  const sellerName =
-    userData.user.user_metadata?.full_name ||
-    userData.user.email?.split("@")[0] ||
-    "Vendeur";
-
-  const { data: store } = await supabase
-    .from("stores")
-    .select(`
-      id,
-      slug,
-      name,
-      description,
-      logo_url,
-      banner_url,
-      is_verified,
-      legal_doc_url,
-      category,
-      created_at
-    `)
-    .eq("id", id)
-    .eq("owner_id", uid)
-    .single();
-
-  if (!store) {
-    redirect("/dashboard/seller/stores?error=store_introuvable");
-  }
-
-  const { count: totalProducts } = await supabase
+  /* ---------------------------------------------------------------- */
+  /* Catalogue                                                        */
+  /* ---------------------------------------------------------------- */
+  const { data: products, error: productsError } = await supabase
     .from("products")
-    .select("*", { count: "exact", head: true })
-    .eq("store_id", store.id);
-
-  const { count: activeProducts } = await supabase
-    .from("products")
-    .select("*", { count: "exact", head: true })
-    .eq("store_id", store.id)
-    .eq("status", "active");
-
-  const { count: lowStockProducts } = await supabase
-    .from("products")
-    .select("*", { count: "exact", head: true })
-    .eq("store_id", store.id)
-    .lte("stock", 5);
-
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("id, status, total_price, created_at")
-    .eq("store_id", store.id)
-    .order("created_at", { ascending: false });
-
-  const totalOrders = orders?.length ?? 0;
-  const pendingOrders = orders?.filter((o) => o.status === "pending").length ?? 0;
-  const completedOrders = orders?.filter((o) => o.status === "completed") ?? [];
-
-  const totalRevenue = completedOrders.reduce(
-    (sum, order) => sum + Number(order.total_price ?? 0),
-    0
-  );
-
-  const { data: recentProducts } = await supabase
-    .from("products")
-    .select(`
-      id,
-      title,
-      price,
-      stock,
-      status,
-      image_url
-    `)
+    .select("id, title, price, stock, status, image_urls, created_at")
     .eq("store_id", store.id)
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(500);
 
-  const storeInitial = store.name?.charAt(0)?.toUpperCase() || "M";
+  const productList = products ?? [];
+  const activeProducts = productList.filter((p) => String(p.status) === "active").length;
+  const outOfStock = productList.filter((p) => (p.stock ?? 0) <= 0).length;
+  const lowStock = productList.filter(
+    (p) => (p.stock ?? 0) > 0 && (p.stock ?? 0) <= LOW_STOCK_THRESHOLD
+  ).length;
 
+  /* ---------------------------------------------------------------- */
+  /* Ventes : les lignes de commande font foi, pas la commande entière */
+  /* ---------------------------------------------------------------- */
+  const { data: items, error: itemsError } = await supabase
+    .from("order_items")
+    .select("id, order_id, quantity, subtotal, commission_amount, seller_amount")
+    .eq("store_id", store.id)
+    .limit(2000);
 
-  const chartValues = [35, 48, 42, 65, 54, 88, 72, 98, 76, 110, 86, 115];
+  const itemList = items ?? [];
+  const orderIds = [...new Set(itemList.map((item) => String(item.order_id)))];
+
+  const ordersResult = orderIds.length
+    ? await supabase
+        .from("orders")
+        .select("id, reference, status, payment_status, created_at")
+        .in("id", orderIds)
+        .order("created_at", { ascending: false })
+        .limit(500)
+    : { data: [], error: null };
+
+  const orders = ordersResult.data ?? [];
+  const orderById = new Map(orders.map((order) => [String(order.id), order]));
+
+  const gross = itemList.reduce((sum, item) => sum + (item.subtotal ?? 0), 0);
+  const net = itemList.reduce((sum, item) => sum + (item.seller_amount ?? 0), 0);
+  const unitsSold = itemList.reduce((sum, item) => sum + (item.quantity ?? 0), 0);
+  const pendingOrders = orders.filter((order) => String(order.status) === "pending").length;
+
+  const settledNet = itemList.reduce((sum, item) => {
+    const order = orderById.get(String(item.order_id));
+    const done = order && ["completed", "delivered"].includes(String(order.status));
+    return done ? sum + (item.seller_amount ?? 0) : sum;
+  }, 0);
+
+  /*
+    Chiffre d'affaires sur douze mois glissants. Les mois sans vente sont
+    présents et valent zéro : sans eux, le graphique tasserait le temps et
+    laisserait croire à une activité continue.
+  */
+  const now = new Date();
+  const months: { key: string; label: string; total: number }[] = [];
+
+  for (let offset = 11; offset >= 0; offset -= 1) {
+    const date = new Date(now.getFullYear(), now.getMonth() - offset, 1);
+    months.push({
+      key: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`,
+      label: MONTH_SHORT.format(date).replace(".", ""),
+      total: 0,
+    });
+  }
+
+  const monthIndex = new Map(months.map((month, index) => [month.key, index]));
+
+  for (const item of itemList) {
+    const order = orderById.get(String(item.order_id));
+
+    if (!order?.created_at) continue;
+
+    const date = new Date(order.created_at);
+
+    if (Number.isNaN(date.getTime())) continue;
+
+    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    const index = monthIndex.get(key);
+
+    if (index !== undefined) months[index].total += item.subtotal ?? 0;
+  }
+
+  const peak = Math.max(...months.map((month) => month.total), 0);
+  const currentMonth = months[months.length - 1].total;
+  const previousMonth = months.length > 1 ? months[months.length - 2].total : 0;
+
+  /* Une variation ne se calcule que si le mois précédent a existé. */
+  const variation =
+    previousMonth > 0
+      ? Math.round(((currentMonth - previousMonth) / previousMonth) * 100)
+      : null;
+
+  const sections = sectionsOf(store.id);
+  const error = productsError || itemsError || ordersResult.error;
+
+  const todo = [
+    !store.legal_doc_url && {
+      label: "Document légal manquant",
+      href: `/dashboard/seller/stores/${store.id}/documents`,
+      action: "Fournir",
+    },
+    productList.length === 0 && {
+      label: "Aucun produit dans cette boutique",
+      href: `/dashboard/seller/stores/${store.id}/products/new`,
+      action: "Ajouter",
+    },
+    outOfStock > 0 && {
+      label: `${formatNumber(outOfStock)} produit(s) en rupture`,
+      href: `/dashboard/seller/stores/${store.id}/stock`,
+      action: "Réapprovisionner",
+    },
+    pendingOrders > 0 && {
+      label: `${formatNumber(pendingOrders)} commande(s) à traiter`,
+      href: `/dashboard/seller/stores/${store.id}/orders?filter=todo`,
+      action: "Traiter",
+    },
+    store.is_active === false && {
+      label: "Boutique fermée au public",
+      href: `/dashboard/seller/stores/${store.id}/settings`,
+      action: "Rouvrir",
+    },
+  ].filter(Boolean) as { label: string; href: string; action: string }[];
 
   return (
     <>
-          <div className="space-y-6">
+      <PageHeader
+        title={store.name?.trim() || "Boutique"}
+        subtitle={`${roleLabel} · plan ${limits.planName} · commission ${limits.commission}`}
+        actions={
+          <>
+            <Button href={`/store/${store.slug || store.id}`}>Voir la vitrine</Button>
+            <Button href={`/dashboard/seller/stores/${store.id}/products/new`} variant="primary">
+              Ajouter un produit
+            </Button>
+          </>
+        }
+      />
 
-            <section className="grid gap-4 xl:grid-cols-[1fr_360px]">
-              <div className="grid rounded-2xl border border-[#e7eaf1] bg-white shadow-sm md:grid-cols-4">
-                <InfoTile
-                  icon="💼"
-                  label="Type de vendeur"
-                  value="Vendeur Business"
-                  sub="Compte professionnel"
-                />
+      <div className="space-y-4">
+        {error && (
+          <Notice tone="warning" title="Certaines données sont indisponibles">
+            {error.message}. Les migrations 0001 à 0005 doivent être appliquées.
+          </Notice>
+        )}
 
-                <InfoTile
-                  icon="🛍️"
-                  label="Boutique"
-                  value={store.name}
-                  sub="Voir ma boutique ↗"
-                  href={`/store/${store.slug}`}
-                />
+        <StatRow>
+          <Stat
+            label="Produits en ligne"
+            value={`${formatNumber(activeProducts)} / ${formatNumber(productList.length)}`}
+            tone={activeProducts === 0 && productList.length > 0 ? "warning" : "default"}
+          />
+          <Stat
+            label="Commandes à traiter"
+            value={formatNumber(pendingOrders)}
+            tone={pendingOrders ? "warning" : "success"}
+          />
+          <Stat label="Chiffre d'affaires" value={formatHTG(gross)} hint={`${formatNumber(unitsSold)} article(s) vendus`} />
+          <Stat label="Net acquis" value={formatHTG(settledNet)} tone="success" hint="commandes livrées, commission déduite" />
+          <Stat
+            label="Note de la boutique"
+            value={store.rating_count ? `${Number(store.rating_average).toFixed(1)} / 5` : "—"}
+            hint={store.rating_count ? `${formatNumber(store.rating_count)} avis` : "Aucun avis encore"}
+          />
+        </StatRow>
 
-                <InfoTile
-                  icon="✅"
-                  label="Statut"
-                  value={store.is_verified ? "Vérifié" : "En attente"}
-                  sub={
-                    store.is_verified
-                      ? "Boutique validée"
-                      : "Documents requis"
-                  }
-                  success={store.is_verified}
-                />
+        {todo.length > 0 && (
+          <Panel title="À faire" description="Points qui bloquent ou freinent les ventes de cette boutique." padded={false}>
+            <Table
+              columns={[
+                { key: "l", label: "Point" },
+                { key: "a", label: "", align: "right", width: "150px" },
+              ]}
+            >
+              {todo.map((task) => (
+                <Row key={task.label}>
+                  <Cell strong>{task.label}</Cell>
+                  <Cell align="right">
+                    <Button href={task.href} size="sm">{task.action}</Button>
+                  </Cell>
+                </Row>
+              ))}
+            </Table>
+          </Panel>
+        )}
 
-                <InfoTile
-                  icon="👑"
-                  label="Abonnement"
-                  value="Business"
-                  sub="Jusqu’au 12 Août 2025"
-                />
-              </div>
-
-              <div className="rounded-2xl bg-gradient-to-br from-[#071a61] to-[#003b9c] p-6 text-white shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-white/75">Solde disponible</p>
-                    <p className="mt-2 text-3xl font-black">
-                      {formatHTG(totalRevenue)}
-                    </p>
-                    <p className="mt-2 text-sm text-white/75">
-                      À recevoir : {formatHTG(totalRevenue * 0.18)}
-                    </p>
-                  </div>
-
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-3xl">
-                    💳
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-              <StatCard
-                title="Produits actifs"
-                value={activeProducts ?? 0}
-                sub={`Sur ${totalProducts ?? 0} produits`}
-                icon="📦"
-                color="green"
-              />
-
-              <StatCard
-                title="Commandes en attente"
-                value={pendingOrders}
-                sub="À traiter aujourd’hui"
-                icon="🛒"
-                color="orange"
-              />
-
-              <StatCard
-                title="Ventes"
-                value={formatHTG(totalRevenue)}
-                sub="+18.6% par rapport au mois dernier"
-                icon="📈"
-                color="green"
-              />
-
-              <StatCard
-                title="Stock faible"
-                value={lowStockProducts ?? 0}
-                sub="Produits à réapprovisionner"
-                icon="⚠️"
-                color="red"
-              />
-
-              <StatCard
-                title="Avis clients"
-                value="4.8/5"
-                sub="Basé sur les avis clients"
-                icon="⭐"
-                color="yellow"
-              />
-            </section>
-
-            <section className="grid gap-4 xl:grid-cols-[0.7fr_1fr]">
-              <div className="rounded-2xl border border-[#e7eaf1] bg-gradient-to-br from-[#fff4f4] to-white p-6 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl font-black text-[#0053c6]">
-                      Boostez vos ventes !
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                      Sponsorisez vos meilleurs produits et atteignez plus de clients.
-                    </p>
-
-                    <Link
-                      href={`/dashboard/seller/stores/${store.id}/ads`}
-                      className="mt-5 inline-flex rounded-xl bg-[#061a36] px-5 py-3 text-sm font-black text-white"
-                    >
-                      Créer une campagne
-                    </Link>
-                  </div>
-
-                  <div className="hidden text-7xl md:block">📣</div>
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-[#e7eaf1] bg-white p-6 shadow-sm">
-                <h2 className="text-xl font-black">Actions rapides</h2>
-
-                <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-5">
-                  <QuickAction
-                    href={`/dashboard/seller/stores/${store.id}/products/new`}
-                    icon="+"
-                    label="Ajouter un produit"
-                  />
-                  <QuickAction
-                    href={`/dashboard/seller/stores/${store.id}/orders`}
-                    icon="🛒"
-                    label="Gérer les commandes"
-                    badge={pendingOrders ? String(pendingOrders) : undefined}
-                  />
-                  <QuickAction
-                    href={`/dashboard/seller/stores/${store.id}/sales`}
-                    icon="↗"
-                    label="Voir mes ventes"
-                  />
-                  <QuickAction
-                    href={`/dashboard/seller/stores/${store.id}/payments`}
-                    icon="💳"
-                    label="Retirer mon argent"
-                  />
-                  <QuickAction
-                    href={`/dashboard/seller/stores/${store.id}/support`}
-                    icon="◎"
-                    label="Contacter le support"
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="grid gap-4 xl:grid-cols-[1.2fr_0.9fr_0.95fr]">
-              <div className="rounded-2xl border border-[#e7eaf1] bg-white p-6 shadow-sm">
-                <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-xl font-black">Graphique des ventes</h2>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Le vendeur peut choisir la période et le type de graphique.
-                    </p>
-                  </div>
-
-                  <form className="flex gap-2" method="GET">
-                    <select
-                      name="period"
-                      defaultValue={period}
-                      className="rounded-xl border border-[#e7eaf1] bg-white px-3 py-2 text-sm font-bold"
-                    >
-                      <option value="week">Semaine</option>
-                      <option value="month">Mois</option>
-                      <option value="year">Année</option>
-                    </select>
-
-                    <select
-                      name="chart"
-                      defaultValue={chartType}
-                      className="rounded-xl border border-[#e7eaf1] bg-white px-3 py-2 text-sm font-bold"
-                    >
-                      <option value="line">Courbe</option>
-                      <option value="bar">Barres</option>
-                      <option value="pie">Diagramme</option>
-                    </select>
-
-                    <button className="rounded-xl bg-[#061a36] px-4 py-2 text-sm font-black text-white">
-                      OK
-                    </button>
-                  </form>
-                </div>
-
-                <ChartPreview type={chartType} values={chartValues} />
-              </div>
-
-              <div className="rounded-2xl border border-[#e7eaf1] bg-white p-6 shadow-sm">
-                <div className="mb-5 flex items-center justify-between">
-                  <h2 className="text-xl font-black">Top produits</h2>
-                  <span className="rounded-xl border border-[#e7eaf1] px-3 py-2 text-xs font-bold text-gray-500">
-                    Meilleures ventes
+        <Panel
+          title="Chiffre d'affaires sur douze mois"
+          description={
+            variation === null
+              ? "Montants réellement facturés, mois par mois."
+              : `Ce mois-ci : ${formatHTG(currentMonth)} (${variation >= 0 ? "+" : ""}${variation} % par rapport au mois précédent).`
+          }
+        >
+          {peak === 0 ? (
+            <p className="py-6 text-center text-[12.5px] text-[#565959]">
+              Aucune vente enregistrée sur les douze derniers mois.
+            </p>
+          ) : (
+            <div className="flex h-44 items-end gap-1.5">
+              {months.map((month) => (
+                <div key={month.key} className="flex flex-1 flex-col items-center gap-1.5">
+                  <span className="tnum text-[9.5px] text-[#767676]">
+                    {month.total > 0 ? formatNumber(Math.round(month.total / 1000)) + "k" : ""}
                   </span>
-                </div>
-
-                {!recentProducts || recentProducts.length === 0 ? (
-                  <div className="rounded-2xl border-2 border-dashed border-[#e7eaf1] p-8 text-center">
-                    <p className="text-4xl">📦</p>
-                    <p className="mt-3 font-black">Aucun produit</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {recentProducts.slice(0, 4).map((product) => (
-                      <Link
-                        key={product.id}
-                        href={`/dashboard/seller/stores/${store.id}/products/${product.id}`}
-                        className="flex items-center gap-4 rounded-2xl border border-transparent p-3 hover:border-[#e7eaf1] hover:bg-gray-50"
-                      >
-                        <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-gray-100">
-                          {product.image_url ? (
-                            <img
-                              src={product.image_url}
-                              alt={product.title}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            "📦"
-                          )}
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-black">{product.title}</p>
-                          <p className="text-sm text-gray-500">
-                            Stock : {product.stock ?? 0}
-                          </p>
-                        </div>
-
-                        <div className="text-right">
-                          <p className="text-sm font-black">
-                            {formatHTG(product.price ?? 0)}
-                          </p>
-                          <p className="text-xs font-bold text-green-600">
-                            +12%
-                          </p>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-
-                <Link
-                  href={`/dashboard/seller/stores/${store.id}/products`}
-                  className="mt-5 block text-center text-sm font-black text-[#0053c6]"
-                >
-                  Voir tous les produits →
-                </Link>
-              </div>
-
-              <div className="rounded-2xl border border-[#e7eaf1] bg-white p-6 shadow-sm">
-                <h2 className="text-xl font-black">Activités récentes</h2>
-
-                <div className="mt-5 space-y-4">
-                  <ActivityItem
-                    icon="🧾"
-                    title="Commande reçue"
-                    sub={`${pendingOrders} commande(s) en attente`}
-                    time="Aujourd’hui"
+                  <div
+                    className="w-full rounded-t-[2px] bg-[#0f1111]"
+                    style={{ height: `${Math.max(2, (month.total / peak) * 100)}%` }}
+                    title={`${month.label} : ${formatHTG(month.total)}`}
                   />
-                  <ActivityItem
-                    icon="💰"
-                    title="Paiement disponible"
-                    sub={formatHTG(totalRevenue)}
-                    time="Cette période"
-                  />
-                  <ActivityItem
-                    icon="⚠️"
-                    title="Stock faible"
-                    sub={`${lowStockProducts ?? 0} produit(s) à réapprovisionner`}
-                    time="Maintenant"
-                  />
-                  <ActivityItem
-                    icon="⭐"
-                    title="Avis client"
-                    sub="Surveillez vos nouveaux avis"
-                    time="Récent"
-                  />
+                  <span className="text-[10px] text-[#565959]">{month.label}</span>
                 </div>
-
-                <Link
-                  href={`/dashboard/seller/stores/${store.id}/activities`}
-                  className="mt-5 block text-center text-sm font-black text-[#0053c6]"
-                >
-                  Voir toutes les activités →
-                </Link>
-              </div>
-            </section>
-
-            {!store.is_verified ? (
-              <section className="rounded-2xl border border-[#ffd88a] bg-[#fff8e8] p-5">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#fff0c8] text-2xl">
-                      🛡️
-                    </div>
-
-                    <div>
-                      <h3 className="font-black">Vérification requise</h3>
-                      <p className="text-sm text-gray-600">
-                        Pour accéder à toutes les fonctionnalités, veuillez soumettre vos documents.
-                      </p>
-                    </div>
-                  </div>
-
-                  <Link
-                    href={`/dashboard/seller/stores/${store.id}/documents`}
-                    className="rounded-xl bg-[#ffc247] px-5 py-3 text-sm font-black"
-                  >
-                    Voir mes documents
-                  </Link>
-                </div>
-              </section>
-            ) : null}
-
-            <section className="rounded-2xl bg-[#061a36] p-5 text-white">
-              <div className="grid gap-5 md:grid-cols-[1fr_1fr_1fr_1fr_auto] md:items-center">
-                <div>
-                  <h3 className="text-xl font-black">Passez au plan supérieur</h3>
-                  <p className="mt-1 text-sm text-white/65">
-                    Débloquez plus de produits, de stores et de fonctionnalités avancées.
-                  </p>
-                </div>
-
-                <PlanFeature icon="🎁" title="Plus de produits" sub="Jusqu’à 10,000 produits" />
-                <PlanFeature icon="🏪" title="Stores multiples" sub="Jusqu’à 10 stores" />
-                <PlanFeature icon="🎧" title="Support prioritaire" sub="Assistance 24/7" />
-
-                <Link
-                  href={`/dashboard/seller/stores/${store.id}/subscription`}
-                  className="rounded-xl bg-[#e31837] px-7 py-3 text-center text-sm font-black text-white"
-                >
-                  Voir les plans
-                </Link>
-              </div>
-            </section>
-          </div>
-    </>
-  );
-}
-
-function InfoTile({
-  icon,
-  label,
-  value,
-  sub,
-  href,
-  success,
-}: {
-  icon: string;
-  label: string;
-  value: string;
-  sub: string;
-  href?: string;
-  success?: boolean;
-}) {
-  const content = (
-    <div className="flex items-center gap-4 border-b border-[#e7eaf1] p-5 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f0f4ff] text-2xl">
-        {icon}
-      </div>
-
-      <div className="min-w-0">
-        <p className="text-xs font-bold text-gray-500">{label}</p>
-        <p className={`truncate font-black ${success ? "text-green-600" : ""}`}>
-          {value}
-        </p>
-        <p className="text-xs font-bold text-[#0053c6]">{sub}</p>
-      </div>
-    </div>
-  );
-
-  if (href) {
-    return (
-      <Link href={href} target="_blank">
-        {content}
-      </Link>
-    );
-  }
-
-  return content;
-}
-
-function StatCard({
-  title,
-  value,
-  sub,
-  icon,
-  color,
-}: {
-  title: string;
-  value: string | number;
-  sub: string;
-  icon: string;
-  color: "green" | "orange" | "red" | "yellow";
-}) {
-  const colorMap = {
-    green: "bg-green-100 text-green-700",
-    orange: "bg-orange-100 text-orange-700",
-    red: "bg-red-100 text-red-700",
-    yellow: "bg-yellow-100 text-yellow-700",
-  };
-
-  return (
-    <div className="rounded-2xl border border-[#e7eaf1] bg-white p-5 shadow-sm">
-      <div className="flex justify-between gap-3">
-        <div>
-          <p className="text-sm font-bold text-gray-600">{title}</p>
-          <p className="mt-2 text-2xl font-black">{value}</p>
-          <p className="mt-2 text-xs text-gray-500">{sub}</p>
-        </div>
-
-        <div className={`flex h-14 w-14 items-center justify-center rounded-full text-2xl ${colorMap[color]}`}>
-          {icon}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function QuickAction({
-  href,
-  icon,
-  label,
-  badge,
-}: {
-  href: string;
-  icon: string;
-  label: string;
-  badge?: string;
-}) {
-  return (
-    <Link href={href} className="relative text-center">
-      <div className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#edf3ff] text-2xl text-[#0053c6]">
-        {icon}
-        {badge ? (
-          <span className="absolute -right-2 -top-2 rounded-full bg-[#e31837] px-1.5 text-[10px] font-black text-white">
-            {badge}
-          </span>
-        ) : null}
-      </div>
-      <p className="mt-3 text-xs font-black">{label}</p>
-    </Link>
-  );
-}
-
-function ChartPreview({
-  type,
-  values,
-}: {
-  type: string;
-  values: number[];
-}) {
-  if (type === "pie") {
-    return (
-      <div className="flex h-80 items-center justify-center rounded-2xl bg-[#f7f9fc]">
-        <div className="relative h-56 w-56 rounded-full bg-[conic-gradient(#2563eb_0_40%,#22c55e_40%_65%,#f59e0b_65%_82%,#e31837_82%_100%)]">
-          <div className="absolute inset-12 flex items-center justify-center rounded-full bg-white text-center">
-            <div>
-              <p className="text-2xl font-black">100%</p>
-              <p className="text-xs text-gray-500">Ventes</p>
+              ))}
             </div>
-          </div>
+          )}
+        </Panel>
+
+        <div className="grid gap-4 xl:grid-cols-2">
+          <Panel
+            title="Dernières commandes"
+            actions={<Button href={`/dashboard/seller/stores/${store.id}/orders`} size="sm">Tout voir</Button>}
+            padded={false}
+          >
+            {orders.length === 0 ? (
+              <EmptyState
+                title="Aucune commande"
+                description="Les commandes contenant vos produits apparaîtront ici."
+              />
+            ) : (
+              <Table
+                columns={[
+                  { key: "r", label: "Référence" },
+                  { key: "d", label: "Date" },
+                  { key: "s", label: "État" },
+                  { key: "n", label: "Net vendeur", align: "right" },
+                ]}
+              >
+                {orders.slice(0, 6).map((order) => {
+                  const lines = itemList.filter((item) => String(item.order_id) === String(order.id));
+                  const lineNet = lines.reduce((sum, line) => sum + (line.seller_amount ?? 0), 0);
+
+                  return (
+                    <Row key={order.id}>
+                      <Cell strong>{order.reference || `#${String(order.id).slice(0, 8)}`}</Cell>
+                      <Cell muted>{formatDate(order.created_at)}</Cell>
+                      <Cell>
+                        <Badge tone={ORDER_STATUS_TONES[String(order.status)] || "neutral"}>
+                          {ORDER_STATUS_LABELS[String(order.status)] || order.status}
+                        </Badge>
+                      </Cell>
+                      <Cell align="right" numeric strong>{formatHTG(lineNet)}</Cell>
+                    </Row>
+                  );
+                })}
+              </Table>
+            )}
+          </Panel>
+
+          <Panel
+            title="Produits récents"
+            actions={<Button href={`/dashboard/seller/stores/${store.id}/products`} size="sm">Tout voir</Button>}
+            padded={false}
+          >
+            {productList.length === 0 ? (
+              <EmptyState
+                title="Aucun produit"
+                description="Une boutique sans produit n'apparaît pas dans la recherche."
+                action={
+                  <Button href={`/dashboard/seller/stores/${store.id}/products/new`} variant="primary">
+                    Ajouter un produit
+                  </Button>
+                }
+              />
+            ) : (
+              <Table
+                columns={[
+                  { key: "t", label: "Produit" },
+                  { key: "s", label: "Stock", align: "right" },
+                  { key: "e", label: "État" },
+                  { key: "p", label: "Prix", align: "right" },
+                ]}
+              >
+                {productList.slice(0, 6).map((product) => (
+                  <Row key={product.id}>
+                    <Cell strong>
+                      <Link
+                        href={`/dashboard/seller/stores/${store.id}/products/${product.id}`}
+                        className="hover:underline"
+                      >
+                        {product.title}
+                      </Link>
+                    </Cell>
+                    <Cell
+                      align="right"
+                      numeric
+                      muted={(product.stock ?? 0) > LOW_STOCK_THRESHOLD}
+                    >
+                      {formatNumber(product.stock ?? 0)}
+                    </Cell>
+                    <Cell>
+                      <Badge tone={String(product.status) === "active" ? "success" : "neutral"}>
+                        {String(product.status) === "active" ? "En ligne" : "Hors ligne"}
+                      </Badge>
+                    </Cell>
+                    <Cell align="right" numeric>{formatHTG(product.price ?? 0)}</Cell>
+                  </Row>
+                ))}
+              </Table>
+            )}
+          </Panel>
         </div>
-      </div>
-    );
-  }
 
-  if (type === "bar") {
-    return (
-      <div className="flex h-80 items-end gap-3 rounded-2xl bg-[#f7f9fc] p-5">
-        {values.map((height, index) => (
-          <div key={index} className="flex flex-1 flex-col items-center justify-end gap-2">
-            <div
-              className="w-full rounded-t-xl bg-[#2563eb]"
-              style={{ height: `${height * 1.6}px` }}
-            />
-            <span className="text-[10px] font-bold text-gray-400">{index + 1}</span>
+        {lowStock > 0 && (
+          <Notice tone="warning" title={`${formatNumber(lowStock)} produit(s) en stock faible`}>
+            En dessous de {LOW_STOCK_THRESHOLD} unités, une vente peut vous
+            mettre en rupture sans prévenir.{" "}
+            <Link
+              href={`/dashboard/seller/stores/${store.id}/stock`}
+              className="font-medium text-[#d2162c] hover:underline"
+            >
+              Voir le stock
+            </Link>
+          </Notice>
+        )}
+
+        <Panel title="Toutes les sections de cette boutique">
+          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {sections.map((section) => (
+              <div key={section.group}>
+                <p className="mb-2 text-[10.5px] font-semibold uppercase tracking-[0.07em] text-[#565959]">
+                  {section.group}
+                </p>
+                <ul className="space-y-1.5">
+                  {section.items.map((item) => (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        className="block rounded-[3px] border border-transparent px-2 py-1.5 transition-colors hover:border-[#e3e6e6] hover:bg-[#f7fafa]"
+                      >
+                        <span className="block text-[12.5px] font-medium text-[#0f1111]">
+                          {item.label}
+                        </span>
+                        <span className="block text-[11px] leading-snug text-[#565959]">
+                          {item.hint}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-        ))}
+        </Panel>
+
+        <Notice tone="info" title="Ce qui n'est pas mesuré ici">
+          Les visites, le taux de conversion et les sources de trafic
+          demandent un suivi d&apos;audience qui n&apos;est pas installé sur
+          MACHÉ. Ils ne sont donc pas affichés : un chiffre inventé vaut moins
+          qu&apos;une case vide. Le solde à recevoir dépendra, lui, du
+          prestataire de paiement une fois raccordé.
+        </Notice>
       </div>
-    );
-  }
-
-  return (
-    <div className="relative h-80 overflow-hidden rounded-2xl bg-[#f7f9fc] p-5">
-      <div className="absolute inset-x-5 top-10 h-px bg-gray-200" />
-      <div className="absolute inset-x-5 top-24 h-px bg-gray-200" />
-      <div className="absolute inset-x-5 top-38 h-px bg-gray-200" />
-      <div className="absolute inset-x-5 top-52 h-px bg-gray-200" />
-
-      <svg viewBox="0 0 600 260" className="h-full w-full">
-        <polyline
-          fill="none"
-          stroke="#2563eb"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points="0,190 50,150 100,165 150,115 200,135 250,170 300,150 350,100 400,125 450,75 500,110 560,80"
-        />
-        <polyline
-          fill="none"
-          stroke="#cbd5e1"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeDasharray="8 8"
-          points="0,210 50,190 100,200 150,170 200,185 250,175 300,160 350,145 400,155 450,130 500,150 560,120"
-        />
-      </svg>
-    </div>
-  );
-}
-
-function ActivityItem({
-  icon,
-  title,
-  sub,
-  time,
-}: {
-  icon: string;
-  title: string;
-  sub: string;
-  time: string;
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#f4f6fa]">
-        {icon}
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="font-black">{title}</p>
-        <p className="text-sm text-gray-500">{sub}</p>
-      </div>
-
-      <p className="text-xs text-gray-400">{time}</p>
-    </div>
-  );
-}
-
-function PlanFeature({
-  icon,
-  title,
-  sub,
-}: {
-  icon: string;
-  title: string;
-  sub: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 border-white/10 md:border-l md:pl-5">
-      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10">
-        {icon}
-      </div>
-
-      <div>
-        <p className="text-sm font-black">{title}</p>
-        <p className="text-xs text-white/60">{sub}</p>
-      </div>
-    </div>
+    </>
   );
 }
