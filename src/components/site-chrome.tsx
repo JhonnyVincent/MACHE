@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { Header } from "./header";
 import { Footer } from "./footer";
 import { ChatAssistant } from "./chat-assistant";
-import { CartDrawer } from "./cart-drawer";
 
 /*
   Les dashboards affichent leur propre en-tête et leur propre sidebar en
@@ -15,7 +14,13 @@ import { CartDrawer } from "./cart-drawer";
 */
 const BARE_PREFIXES = ["/dashboard"];
 
-export function SiteChrome({ children }: { children: React.ReactNode }) {
+export function SiteChrome({
+  children,
+  cartCount = 0,
+}: {
+  children: React.ReactNode;
+  cartCount?: number;
+}) {
   const pathname = usePathname() || "/";
 
   const isBare = BARE_PREFIXES.some(
@@ -28,11 +33,10 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Header />
+      <Header cartCount={cartCount} />
       {children}
       <Footer />
       <ChatAssistant />
-      <CartDrawer />
     </>
   );
 }

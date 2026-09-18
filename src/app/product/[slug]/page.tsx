@@ -1,214 +1,278 @@
-import { notFound } from "next/navigation";
+/*
+  PAGE : fiche produit
+
+  Lit le catalogue Medusa. Le prix affiché est celui que le backend a
+  calculé pour la région : la page n'en recalcule aucun.
+
+  Le bouton d'ajout envoie un `offer_id`, pas un identifiant de variante.
+  Sur une marketplace, « taille 44 » ne désigne pas une ligne de commande
+  tant qu'on ne sait pas de quelle boutique elle vient — et plusieurs
+  boutiques peuvent proposer exactement la même.
+*/
+
 import Link from "next/link";
-import { allProducts } from "@/lib/mock-data";
-import { ProductActions } from "@/components/product-actions";
+import { notFound } from "next/navigation";
+import {
+  fetchProductByHandle, fetchProducts, fetchOffersForVariant, formatAmount,
+} from "@/lib/medusa/catalog";
+import { ProductRailSection } from "@/components/home/rails";
+import { addToCartAction } from "@/app/cart/actions";
+
+export const dynamic = "force-dynamic";
 
 export default async function ProductPage({
-  params
+  params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ variant?: string; error?: string }>;
 }) {
   const { slug } = await params;
-  const product = allProducts.find((item) => item.slug === slug);
+  const query = searchParams ? await searchParams : {};
+
+  const result = await fetchProductByHandle(slug);
+
+  if (!result.ok) {
+    return (
+      <main className="mx-auto w-full max-w-3xl px-4 py-16">
+        <h1 className="text-[22px] font-bold text-[var(--mache-text)]">
+          Fiche indisponible
+        </h1>
+        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+          {result.reason}
+        </p>
+        <Link
+          href="/shop"
+          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white"
+        >
+          Retour au catalogue
+        </Link>
+      </main>
+    );
+  }
+
+  const product = result.data;
 
   if (!product) notFound();
 
-  const relatedProducts = allProducts
-    .filter((item) => item.slug !== product.slug && item.category === product.category)
-    .slice(0, 4);
+  /* Variante choisie, ou la première disponible. */
+  const selected =
+    product.variants.find((variant) => variant.id === query.variant) ??
+    product.variants.find((variant) => variant.available) ??
+    product.variants[0] ??
+    null;
 
-  const fallbackProducts =
-    relatedProducts.length < 4
-      ? allProducts.filter((item) => item.slug !== product.slug).slice(0, 4)
-      : relatedProducts;
-
-  const displayProducts = relatedProducts.length ? relatedProducts : fallbackProducts;
-
-  const savings = product.compareAtPrice
-    ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
+  const offersResult = selected
+    ? await fetchOffersForVariant(selected.id)
     : null;
 
+  const offers = offersResult?.ok ? offersResult.data : [];
+
+  const related = await fetchProducts({ limit: 6 });
+
+  const price = selected?.price ?? product.price;
+  const originalPrice = selected?.originalPrice ?? product.originalPrice;
+  const currency = selected?.currency ?? product.currency;
+
+  const hasDiscount =
+    originalPrice !== null && price !== null && originalPrice > price;
+
   return (
-    <main>
-      <section className="container-page py-8">
-        <div className="mb-5 text-[12px] text-[var(--mache-muted)]">
-          <Link href="/">Accueil</Link> / <Link href="/shop">Boutique</Link> /{" "}
-          <span>{product.category}</span> / <span>{product.title}</span>
-        </div>
+    <main className="bg-[var(--mache-bg)] pb-10">
+      <div className="container-page py-6">
+        <nav className="mb-4 text-[12.5px] text-[var(--mache-muted)]">
+          <Link href="/shop" className="hover:underline">Catalogue</Link>
+          <span className="mx-1.5">/</span>
+          <span className="text-[var(--mache-text)]">{product.title}</span>
+        </nav>
 
-        <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+        {query.error && (
+          <div className="mb-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-[13px] text-[#b01124]">
+            {decodeURIComponent(query.error)}
+          </div>
+        )}
+
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr] xl:grid-cols-[1.1fr_0.9fr]">
+          {/* Images */}
           <div>
-            <div className="overflow-hidden rounded-[20px] border border-[var(--mache-line)] bg-[var(--mache-white)]">
-              <img
-                src={product.images[0]}
-                alt={product.title}
-                className="h-[500px] w-full object-cover"
-              />
+            <div className="overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
+              <div className="aspect-square">
+                {product.thumbnail ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={product.thumbnail}
+                    alt={product.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-[13px] text-[var(--mache-light)]">
+                    Aucune image
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-3 gap-3">
-              {product.images.map((image, index) => (
-                <div
-                  key={`${image}-${index}`}
-                  className="overflow-hidden rounded-[14px] border border-[var(--mache-line)] bg-[var(--mache-white)]"
-                >
-                  <img
-                    src={image}
-                    alt={product.title}
-                    className="h-28 w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
+            {product.images.length > 1 && (
+              <div className="mt-2 grid grid-cols-5 gap-2">
+                {product.images.slice(0, 5).map((image) => (
+                  <span
+                    key={image}
+                    className="aspect-square overflow-hidden rounded-[6px] border border-[var(--mache-line)] bg-white"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={image} alt="" className="h-full w-full object-cover" />
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Achat */}
           <div>
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <span className="badge">{product.category}</span>
-              <span className="btag bg-hot">Tendance</span>
-              {savings ? <span className="btag bg-promo">-{savings}%</span> : null}
-              {product.stock > 0 ? (
-                <span className="btag bg-fresh">En stock</span>
-              ) : (
-                <span className="btag bg-promo">Rupture</span>
-              )}
-            </div>
-
-            <h1 className="text-[clamp(24px,3vw,38px)] font-[900] leading-[1.08] tracking-[-0.04em]">
+            <h1 className="text-[24px] font-bold leading-tight tracking-[-0.01em] text-[var(--mache-text)] sm:text-[28px]">
               {product.title}
             </h1>
 
-            <div className="mt-3 flex items-center gap-3">
-              <div className="text-[34px] font-[900] tracking-[-0.04em]">
-                {product.currency} {product.price}
+            {product.subtitle && (
+              <p className="mt-1.5 text-[14px] text-[var(--mache-muted)]">
+                {product.subtitle}
+              </p>
+            )}
+
+            <div className="mt-4 flex flex-wrap items-baseline gap-x-3">
+              <span className="text-[30px] font-[900] leading-none tracking-[-0.02em] text-[var(--mache-text)]">
+                {formatAmount(price, currency)}
+              </span>
+              {hasDiscount && (
+                <span className="text-[16px] text-[var(--mache-light)] line-through">
+                  {formatAmount(originalPrice, currency)}
+                </span>
+              )}
+            </div>
+
+            {/* Variantes */}
+            {product.variants.length > 1 && (
+              <div className="mt-5">
+                <p className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  Choisir une déclinaison
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {product.variants.map((variant) => (
+                    <Link
+                      key={variant.id}
+                      href={`/product/${product.handle}?variant=${variant.id}`}
+                      scroll={false}
+                      className={`rounded-[6px] border px-3 py-1.5 text-[13px] transition-colors ${
+                        selected?.id === variant.id
+                          ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
+                          : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+                      }`}
+                    >
+                      {variant.title}
+                    </Link>
+                  ))}
+                </div>
               </div>
+            )}
 
-              {product.compareAtPrice ? (
-                <div className="text-[18px] text-[var(--mache-muted)] line-through">
-                  {product.currency} {product.compareAtPrice}
-                </div>
-              ) : null}
-
-              {savings ? (
-                <div className="rounded-[4px] bg-[var(--mache-success-soft)] px-2 py-1 text-[11px] font-[700] text-[var(--mache-success)]">
-                  Économie {savings}%
-                </div>
-              ) : null}
-            </div>
-
-            <div className="mt-3 text-[13px] text-[var(--mache-muted)]">
-              ⭐ {product.rating} · {product.reviewCount} avis
-            </div>
-
-            <p className="mt-5 text-[14px] leading-7 text-[var(--mache-muted)]">
-              {product.description}
-            </p>
-
-            {product.variants?.length ? (
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                {product.variants.map((variant) => (
-                  <div
-                    key={variant.id}
-                    className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-bg)] px-4 py-3 text-[13px]"
+            {/* Ajout au panier */}
+            <div className="mt-6">
+              {selected?.offerId ? (
+                <form action={addToCartAction} className="flex flex-wrap gap-2">
+                  <input type="hidden" name="offer_id" value={selected.offerId} />
+                  <input
+                    type="hidden"
+                    name="return_to"
+                    value={`/product/${product.handle}?variant=${selected.id}`}
+                  />
+                  <label htmlFor="quantity" className="sr-only">Quantité</label>
+                  <input
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    min={1}
+                    defaultValue={1}
+                    className="w-20 rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-[14px]"
+                  />
+                  <button
+                    type="submit"
+                    className="flex-1 rounded-[6px] bg-[var(--mache-primary)] px-6 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
                   >
-                    <span className="font-[700]">{variant.name} :</span> {variant.value}
-                  </div>
-                ))}
-              </div>
-            ) : null}
-
-            <ProductActions productId={product.id} />
-
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[10px] bg-[var(--mache-bg)] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
-                🚚 Livraison nationale et internationale
-              </div>
-              <div className="rounded-[10px] bg-[var(--mache-bg)] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
-                🔒 Paiement sécurisé et structure checkout prête
-              </div>
-              <div className="rounded-[10px] bg-[var(--mache-bg)] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
-                ↩️ Retour selon politique produit
-              </div>
-              <div className="rounded-[10px] bg-[var(--mache-bg)] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
-                📦 Stock actuel : {product.stock}
-              </div>
+                    Ajouter au panier
+                  </button>
+                </form>
+              ) : (
+                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
+                  Aucun vendeur ne propose actuellement cette déclinaison.
+                </p>
+              )}
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="container-page py-6">
-        <div className="border-b-2 border-[var(--mache-line)]">
-          <div className="flex flex-wrap gap-6">
-            <button className="border-b-2 border-[var(--mache-primary)] pb-3 text-[13px] font-[700] text-[var(--mache-primary)]">
-              Description
-            </button>
-            <button className="pb-3 text-[13px] font-[700] text-[var(--mache-muted)]">
-              Avis clients
-            </button>
-            <button className="pb-3 text-[13px] font-[700] text-[var(--mache-muted)]">
-              Livraison
-            </button>
-          </div>
-        </div>
+            {/*
+              Les vendeurs concurrents. C'est ce qui distingue une
+              marketplace d'une boutique : le client choisit chez qui il
+              achète, et le voit.
+            */}
+            {offers.length > 0 && (
+              <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+                <p className="text-[13px] font-bold text-[var(--mache-text)]">
+                  {offers.length > 1
+                    ? `${offers.length} boutiques proposent cette déclinaison`
+                    : "Vendu par"}
+                </p>
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-2">
-          <div className="card p-6">
-            <h3 className="text-[15px] font-[800]">Description</h3>
-            <p className="mt-4 text-[14px] leading-7 text-[var(--mache-muted)]">
-              {product.description}
-            </p>
-            <p className="mt-4 text-[14px] leading-7 text-[var(--mache-muted)]">
-              Produit présenté dans une logique e-commerce moderne avec variations,
-              stock, wishlist, panier, avis et livraison.
-            </p>
-          </div>
+                <ul className="mt-2.5 space-y-2">
+                  {offers.map((offer) => (
+                    <li key={offer.id} className="flex items-center justify-between gap-3">
+                      <Link
+                        href={`/store/${offer.sellerHandle}`}
+                        className="text-[13px] font-medium text-[var(--mache-text)] hover:underline"
+                      >
+                        {offer.sellerName}
+                      </Link>
 
-          <div className="card p-6">
-            <h3 className="text-[15px] font-[800]">Livraison & retours</h3>
-            <div className="mt-4 space-y-4 text-[14px] leading-7 text-[var(--mache-muted)]">
-              <p>Haïti : 2 à 4 jours</p>
-              <p>USA / Canada : 5 à 10 jours</p>
-              <p>Europe : 7 à 14 jours</p>
-              <p>Retour accepté selon la politique du produit et l’état à réception.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="container-page py-10">
-        <div className="mb-6">
-          <h2 className="section-title">Produits similaires</h2>
-          <p className="section-subtitle">
-            Suggestions produit dynamiques pour garder une logique e-commerce vivante.
-          </p>
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {displayProducts.map((item) => (
-            <Link
-              key={item.id}
-              href={`/product/${item.slug}`}
-              className="card overflow-hidden transition hover:-translate-y-1"
-            >
-              <img
-                src={item.images[0]}
-                alt={item.title}
-                className="h-52 w-full object-cover"
-              />
-              <div className="p-4">
-                <div className="mb-2">
-                  <span className="badge">{item.category}</span>
-                </div>
-                <h3 className="line-clamp-2 text-[14px] font-[700]">{item.title}</h3>
-                <div className="mt-3 text-[18px] font-[800]">
-                  {item.currency} {item.price}
-                </div>
+                      <form action={addToCartAction}>
+                        <input type="hidden" name="offer_id" value={offer.id} />
+                        <input type="hidden" name="quantity" value={1} />
+                        <input
+                          type="hidden"
+                          name="return_to"
+                          value={`/product/${product.handle}`}
+                        />
+                        <button
+                          type="submit"
+                          className="rounded-[4px] border border-[var(--mache-line)] px-2.5 py-1 text-[12px] font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+                        >
+                          Acheter ici
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </Link>
-          ))}
+            )}
+
+            {product.description && (
+              <div className="mt-6">
+                <h2 className="text-[15px] font-bold text-[var(--mache-text)]">
+                  Description
+                </h2>
+                <p className="mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
+                  {product.description}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      </section>
+      </div>
+
+      {related.ok && related.data.products.length > 0 && (
+        <ProductRailSection
+          title="Autres produits"
+          href="/shop"
+          products={related.data.products.filter((item) => item.id !== product.id)}
+        />
+      )}
     </main>
   );
 }

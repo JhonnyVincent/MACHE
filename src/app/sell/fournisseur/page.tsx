@@ -44,10 +44,12 @@ export default function SellFournisseurPage() {
     <main className="bg-white">
       <section className="relative overflow-hidden bg-[#071f3d] text-white">
         <div className="absolute inset-0 opacity-20">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1800&auto=format&fit=crop"
-            alt="Fournisseur Maché"
-            className="h-full w-full object-cover"
+            src="/images/carte-haiti-mache.png"
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-contain object-right"
           />
         </div>
 

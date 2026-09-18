@@ -77,10 +77,12 @@ export default function SellPage() {
     <main className="bg-white">
       <section className="relative overflow-hidden bg-[#071f3d] text-white">
         <div className="absolute inset-0 opacity-20">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1800&auto=format&fit=crop"
-            alt="Vendre sur Maché"
-            className="h-full w-full object-cover"
+            src="/images/carte-haiti-mache.png"
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-contain object-right"
           />
         </div>
 
@@ -167,10 +169,18 @@ export default function SellPage() {
                 ))}
               </div>
 
+              {/*
+                Cet encart affichait « ⭐ 4.8 / 5 · Temps de réponse rapide » :
+                une note inventée, présentée à de futurs vendeurs comme un
+                résultat obtenu. Il montre désormais ce qu'une boutique gagne
+                réellement à être vérifiée.
+              */}
               <div className="mt-5 flex items-center justify-between rounded-2xl border p-4">
                 <div>
-                  <p className="font-black">⭐ 4.8 / 5</p>
-                  <p className="text-sm text-neutral-500">Temps de réponse rapide</p>
+                  <p className="font-black">Badge vérifié</p>
+                  <p className="text-sm text-neutral-500">
+                    Accordé après contrôle de vos documents
+                  </p>
                 </div>
 
                 <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-black text-[var(--mache-primary)]">
@@ -297,7 +307,7 @@ export default function SellPage() {
 
           <div className="overflow-hidden rounded-[2rem] border bg-neutral-100">
             <img
-              src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?q=80&w=1400&auto=format&fit=crop"
+              src="/images/carte-haiti-mache.png"
               alt="Dashboard vendeur Maché"
               className="h-[520px] w-full object-cover"
             />

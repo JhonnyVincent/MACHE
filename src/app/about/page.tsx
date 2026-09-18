@@ -19,11 +19,11 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-[20px]">
+          <div className="overflow-hidden rounded-[20px] bg-[var(--mache-dark)] p-8">
             <img
-              src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&q=80"
-              alt="Marché"
-              className="h-[400px] w-full object-cover opacity-85"
+              src="/images/carte-haiti-mache.png"
+              alt="Carte d'Haïti aux couleurs de MACHÉ"
+              className="h-[340px] w-full object-contain"
             />
           </div>
         </div>

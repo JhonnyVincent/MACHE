@@ -509,9 +509,9 @@ aside:not([data-chrome="dark"]) a:active {
   right: 0;
   bottom: 0;
   width: 40%;
-  background: url("https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=900&q=80")
-    center / cover;
-  opacity: 0.14;
+  /* Texture de bandeau : la carte d'Haiti, seul visuel du projet. */
+  background: url("/images/carte-haiti-mache.png") center / contain no-repeat;
+  opacity: 0.12;
 }
 
 .sbg {

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useCart } from "./cart-provider";
 
 const tickerTranslations = {
   fr: [
@@ -34,12 +33,11 @@ const translations = {
     account: "Mon compte",
     favorites: "Favoris",
     cart: "Panier",
-    bestSellers: "Meilleures ventes",
     newArrivals: "Nouveautés",
-    promotions: "Promotions",
     catalog: "Tout le catalogue",
-    sellers: "Vendre sur Maché",
-    brands: "Marques"
+    sellers: "Vendre sur MACHÉ",
+    verifyAgent: "Vérifier un agent",
+    help: "Aide"
   },
   ht: {
     delivery: "Livrezon toupatou an Ayiti",
@@ -49,19 +47,26 @@ const translations = {
     account: "Kont mwen",
     favorites: "Favori",
     cart: "Panye",
-    bestSellers: "Pi byen vann",
     newArrivals: "Nouvo pwodwi",
-    promotions: "Pwomosyon",
     catalog: "Tout katalòg la",
-    sellers: "Vann sou Maché",
-    brands: "Mak"
+    sellers: "Vann sou MACHÉ",
+    verifyAgent: "Verifye yon ajan",
+    help: "Èd"
   }
 };
 
 type Lang = keyof typeof translations;
 
-export function Header() {
-  const { count, openCart } = useCart();
+/*
+  Le compteur du panier est passé par le serveur.
+
+  Il lisait auparavant le panier stocké dans le navigateur. Depuis que le
+  panier vit dans Medusa, cette lecture serait restée bloquée à zéro
+  pendant que le vrai panier se remplissait : deux compteurs, deux
+  vérités, et le client croit avoir perdu ses articles.
+*/
+export function Header({ cartCount = 0 }: { cartCount?: number }) {
+  const count = cartCount;
 
   const [lang, setLang] = useState<Lang>("fr");
 
@@ -118,11 +123,11 @@ export function Header() {
               <option value="ht">HT</option>
             </select>
 
-            <Link href="/login">
+            <Link href="/compte/connexion">
               {t.login}
             </Link>
 
-            <Link href="/register">
+            <Link href="/compte/inscription">
               {t.register}
             </Link>
           </div>
@@ -148,15 +153,28 @@ export function Header() {
           </div>
         </Link>
 
-        <div className="hidden md:flex">
+        <form action="/shop" method="GET" className="hidden w-full md:flex">
+          <label htmlFor="site-search" className="sr-only">
+            {t.searchPlaceholder}
+          </label>
           <input
-            className="w-full rounded-xl border px-6 py-4"
+            id="site-search"
+            name="q"
+            type="search"
+            className="w-full rounded-l-xl border border-r-0 px-6 py-4"
             placeholder={t.searchPlaceholder}
           />
-        </div>
+          <button
+            type="submit"
+            className="rounded-r-xl bg-[var(--mache-primary)] px-6 py-4 font-bold text-white"
+            aria-label="Rechercher"
+          >
+            🔍
+          </button>
+        </form>
 
         <div className="flex justify-end gap-7 text-center">
-          <Link href="/dashboard">
+          <Link href="/dashboard/buyer">
             <div>👤</div>
             {t.account}
           </Link>
@@ -166,36 +184,32 @@ export function Header() {
             {t.favorites}
           </Link>
 
-          <button onClick={openCart}>
+          <Link href="/cart">
             🛍️ {t.cart} ({count})
-          </button>
+          </Link>
         </div>
       </div>
 
       <nav className="bg-black text-white">
         <div className="container-page flex h-16 items-center gap-6 overflow-x-auto whitespace-nowrap">
-          <Link href="/shop?sort=best">
-            🔥 {t.bestSellers}
-          </Link>
-
-          <Link href="/shop?sort=new">
-            🟢 {t.newArrivals}
-          </Link>
-
-          <Link href="/shop?promo=true">
-            🏷️ {t.promotions}
-          </Link>
-
           <Link href="/shop">
             ▦ {t.catalog}
+          </Link>
+
+          <Link href="/shop?sort=recent">
+            🟢 {t.newArrivals}
           </Link>
 
           <Link href="/sell">
             🏪 {t.sellers}
           </Link>
 
-          <Link href="/shop?brands=true">
-            🏅 {t.brands}
+          <Link href="/verify-agent">
+            ✅ {t.verifyAgent}
+          </Link>
+
+          <Link href="/contact">
+            🎧 {t.help}
           </Link>
         </div>
       </nav>

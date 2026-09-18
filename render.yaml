@@ -1,0 +1,80 @@
+# Déploiement du backend commerce MACHÉ sur Render.
+#
+# Le storefront Next.js reste sur Vercel : ce fichier ne concerne que
+# backend/ (Medusa + Mercur), qui est un serveur Node persistant et ne
+# peut pas tourner en serverless.
+#
+# ---------------------------------------------------------------------
+# LIRE AVANT DE DÉPLOYER — ce que le plan gratuit implique réellement
+# ---------------------------------------------------------------------
+#
+# 1. La base PostgreSQL gratuite de Render EXPIRE au bout de 30 jours et
+#    est supprimée. Tout ce qui s'y trouve disparaît : produits, vendeurs,
+#    commandes. C'est acceptable pour une démonstration, jamais pour de
+#    vraies ventes. Passer en base payante avant la première commande
+#    réelle.
+#
+# 2. Le service web gratuit s'endort après ~15 minutes sans trafic. Le
+#    réveil prend environ une minute : la première visite après une
+#    période calme paraîtra cassée. Pour une démonstration à quelqu'un,
+#    ouvrir le site une minute avant.
+#
+# 3. Redis n'est pas prévu ici. Medusa bascule alors sur une file
+#    d'événements en mémoire et le dit dans ses logs :
+#    « Local Event Bus installed. This is not recommended for production. »
+#    Conséquence concrète : un événement en cours au moment d'un
+#    redémarrage est perdu — un e-mail de confirmation, une mise à jour de
+#    stock. Tolérable en démonstration, pas en production.
+#
+# Autrement dit : ce fichier sert à VOIR la plateforme en ligne et à la
+# montrer. Le passage aux plans payants est une étape distincte, à faire
+# avant d'accepter le moindre paiement réel.
+
+services:
+  - type: web
+    name: mache-backend
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    buildCommand: npm install -g bun && bun install && cd packages/api && ./node_modules/.bin/medusa build
+    startCommand: cd packages/api && ./node_modules/.bin/medusa db:migrate && ./node_modules/.bin/medusa start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mache-db
+          property: connectionString
+      # Générés une fois par Render, puis conservés. Ne jamais les
+      # remettre à une valeur connue : ils signent les sessions.
+      - key: JWT_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: STOREFRONT_REVALIDATE_SECRET
+        generateValue: true
+      # Origines autorisées. À remplacer par les domaines réels : une
+      # liste trop large annule l'intérêt du CORS.
+      - key: STORE_CORS
+        sync: false
+      - key: ADMIN_CORS
+        sync: false
+      - key: VENDOR_CORS
+        sync: false
+      - key: AUTH_CORS
+        sync: false
+      # L'URL publique du service, que le fournisseur de fichiers local
+      # inscrit dans chaque adresse d'image. Sans elle, les images
+      # pointent vers localhost et ne s'affichent pas.
+      - key: FILE_BACKEND_URL
+        sync: false
+      - key: STOREFRONT_REVALIDATE_URL
+        sync: false
+
+databases:
+  - name: mache-db
+    plan: free
+    region: frankfurt
+    databaseName: mache_commerce

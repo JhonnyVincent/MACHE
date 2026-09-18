@@ -1,8 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { CartProvider } from "@/components/cart-provider";
 import { SiteChrome } from "@/components/site-chrome";
+import { getCart } from "@/lib/medusa/cart";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,19 +11,27 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mache",
-  description: "Marketplace internationale centrée sur Haïti, la Caraïbe et la diaspora."
+  title: "MACHÉ",
+  description:
+    "Marketplace haïtienne : boutiques indépendantes, marques et fournisseurs d'Haïti et de la diaspora."
 };
 
-export default function RootLayout({
+/*
+  Le compteur du panier est lu ici, côté serveur, et descendu jusqu'à
+  l'en-tête. Le fournisseur de panier côté navigateur a disparu : le
+  panier vit dans Medusa, et deux compteurs auraient donné deux vérités —
+  celui du navigateur serait resté à zéro pendant que le vrai se
+  remplissait.
+*/
+export default async function RootLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {
+  const cart = await getCart();
+
   return (
     <html lang="fr">
       <body className={inter.variable}>
-        <CartProvider>
-          <SiteChrome>{children}</SiteChrome>
-        </CartProvider>
+        <SiteChrome cartCount={cart?.itemCount ?? 0}>{children}</SiteChrome>
       </body>
     </html>
   );
