@@ -175,6 +175,62 @@ export default async function ProductPage({
               </div>
             )}
 
+            {/*
+              Prix dégressifs.
+
+              Annoncés avant l'achat, pas découverts dans le panier : un
+              acheteur professionnel décide de sa quantité en fonction du
+              palier, pas l'inverse. Les paliers affichés sont ceux de
+              CETTE offre — ceux d'un autre vendeur sur la même
+              déclinaison ne le concernent pas.
+            */}
+            {selected && selected.tiers.length > 0 && (
+              <div className="mt-5 overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
+                <p className="border-b border-[var(--mache-line)] bg-[var(--mache-bg)] px-3.5 py-2 text-[12.5px] font-bold text-[var(--mache-text)]">
+                  Tarifs par quantité
+                </p>
+
+                <table className="w-full text-[13px]">
+                  <tbody>
+                    <tr className="border-b border-[var(--mache-line)]">
+                      <td className="px-3.5 py-2 text-[var(--mache-muted)]">
+                        1
+                        {selected.tiers[0].minQuantity > 2
+                          ? ` à ${selected.tiers[0].minQuantity - 1}`
+                          : ""}{" "}
+                        unité{selected.tiers[0].minQuantity > 2 ? "s" : ""}
+                      </td>
+                      <td className="px-3.5 py-2 text-right font-semibold">
+                        {formatAmount(price, currency)}
+                      </td>
+                    </tr>
+
+                    {selected.tiers.map((tier) => (
+                      <tr key={tier.minQuantity} className="border-b border-[var(--mache-line)] last:border-0">
+                        <td className="px-3.5 py-2 text-[var(--mache-muted)]">
+                          À partir de {tier.minQuantity} unités
+                          {tier.maxQuantity ? ` (jusqu'à ${tier.maxQuantity})` : ""}
+                        </td>
+                        <td className="px-3.5 py-2 text-right font-semibold text-[var(--mache-success)]">
+                          {formatAmount(tier.amount, tier.currency)}
+                          {price !== null && tier.amount < price && (
+                            <span className="ml-1.5 text-[11.5px] font-normal text-[var(--mache-muted)]">
+                              −{Math.round((1 - tier.amount / price) * 100)} %
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                <p className="border-t border-[var(--mache-line)] px-3.5 py-2 text-[11.5px] leading-relaxed text-[var(--mache-muted)]">
+                  Le tarif s&apos;applique automatiquement au panier dès que la
+                  quantité atteint le seuil. Rien à demander.
+                </p>
+              </div>
+            )}
+
             {/* Ajout au panier */}
             <div className="mt-6">
               {selected?.offerId ? (

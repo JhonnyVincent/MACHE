@@ -22,6 +22,20 @@ import { medusaRegionId } from "./config";
   variante qu'on met au panier mais l'offre d'un vendeur précis. Sans lui,
   « chaussure taille 44 » ne désigne aucune ligne de commande.
 */
+/*
+  Palier de prix dégressif.
+
+  Medusa porte nativement `min_quantity` sur un prix : au-delà du seuil,
+  c'est ce prix-là qui s'applique. Vérifié dans le panier — à cinq unités
+  d'un article à 124, le prix unitaire tombe à 60.
+*/
+export type PriceTier = {
+  minQuantity: number;
+  maxQuantity: number | null;
+  amount: number;
+  currency: string;
+};
+
 export type StoreVariant = {
   id: string;
   title: string;
@@ -30,6 +44,8 @@ export type StoreVariant = {
   originalPrice: number | null;
   currency: string | null;
   available: boolean;
+  /* Paliers de quantité de CETTE offre, du plus petit seuil au plus grand. */
+  tiers: PriceTier[];
 };
 
 export type StoreProduct = {
@@ -113,6 +129,59 @@ function firstVariantPrice(raw: RawProduct) {
   return { price: null, originalPrice: null, currency: null };
 }
 
+/*
+  Paliers de quantité applicables à une variante.
+
+  `variants.prices` renvoie les prix de TOUTES les offres de la variante —
+  sur le catalogue de démonstration, dix prix pour cinq vendeurs et deux
+  devises. Les afficher tels quels annoncerait au client le tarif de gros
+  d'un concurrent.
+
+  On filtre donc sur deux critères : la règle `offer_id` doit désigner
+  l'offre de cette variante, et la devise doit être celle du prix affiché.
+*/
+function tiersOf(raw: RawProduct, offerId: string | null, currency: string | null): PriceTier[] {
+  if (!offerId || !Array.isArray(raw.prices)) return [];
+
+  const tiers: PriceTier[] = [];
+
+  for (const entry of raw.prices as RawProduct[]) {
+    const min = Number(entry.min_quantity);
+
+    /* Sans seuil, c'est le prix de base et non un palier. */
+    if (!Number.isFinite(min) || min <= 1) continue;
+
+    const priceCurrency = text(entry.currency_code);
+
+    if (currency && priceCurrency && priceCurrency.toLowerCase() !== currency.toLowerCase()) {
+      continue;
+    }
+
+    const rules = Array.isArray(entry.price_rules) ? (entry.price_rules as RawProduct[]) : [];
+
+    const belongsToOffer = rules.some(
+      (rule) => text(rule.attribute) === "offer_id" && text(rule.value) === offerId
+    );
+
+    if (!belongsToOffer) continue;
+
+    const amount = Number(entry.amount);
+
+    if (!Number.isFinite(amount)) continue;
+
+    const max = Number(entry.max_quantity);
+
+    tiers.push({
+      minQuantity: min,
+      maxQuantity: Number.isFinite(max) && max > 0 ? max : null,
+      amount,
+      currency: (priceCurrency ?? currency ?? "htg").toLowerCase(),
+    });
+  }
+
+  return tiers.sort((a, b) => a.minQuantity - b.minQuantity);
+}
+
 function mapVariant(raw: RawProduct): StoreVariant {
   const calculated = raw.calculated_price as Record<string, unknown> | undefined;
 
@@ -138,6 +207,7 @@ function mapVariant(raw: RawProduct): StoreVariant {
       raw.manage_inventory === false ||
       raw.allow_backorder === true ||
       Number(raw.inventory_quantity ?? 1) > 0,
+    tiers: tiersOf(raw, text(raw.offer_id), text(calculated?.currency_code)),
   };
 }
 
@@ -331,7 +401,15 @@ export async function fetchProductByHandle(
       handle,
       limit: 1,
       region_id: medusaRegionId() || undefined,
-      fields: "*variants.calculated_price,*images",
+      /*
+        Les deux sélections de prix sont nécessaires. Demander
+        `prices.price_rules` SEUL ne rend que `id` et `price_rules` : ni
+        `amount`, ni `min_quantity`. Les paliers disparaissaient
+        silencieusement — la fiche affichait un prix unique comme si
+        aucun tarif de gros n'existait.
+      */
+      fields:
+        "*variants.calculated_price,*variants.prices,*variants.prices.price_rules,*images",
     },
     { revalidate: 60, tags: ["products", `product:${handle}`] }
   );
