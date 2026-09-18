@@ -30,6 +30,7 @@ import { cookies } from "next/headers";
 import { getMedusaConfig } from "./config";
 
 const CART_COOKIE = "mache_cart_id";
+const CUSTOMER_TOKEN_COOKIE = "mache_customer_token";
 
 export type CartLine = {
   id: string;
@@ -111,14 +112,30 @@ async function call<T>(
 
   const { url, key } = configured.config;
 
+  /*
+    Le jeton du client connecté est joint quand il existe.
+
+    Sans lui, Medusa rattache la commande à un client anonyme créé à la
+    volée : le client verrait alors « aucune commande » dans son espace
+    juste après avoir commandé. C'est exactement le genre de panne dont
+    personne ne se plaint — on croit simplement que le site a perdu la
+    commande.
+  */
+  const store = await cookies();
+  const customerToken = store.get(CUSTOMER_TOKEN_COOKIE)?.value;
+
+  const headers: Record<string, string> = {
+    "x-publishable-api-key": key,
+    "content-type": "application/json",
+    accept: "application/json",
+  };
+
+  if (customerToken) headers.authorization = `Bearer ${customerToken}`;
+
   try {
     const response = await fetch(`${url}${path}`, {
       method: init.method ?? "GET",
-      headers: {
-        "x-publishable-api-key": key,
-        "content-type": "application/json",
-        accept: "application/json",
-      },
+      headers,
       body: init.body ? JSON.stringify(init.body) : undefined,
       /* Un panier ne se met jamais en cache : il est propre à la session. */
       cache: "no-store",

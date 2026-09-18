@@ -1,14 +1,18 @@
 /*
   PAGE : Espace client — vue d'ensemble
 
-  Sert à :
-  - résumer l'activité d'achat du compte ;
-  - afficher les commandes récentes et leur état ;
-  - signaler ce qui attend une action du client.
+  Les commandes viennent de Medusa. Cette page lisait la table Supabase
+  `orders`, qui n'est plus alimentée : un client venant de commander y
+  voyait zéro.
 */
 
-import { requireBuyer, ORDER_STATUS_LABELS, ORDER_STATUS_TONES } from "@/lib/buyer";
-import { formatHTG, formatNumber, formatDate } from "@/lib/seller";
+import Link from "next/link";
+import { getCustomer, getCustomerOrders } from "@/lib/medusa/customer";
+import { formatAmount } from "@/lib/medusa/catalog";
+import { formatNumber, formatDate } from "@/lib/seller";
+import {
+  FULFILLMENT_STATUS_LABELS, fulfillmentTone,
+} from "@/lib/medusa/order-labels";
 import {
   PageHeader, Panel, Stat, StatRow, Table, Row, Cell, Badge, Button, EmptyState, Notice,
 } from "@/components/seller/ui";
@@ -16,86 +20,112 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function BuyerOverviewPage() {
-  const { supabase, uid, firstName } = await requireBuyer();
+  const customer = await getCustomer();
 
-  const { data: orders, error } = await supabase
-    .from("orders")
-    .select("id, reference, status, payment_status, total_price, created_at")
-    .eq("buyer_id", uid)
-    .order("created_at", { ascending: false })
-    .limit(200);
+  if (!customer) {
+    return (
+      <>
+        <PageHeader
+          title="Espace client"
+          subtitle="Vos commandes, vos adresses et votre profil."
+        />
+        <Panel padded={false}>
+          <EmptyState
+            title="Connectez-vous"
+            description="Un compte MACHÉ vous permet de suivre vos commandes et de garder vos adresses."
+            action={
+              <span className="flex flex-wrap justify-center gap-2">
+                <Button href="/compte/connexion" variant="primary">Se connecter</Button>
+                <Button href="/compte/inscription">Créer un compte</Button>
+              </span>
+            }
+          />
+        </Panel>
 
-  if (error) console.error("[buyer/overview]", error.message);
+        <div className="mt-4">
+          <Notice tone="info" title="Commander sans compte">
+            MACHÉ n&apos;exige pas de compte pour passer commande. Sans
+            compte en revanche, vous ne pourrez pas revenir consulter le
+            suivi depuis ce site.
+          </Notice>
+        </div>
+      </>
+    );
+  }
 
-  const list = orders ?? [];
-  const spent = list
-    .filter((o) => !["cancelled", "refunded", "failed"].includes(String(o.status)))
-    .reduce((sum, o) => sum + (o.total_price ?? 0), 0);
+  const result = await getCustomerOrders();
+  const orders = result.ok ? result.data : [];
 
-  const inProgress = list.filter((o) =>
-    ["pending", "processing", "shipped"].includes(String(o.status))
-  ).length;
+  const inProgress = orders.filter(
+    (order) => order.fulfillmentStatus !== "delivered" && order.status !== "canceled"
+  );
 
-  const delivered = list.filter((o) =>
-    ["delivered", "completed"].includes(String(o.status))
-  ).length;
+  const spent = orders.reduce((sum, order) => sum + order.total, 0);
+  const currency = orders[0]?.currency ?? null;
 
   return (
     <>
       <PageHeader
-        title={`Bonjour ${firstName}`}
-        subtitle="Vos commandes et le suivi de vos achats sur MACHE."
-        actions={<Button href="/shop" variant="primary">Voir le catalogue</Button>}
+        title={`Bonjour ${customer.firstName ?? ""}`.trim()}
+        subtitle={customer.email}
+        actions={<Button href="/shop" variant="primary">Continuer mes achats</Button>}
       />
 
       <div className="space-y-4">
-        {error && (
+        {!result.ok && (
           <Notice tone="warning" title="Commandes indisponibles">
-            {error.message}. Les migrations 0001 et 0003 doivent être appliquées
-            à la base.
+            {result.reason}
           </Notice>
         )}
 
         <StatRow>
-          <Stat label="Commandes" value={formatNumber(list.length)} />
-          <Stat label="En cours" value={formatNumber(inProgress)} tone={inProgress ? "warning" : "default"} />
-          <Stat label="Livrées" value={formatNumber(delivered)} tone={delivered ? "success" : "default"} />
-          <Stat label="Total dépensé" value={formatHTG(spent)} hint="hors commandes annulées" />
+          <Stat label="Commandes" value={formatNumber(orders.length)} />
+          <Stat
+            label="En cours"
+            value={formatNumber(inProgress.length)}
+            tone={inProgress.length ? "warning" : "success"}
+          />
+          <Stat label="Total commandé" value={formatAmount(spent, currency)} />
         </StatRow>
 
         <Panel
-          title="Commandes récentes"
-          actions={list.length > 0 ? <Button href="/dashboard/buyer/orders" size="sm">Tout voir</Button> : undefined}
+          title="Dernières commandes"
+          actions={<Button href="/dashboard/buyer/orders" size="sm">Tout voir</Button>}
           padded={false}
         >
-          {list.length === 0 ? (
+          {orders.length === 0 ? (
             <EmptyState
               title="Aucune commande"
-              description="Vos commandes apparaîtront ici avec leur suivi dès votre premier achat."
-              action={<Button href="/shop" variant="primary">Parcourir le catalogue</Button>}
+              description="Vos achats apparaîtront ici."
+              action={<Button href="/shop" variant="primary">Voir le catalogue</Button>}
             />
           ) : (
             <Table
               columns={[
-                { key: "ref", label: "Référence" },
-                { key: "date", label: "Date" },
-                { key: "status", label: "État" },
-                { key: "total", label: "Montant", align: "right" },
-                { key: "actions", label: "", align: "right", width: "90px" },
+                { key: "r", label: "Commande" },
+                { key: "d", label: "Date" },
+                { key: "l", label: "Livraison" },
+                { key: "t", label: "Total", align: "right" },
               ]}
             >
-              {list.slice(0, 8).map((order) => (
+              {orders.slice(0, 6).map((order) => (
                 <Row key={order.id}>
-                  <Cell strong>{order.reference || `#${String(order.id).slice(0, 8)}`}</Cell>
-                  <Cell muted>{formatDate(order.created_at)}</Cell>
+                  <Cell strong>
+                    <Link
+                      href={`/dashboard/buyer/orders/${order.id}`}
+                      className="hover:underline"
+                    >
+                      #{order.displayId ?? String(order.id).slice(0, 8)}
+                    </Link>
+                  </Cell>
+                  <Cell muted>{formatDate(order.createdAt)}</Cell>
                   <Cell>
-                    <Badge tone={ORDER_STATUS_TONES[String(order.status)] || "neutral"}>
-                      {ORDER_STATUS_LABELS[String(order.status)] || order.status}
+                    <Badge tone={fulfillmentTone(order.fulfillmentStatus)}>
+                      {FULFILLMENT_STATUS_LABELS[order.fulfillmentStatus] ?? order.fulfillmentStatus}
                     </Badge>
                   </Cell>
-                  <Cell align="right" numeric strong>{formatHTG(order.total_price)}</Cell>
-                  <Cell align="right">
-                    <Button href={`/dashboard/buyer/orders/${order.id}`} size="sm">Détail</Button>
+                  <Cell align="right" numeric strong>
+                    {formatAmount(order.total, order.currency)}
                   </Cell>
                 </Row>
               ))}

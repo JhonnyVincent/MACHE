@@ -1,39 +1,45 @@
 /*
   LAYOUT : espace client
 
-  Définit une seule fois la navigation et l'en-tête de l'espace client.
-  Reprend les primitives de l'espace vendeur : même registre visuel dans
-  tout le back-office, ce qui évite deux systèmes de design concurrents.
+  L'identité vient désormais de Medusa : c'est là que vivent les
+  commandes, les adresses et le profil. Il lisait auparavant le compte
+  Supabase et comptait des commandes qui ne sont plus alimentées.
+
+  L'espace reste accessible sans être connecté : chaque page dit alors
+  quoi faire. Rediriger vers une connexion depuis le gabarit priverait le
+  visiteur de tout repère, et l'empêcherait même de comprendre où il est.
 */
 
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { requireBuyer } from "@/lib/buyer";
+import { getCustomer, getCustomerOrders } from "@/lib/medusa/customer";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
+import { logoutAction } from "@/app/compte/actions";
+
+export const dynamic = "force-dynamic";
 
 export default async function BuyerLayout({ children }: { children: React.ReactNode }) {
-  const { supabase, uid, displayName, firstName, email } = await requireBuyer();
+  const customer = await getCustomer();
 
-  /*
-    Compteurs de la navigation. Les requêtes échouent si les migrations ne
-    sont pas appliquées : le compteur retombe alors à zéro plutôt que de
-    casser tout l'espace client.
-  */
-  const [openOrders, favorites] = await Promise.all([
-    supabase
-      .from("orders")
-      .select("id", { count: "exact", head: true })
-      .eq("buyer_id", uid)
-      .in("status", ["pending", "processing", "shipped"]),
-    supabase
-      .from("favorites")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", uid),
-  ]);
+  const displayName =
+    [customer?.firstName, customer?.lastName].filter(Boolean).join(" ").trim() ||
+    customer?.email ||
+    "Visiteur";
 
-  const openCount = openOrders.count ?? 0;
+  const firstName = customer?.firstName?.trim() || displayName.split(" ")[0];
+
+  /* Compteur des commandes en cours, uniquement si quelqu'un est connecté. */
+  let openCount = 0;
+
+  if (customer) {
+    const orders = await getCustomerOrders();
+
+    if (orders.ok) {
+      openCount = orders.data.filter(
+        (order) => order.fulfillmentStatus !== "delivered" && order.status !== "canceled"
+      ).length;
+    }
+  }
 
   const sections: NavSection[] = [
     {
@@ -41,8 +47,7 @@ export default async function BuyerLayout({ children }: { children: React.ReactN
       items: [
         { label: "Vue d'ensemble", href: "/dashboard/buyer" },
         { label: "Mes commandes", href: "/dashboard/buyer/orders", badge: openCount },
-        { label: "Mes favoris", href: "/favorites", badge: favorites.count ?? 0 },
-        { label: "Mes avis", href: "/dashboard/buyer/reviews" },
+        { label: "Mes favoris", href: "/favorites" },
       ],
     },
     {
@@ -53,14 +58,6 @@ export default async function BuyerLayout({ children }: { children: React.ReactN
       ],
     },
   ];
-
-  async function signOutAction() {
-    "use server";
-
-    const supabase = await createSupabaseServerClient();
-    await supabase.auth.signOut();
-    redirect("/login");
-  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#eef1f3] font-sans text-[13px] text-[#0f1111] antialiased">
@@ -80,17 +77,28 @@ export default async function BuyerLayout({ children }: { children: React.ReactN
         <SellerSidebarNav sections={sections} />
 
         <div className="border-t border-white/10 px-4 py-2.5">
-          <p className="truncate text-[11.5px] font-medium">{displayName}</p>
-          <p className="truncate text-[10.5px] text-white/40">{email}</p>
+          {customer ? (
+            <>
+              <p className="truncate text-[11.5px] font-medium">{displayName}</p>
+              <p className="truncate text-[10.5px] text-white/40">{customer.email}</p>
 
-          <form action={signOutAction} className="mt-2">
-            <button
-              type="submit"
-              className="text-[11px] text-white/45 underline-offset-2 transition-colors hover:text-white hover:underline"
+              <form action={logoutAction} className="mt-2">
+                <button
+                  type="submit"
+                  className="text-[11px] text-white/45 underline-offset-2 transition-colors hover:text-white hover:underline"
+                >
+                  Se déconnecter
+                </button>
+              </form>
+            </>
+          ) : (
+            <Link
+              href="/compte/connexion"
+              className="text-[11.5px] font-medium text-white/70 hover:text-white"
             >
-              Se déconnecter
-            </button>
-          </form>
+              Se connecter →
+            </Link>
+          )}
         </div>
       </aside>
 

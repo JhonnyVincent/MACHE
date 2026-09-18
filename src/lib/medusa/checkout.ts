@@ -28,6 +28,7 @@ import { cookies } from "next/headers";
 import { getMedusaConfig } from "./config";
 
 const CART_COOKIE = "mache_cart_id";
+const CUSTOMER_TOKEN_COOKIE = "mache_customer_token";
 
 export const MANUAL_PAYMENT_PROVIDER = "pp_system_default";
 
@@ -68,14 +69,22 @@ async function call<T>(
 
   if (!configured.ok) return { ok: false, reason: configured.reason };
 
+  /* Voir cart.ts : sans ce jeton, la commande n'est rattachée à personne. */
+  const store = await cookies();
+  const customerToken = store.get(CUSTOMER_TOKEN_COOKIE)?.value;
+
+  const headers: Record<string, string> = {
+    "x-publishable-api-key": configured.config.key,
+    "content-type": "application/json",
+    accept: "application/json",
+  };
+
+  if (customerToken) headers.authorization = `Bearer ${customerToken}`;
+
   try {
     const response = await fetch(`${configured.config.url}${path}`, {
       method: init.method ?? "GET",
-      headers: {
-        "x-publishable-api-key": configured.config.key,
-        "content-type": "application/json",
-        accept: "application/json",
-      },
+      headers,
       body: init.body ? JSON.stringify(init.body) : undefined,
       cache: "no-store",
     });

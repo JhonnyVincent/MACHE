@@ -1,84 +1,81 @@
 /*
-  PAGE : Espace client — profil
+  PAGE : mon profil
 
-  Sert à :
-  - afficher les informations du compte ;
-  - rappeler les moyens de connexion disponibles.
-
-  La modification du nom et de l'e-mail n'est pas encore ouverte : elle
-  touche à l'authentification et sera traitée avec la gestion du compte.
-  C'est annoncé plutôt que présenté par un bouton sans effet.
+  Les informations viennent du compte client Medusa.
 */
 
-import { requireBuyer } from "@/lib/buyer";
-import { formatDate } from "@/lib/seller";
-import { PageHeader, Panel, Table, Row, Cell, Button, Notice } from "@/components/seller/ui";
+import { getCustomer } from "@/lib/medusa/customer";
+import {
+  PageHeader, Panel, Table, Row, Cell, Button, EmptyState, Notice,
+} from "@/components/seller/ui";
+import { logoutAction } from "@/app/compte/actions";
 
 export const dynamic = "force-dynamic";
 
-const ROLE_LABELS: Record<string, string> = {
-  buyer: "Client",
-  seller_individual: "Vendeur particulier",
-  seller_business: "Vendeur Business",
-  supplier: "Fournisseur",
-  official_brand: "Marque officielle",
-  agent: "Agent",
-  partner: "Partenaire",
-  admin: "Administrateur",
-  super_admin: "Super administrateur",
-};
-
 export default async function BuyerProfilePage() {
-  const { profile, email, displayName, role } = await requireBuyer("/dashboard/buyer/profile");
+  const customer = await getCustomer();
+
+  if (!customer) {
+    return (
+      <>
+        <PageHeader title="Mon profil" />
+        <Panel padded={false}>
+          <EmptyState
+            title="Connectez-vous"
+            description="Votre profil est rattaché à votre compte client."
+            action={
+              <Button href="/compte/connexion?next=/dashboard/buyer/profile" variant="primary">
+                Se connecter
+              </Button>
+            }
+          />
+        </Panel>
+      </>
+    );
+  }
 
   return (
     <>
-      <PageHeader title="Mon profil" subtitle="Informations de votre compte MACHE." />
+      <PageHeader title="Mon profil" subtitle="Les informations de votre compte MACHÉ." />
 
       <div className="space-y-4">
         <Panel padded={false}>
-          <Table
-            columns={[
-              { key: "field", label: "Champ", width: "220px" },
-              { key: "value", label: "Valeur" },
-            ]}
-          >
+          <Table columns={[{ key: "k", label: "Élément" }, { key: "v", label: "Valeur" }]}>
             <Row>
-              <Cell muted>Nom</Cell>
-              <Cell strong>{displayName}</Cell>
+              <Cell strong>Prénom</Cell>
+              <Cell muted>{customer.firstName ?? "—"}</Cell>
             </Row>
             <Row>
-              <Cell muted>Adresse e-mail</Cell>
-              <Cell strong>{email || "—"}</Cell>
+              <Cell strong>Nom</Cell>
+              <Cell muted>{customer.lastName ?? "—"}</Cell>
             </Row>
             <Row>
-              <Cell muted>Type de compte</Cell>
-              <Cell strong>{ROLE_LABELS[role] || role || "Client"}</Cell>
+              <Cell strong>Adresse e-mail</Cell>
+              <Cell muted>{customer.email}</Cell>
             </Row>
             <Row>
-              <Cell muted>Compte créé le</Cell>
-              <Cell muted>{formatDate(profile?.created_at)}</Cell>
+              <Cell strong>Téléphone</Cell>
+              <Cell muted>{customer.phone ?? "—"}</Cell>
             </Row>
           </Table>
         </Panel>
 
-        <Notice tone="info" title="Modification des informations">
-          La modification du nom et de l&apos;adresse e-mail n&apos;est pas
-          encore ouverte depuis cette page. Passez par l&apos;assistance pour
-          toute correction.
-        </Notice>
-
-        <Panel title="Connexion">
-          <p className="text-[12.5px] leading-relaxed text-[#565959]">
-            Vous pouvez vous connecter par mot de passe ou par code à usage
-            unique envoyé par e-mail. Le code fonctionne depuis n&apos;importe
-            quel appareil, sans mot de passe à retenir.
+        <Panel title="Se déconnecter">
+          <p className="max-w-2xl text-[12.5px] leading-relaxed text-[#565959]">
+            Votre panier en cours n&apos;est pas supprimé : il reste attaché à
+            ce navigateur.
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Button href="/forgot-password">Changer mon mot de passe</Button>
-            <Button href="/login/code">Se connecter par code</Button>
-          </div>
+          <form action={logoutAction} className="mt-3">
+            <Button type="submit">Se déconnecter</Button>
+          </form>
         </Panel>
+
+        <Notice tone="info" title="Modifier ces informations">
+          La modification du profil et du mot de passe n&apos;est pas encore
+          branchée. Écrivez à l&apos;équipe MACHÉ si une information est
+          erronée — plutôt qu&apos;un formulaire qui n&apos;enregistrerait
+          rien.
+        </Notice>
       </div>
     </>
   );

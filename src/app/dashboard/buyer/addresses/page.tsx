@@ -1,18 +1,12 @@
 /*
-  PAGE : Espace client — mes adresses
+  PAGE : mes adresses
 
-  Sert à :
-  - lister les adresses enregistrées par le client ;
-  - expliquer comment elles sont créées.
-
-  Les adresses sont enregistrées depuis le tunnel d'achat, quand le client
-  coche « Enregistrer cette adresse ». Un formulaire d'ajout autonome
-  viendra avec la gestion complète du profil ; l'annoncer plutôt que
-  d'afficher un bouton sans effet.
+  Lit le carnet d'adresses Medusa. Il lisait auparavant la table Supabase
+  `addresses`, qui n'est plus celle utilisée au moment de commander : le
+  client aurait modifié une adresse sans effet sur ses livraisons.
 */
 
-import { requireBuyer } from "@/lib/buyer";
-import { formatDate } from "@/lib/seller";
+import { getCustomer, getCustomerAddresses } from "@/lib/medusa/customer";
 import {
   PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Notice,
 } from "@/components/seller/ui";
@@ -20,73 +14,90 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function BuyerAddressesPage() {
-  const { supabase, uid } = await requireBuyer("/dashboard/buyer/addresses");
+  const customer = await getCustomer();
 
-  const { data: addresses, error } = await supabase
-    .from("addresses")
-    .select("id, label, full_name, phone, line1, line2, city, department, is_default, created_at")
-    .eq("user_id", uid)
-    .order("created_at", { ascending: false });
+  if (!customer) {
+    return (
+      <>
+        <PageHeader title="Mes adresses" />
+        <Panel padded={false}>
+          <EmptyState
+            title="Connectez-vous"
+            description="Votre carnet d'adresses est rattaché à votre compte."
+            action={
+              <Button href="/compte/connexion?next=/dashboard/buyer/addresses" variant="primary">
+                Se connecter
+              </Button>
+            }
+          />
+        </Panel>
+      </>
+    );
+  }
 
-  if (error) console.error("[buyer/addresses]", error.message);
-
-  const list = addresses ?? [];
+  const result = await getCustomerAddresses();
+  const addresses = result.ok ? result.data : [];
 
   return (
     <>
       <PageHeader
         title="Mes adresses"
-        subtitle="Les adresses enregistrées lors de vos commandes."
+        subtitle="Les adresses de livraison enregistrées sur votre compte."
       />
 
       <div className="space-y-4">
-        {error && (
-          <Notice tone="warning" title="Adresses indisponibles">
-            {error.message}. La migration 0001 doit être appliquée à la base.
+        {!result.ok && (
+          <Notice tone="warning" title="Carnet d'adresses indisponible">
+            {result.reason}
           </Notice>
         )}
 
         <Panel padded={false}>
-          {list.length === 0 ? (
+          {addresses.length === 0 ? (
             <EmptyState
               title="Aucune adresse enregistrée"
-              description="Lors de votre prochaine commande, cochez « Enregistrer cette adresse » pour la retrouver ici et ne plus la resaisir."
+              description="L'adresse saisie lors d'une commande est conservée sur votre compte."
               action={<Button href="/shop" variant="primary">Voir le catalogue</Button>}
             />
           ) : (
             <Table
               columns={[
-                { key: "name", label: "Destinataire" },
-                { key: "address", label: "Adresse" },
-                { key: "zone", label: "Zone" },
-                { key: "added", label: "Ajoutée le" },
+                { key: "n", label: "Destinataire" },
+                { key: "a", label: "Adresse" },
+                { key: "t", label: "Téléphone" },
+                { key: "d", label: "", align: "right", width: "110px" },
               ]}
             >
-              {list.map((address) => (
+              {addresses.map((address) => (
                 <Row key={address.id}>
                   <Cell strong>
-                    {address.full_name}
-                    <span className="mt-0.5 block text-[11px] font-normal text-[#565959]">
-                      {address.phone}
-                    </span>
-                    {address.is_default && (
-                      <span className="mt-1 inline-block">
-                        <Badge tone="success">Par défaut</Badge>
-                      </span>
-                    )}
+                    {[address.firstName, address.lastName].filter(Boolean).join(" ") || "—"}
                   </Cell>
                   <Cell muted>
-                    {address.line1}
-                    {address.line2 ? `, ${address.line2}` : ""}
-                    <span className="mt-0.5 block">{address.city}</span>
+                    {address.address1}
+                    {address.address2 ? `, ${address.address2}` : ""}
+                    <span className="mt-0.5 block text-[11px]">
+                      {[address.city, address.province, address.countryCode]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </span>
                   </Cell>
-                  <Cell muted>{address.department || "—"}</Cell>
-                  <Cell muted>{formatDate(address.created_at)}</Cell>
+                  <Cell muted>{address.phone ?? "—"}</Cell>
+                  <Cell align="right">
+                    {address.isDefaultShipping && <Badge tone="info">Par défaut</Badge>}
+                  </Cell>
                 </Row>
               ))}
             </Table>
           )}
         </Panel>
+
+        <Notice tone="info" title="Modifier une adresse">
+          L&apos;adresse se saisit au moment de commander, et celle que vous
+          y renseignez est conservée ici. La modification directe depuis
+          cette page n&apos;est pas encore branchée : elle viendra avec la
+          gestion complète du carnet d&apos;adresses.
+        </Notice>
       </div>
     </>
   );

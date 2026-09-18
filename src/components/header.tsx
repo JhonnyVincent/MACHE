@@ -123,11 +123,11 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
               <option value="ht">HT</option>
             </select>
 
-            <Link href="/login">
+            <Link href="/compte/connexion">
               {t.login}
             </Link>
 
-            <Link href="/register">
+            <Link href="/compte/inscription">
               {t.register}
             </Link>
           </div>
@@ -153,15 +153,28 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
           </div>
         </Link>
 
-        <div className="hidden md:flex">
+        <form action="/shop" method="GET" className="hidden w-full md:flex">
+          <label htmlFor="site-search" className="sr-only">
+            {t.searchPlaceholder}
+          </label>
           <input
-            className="w-full rounded-xl border px-6 py-4"
+            id="site-search"
+            name="q"
+            type="search"
+            className="w-full rounded-l-xl border border-r-0 px-6 py-4"
             placeholder={t.searchPlaceholder}
           />
-        </div>
+          <button
+            type="submit"
+            className="rounded-r-xl bg-[var(--mache-primary)] px-6 py-4 font-bold text-white"
+            aria-label="Rechercher"
+          >
+            🔍
+          </button>
+        </form>
 
         <div className="flex justify-end gap-7 text-center">
-          <Link href="/dashboard">
+          <Link href="/dashboard/buyer">
             <div>👤</div>
             {t.account}
           </Link>
