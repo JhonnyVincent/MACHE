@@ -138,12 +138,40 @@ Dans cet ordre :
    l'autre.
 
 Si `/shop` reste vide alors que `/health` répond, c'est que le backend
-n'a aucun produit : un vendeur doit en créer depuis
-`https://mache-backend.onrender.com/seller`, ou vous pouvez charger le
-catalogue de démonstration de Mercur, depuis l'onglet `Shell` :
-`cd packages/api && ./node_modules/.bin/medusa exec ./src/scripts/seed.ts`.
-Ce catalogue est une **démonstration** : des chaussures en euros. Ne le
-laissez pas en ligne devant de vrais clients.
+n'a aucun produit. Deux façons de le remplir.
+
+### Un vrai vendeur
+
+Depuis `https://VOTRE-BACKEND.onrender.com/seller`, créez une boutique
+et ses produits. C'est le parcours réel, celui que vos vendeurs
+suivront.
+
+### Le catalogue de démonstration
+
+Pour voir la plateforme vivante tout de suite, sans terminal :
+
+`mache-backend` → `Environment` → `Add Environment Variable`
+
+| | |
+|---|---|
+| `SEED_DEMO` | `true` |
+
+Render redéploie, et le catalogue se charge au démarrage : 3 boutiques,
+12 produits, 244 offres. **Retirez ensuite la variable.**
+
+Deux garanties, vérifiées :
+
+- il ne charge rien si le catalogue contient déjà un produit. La
+  démonstration ne s'ajoute jamais à un catalogue existant, donc jamais
+  au milieu de vrais produits et de vraies commandes ;
+- il ne touche pas à la région Haïti. La démonstration crée une région
+  « Europe » en euros et voudrait en faire la région par défaut ; la
+  mise en place MACHÉ passe après elle et rétablit Haïti.
+
+Ce catalogue est une **démonstration** : des chaussures fictives, en
+euros, avec des vendeurs fictifs. Ne le laissez pas en ligne devant de
+vrais clients — un catalogue inventé qui reste affiché fait passer pour
+des offres ce qui n'en est pas.
 
 ---
 

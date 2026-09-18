@@ -39,17 +39,18 @@ services:
     rootDir: backend
     buildCommand: npm install -g bun && bun install && cd packages/api && ./node_modules/.bin/medusa build
     # Trois temps, dans cet ordre :
-    #   1. migrations   — la base rattrape le code ;
-    #   2. mise en place — région Haïti, canal de vente, clé publique du
-    #      site. Le script est idempotent : au deuxième démarrage il
-    #      constate ce qui existe et ne recrée rien. Il coûte environ
-    #      quatre secondes, et il affiche dans les journaux les trois
-    #      valeurs à reporter côté site ;
+    #   1. migrations — la base rattrape le code ;
+    #   2. amorçage   — catalogue de démonstration si SEED_DEMO le
+    #      demande et si le catalogue est vide, puis mise en place
+    #      MACHÉ : région Haïti, canal de vente, clé publique du site.
+    #      Idempotent : au deuxième démarrage il constate ce qui existe
+    #      et ne recrée rien. Environ quatre secondes, et il affiche
+    #      dans les journaux les trois valeurs à reporter côté site ;
     #   3. le serveur.
     startCommand: >-
       cd packages/api &&
       ./node_modules/.bin/medusa db:migrate &&
-      ./node_modules/.bin/medusa exec ./src/scripts/setup-mache.ts &&
+      ./node_modules/.bin/medusa exec ./src/scripts/bootstrap.ts &&
       ./node_modules/.bin/medusa start
     healthCheckPath: /health
     envVars:
@@ -82,6 +83,19 @@ services:
       # navigateur. Elles restent déclarables à la main si un domaine
       # propre ou une préproduction s'ajoute.
       - key: STOREFRONT_URL
+        sync: false
+      # Catalogue de démonstration Mercur, pour voir la plateforme
+      # vivante avant d'avoir des vendeurs. Mettre "true" une fois, puis
+      # RETIRER la variable.
+      #
+      # Elle ne charge rien si le catalogue contient déjà un produit :
+      # la démonstration ne s'ajoute jamais à un catalogue existant.
+      #
+      # Ce sont des chaussures fictives en euros. À retirer avant
+      # d'ouvrir la boutique à de vrais clients : un catalogue inventé
+      # qui reste en ligne fait passer pour des offres ce qui n'en est
+      # pas.
+      - key: SEED_DEMO
         sync: false
 
 databases:
