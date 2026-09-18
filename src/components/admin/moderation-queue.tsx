@@ -14,7 +14,7 @@ import Link from "next/link";
 import {
   STATUS_LABELS, STATUS_TONES, MODERATION_STATUSES, type ModerationProduct,
 } from "@/lib/moderation";
-import { moderateProductAction } from "@/app/dashboard/[role]/[[...section]]/moderation-actions";
+import { moderateProductAction } from "@/app/dashboard/admin/products/moderation-actions";
 
 function formatDate(value: string | null) {
   if (!value) return "—";
