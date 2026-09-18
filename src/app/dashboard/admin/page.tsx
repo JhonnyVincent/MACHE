@@ -1,20 +1,23 @@
 /*
   PAGE : Administration — vue d'ensemble
 
-  Sert à :
-  - donner l'état réel de la marketplace : comptes, boutiques, catalogue,
-    commandes, modération ;
-  - pointer ce qui demande une décision humaine.
+  Ce que cet espace couvre, et ce qu'il ne couvre plus
 
-  Tous les nombres viennent de `count: "exact"` sur la base. Aucun n'est
-  estimé, et aucune variation n'est affichée : MACHÉ ne conserve pas
-  d'historique de ces compteurs, donc « +18 % ce mois-ci » serait inventé.
+  Le catalogue, les commandes, les régions, les taxes et la modération des
+  produits sont passés au panneau d'administration de Medusa, qui en est
+  la source de vérité. Les compteurs correspondants ont été retirés
+  d'ici : ils lisaient encore Supabase et affichaient donc des chiffres
+  morts — un catalogue figé, un chiffre d'affaires d'avant la bascule.
+
+  Restent les écrans que Medusa ne connaît pas, parce qu'ils sont propres
+  à MACHÉ : l'habilitation des agents, la vérification des boutiques, les
+  rôles des comptes et les partenaires.
 */
 
 import { requireAdmin } from "@/lib/admin";
-import { formatNumber, formatHTG } from "@/lib/seller";
-import { PENDING_STATUSES } from "@/lib/moderation";
+import { formatNumber } from "@/lib/seller";
 import { SELLER_ROLES } from "@/lib/authz";
+import { medusaBackendUrl } from "@/lib/medusa/config";
 import {
   PageHeader, Panel, Stat, StatRow, Table, Row, Cell, Button, Notice,
 } from "@/components/seller/ui";
@@ -24,45 +27,21 @@ export const dynamic = "force-dynamic";
 export default async function AdminHomePage() {
   const { supabase, isSuperAdmin, firstName } = await requireAdmin();
 
-  /*
-    Les compteurs sont écrits à plat plutôt que derrière un utilitaire :
-    chaque ligne dit exactement ce qu'elle compte, et une erreur de lecture
-    se rattache à un compteur précis.
-  */
-  const [users, sellers, stores, unverified, products, pending, orders, agents] =
-    await Promise.all([
-      supabase.from("users").select("id", { count: "exact", head: true }),
-      supabase.from("users").select("id", { count: "exact", head: true }).in("role", [...SELLER_ROLES]),
-      supabase.from("stores").select("id", { count: "exact", head: true }),
-      supabase.from("stores").select("id", { count: "exact", head: true }).eq("is_verified", false),
-      supabase.from("products").select("id", { count: "exact", head: true }),
-      supabase.from("products").select("id", { count: "exact", head: true }).in("status", [...PENDING_STATUSES]),
-      supabase.from("orders").select("id", { count: "exact", head: true }),
-      supabase.from("agent_profiles").select("id", { count: "exact", head: true }),
-    ]);
+  const [users, sellers, stores, unverified, agents] = await Promise.all([
+    supabase.from("users").select("id", { count: "exact", head: true }),
+    supabase.from("users").select("id", { count: "exact", head: true }).in("role", [...SELLER_ROLES]),
+    supabase.from("stores").select("id", { count: "exact", head: true }),
+    supabase.from("stores").select("id", { count: "exact", head: true }).eq("is_verified", false),
+    supabase.from("agent_profiles").select("id", { count: "exact", head: true }),
+  ]);
 
   const n = (result: { count: number | null }) => result.count ?? 0;
 
-  /* Chiffre d'affaires réel de la marketplace, lignes de commande à l'appui. */
-  const { data: lines } = await supabase
-    .from("order_items")
-    .select("subtotal, commission_amount")
-    .limit(5000);
-
-  const gross = (lines ?? []).reduce((sum, line) => sum + (line.subtotal ?? 0), 0);
-  const commission = (lines ?? []).reduce(
-    (sum, line) => sum + (line.commission_amount ?? 0),
-    0
-  );
+  const backendUrl = medusaBackendUrl();
 
   const todo = [
-    n(pending) > 0 && {
-      label: `${formatNumber(n(pending))} produit(s) en attente d'examen`,
-      href: "/dashboard/admin/products",
-      action: "Modérer",
-    },
     n(unverified) > 0 && {
-      label: `${formatNumber(n(unverified))} boutique(s) non vérifiée(s)`,
+      label: `${formatNumber(n(unverified))} boutique(s) en attente de vérification`,
       href: "/dashboard/admin/stores",
       action: "Vérifier",
     },
@@ -73,7 +52,7 @@ export default async function AdminHomePage() {
     },
   ].filter(Boolean) as { label: string; href: string; action: string }[];
 
-  const readErrors = [users, stores, products, orders, agents]
+  const readErrors = [users, stores, agents]
     .map((result) => result.error?.message)
     .filter(Boolean);
 
@@ -83,36 +62,39 @@ export default async function AdminHomePage() {
         title={`Bonjour ${firstName}`}
         subtitle={
           isSuperAdmin
-            ? "Accès complet : comptes, rôles, boutiques, catalogue et contenu du site."
-            : "Accès administrateur : modération, boutiques et contenu du site."
+            ? "Accès complet : comptes, rôles, boutiques et agents."
+            : "Accès administrateur : boutiques, agents et partenaires."
         }
-        actions={<Button href="/dashboard/admin/products" variant="primary">File de modération</Button>}
+        actions={
+          backendUrl ? (
+            <Button href={`${backendUrl}/dashboard`} variant="primary">
+              Panneau Medusa
+            </Button>
+          ) : undefined
+        }
       />
 
       <div className="space-y-4">
         {readErrors.length > 0 && (
           <Notice tone="warning" title="Certains compteurs sont indisponibles">
-            {readErrors[0]}. Les migrations 0001 à 0006 doivent être appliquées,
-            et les politiques de lecture doivent autoriser ce compte.
+            {readErrors[0]}. Vérifiez que les politiques de lecture autorisent
+            ce compte.
           </Notice>
         )}
 
         <StatRow>
           <Stat label="Comptes" value={formatNumber(n(users))} hint={`${formatNumber(n(sellers))} vendeur(s)`} />
-          <Stat label="Boutiques" value={formatNumber(n(stores))} hint={`${formatNumber(n(unverified))} à vérifier`} />
-          <Stat label="Produits" value={formatNumber(n(products))} />
+          <Stat label="Boutiques" value={formatNumber(n(stores))} />
           <Stat
-            label="En attente d'examen"
-            value={formatNumber(n(pending))}
-            tone={n(pending) ? "warning" : "success"}
+            label="À vérifier"
+            value={formatNumber(n(unverified))}
+            tone={n(unverified) ? "warning" : "success"}
           />
-          <Stat label="Commandes" value={formatNumber(n(orders))} />
-        </StatRow>
-
-        <StatRow>
-          <Stat label="Volume d'affaires" value={formatHTG(gross)} hint="somme des lignes de commande" />
-          <Stat label="Commission MACHÉ" value={formatHTG(commission)} tone="success" />
-          <Stat label="Agents habilités" value={formatNumber(n(agents))} tone={n(agents) ? "default" : "warning"} />
+          <Stat
+            label="Agents habilités"
+            value={formatNumber(n(agents))}
+            tone={n(agents) ? "default" : "warning"}
+          />
         </StatRow>
 
         {todo.length > 0 && (
@@ -135,12 +117,40 @@ export default async function AdminHomePage() {
           </Panel>
         )}
 
+        <Panel
+          title="Le commerce se pilote ailleurs"
+          description="Catalogue, commandes, régions, taxes, promotions et modération."
+        >
+          {backendUrl ? (
+            <>
+              <p className="max-w-2xl text-[12.5px] leading-relaxed text-[#565959]">
+                Ces domaines sont tenus par le backend commerce, qui en est la
+                seule source de vérité. Les dupliquer ici reviendrait à
+                entretenir deux vérités sur un même stock.
+              </p>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button href={`${backendUrl}/dashboard`}>
+                  Administration Medusa
+                </Button>
+                <Button href={`${backendUrl}/seller`}>
+                  Panneau vendeur Mercur
+                </Button>
+              </div>
+            </>
+          ) : (
+            <p className="max-w-2xl text-[12.5px] leading-relaxed text-[#565959]">
+              L&apos;adresse du backend commerce n&apos;est pas renseignée
+              (NEXT_PUBLIC_MEDUSA_BACKEND_URL) : MACHÉ ne sait pas où trouver
+              le panneau d&apos;administration.
+            </p>
+          )}
+        </Panel>
+
         <Notice tone="info" title="Ce que cette page ne dit pas">
           Aucune évolution dans le temps n&apos;est affichée : MACHÉ ne
           conserve pas d&apos;historique de ces compteurs, et une variation
-          calculée sans point de comparaison serait inventée. Les visites et
-          le trafic demandent un suivi d&apos;audience qui n&apos;est pas
-          installé.
+          calculée sans point de comparaison serait inventée.
         </Notice>
       </div>
     </>

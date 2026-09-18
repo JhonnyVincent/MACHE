@@ -11,25 +11,27 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/admin";
 import { initialsOf } from "@/lib/seller";
-import { PENDING_STATUSES } from "@/lib/moderation";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { supabase, displayName, firstName, email, isSuperAdmin } = await requireAdmin();
 
-  /* Compteur de la file de modération : c'est la seule urgence réelle. */
-  const { count: pending } = await supabase
-    .from("products")
+  /*
+    Compteur des boutiques en attente de vérification : c'est désormais la
+    seule urgence dont cet espace est responsable. Le catalogue et les
+    commandes sont passés au panneau Medusa.
+  */
+  const { count: unverified } = await supabase
+    .from("stores")
     .select("id", { count: "exact", head: true })
-    .in("status", [...PENDING_STATUSES]);
+    .eq("is_verified", false);
 
   const sections: NavSection[] = [
     {
       label: "Marketplace",
       items: [
         { label: "Vue d'ensemble", href: "/dashboard/admin" },
-        { label: "Modération produits", href: "/dashboard/admin/products", badge: pending ?? 0 },
-        { label: "Boutiques", href: "/dashboard/admin/stores" },
+        { label: "Boutiques", href: "/dashboard/admin/stores", badge: unverified ?? 0 },
       ],
     },
     {

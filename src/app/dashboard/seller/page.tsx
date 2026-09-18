@@ -1,368 +1,130 @@
 /*
-  PAGE : vue d'ensemble de l'espace vendeur
+  PAGE : entrée de l'espace vendeur
 
-  Registre : tableau de bord de gestion. Les chiffres d'abord, les
-  boutiques en tableau, les points bloquants listés — pas de vignettes
-  décoratives.
+  L'espace vendeur de MACHÉ n'est plus une trentaine de pages Next : c'est
+  le panneau vendeur de Mercur, servi par le backend commerce.
+
+  Pourquoi ce choix
+
+  Les trente-cinq pages précédentes lisaient les tables commerce de
+  Supabase. Depuis que le catalogue, le stock et les commandes vivent dans
+  Medusa, elles montraient à chaque vendeur des chiffres qui ne
+  correspondaient plus à rien — un stock qui n'était plus le sien, un
+  chiffre d'affaires figé. Les réécrire aurait voulu dire réimplémenter,
+  écran par écran, un produit déjà maintenu en amont : produits,
+  variantes, inventaire, commandes, commissions, versements.
+
+  Cette page n'est donc pas une page d'attente : c'est la porte d'entrée,
+  et elle dit où aller.
 */
 
-import {
-  requireSeller,
-  formatHTG,
-  formatNumber,
-  formatDate,
-  LOW_STOCK_THRESHOLD,
-} from "@/lib/seller";
-import {
-  PageHeader,
-  Panel,
-  Stat,
-  StatRow,
-  Table,
-  Row,
-  Cell,
-  Badge,
-  Button,
-  EmptyState,
-  Notice,
-  Meter,
-} from "@/components/seller/ui";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { medusaBackendUrl } from "@/lib/medusa/config";
 
 export const dynamic = "force-dynamic";
 
-function startOfCurrentMonth() {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-}
+const CAPABILITIES = [
+  "Produits, variantes, photos et prix",
+  "Stock et inventaire",
+  "Commandes de votre boutique et expéditions",
+  "Commissions retenues par MACHÉ",
+  "Versements et compte de paiement",
+  "Avis reçus et réponses",
+];
 
-export default async function SellerOverviewPage() {
-  const { supabase, uid, firstName, limits } = await requireSeller();
+export default async function SellerEntryPage() {
+  const backendUrl = medusaBackendUrl();
+  const vendorUrl = backendUrl ? `${backendUrl}/seller` : "";
 
-  const { data: stores, error: storesError } = await supabase
-    .from("stores")
-    .select("id, slug, name, is_verified, category, legal_doc_url, created_at")
-    .eq("owner_id", uid)
-    .order("created_at", { ascending: true });
+  /*
+    On vérifie seulement qu'une session existe, sans exiger de rôle : le
+    panneau vendeur a sa propre authentification, et refuser ici quelqu'un
+    qui a un compte vendeur Mercur mais pas de rôle Supabase serait un
+    verrou sans objet.
+  */
+  let signedIn = false;
 
-  if (storesError) {
-    console.error("[seller/overview] stores:", storesError.message);
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+    signedIn = Boolean(data.user);
+  } catch {
+    /* Supabase non configuré : la page reste consultable. */
   }
 
-  const storeList = stores ?? [];
-  const storeIds = storeList.map((store) => store.id);
-
-  const ordersResult = storeIds.length
-    ? await supabase
-        .from("orders")
-        .select("id, status, total_price, created_at, store_id")
-        .in("store_id", storeIds)
-        .order("created_at", { ascending: false })
-        .limit(2000)
-    : { data: [], error: null };
-
-  if (ordersResult.error) {
-    console.error("[seller/overview] orders:", ordersResult.error.message);
+  if (!backendUrl) {
+    return (
+      <main className="mx-auto w-full max-w-2xl px-4 py-14">
+        <h1 className="text-[24px] font-bold text-[var(--mache-text)]">
+          Espace vendeur indisponible
+        </h1>
+        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+          L&apos;adresse du backend commerce n&apos;est pas renseignée
+          (NEXT_PUBLIC_MEDUSA_BACKEND_URL). Sans elle, MACHÉ ne sait pas où
+          se trouve le panneau vendeur.
+        </p>
+      </main>
+    );
   }
-
-  const orders = ordersResult.data ?? [];
-  const monthStart = startOfCurrentMonth();
-
-  const pendingOrders = orders.filter((order) => order.status === "pending").length;
-
-  const monthRevenue = orders
-    .filter(
-      (order) =>
-        order.status === "completed" &&
-        typeof order.created_at === "string" &&
-        order.created_at >= monthStart
-    )
-    .reduce((sum, order) => sum + (order.total_price ?? 0), 0);
-
-  const totalRevenue = orders
-    .filter((order) => order.status === "completed")
-    .reduce((sum, order) => sum + (order.total_price ?? 0), 0);
-
-  const perStore = await Promise.all(
-    storeList.map(async (store) => {
-      const [products, lowStock] = await Promise.all([
-        supabase
-          .from("products")
-          .select("id", { count: "exact", head: true })
-          .eq("store_id", store.id),
-        supabase
-          .from("products")
-          .select("id", { count: "exact", head: true })
-          .eq("store_id", store.id)
-          .lte("stock", LOW_STOCK_THRESHOLD),
-      ]);
-
-      const storeOrders = orders.filter((order) => order.store_id === store.id);
-
-      return {
-        store,
-        products: products.count ?? 0,
-        lowStock: lowStock.count ?? 0,
-        orders: storeOrders.length,
-        revenue: storeOrders
-          .filter((order) => order.status === "completed")
-          .reduce((sum, order) => sum + (order.total_price ?? 0), 0),
-        error: products.error ?? lowStock.error ?? null,
-      };
-    })
-  );
-
-  const totalProducts = perStore.reduce((sum, entry) => sum + entry.products, 0);
-  const lowStockCount = perStore.reduce((sum, entry) => sum + entry.lowStock, 0);
-  const missingStoreDocs = storeList.filter((store) => !store.legal_doc_url).length;
-
-  const dataError =
-    storesError || ordersResult.error || perStore.find((entry) => entry.error)?.error || null;
-
-  const alerts = [
-    {
-      label: "Commandes en attente de traitement",
-      count: pendingOrders,
-      href: "/dashboard/seller/orders",
-      tone: "warning" as const,
-    },
-    {
-      label: `Produits à ${LOW_STOCK_THRESHOLD} unités ou moins`,
-      count: lowStockCount,
-      href: "/dashboard/seller/stock",
-      tone: "warning" as const,
-    },
-    {
-      label: "Boutiques sans document légal",
-      count: missingStoreDocs,
-      href: "/dashboard/seller/documents",
-      tone: "danger" as const,
-    },
-  ].filter((alert) => alert.count > 0);
 
   return (
-    <>
-      <PageHeader
-        title={`Bonjour ${firstName}`}
-        subtitle="Vue d'ensemble de votre activité sur MACHE."
-        actions={
-          storeList.length < limits.maxStores ? (
-            <Button href="/dashboard/seller/stores/new" variant="primary">
-              Créer une boutique
-            </Button>
-          ) : null
-        }
-      />
+    <main className="mx-auto w-full max-w-2xl px-4 py-14">
+      <h1 className="text-[26px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[30px]">
+        Espace vendeur
+      </h1>
 
-      <div className="space-y-4">
-        {dataError && (
-          <Notice tone="warning" title="Certaines données n'ont pas pu être chargées">
-            Les totaux ci-dessous sont peut-être incomplets. Détail : {dataError.message}
-          </Notice>
-        )}
+      <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+        Votre boutique se gère depuis le panneau vendeur MACHÉ. Tout y est :
+      </p>
 
-        <StatRow>
-          <Stat
-            label="Chiffre d'affaires du mois"
-            value={formatHTG(monthRevenue)}
-            hint="commandes réglées"
-          />
-          <Stat
-            label="Total encaissé"
-            value={formatHTG(totalRevenue)}
-            hint="depuis l'ouverture"
-          />
-          <Stat
-            label="Commandes à traiter"
-            value={formatNumber(pendingOrders)}
-            tone={pendingOrders > 0 ? "warning" : "default"}
-            hint={`${formatNumber(orders.length)} au total`}
-          />
-          <Stat
-            label="Produits en ligne"
-            value={formatNumber(totalProducts)}
-            hint={`${storeList.length} boutique${storeList.length > 1 ? "s" : ""}`}
-          />
-          <Stat
-            label="Stock critique"
-            value={formatNumber(lowStockCount)}
-            tone={lowStockCount > 0 ? "danger" : "success"}
-            hint={`seuil : ${LOW_STOCK_THRESHOLD} unités`}
-          />
-        </StatRow>
+      <ul className="mt-4 grid gap-1.5 sm:grid-cols-2">
+        {CAPABILITIES.map((item) => (
+          <li key={item} className="flex gap-2 text-[13.5px] text-[var(--mache-text)]">
+            <span aria-hidden="true" className="text-[var(--mache-success)]">✓</span>
+            {item}
+          </li>
+        ))}
+      </ul>
 
-        {alerts.length > 0 && (
-          <Panel title="À traiter" padded={false}>
-            <ul>
-              {alerts.map((alert) => (
-                <li
-                  key={alert.label}
-                  className="flex items-center justify-between gap-3 border-b border-[#e3e6e6] px-4 py-2.5 last:border-0"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <Badge tone={alert.tone}>{formatNumber(alert.count)}</Badge>
-                    <span className="text-[12.5px]">{alert.label}</span>
-                  </span>
-                  <Button href={alert.href} variant="ghost" size="sm">
-                    Traiter →
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        )}
-
-        <Panel
-          title="Mes boutiques"
-          description={`${storeList.length} sur ${limits.maxStores} autorisées par l'offre ${limits.planName}`}
-          actions={<Button href="/dashboard/seller/stores" size="sm">Tout voir</Button>}
-          padded={false}
+      <div className="mt-6 flex flex-wrap gap-2.5">
+        <a
+          href={vendorUrl}
+          className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
         >
-          {storeList.length === 0 ? (
-            <EmptyState
-              title="Aucune boutique"
-              description="Créez votre première boutique pour publier des produits et recevoir des commandes."
-              action={
-                <Button href="/dashboard/seller/stores/new" variant="primary">
-                  Créer une boutique
-                </Button>
-              }
-            />
-          ) : (
-            <Table
-              columns={[
-                { key: "name", label: "Boutique" },
-                { key: "status", label: "Statut" },
-                { key: "products", label: "Produits", align: "right" },
-                { key: "orders", label: "Commandes", align: "right" },
-                { key: "revenue", label: "Encaissé", align: "right" },
-                { key: "stock", label: "Stock bas", align: "right" },
-                { key: "actions", label: "", align: "right", width: "90px" },
-              ]}
-            >
-              {perStore.map(({ store, products, lowStock, orders: storeOrders, revenue }) => (
-                <Row key={store.id}>
-                  <Cell strong>
-                    {store.name?.trim() || "Boutique sans nom"}
-                    <span className="mt-0.5 block text-[11px] font-normal text-[#565959]">
-                      /store/{store.slug} · créée le {formatDate(store.created_at)}
-                    </span>
-                  </Cell>
-                  <Cell>
-                    <Badge tone={store.is_verified ? "success" : "warning"}>
-                      {store.is_verified ? "Vérifiée" : "En attente"}
-                    </Badge>
-                  </Cell>
-                  <Cell align="right" numeric>
-                    {formatNumber(products)}
-                    <span className="block text-[10.5px] text-[#767676]">
-                      / {formatNumber(limits.maxArticlesPerStore)}
-                    </span>
-                  </Cell>
-                  <Cell align="right" numeric>
-                    {formatNumber(storeOrders)}
-                  </Cell>
-                  <Cell align="right" numeric strong>
-                    {formatHTG(revenue)}
-                  </Cell>
-                  <Cell align="right" numeric>
-                    {lowStock > 0 ? (
-                      <span className="font-semibold text-[#b45309]">{lowStock}</span>
-                    ) : (
-                      <span className="text-[#767676]">0</span>
-                    )}
-                  </Cell>
-                  <Cell align="right">
-                    <Button href={`/dashboard/seller/stores/${store.id}`} size="sm">
-                      Ouvrir
-                    </Button>
-                  </Cell>
-                </Row>
-              ))}
-            </Table>
-          )}
-        </Panel>
+          Ouvrir mon panneau vendeur
+        </a>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Panel title="Utilisation de votre offre">
-            <dl className="space-y-3.5">
-              <div>
-                <div className="flex items-baseline justify-between text-[12.5px]">
-                  <dt>Boutiques</dt>
-                  <dd className="tnum text-[#565959]">
-                    {storeList.length} / {limits.maxStores}
-                  </dd>
-                </div>
-                <div className="mt-1.5">
-                  <Meter value={storeList.length} max={limits.maxStores} intent="capacity" />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-baseline justify-between text-[12.5px]">
-                  <dt>Produits (toutes boutiques)</dt>
-                  <dd className="tnum text-[#565959]">
-                    {formatNumber(totalProducts)} /{" "}
-                    {formatNumber(limits.maxArticlesPerStore * Math.max(1, storeList.length))}
-                  </dd>
-                </div>
-                <div className="mt-1.5">
-                  <Meter
-                    value={totalProducts}
-                    max={limits.maxArticlesPerStore * Math.max(1, storeList.length)}
-                    intent="capacity"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-baseline justify-between border-t border-[#e3e6e6] pt-3 text-[12.5px]">
-                <dt>Commission par vente</dt>
-                <dd className="font-semibold">{limits.commission}</dd>
-              </div>
-            </dl>
-          </Panel>
-
-          <Panel title="Dernières commandes" padded={false}>
-            {orders.length === 0 ? (
-              <EmptyState
-                title="Aucune commande"
-                description="Les commandes de vos boutiques apparaîtront ici."
-              />
-            ) : (
-              <Table
-                columns={[
-                  { key: "ref", label: "Référence" },
-                  { key: "date", label: "Date" },
-                  { key: "status", label: "Statut" },
-                  { key: "total", label: "Montant", align: "right" },
-                ]}
-              >
-                {orders.slice(0, 6).map((order) => (
-                  <Row key={order.id}>
-                    <Cell muted>#{String(order.id).slice(0, 8)}</Cell>
-                    <Cell muted>{formatDate(order.created_at)}</Cell>
-                    <Cell>
-                      <Badge
-                        tone={
-                          order.status === "completed"
-                            ? "success"
-                            : order.status === "pending"
-                              ? "warning"
-                              : "neutral"
-                        }
-                      >
-                        {order.status || "—"}
-                      </Badge>
-                    </Cell>
-                    <Cell align="right" numeric strong>
-                      {formatHTG(order.total_price)}
-                    </Cell>
-                  </Row>
-                ))}
-              </Table>
-            )}
-          </Panel>
-        </div>
+        {!signedIn && (
+          <Link
+            href="/sell"
+            className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-[14px] font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
+          >
+            Devenir vendeur
+          </Link>
+        )}
       </div>
-    </>
+
+      <div className="mt-8 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+        <h2 className="text-[14px] font-bold text-[var(--mache-text)]">
+          Un compte vendeur distinct
+        </h2>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--mache-muted)]">
+          Le panneau vendeur a sa propre inscription. Si vous vendiez déjà sur
+          l&apos;ancienne version de MACHÉ, créez-y votre boutique : le
+          catalogue a changé de moteur, et les anciennes fiches produit ne
+          sont pas reprises automatiquement. Écrivez à l&apos;équipe MACHÉ si
+          vous avez besoin d&apos;aide pour les transférer.
+        </p>
+      </div>
+
+      <p className="mt-6 text-[12.5px] text-[var(--mache-muted)]">
+        Vous cherchiez plutôt vos achats ?{" "}
+        <Link href="/dashboard/buyer" className="font-semibold text-[var(--mache-primary)] hover:underline">
+          Espace client
+        </Link>
+      </p>
+    </main>
   );
 }
