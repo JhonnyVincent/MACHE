@@ -2,6 +2,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured, AUTH_UNAVAILABLE_MESSAGE } from "@/lib/supabase/env";
 
 function createSlug(value: string) {
   return value
@@ -20,6 +21,14 @@ export async function registerAction(formData: FormData) {
 
   if (!fullName || !email || !password) {
     redirect("/register?error=missing_fields");
+  }
+
+  /*
+    Sans Supabase, `createSupabaseServerClient` lève, et l'inscription
+    répondait par une exception serveur. On le dit avant d'essayer.
+  */
+  if (!supabaseConfigured()) {
+    redirect(`/register?error=${encodeURIComponent(AUTH_UNAVAILABLE_MESSAGE)}`);
   }
 
   const headersList = await headers();

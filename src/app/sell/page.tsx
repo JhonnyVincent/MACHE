@@ -101,16 +101,16 @@ export default function SellPage() {
               vente en ligne, stock, commandes, publicité, dashboard vendeur et outils business.
             </p>
 
+            {/*
+              Un seul bouton, et non « créer un compte » à côté de « se
+              connecter » : les deux mènent au même endroit, le panneau
+              vendeur, qui gère lui-même l'inscription et la connexion.
+              Deux boutons identiques obligent à choisir sans qu'il y ait
+              de choix.
+            */}
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/register?role=seller" className="btn-primary">
-                Créer un compte vendeur
-              </Link>
-
-              <Link
-                href="/login?next=/dashboard/seller"
-                className="btn-secondary bg-white text-[#071f3d]"
-              >
-                Se connecter vendeur
+              <Link href="/dashboard/seller" className="btn-primary">
+                Ouvrir ma boutique
               </Link>
 
               <Link href="/contact" className="btn-secondary border-white/30 text-white">
@@ -408,7 +408,7 @@ export default function SellPage() {
                 Contacter l’équipe
               </Link>
 
-              <Link href="/register?role=seller" className="btn-secondary">
+              <Link href="/dashboard/seller" className="btn-secondary">
                 Créer mon compte vendeur
               </Link>
             </div>
@@ -435,15 +435,8 @@ export default function SellPage() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-              <Link href="/register?role=seller" className="btn-primary">
-                Créer un compte vendeur
-              </Link>
-
-              <Link
-                href="/login?next=/dashboard/seller"
-                className="btn-secondary bg-white text-[#071f3d]"
-              >
-                J’ai déjà un compte
+              <Link href="/dashboard/seller" className="btn-primary">
+                Ouvrir ma boutique
               </Link>
             </div>
           </div>

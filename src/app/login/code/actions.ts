@@ -14,6 +14,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured, AUTH_UNAVAILABLE_MESSAGE } from "@/lib/supabase/env";
 
 const CODE_PAGE = "/login/code";
 
@@ -34,6 +35,10 @@ export async function requestCodeAction(formData: FormData) {
 
   if (!email) {
     back({ error: "missing_email", next });
+  }
+
+  if (!supabaseConfigured()) {
+    back({ error: AUTH_UNAVAILABLE_MESSAGE, next });
   }
 
   const supabase = await createSupabaseServerClient();
@@ -96,6 +101,10 @@ export async function verifyCodeAction(formData: FormData) {
 
   if (!email || !token) {
     back({ sent: "1", email, next, error: "missing_code" });
+  }
+
+  if (!supabaseConfigured()) {
+    back({ sent: "1", email, next, error: AUTH_UNAVAILABLE_MESSAGE });
   }
 
   const supabase = await createSupabaseServerClient();

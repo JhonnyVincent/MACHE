@@ -65,7 +65,7 @@ export default async function FavoritesPage() {
             côté.
           </p>
           <Link
-            href="/login?next=/favorites"
+            href="/compte/connexion?next=/favorites"
             className="mt-4 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
           >
             Se connecter

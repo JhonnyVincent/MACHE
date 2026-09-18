@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured, AUTH_UNAVAILABLE_MESSAGE } from "@/lib/supabase/env";
 import { isSellerRole } from "@/lib/authz";
 
 export async function loginAction(formData: FormData) {
@@ -11,6 +12,15 @@ export async function loginAction(formData: FormData) {
 
   if (!email || !password) {
     redirect("/login?error=missing_fields");
+  }
+
+  /*
+    Sans Supabase, `createSupabaseServerClient` lève, et le formulaire
+    répondait par une exception serveur : un écran gris, sans rien
+    indiquer. On le dit avant d'essayer.
+  */
+  if (!supabaseConfigured()) {
+    redirect(`/login?error=${encodeURIComponent(AUTH_UNAVAILABLE_MESSAGE)}`);
   }
 
   const supabase = await createSupabaseServerClient();

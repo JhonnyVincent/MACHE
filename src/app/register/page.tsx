@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { supabaseConfigured } from "@/lib/supabase/env";
 import { registerAction } from "./actions";
 
 const errorMessages: Record<string, string> = {
@@ -32,6 +34,20 @@ function getDefaultRole(role?: string) {
   return "buyer";
 }
 
+/*
+  Cette page crée un compte Supabase.
+
+  Depuis la bascule sur Medusa, ce n'est plus par là qu'on achète ni
+  qu'on vend : le compte client vit dans le backend commerce
+  (/compte/inscription) et le compte vendeur dans le panneau vendeur.
+  Supabase ne porte plus que les rôles internes de MACHÉ — agents,
+  partenaires, administration.
+
+  Elle le disait pourtant : « Créez un compte client pour acheter sur
+  Maché ». Quelqu'un qui suivait cette phrase créait un compte qui ne
+  lui servait à rien, puis ne comprenait pas pourquoi son panier ne le
+  reconnaissait pas.
+*/
 export default async function RegisterPage({
   searchParams,
 }: {
@@ -42,6 +58,7 @@ export default async function RegisterPage({
   const safeError = error ? decodeURIComponent(error) : "";
   const message = errorMessages[safeError] || safeError;
   const defaultRole = getDefaultRole(role);
+  const configured = supabaseConfigured();
 
   const isProAccount =
     defaultRole === "seller_individual" ||
@@ -55,19 +72,55 @@ export default async function RegisterPage({
       <div className="card mx-auto max-w-md p-6">
         <h1 className="text-2xl font-bold">Créer un compte</h1>
 
-        {isProAccount ? (
-          <p className="mt-2 text-sm text-neutral-500">
-            Vous créez un compte professionnel Maché :{" "}
-            <span className="font-semibold text-neutral-900">
-              {roleLabels[defaultRole]}
-            </span>
+        <p className="mt-2 text-sm text-neutral-500">
+          {isProAccount ? (
+            <>
+              Compte interne MACHÉ :{" "}
+              <span className="font-semibold text-neutral-900">
+                {roleLabels[defaultRole]}
+              </span>
+              .
+            </>
+          ) : (
+            "Compte interne MACHÉ."
+          )}
+        </p>
+
+        {/*
+          Sans base de comptes, le formulaire est retiré plutôt que
+          désactivé ou laissé en place : un formulaire qu'on remplit pour
+          se voir refuser à l'envoi est une fausse porte. Ce qui reste
+          dit pourquoi, et où aller.
+        */}
+        {!configured && (
+          <div className="mt-4 rounded-xl border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-sm leading-relaxed text-neutral-700">
+            La création de comptes internes n&apos;est pas disponible pour le
+            moment.
+          </div>
+        )}
+
+        {/*
+          Les deux parcours qui fonctionnent sont nommés ici, avant le
+          formulaire. Quelqu'un qui cherche à acheter ou à vendre ne doit
+          pas avoir à le remplir pour découvrir qu'il s'est trompé de
+          page.
+        */}
+        <div className="mt-4 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm leading-relaxed text-neutral-600">
+          <p>
+            Pour <strong>acheter</strong> sur MACHÉ :{" "}
+            <Link href="/compte/inscription" className="font-semibold text-[var(--mache-primary)] hover:underline">
+              créer un compte client
+            </Link>
             .
           </p>
-        ) : (
-          <p className="mt-2 text-sm text-neutral-500">
-            Créez un compte client pour acheter sur Maché.
+          <p className="mt-1">
+            Pour <strong>vendre</strong> :{" "}
+            <Link href="/dashboard/seller" className="font-semibold text-[var(--mache-primary)] hover:underline">
+              ouvrir une boutique
+            </Link>
+            .
           </p>
-        )}
+        </div>
 
         {message ? (
           <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -75,6 +128,7 @@ export default async function RegisterPage({
           </div>
         ) : null}
 
+        {configured && (
         <form action={registerAction} className="mt-6 space-y-4">
           <input
             className="input"
@@ -113,6 +167,7 @@ export default async function RegisterPage({
             Créer mon compte
           </button>
         </form>
+        )}
       </div>
     </main>
   );

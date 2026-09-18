@@ -9,17 +9,19 @@ const footerShopLinks = [
   { label: "Beauté", href: "/shop" }
 ];
 
+/*
+  « Créer ma boutique » et « Dashboard vendeur » menaient à l'ancienne
+  inscription Supabase, qui ne crée plus ni boutique ni catalogue depuis
+  la bascule sur Medusa. Les deux pointent maintenant vers l'espace
+  vendeur, qui est la seule porte réelle — et une seule entrée, plutôt
+  que deux libellés pour le même endroit.
+*/
 const footerSellLinks = [
   { label: "Devenir vendeur", href: "/sell" },
 
   {
-    label: "Créer ma boutique",
-    href: "/register?role=seller"
-  },
-
-  {
-    label: "Dashboard vendeur",
-    href: "/login?next=/dashboard/seller"
+    label: "Espace vendeur",
+    href: "/dashboard/seller"
   },
 
   {

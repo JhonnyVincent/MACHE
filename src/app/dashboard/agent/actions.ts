@@ -13,6 +13,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured } from "@/lib/supabase/env";
 import { AGENT_NEXT_STATUS } from "@/lib/agents";
 
 function back(message: string, key: "error" | "success"): never {
@@ -26,6 +27,13 @@ export async function advanceShipmentAction(formData: FormData) {
 
   if (!shipmentId || !nextStatus) {
     back("Course ou étape manquante.", "error");
+  }
+
+  if (!supabaseConfigured()) {
+    back(
+      "L'espace agent n'est pas relié à sa base de comptes : la course ne peut pas être mise à jour.",
+      "error"
+    );
   }
 
   const supabase = await createSupabaseServerClient();

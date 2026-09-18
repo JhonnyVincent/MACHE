@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured, AUTH_UNAVAILABLE_MESSAGE } from "@/lib/supabase/env";
 
 export async function resetPasswordAction(formData: FormData) {
   const password = String(formData.get("password") || "").trim();
@@ -17,6 +18,10 @@ export async function resetPasswordAction(formData: FormData) {
 
   if (password !== confirmPassword) {
     redirect("/reset-password?error=passwords_not_match");
+  }
+
+  if (!supabaseConfigured()) {
+    redirect(`/reset-password?error=${encodeURIComponent(AUTH_UNAVAILABLE_MESSAGE)}`);
   }
 
   const supabase = await createSupabaseServerClient();

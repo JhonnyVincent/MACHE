@@ -72,3 +72,20 @@ export function missingSupabaseEnvMessage(scope: "serveur" | "client" | "middlew
 export function supabaseConfigured(): boolean {
   return getSupabaseCredentials() !== null;
 }
+
+/*
+  Message destiné à quelqu'un qui vient de remplir un formulaire.
+
+  `missingSupabaseEnvMessage` nomme les variables : c'est ce qu'il faut à
+  qui déploie le site. Ce n'est pas ce qu'il faut à quelqu'un qui essaie
+  de créer un compte et à qui le site répondait, jusqu'ici, par une
+  exception serveur — un écran gris disant « Application error », sans
+  rien de plus.
+
+  Ce message-ci lui dit ce qui se passe et ce qu'il peut faire à la
+  place. Les deux parcours qui fonctionnent sans Supabase sont nommés :
+  le compte client et le panneau vendeur vivent dans le backend
+  commerce, pas ici.
+*/
+export const AUTH_UNAVAILABLE_MESSAGE =
+  "Les comptes de l'équipe MACHÉ ne sont pas disponibles pour le moment. Pour acheter, créez un compte client ; pour vendre, passez par l'espace vendeur.";

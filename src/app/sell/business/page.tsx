@@ -73,7 +73,7 @@ export default function SellBusinessPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/register?role=seller_business" className="btn-primary">
+              <Link href="/dashboard/seller" className="btn-primary">
                 Créer un compte business
               </Link>
 
@@ -264,7 +264,7 @@ export default function SellBusinessPage() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/register?role=seller_business" className="btn-primary">
+              <Link href="/dashboard/seller" className="btn-primary">
                 Créer un compte business
               </Link>
 

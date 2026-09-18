@@ -82,7 +82,7 @@ export default function ServicesPage() {
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/register" className="btn-primary">
+            <Link href="/dashboard/seller" className="btn-primary">
               Créer ma boutique
             </Link>
             <Link href="/about" className="btn-secondary">

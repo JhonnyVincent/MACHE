@@ -96,12 +96,18 @@ export default async function SellerEntryPage() {
           Ouvrir mon panneau vendeur
         </a>
 
+        {/*
+          Ce lien dit « en savoir plus » et non « devenir vendeur » : la
+          page /sell renvoie ici, et deux boutons qui se renvoient l'un à
+          l'autre font tourner en rond quelqu'un qui cherche simplement où
+          s'inscrire. L'inscription se fait dans le panneau vendeur.
+        */}
         {!signedIn && (
           <Link
             href="/sell"
             className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
           >
-            Devenir vendeur
+            Vendre sur MACHÉ : ce qu&apos;il faut savoir
           </Link>
         )}
       </div>
