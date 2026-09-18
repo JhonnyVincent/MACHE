@@ -182,21 +182,22 @@ export default async function CartPage({
                 </div>
               </dl>
 
+              <Link
+                href="/checkout"
+                className="mt-4 block rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-center text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+              >
+                Commander
+              </Link>
+
               {/*
-                Le passage de commande n'est pas encore branché : aucun
-                prestataire de paiement n'est raccordé au backend. Le dire
-                vaut mieux qu'un bouton qui mènerait à une impasse.
+                Le moyen de paiement est annoncé ici, pas découvert à la
+                dernière étape : quelqu'un qui n'a pas d'espèces doit le
+                savoir avant de saisir son adresse.
               */}
-              <div className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-3 py-2.5">
-                <p className="text-[12.5px] font-semibold text-[var(--mache-text)]">
-                  Commande pas encore ouverte
-                </p>
-                <p className="mt-1 text-[12px] leading-relaxed text-[var(--mache-muted)]">
-                  Aucun prestataire de paiement n&apos;est raccordé. Votre
-                  panier est conservé : vous le retrouverez quand le
-                  paiement sera ouvert.
-                </p>
-              </div>
+              <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--mache-muted)]">
+                Paiement à la livraison. Aucune donnée bancaire ne vous sera
+                demandée.
+              </p>
 
               <Link
                 href="/shop"
