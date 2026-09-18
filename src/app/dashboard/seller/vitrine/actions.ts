@@ -15,7 +15,8 @@ import {
   loginVendor, clearVendorSession, getVendorSeller, saveStorefrontLayout,
 } from "@/lib/medusa/vendor";
 import {
-  parseLayout, BLOCK_CATALOG, type Block, type BlockType, type StorefrontLayout,
+  parseLayout, sanitizeProps, blockDefinition, BLOCK_CATALOG,
+  type Block, type BlockType, type StorefrontLayout,
 } from "@/lib/storefront/blocks";
 
 const BASE = "/dashboard/seller/vitrine";
@@ -129,13 +130,6 @@ export async function moveBlockAction(formData: FormData) {
   done();
 }
 
-/*
-  Enregistrement des propriétés d'un bloc.
-
-  Le formulaire envoie ses champs sous la forme `prop_<nom>`. Les listes —
-  les questions fréquentes — sont transmises en JSON, faute de quoi il
-  faudrait un champ par question et par réponse.
-*/
 export async function updateBlockAction(formData: FormData) {
   const index = Number(formData.get("index"));
 
@@ -145,31 +139,41 @@ export async function updateBlockAction(formData: FormData) {
     fail("Ce bloc n'existe plus.");
   }
 
-  const props: Record<string, unknown> = {};
+  const type = layout.content[index].type;
+  const definition = blockDefinition(type);
+
+  if (!definition) fail("Ce type de bloc n'existe plus.");
+
+  const raw: Record<string, unknown> = {};
 
   for (const [key, value] of formData.entries()) {
     if (!key.startsWith("prop_")) continue;
 
     const name = key.slice(5);
-    const raw = String(value).trim();
+    const text = String(value).trim();
 
-    if (!raw) continue;
+    if (!text) continue;
 
-    if (name === "items") {
+    if (definition.fields.find((field) => field.name === name)?.kind === "faq") {
       try {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) props[name] = parsed;
+        raw[name] = JSON.parse(text);
       } catch {
         fail("La liste des questions n'est pas un JSON valide.");
       }
       continue;
     }
 
-    props[name] = name === "limit" ? Number(raw) || 12 : raw;
+    raw[name] = text;
   }
 
+  /*
+    Le formulaire ne décide pas de ce qui est enregistré : `sanitizeProps`
+    ne retient que les champs déclarés pour ce type de bloc, dans le type
+    déclaré. Un champ ajouté au formulaire par le navigateur n'atteint pas
+    la base.
+  */
   const content = [...layout.content];
-  content[index] = { ...content[index], props };
+  content[index] = { type, props: sanitizeProps(type, raw) };
 
   const saved = await saveStorefrontLayout({ ...layout, content });
 

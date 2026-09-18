@@ -59,3 +59,16 @@ export function missingSupabaseEnvMessage(scope: "serveur" | "client" | "middlew
     ", "
   )}. Ajoutez ces variables dans .env.local (voir .env.example) puis redémarrez le serveur.`;
 }
+
+/*
+  Vrai si les deux variables sont présentes.
+
+  Les espaces internes de MACHÉ — administration, agents, partenaires —
+  lisent leurs comptes dans Supabase. Sans configuration,
+  `createSupabaseServerClient` lève, et la page rendait une erreur 500 :
+  un écran blanc, sans rien indiquer de ce qui manque ni à qui le dire.
+  Ce test permet de l'annoncer avant d'essayer.
+*/
+export function supabaseConfigured(): boolean {
+  return getSupabaseCredentials() !== null;
+}

@@ -10,12 +10,12 @@
 */
 
 import Link from "next/link";
-import {
-  formatAmount,
-  type StoreProduct,
-  type StoreSeller,
-  type StoreCategory,
-  type StoreCollection,
+import { formatAmount } from "@/lib/format";
+import type {
+  StoreProduct,
+  StoreSeller,
+  StoreCategory,
+  StoreCollection,
 } from "@/lib/medusa/catalog";
 
 /* -------------------------------------------------------------------------- */

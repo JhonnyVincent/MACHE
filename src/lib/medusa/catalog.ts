@@ -62,6 +62,8 @@ export type StoreProduct = {
   originalPrice: number | null;
   currency: string | null;
   collectionId: string | null;
+  /* Nom du rayon, pour l'afficher au lieu de son identifiant. */
+  collectionTitle: string | null;
   createdAt: string | null;
   variantCount: number;
   variants: StoreVariant[];
@@ -234,6 +236,7 @@ function mapProduct(raw: RawProduct): StoreProduct {
     originalPrice,
     currency,
     collectionId: text(raw.collection_id),
+    collectionTitle: text((raw.collection as Record<string, unknown> | null)?.title),
     createdAt: text(raw.created_at),
     variantCount: Array.isArray(raw.variants) ? raw.variants.length : 0,
     variants: Array.isArray(raw.variants)
@@ -376,7 +379,7 @@ export async function fetchProducts(
       order: query.order,
       /* Sans région, Medusa refuse de calculer les prix, et c'est sain. */
       region_id: medusaRegionId() || undefined,
-      fields: "*variants.calculated_price",
+      fields: "*variants.calculated_price,*collection",
     },
     { revalidate: 60, tags: ["products"] }
   );
@@ -503,25 +506,9 @@ export async function fetchCategories(
 /*
   Mise en forme d'un montant.
 
-  La devise vient du backend : coder « HTG » en dur ici afficherait des
-  gourdes sur un catalogue facturé en dollars.
+  L'implémentation a déménagé dans `src/lib/format.ts`, qui n'importe
+  rien : elle est employée par des composants qui tournent aussi dans le
+  navigateur. Elle reste réexportée ici pour ne pas casser les appels
+  existants.
 */
-export function formatAmount(
-  amount: number | null,
-  currency: string | null
-): string {
-  if (amount === null) return "Prix indisponible";
-
-  const code = (currency || "HTG").toUpperCase();
-
-  try {
-    return new Intl.NumberFormat("fr-FR", {
-      style: "currency",
-      currency: code,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  } catch {
-    /* Devise inconnue d'Intl : on reste lisible plutôt que d'échouer. */
-    return `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(amount)} ${code}`;
-  }
-}
+export { formatAmount } from "../format";

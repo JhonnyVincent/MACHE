@@ -12,8 +12,20 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/admin";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
+import { supabaseConfigured } from "@/lib/supabase/env";
+import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  /*
+    Sans Supabase, `requireAdmin` lève et toutes les pages de cet espace
+    rendaient une erreur 500. Le contrôle se fait donc ici, une fois, avant
+    d'essayer : les enfants ne sont pas rendus, et l'écran dit ce qui
+    manque.
+  */
+  if (!supabaseConfigured()) {
+    return <StaffUnavailable area="Administration" />;
+  }
+
   const { supabase, displayName, firstName, email, isSuperAdmin } = await requireAdmin();
 
   /*

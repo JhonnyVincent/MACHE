@@ -14,7 +14,9 @@
 import Link from "next/link";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { medusaBackendUrl } from "@/lib/medusa/config";
-import { parseLayout, BLOCK_CATALOG, PRODUCT_SELECTION_LABELS } from "@/lib/storefront/blocks";
+import {
+  parseLayout, BLOCK_CATALOG, blockDefinition, type BlockField,
+} from "@/lib/storefront/blocks";
 import {
   vendorLoginAction, vendorLogoutAction, addBlockAction,
   removeBlockAction, moveBlockAction, updateBlockAction,
@@ -26,44 +28,6 @@ const input =
   "mt-1 w-full rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-2 text-base outline-none focus:border-[var(--mache-primary)]";
 
 const label = "text-sm font-semibold text-[var(--mache-text)]";
-
-/* Champs proposés par type de bloc, avec ce que chacun affiche vraiment. */
-const FIELDS: Record<string, { name: string; label: string; hint?: string; long?: boolean }[]> = {
-  hero: [
-    { name: "title", label: "Titre" },
-    { name: "subtitle", label: "Accroche", long: true },
-    { name: "ctaLabel", label: "Texte du bouton" },
-    { name: "ctaHref", label: "Lien du bouton", hint: "#produits pour descendre à la grille" },
-  ],
-  banner: [{ name: "message", label: "Message" }],
-  text: [
-    { name: "title", label: "Titre" },
-    { name: "body", label: "Texte", long: true },
-  ],
-  image: [
-    { name: "url", label: "Adresse de l'image", hint: "http:// ou https://" },
-    { name: "caption", label: "Légende" },
-  ],
-  products: [
-    { name: "title", label: "Titre de la section" },
-    { name: "selection", label: "Sélection", hint: Object.entries(PRODUCT_SELECTION_LABELS).map(([k, v]) => `${k} — ${v}`).join(" · ") },
-    { name: "limit", label: "Nombre de produits" },
-  ],
-  categories: [{ name: "title", label: "Titre de la section" }],
-  faq: [
-    { name: "title", label: "Titre de la section" },
-    {
-      name: "items",
-      label: "Questions",
-      long: true,
-      hint: 'Format JSON : [{"question":"…","answer":"…"}]',
-    },
-  ],
-  countdown: [
-    { name: "title", label: "Titre" },
-    { name: "until", label: "Jusqu'au", hint: "AAAA-MM-JJ. Passée la date, le bloc disparaît de lui-même." },
-  ],
-};
 
 export default async function VitrinePage({
   searchParams,
@@ -155,11 +119,20 @@ export default async function VitrinePage({
           </p>
         </div>
 
-        <form action={vendorLogoutAction}>
-          <button type="submit" className="text-sm text-[var(--mache-muted)] hover:underline">
-            Se déconnecter
-          </button>
-        </form>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/dashboard/seller/vitrine/editeur"
+            className="rounded-[6px] bg-[var(--mache-text)] px-4 py-2 text-base font-bold text-white transition-colors hover:bg-black"
+          >
+            Éditeur visuel
+          </Link>
+
+          <form action={vendorLogoutAction}>
+            <button type="submit" className="text-sm text-[var(--mache-muted)] hover:underline">
+              Se déconnecter
+            </button>
+          </form>
+        </div>
       </div>
 
       {seller.status !== "active" && (
@@ -185,8 +158,8 @@ export default async function VitrinePage({
       {/* Blocs */}
       <div className="mt-6 space-y-3">
         {layout.content.map((block, index) => {
-          const meta = BLOCK_CATALOG.find((entry) => entry.type === block.type);
-          const fields = FIELDS[block.type] ?? [];
+          const meta = blockDefinition(block.type);
+          const fields: BlockField[] = meta?.fields ?? [];
 
           return (
             <section
@@ -250,7 +223,7 @@ export default async function VitrinePage({
                 {fields.map((field) => {
                   const value = block.props[field.name];
                   const defaultValue =
-                    field.name === "items"
+                    field.kind === "faq"
                       ? Array.isArray(value)
                         ? JSON.stringify(value, null, 1)
                         : ""
@@ -264,21 +237,49 @@ export default async function VitrinePage({
                         {field.label}
                       </label>
 
-                      {field.long ? (
+                      {field.kind === "textarea" || field.kind === "faq" ? (
                         <textarea
                           id={`b${index}-${field.name}`}
                           name={`prop_${field.name}`}
-                          rows={field.name === "items" ? 5 : 3}
+                          rows={field.kind === "faq" ? 5 : 3}
                           defaultValue={defaultValue}
                           className={input}
                         />
+                      ) : field.kind === "select" ? (
+                        <select
+                          id={`b${index}-${field.name}`}
+                          name={`prop_${field.name}`}
+                          defaultValue={defaultValue}
+                          className={input}
+                        >
+                          {(field.options ?? []).map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
                       ) : (
                         <input
                           id={`b${index}-${field.name}`}
                           name={`prop_${field.name}`}
+                          type={
+                            field.kind === "number"
+                              ? "number"
+                              : field.kind === "date"
+                                ? "date"
+                                : "text"
+                          }
+                          min={field.min}
+                          max={field.max}
                           defaultValue={defaultValue}
                           className={input}
                         />
+                      )}
+
+                      {field.kind === "faq" && !field.hint && (
+                        <p className="mt-1 text-xs leading-snug text-[var(--mache-muted)]">
+                          Format JSON : [&#123;&quot;question&quot;:&quot;…&quot;,&quot;answer&quot;:&quot;…&quot;&#125;]
+                        </p>
                       )}
 
                       {field.hint && (
@@ -325,9 +326,10 @@ export default async function VitrinePage({
       </section>
 
       <p className="mt-6 text-xs leading-relaxed text-[var(--mache-muted)]">
-        Cet éditeur enregistre le format de l&apos;éditeur visuel Puck. Le
-        glisser-déposer viendra le remplacer sans qu&apos;aucune vitrine ait à
-        être refaite : ce sont les mêmes données.
+        Cet éditeur fonctionne sans JavaScript et sur une connexion lente :
+        chaque bloc s&apos;enregistre seul. L&apos;éditeur visuel, lui, montre
+        la page telle qu&apos;elle sera. Les deux écrivent les mêmes données,
+        vous pouvez passer de l&apos;un à l&apos;autre.
       </p>
     </main>
   );

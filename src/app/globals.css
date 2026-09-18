@@ -278,3 +278,139 @@ aside:not([data-chrome="dark"]) a:active {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.18);
 }
+
+/* ---------------------------------------------------------------------------
+   Éditeur visuel de vitrine
+   --------------------------------------------------------------------------- */
+
+/*
+  Puck occupe toute la hauteur restante sous la barre de retour. Sans
+  cette hauteur explicite, son panneau de blocs et son panneau de champs
+  s'écrasent l'un sur l'autre.
+*/
+.mache-puck {
+  flex: 1;
+  min-height: 0;
+}
+
+.mache-puck > div {
+  height: 100%;
+}
+
+/*
+  Repère d'un bloc qui ne rend rien.
+
+  Il n'existe que dans l'éditeur : sur la page publique, un bloc sans
+  contenu affichable disparaît. Sans ce repère, il n'occuperait aucune
+  place et deviendrait impossible à sélectionner ou à supprimer.
+*/
+.mache-empty-block {
+  margin: 8px 12px;
+  border: 1px dashed var(--mache-line);
+  border-radius: 10px;
+  background: var(--mache-bg);
+  padding: 18px;
+  color: var(--mache-muted);
+  font-size: 13.5px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/*
+  Puck compose son interface en Inter, qu'il téléchargeait chez un tiers.
+  On lui désigne celle que MACHÉ sert déjà : l'éditeur et la page qu'il
+  compose emploient alors le même dessin de lettre.
+*/
+.mache-puck {
+  --puck-font-family: var(--font-inter), system-ui, sans-serif;
+  --puck-font-family-monospaced: var(--font-inter), system-ui, sans-serif;
+}
+
+/* En-tête français, en remplacement de celui de Puck. */
+.mache-puck-header {
+  border-bottom: 1px solid var(--mache-line);
+  background: var(--mache-white);
+  padding: 10px 16px;
+}
+
+.mache-puck-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mache-puck-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--mache-text);
+}
+
+.mache-puck-link {
+  font-size: 12.5px;
+  color: var(--mache-muted);
+  text-decoration: underline;
+}
+
+.mache-puck-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mache-puck-ghost,
+.mache-puck-save {
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mache-puck-ghost {
+  border: 1px solid var(--mache-line);
+  background: var(--mache-white);
+  color: var(--mache-text);
+}
+
+.mache-puck-ghost:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.mache-puck-save {
+  border: none;
+  background: var(--mache-primary);
+  color: #ffffff;
+}
+
+.mache-puck-save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.mache-puck-message {
+  margin-top: 8px;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.mache-puck-message.is-ok {
+  background: #f4fbf7;
+  color: #046c4e;
+}
+
+.mache-puck-message.is-error {
+  background: #fdeaec;
+  color: #b01124;
+}
+
+.mache-puck-legend {
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--mache-muted);
+}

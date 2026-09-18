@@ -18,8 +18,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSellerRole } from "@/lib/authz";
+import { supabaseConfigured } from "@/lib/supabase/env";
+import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export default async function DashboardRedirectPage() {
+  if (!supabaseConfigured()) {
+    return <StaffUnavailable area="Tableau de bord" />;
+  }
+
   const supabase = await createSupabaseServerClient();
 
   const { data: userData } = await supabase.auth.getUser();

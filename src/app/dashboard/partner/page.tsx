@@ -17,10 +17,16 @@ import { formatNumber, formatDate, initialsOf } from "@/lib/seller";
 import {
   PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Stat, StatRow, Notice,
 } from "@/components/seller/ui";
+import { supabaseConfigured } from "@/lib/supabase/env";
+import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export const dynamic = "force-dynamic";
 
 export default async function PartnerHomePage() {
+  if (!supabaseConfigured()) {
+    return <StaffUnavailable area="Espace partenaire" />;
+  }
+
   const { supabase, uid, displayName, firstName, email } = await requirePartner();
 
   const { data: links, error } = await supabase

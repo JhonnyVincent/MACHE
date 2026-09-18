@@ -13,8 +13,14 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireAgent } from "@/lib/agents";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
+import { supabaseConfigured } from "@/lib/supabase/env";
+import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export default async function AgentLayout({ children }: { children: React.ReactNode }) {
+  if (!supabaseConfigured()) {
+    return <StaffUnavailable area="Espace agent" />;
+  }
+
   const { supabase, uid, displayName, firstName, email } = await requireAgent();
 
   /*

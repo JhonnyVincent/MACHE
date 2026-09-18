@@ -283,8 +283,33 @@ function CategoriesBlock({
     Les rayons sont déduits des produits réellement en vente dans la
     boutique : une liste saisie à la main finirait par annoncer des rayons
     vides.
+
+    Chaque rayon porte son nom et le nombre d'articles qu'il contient. Il
+    n'affichait auparavant que « Voir la sélection », répété autant de fois
+    qu'il y avait de rayons : une rangée de boutons identiques, entre
+    lesquels le client n'avait aucun moyen de choisir.
   */
-  const categories = [...new Set(products.map((p) => p.collectionId).filter(Boolean))];
+  const byCollection = new Map<string, { title: string; count: number }>();
+
+  for (const product of products) {
+    if (!product.collectionId) continue;
+
+    const entry = byCollection.get(product.collectionId);
+
+    if (entry) {
+      entry.count += 1;
+      continue;
+    }
+
+    byCollection.set(product.collectionId, {
+      title: product.collectionTitle ?? "Rayon",
+      count: 1,
+    });
+  }
+
+  const categories = [...byCollection.entries()].sort(
+    (a, b) => b[1].count - a[1].count
+  );
 
   if (categories.length === 0) return null;
 
@@ -294,13 +319,16 @@ function CategoriesBlock({
         {title}
       </h2>
       <div className="flex flex-wrap gap-2">
-        {categories.map((id) => (
+        {categories.map(([id, entry]) => (
           <Link
-            key={String(id)}
-            href={`/shop?collection=${encodeURIComponent(String(id))}`}
+            key={id}
+            href={`/shop?collection=${encodeURIComponent(id)}`}
             className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3.5 py-2 text-base font-medium text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
           >
-            Voir la sélection
+            {entry.title}
+            <span className="ml-1.5 text-sm font-normal text-[var(--mache-muted)]">
+              {entry.count}
+            </span>
           </Link>
         ))}
       </div>
