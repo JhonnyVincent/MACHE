@@ -1,8 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { siteOrigin } from "@/lib/site-url";
 import { supabaseConfigured, AUTH_UNAVAILABLE_MESSAGE } from "@/lib/supabase/env";
 
 export async function forgotPasswordAction(formData: FormData) {
@@ -16,8 +16,7 @@ export async function forgotPasswordAction(formData: FormData) {
     redirect(`/forgot-password?error=${encodeURIComponent(AUTH_UNAVAILABLE_MESSAGE)}`);
   }
 
-  const headersList = await headers();
-  const origin = headersList.get("origin") || "https://mache-two.vercel.app";
+  const origin = await siteOrigin();
 
   const supabase = await createSupabaseServerClient();
 

@@ -11,9 +11,9 @@
   a plus rien à retrouver dans le stockage du navigateur.
 */
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { siteOrigin } from "@/lib/site-url";
 import { supabaseConfigured, AUTH_UNAVAILABLE_MESSAGE } from "@/lib/supabase/env";
 
 const CODE_PAGE = "/login/code";
@@ -52,11 +52,7 @@ export async function requestCodeAction(formData: FormData) {
     s'est passé. En le pointant vers /auth/callback, le lien ouvre bien
     une session et arrive sur le tableau de bord.
   */
-  const headersList = await headers();
-  const origin =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    headersList.get("origin") ||
-    `https://${headersList.get("host")}`;
+  const origin = await siteOrigin();
 
   const destination = next || "/dashboard";
 
