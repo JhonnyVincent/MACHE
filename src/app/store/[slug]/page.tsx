@@ -15,6 +15,7 @@
 */
 
 import Link from "next/link";
+import { reportOutage } from "@/lib/medusa/outage";
 import { notFound } from "next/navigation";
 import { fetchSellerByHandle, fetchProducts } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
@@ -33,13 +34,16 @@ export default async function StorePage({
   const sellerResult = await fetchSellerByHandle(slug);
 
   if (!sellerResult.ok) {
+    reportOutage("boutique", sellerResult.reason);
+
     return (
       <main className="mx-auto w-full max-w-3xl px-4 py-16">
         <h1 className="text-2xl font-bold text-[var(--mache-text)]">
           Boutique indisponible
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-          {sellerResult.reason}
+          Cette boutique ne peut pas être affichée pour le moment.
+          Réessayez dans quelques minutes.
         </p>
         <Link
           href="/shop"
@@ -62,9 +66,7 @@ export default async function StorePage({
   });
 
   if (!productsResult.ok) {
-    console.warn(
-      `[boutique] catalogue indisponible : ${productsResult.reason}`
-    );
+    reportOutage("boutique", `catalogue indisponible : ${productsResult.reason}`);
   }
 
   const products = productsResult.ok ? productsResult.data.products : [];

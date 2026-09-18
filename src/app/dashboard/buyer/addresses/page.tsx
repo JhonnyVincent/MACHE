@@ -10,6 +10,7 @@ import { getCustomer, getCustomerAddresses } from "@/lib/medusa/customer";
 import {
   PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Notice,
 } from "@/components/seller/ui";
+import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,8 @@ export default async function BuyerAddressesPage() {
   }
 
   const result = await getCustomerAddresses();
+
+  if (!result.ok) reportOutage("adresses", result.reason);
   const addresses = result.ok ? result.data : [];
 
   return (
@@ -48,7 +51,8 @@ export default async function BuyerAddressesPage() {
       <div className="space-y-4">
         {!result.ok && (
           <Notice tone="warning" title="Carnet d'adresses indisponible">
-            {result.reason}
+            Vos adresses ne peuvent pas être affichées pour le moment.
+            Elles ne sont pas perdues : réessayez dans quelques minutes.
           </Notice>
         )}
 

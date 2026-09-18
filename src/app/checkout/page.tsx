@@ -12,6 +12,7 @@
 */
 
 import Link from "next/link";
+import { reportOutage } from "@/lib/medusa/outage";
 import { redirect } from "next/navigation";
 import { getCart } from "@/lib/medusa/cart";
 import { getCheckoutState } from "@/lib/medusa/checkout";
@@ -77,13 +78,16 @@ export default async function CheckoutPage({
   const stateResult = await getCheckoutState();
 
   if (!stateResult.ok) {
+    reportOutage("commande", stateResult.reason);
+
     return (
       <main className="mx-auto w-full max-w-3xl px-4 py-14">
         <h1 className="text-2xl font-bold text-[var(--mache-text)]">
           Commande indisponible
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-          {stateResult.reason}
+          La commande ne peut pas être préparée pour le moment. Votre
+          panier est conservé, et rien ne vous a été facturé.
         </p>
         <Link
           href="/cart"

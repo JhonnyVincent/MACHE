@@ -16,6 +16,7 @@ import {
 import {
   PageHeader, Panel, Stat, StatRow, Table, Row, Cell, Badge, Button, EmptyState, Notice,
 } from "@/components/seller/ui";
+import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,8 @@ export default async function BuyerOverviewPage() {
   }
 
   const result = await getCustomerOrders();
+
+  if (!result.ok) reportOutage("espace client", result.reason);
   const orders = result.ok ? result.data : [];
 
   const inProgress = orders.filter(
@@ -74,7 +77,8 @@ export default async function BuyerOverviewPage() {
       <div className="space-y-4">
         {!result.ok && (
           <Notice tone="warning" title="Commandes indisponibles">
-            {result.reason}
+            Vos commandes ne peuvent pas être affichées pour le moment.
+            Rien n'est perdu : réessayez dans quelques minutes.
           </Notice>
         )}
 

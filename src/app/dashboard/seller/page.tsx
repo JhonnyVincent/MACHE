@@ -22,6 +22,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { medusaBackendUrl } from "@/lib/medusa/config";
+import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
 
@@ -54,17 +55,34 @@ export default async function SellerEntryPage() {
     /* Supabase non configuré : la page reste consultable. */
   }
 
+  /*
+    Un vendeur n'est pas l'exploitant du site : lui montrer le nom d'une
+    variable d'environnement, c'est lui demander de comprendre un
+    problème qu'il ne peut pas corriger. La cause va au journal, où la
+    trouvera celui qui déploie.
+  */
   if (!backendUrl) {
+    reportOutage(
+      "espace vendeur",
+      "adresse du backend commerce absente (NEXT_PUBLIC_MEDUSA_BACKEND_URL)"
+    );
+
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-14">
         <h1 className="text-2xl font-bold text-[var(--mache-text)]">
-          Espace vendeur indisponible
+          Espace vendeur momentanément indisponible
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-          L&apos;adresse du backend commerce n&apos;est pas renseignée
-          (NEXT_PUBLIC_MEDUSA_BACKEND_URL). Sans elle, MACHÉ ne sait pas où
-          se trouve le panneau vendeur.
+          Le panneau vendeur ne peut pas être joint pour le moment.
+          Réessayez dans quelques minutes. Si cela persiste, écrivez à
+          l&apos;équipe MACHÉ.
         </p>
+        <Link
+          href="/contact"
+          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
+        >
+          Contacter MACHÉ
+        </Link>
       </main>
     );
   }

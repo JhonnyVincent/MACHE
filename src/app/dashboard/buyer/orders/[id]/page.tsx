@@ -19,6 +19,7 @@ import {
 import {
   PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Notice,
 } from "@/components/seller/ui";
+import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
 
@@ -52,12 +53,15 @@ export default async function BuyerOrderPage({
 
   const result = await getCustomerOrder(id);
 
+  if (!result.ok) reportOutage("commande", result.reason);
+
   if (!result.ok) {
     return (
       <>
         <PageHeader title="Commande" />
         <Notice tone="warning" title="Commande indisponible">
-          {result.reason}
+          Cette commande ne peut pas être affichée pour le moment. Elle
+          n'est pas perdue : réessayez dans quelques minutes.
         </Notice>
       </>
     );

@@ -11,6 +11,7 @@
 */
 
 import Link from "next/link";
+import { reportOutage } from "@/lib/medusa/outage";
 import { notFound } from "next/navigation";
 import {
   fetchProductByHandle, fetchProducts, fetchOffersForVariant, formatAmount,
@@ -33,13 +34,16 @@ export default async function ProductPage({
   const result = await fetchProductByHandle(slug);
 
   if (!result.ok) {
+    reportOutage("produit", result.reason);
+
     return (
       <main className="mx-auto w-full max-w-3xl px-4 py-16">
         <h1 className="text-2xl font-bold text-[var(--mache-text)]">
           Fiche indisponible
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-          {result.reason}
+          Cette fiche produit ne peut pas être affichée pour le moment.
+          Réessayez dans quelques minutes.
         </p>
         <Link
           href="/shop"

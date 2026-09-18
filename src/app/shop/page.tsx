@@ -7,6 +7,7 @@
 */
 
 import Link from "next/link";
+import { reportOutage } from "@/lib/medusa/outage";
 import { fetchProducts, fetchCategories } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
 
@@ -64,8 +65,9 @@ export default async function ShopPage({
     vide, ce qui serait faux.
   */
   if (!result.ok) {
-    console.warn(
-      `[catalogue] ${result.configured ? "le backend ne répond pas" : "backend non configuré"} : ${result.reason}`
+    reportOutage(
+      "catalogue",
+      `${result.configured ? "le backend ne répond pas" : "backend non configuré"} : ${result.reason}`
     );
   }
 
