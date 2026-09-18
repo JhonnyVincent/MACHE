@@ -61,7 +61,7 @@ export default async function BuyerProfilePage() {
         </Panel>
 
         <Panel title="Se déconnecter">
-          <p className="max-w-2xl text-[12.5px] leading-relaxed text-[#565959]">
+          <p className="max-w-2xl text-sm leading-relaxed text-[#565959]">
             Votre panier en cours n&apos;est pas supprimé : il reste attaché à
             ce navigateur.
           </p>

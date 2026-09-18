@@ -59,27 +59,27 @@ export default async function PartnerHomePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#eef1f3] font-sans text-[13px] text-[#0f1111] antialiased">
+    <div className="flex min-h-screen flex-col bg-[#eef1f3] font-sans text-base text-[#0f1111] antialiased">
       <header
         data-chrome="app"
         className="flex h-12 shrink-0 items-center gap-3 border-b border-[#d5d9d9] bg-white px-3 sm:px-4"
       >
-        <Link href="/" className="text-[14px] font-bold tracking-[0.1em]">
+        <Link href="/" className="text-md font-bold tracking-widest">
           MACHE
         </Link>
-        <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-[#767676]">
+        <span className="text-2xs font-medium uppercase tracking-widest text-[#767676]">
           Espace partenaire
         </span>
 
         <div className="ml-auto flex items-center gap-2 border-l border-[#d5d9d9] pl-3">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0a0a0a] text-[10px] font-semibold text-white">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0a0a0a] text-2xs font-semibold text-white">
             {initialsOf(displayName, 1)}
           </span>
-          <span className="hidden text-[12px] font-medium sm:block">{firstName}</span>
+          <span className="hidden text-sm font-medium sm:block">{firstName}</span>
           <form action={signOutAction}>
             <button
               type="submit"
-              className="ml-2 text-[11px] text-[#565959] underline-offset-2 hover:text-[#0f1111] hover:underline"
+              className="ml-2 text-xs text-[#565959] underline-offset-2 hover:text-[#0f1111] hover:underline"
             >
               Se déconnecter
             </button>

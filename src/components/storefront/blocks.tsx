@@ -52,12 +52,12 @@ function Hero({ props, seller }: { props: Record<string, unknown>; seller: Store
       )}
 
       <div className="container-page relative py-12 sm:py-16">
-        <h1 className="max-w-3xl text-[clamp(26px,4vw,42px)] font-[900] leading-[1.08] tracking-[-0.02em]">
+        <h1 className="max-w-3xl text-hero font-black tracking-tightest">
           {title}
         </h1>
 
         {subtitle && (
-          <p className="mt-3 max-w-2xl text-[14.5px] leading-relaxed text-white/75">
+          <p className="mt-3 max-w-2xl text-md leading-relaxed text-white/75">
             {subtitle}
           </p>
         )}
@@ -65,7 +65,7 @@ function Hero({ props, seller }: { props: Record<string, unknown>; seller: Store
         {ctaLabel && (
           <Link
             href={ctaHref}
-            className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-strong)]"
+            className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-strong)]"
           >
             {ctaLabel}
           </Link>
@@ -82,7 +82,7 @@ function Banner({ props }: { props: Record<string, unknown> }) {
 
   return (
     <section className="border-b border-[var(--mache-line)] bg-[var(--mache-primary-soft)]">
-      <div className="container-page py-2.5 text-center text-[13.5px] font-semibold text-[var(--mache-primary-dark)]">
+      <div className="container-page py-2.5 text-center text-base font-semibold text-[var(--mache-primary-dark)]">
         {message}
       </div>
     </section>
@@ -99,12 +99,12 @@ function TextBlock({ props }: { props: Record<string, unknown> }) {
     <section className="container-page py-6">
       <div className="max-w-2xl">
         {title && (
-          <h2 className="text-[19px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[22px]">
+          <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
             {title}
           </h2>
         )}
         {body && (
-          <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed text-[var(--mache-muted)]">
+          <p className="mt-2 whitespace-pre-line text-md leading-relaxed text-[var(--mache-muted)]">
             {body}
           </p>
         )}
@@ -130,7 +130,7 @@ function ImageBlock({ props }: { props: Record<string, unknown> }) {
           <img src={url} alt={alt} loading="lazy" className="w-full object-cover" />
         </div>
         {caption && (
-          <figcaption className="mt-2 text-[12.5px] text-[var(--mache-muted)]">
+          <figcaption className="mt-2 text-sm text-[var(--mache-muted)]">
             {caption}
           </figcaption>
         )}
@@ -181,7 +181,7 @@ function ProductsBlock({
 
   return (
     <section id="produits" className="container-page py-6">
-      <h2 className="mb-3 text-[19px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[22px]">
+      <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
         {title}
       </h2>
 
@@ -211,17 +211,17 @@ function FaqBlock({ props }: { props: Record<string, unknown> }) {
 
   return (
     <section className="container-page py-6">
-      <h2 className="mb-3 text-[19px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[22px]">
+      <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
         {title}
       </h2>
 
       <div className="max-w-2xl divide-y divide-[var(--mache-line)] rounded-[10px] border border-[var(--mache-line)] bg-white">
         {items.map((item) => (
           <details key={item.question} className="group p-4">
-            <summary className="cursor-pointer text-[14px] font-semibold text-[var(--mache-text)]">
+            <summary className="cursor-pointer text-md font-semibold text-[var(--mache-text)]">
               {item.question}
             </summary>
-            <p className="mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
+            <p className="mt-2 whitespace-pre-line text-base leading-relaxed text-[var(--mache-muted)]">
               {item.answer}
             </p>
           </details>
@@ -259,8 +259,8 @@ function CountdownBlock({ props }: { props: Record<string, unknown> }) {
   return (
     <section className="container-page py-6">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] p-4">
-        <p className="text-[15px] font-bold text-[var(--mache-primary-dark)]">{title}</p>
-        <p className="text-[14px] font-semibold text-[var(--mache-primary-dark)]">
+        <p className="text-md font-bold text-[var(--mache-primary-dark)]">{title}</p>
+        <p className="text-md font-semibold text-[var(--mache-primary-dark)]">
           {days > 0
             ? `Encore ${days} jour${days > 1 ? "s" : ""}`
             : `Encore ${Math.max(1, hours)} heure${hours > 1 ? "s" : ""}`}
@@ -290,7 +290,7 @@ function CategoriesBlock({
 
   return (
     <section className="container-page py-6">
-      <h2 className="mb-3 text-[19px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[22px]">
+      <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
         {title}
       </h2>
       <div className="flex flex-wrap gap-2">
@@ -298,7 +298,7 @@ function CategoriesBlock({
           <Link
             key={String(id)}
             href={`/shop?collection=${encodeURIComponent(String(id))}`}
-            className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3.5 py-2 text-[13px] font-medium text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+            className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3.5 py-2 text-base font-medium text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
           >
             Voir la sélection
           </Link>

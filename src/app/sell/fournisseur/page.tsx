@@ -63,7 +63,7 @@ export default function SellFournisseurPage() {
               Profil vendeur · Fournisseur / Grossiste
             </div>
 
-            <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
+            <h1 className="mt-6 max-w-4xl text-hero font-black tracking-tightest">
               Vendez en gros aux boutiques et partenaires.
             </h1>
 

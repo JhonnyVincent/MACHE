@@ -91,7 +91,7 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white">
-      <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-wide text-white">
+      <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-label text-white">
         <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
           {[...tickerTranslations[lang], ...tickerTranslations[lang]].map(
             (item, index) => (
@@ -143,7 +143,7 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
           />
 
           <div>
-            <div className="text-5xl font-black text-[#071f3d]">
+            <div className="text-4xl font-black tracking-tightest text-[#071f3d]">
               Maché
             </div>
 

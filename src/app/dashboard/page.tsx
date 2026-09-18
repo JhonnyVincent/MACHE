@@ -57,7 +57,7 @@ export default async function DashboardRedirectPage() {
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-neutral-500">Identifiant</dt>
-              <dd className="font-mono text-xs">{userData.user.id}</dd>
+              <dd className="font-mono tabular-nums text-xs">{userData.user.id}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-neutral-500">Cause</dt>

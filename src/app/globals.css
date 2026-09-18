@@ -101,9 +101,9 @@ img {
   border: 1px solid var(--mache-line);
   border-radius: 999px;
   padding: 6px 12px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   background: var(--mache-white);
 }
 
@@ -116,8 +116,8 @@ img {
   padding: 12px 20px;
   background: linear-gradient(135deg, var(--mache-primary), var(--mache-primary-strong));
   color: white;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 13.5px;
+  font-weight: 700;
   cursor: pointer;
   transition: 0.22s ease;
   box-shadow: 0 10px 24px rgba(233, 30, 58, 0.25);
@@ -137,8 +137,8 @@ img {
   padding: 12px 20px;
   background: var(--mache-white);
   color: var(--mache-text);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 13.5px;
+  font-weight: 700;
   cursor: pointer;
   transition: 0.22s ease;
 }
@@ -182,8 +182,8 @@ header a {
 }
 
 header .border-t a {
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 13.5px;
+  font-weight: 700;
 }
 
 header .border-t a:hover {
@@ -205,7 +205,7 @@ aside:not([data-chrome="dark"]) {
 }
 
 aside:not([data-chrome="dark"]) a {
-  font-weight: 750;
+  font-weight: 600;
   color: var(--mache-text);
   border: 1px solid transparent;
 }
@@ -221,449 +221,21 @@ aside:not([data-chrome="dark"]) a:active {
   transform: scale(0.98);
 }
 
-.menu-link-active {
-  background: linear-gradient(135deg, var(--mache-primary), var(--mache-primary-strong));
-  color: white !important;
-  box-shadow: 0 10px 24px rgba(233, 30, 58, 0.25);
-  transform: scale(1.03);
-}
-
-.section-title {
-  font-size: clamp(24px, 2.6vw, 34px);
-  font-weight: 950;
-  letter-spacing: -0.055em;
-}
-
-.section-subtitle {
-  margin-top: 10px;
-  max-width: 720px;
-  color: var(--mache-muted);
-  font-size: 15px;
-  line-height: 1.7;
-}
-
-.market-hero {
-  background:
-    radial-gradient(circle at 20% 20%, rgba(233, 30, 58, 0.32), transparent 28%),
-    linear-gradient(135deg, #0b0d10 0%, #141e29 52%, #2c0710 100%);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 22px 60px rgba(16, 24, 32, 0.18);
-}
-
-.market-hero-grid {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 0;
-  min-height: 520px;
-}
-
-.market-hero-copy {
-  padding: 56px 48px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.market-hero-kicker {
-  display: inline-flex;
-  width: fit-content;
-  margin-bottom: 16px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  background: rgba(233, 30, 58, 0.16);
-  border: 1px solid rgba(255, 111, 138, 0.32);
-  color: #ff6f8a;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.market-hero-title {
-  color: white;
-  font-size: clamp(38px, 4.8vw, 66px);
-  font-weight: 950;
-  line-height: 1.02;
-  letter-spacing: -0.06em;
-}
-
-.market-hero-title em {
-  font-style: normal;
-  color: #ff3f61;
-}
-
-.market-hero-text {
-  margin-top: 18px;
-  max-width: 460px;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 15px;
-  line-height: 1.8;
-}
-
-.market-hero-actions {
-  margin-top: 28px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.market-hero-visual {
-  position: relative;
-  min-height: 520px;
-}
-
-.market-hero-visual img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.88;
-}
-
-.market-hero-visual::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to right,
-    rgba(15, 14, 12, 0.95) 0%,
-    rgba(15, 14, 12, 0.2) 32%,
-    rgba(15, 14, 12, 0.05) 100%
-  );
-}
-
-.market-strip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-top: -38px;
-  position: relative;
-  z-index: 2;
-}
-
-.market-strip-card {
-  background: var(--mache-white);
-  border: 1px solid var(--mache-line);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-}
-
-.market-strip-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(233, 30, 58, 0.22);
-  box-shadow: var(--shadow-medium);
-}
-
-.market-strip-title {
-  font-size: 14px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-.market-strip-text {
-  margin-top: 8px;
-  color: var(--mache-muted);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.vendor-card,
-.info-card {
-  padding: 20px;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-}
-
-.vendor-card:hover,
-.info-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(233, 30, 58, 0.22);
-  box-shadow: var(--shadow-medium);
-}
-
-/* EXTRA BADGES */
-.btag {
-  display: inline-flex;
-  padding: 3px 7px;
-  border-radius: 5px;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-}
-
-.bg-new {
-  background: var(--mache-blue-soft);
-  color: var(--mache-blue);
-}
-
-.bg-hot {
-  background: var(--mache-primary-soft);
-  color: var(--mache-primary);
-}
-
-.bg-promo {
-  background: #ffe4eb;
-  color: var(--mache-danger);
-}
-
-.bg-fresh {
-  background: var(--mache-success-soft);
-  color: var(--mache-success);
-}
-
-.bg-lux {
-  background: var(--mache-gold-soft);
-  color: var(--mache-gold);
-}
-
-/* PROMO GRID */
-.promo-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 13px;
-}
-
-.promo-card {
-  position: relative;
-  height: 220px;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.promo-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-medium);
-}
-
-.promo-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: 0.4s;
-}
-
-.promo-card:hover img {
-  transform: scale(1.06);
-}
-
-.promo-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.76) 0%, transparent 58%);
-}
-
-.promo-body {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  padding: 16px;
-}
-
-.promo-badge {
-  display: inline-flex;
-  margin-bottom: 6px;
-  padding: 3px 7px;
-  border-radius: 5px;
-  background: var(--mache-primary);
-  color: white;
-  font-size: 9px;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-}
-
-.promo-title {
-  font-size: 17px;
-  font-weight: 950;
-  letter-spacing: -0.03em;
-  color: white;
-}
-
-.promo-sub {
-  margin-top: 3px;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.74);
-}
-
-/* SELLER BAND */
-.sband {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-  background:
-    radial-gradient(circle at top left, rgba(233, 30, 58, 0.28), transparent 32%),
-    var(--mache-dark);
-  padding: 44px;
-}
-
-.sband::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 40%;
-  /* Texture de bandeau : la carte d'Haiti, seul visuel du projet. */
-  background: url("/images/carte-haiti-mache.png") center / contain no-repeat;
-  opacity: 0.12;
-}
-
-.sbg {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 40px;
-  align-items: center;
-}
-
-.sbk {
-  margin-bottom: 10px;
-  color: #ff6f8a;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.sbh {
-  margin-bottom: 12px;
-  color: white;
-  font-size: clamp(30px, 3.7vw, 46px);
-  font-weight: 950;
-  letter-spacing: -0.055em;
-  line-height: 1.06;
-}
-
-.sbp {
-  margin-bottom: 20px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 13px;
-  line-height: 1.8;
-}
-
-.sbsteps {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 9px;
-  margin-top: 22px;
-}
-
-.sbstep {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.07);
-  padding: 13px;
-}
-
-.sbstep .n {
-  margin-bottom: 3px;
-  color: #ff6f8a;
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1;
-}
-
-.sbstep p {
-  color: rgba(255, 255, 255, 0.52);
-  font-size: 11px;
-  line-height: 1.4;
-}
-
-.sbcards {
-  display: grid;
-  gap: 10px;
-}
-
-.sbcard {
-  display: flex;
-  gap: 11px;
-  align-items: flex-start;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.08);
-  padding: 13px;
-}
-
-.sbcard-ico {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  border-radius: 10px;
-  background: rgba(233, 30, 58, 0.22);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-}
-
-.sbcard h4 {
-  margin-bottom: 2px;
-  color: white;
-  font-size: 12px;
-  font-weight: 900;
-}
-
-.sbcard p {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
-  line-height: 1.5;
-}
-
-@keyframes ticker {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (max-width: 1100px) {
-  .market-hero-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .market-strip {
-    grid-template-columns: repeat(2, 1fr);
-    margin-top: 18px;
-  }
-
-  .sbg {
-    grid-template-columns: 1fr;
-  }
-
-  .promo-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .sbsteps {
-    grid-template-columns: 1fr;
-  }
-}
+/*
+  Les règles de mise en page des anciennes sections marketing
+  (.market-hero, .promo-card, .sband, .section-title…) ont été retirées :
+  aucun composant ne les employait plus depuis la refonte du storefront,
+  et elles portaient une troisième échelle typographique — des graisses
+  950 et 900 et des titres jusqu'à 66px — concurrente de celle de
+  Tailwind. Vérifié par recherche dans tout src/ avant suppression.
+*/
 
 @media (max-width: 640px) {
   .container-page {
     width: min(100% - 24px, 1380px);
   }
-
-  .market-hero-copy {
-    padding: 28px 22px;
-  }
-
-  .market-strip {
-    grid-template-columns: 1fr;
-  }
 }
+
 @keyframes macheTicker {
   from {
     transform: translateX(0);

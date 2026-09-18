@@ -123,7 +123,7 @@ export default async function AdminHomePage() {
         >
           {backendUrl ? (
             <>
-              <p className="max-w-2xl text-[12.5px] leading-relaxed text-[#565959]">
+              <p className="max-w-2xl text-sm leading-relaxed text-[#565959]">
                 Ces domaines sont tenus par le backend commerce, qui en est la
                 seule source de vérité. Les dupliquer ici reviendrait à
                 entretenir deux vérités sur un même stock.
@@ -139,7 +139,7 @@ export default async function AdminHomePage() {
               </div>
             </>
           ) : (
-            <p className="max-w-2xl text-[12.5px] leading-relaxed text-[#565959]">
+            <p className="max-w-2xl text-sm leading-relaxed text-[#565959]">
               L&apos;adresse du backend commerce n&apos;est pas renseignée
               (NEXT_PUBLIC_MEDUSA_BACKEND_URL) : MACHÉ ne sait pas où trouver
               le panneau d&apos;administration.

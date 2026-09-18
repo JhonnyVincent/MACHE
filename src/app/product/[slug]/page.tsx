@@ -35,15 +35,15 @@ export default async function ProductPage({
   if (!result.ok) {
     return (
       <main className="mx-auto w-full max-w-3xl px-4 py-16">
-        <h1 className="text-[22px] font-bold text-[var(--mache-text)]">
+        <h1 className="text-2xl font-bold text-[var(--mache-text)]">
           Fiche indisponible
         </h1>
-        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+        <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           {result.reason}
         </p>
         <Link
           href="/shop"
-          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white"
+          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
         >
           Retour au catalogue
         </Link>
@@ -80,14 +80,14 @@ export default async function ProductPage({
   return (
     <main className="bg-[var(--mache-bg)] pb-10">
       <div className="container-page py-6">
-        <nav className="mb-4 text-[12.5px] text-[var(--mache-muted)]">
+        <nav className="mb-4 text-sm text-[var(--mache-muted)]">
           <Link href="/shop" className="hover:underline">Catalogue</Link>
           <span className="mx-1.5">/</span>
           <span className="text-[var(--mache-text)]">{product.title}</span>
         </nav>
 
         {query.error && (
-          <div className="mb-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-[13px] text-[#b01124]">
+          <div className="mb-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
             {decodeURIComponent(query.error)}
           </div>
         )}
@@ -105,7 +105,7 @@ export default async function ProductPage({
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center text-[13px] text-[var(--mache-light)]">
+                  <div className="flex h-full items-center justify-center text-base text-[var(--mache-light)]">
                     Aucune image
                   </div>
                 )}
@@ -129,22 +129,22 @@ export default async function ProductPage({
 
           {/* Achat */}
           <div>
-            <h1 className="text-[24px] font-bold leading-tight tracking-[-0.01em] text-[var(--mache-text)] sm:text-[28px]">
+            <h1 className="text-2xl font-bold leading-tight tracking-tight text-[var(--mache-text)] sm:text-3xl">
               {product.title}
             </h1>
 
             {product.subtitle && (
-              <p className="mt-1.5 text-[14px] text-[var(--mache-muted)]">
+              <p className="mt-1.5 text-md text-[var(--mache-muted)]">
                 {product.subtitle}
               </p>
             )}
 
             <div className="mt-4 flex flex-wrap items-baseline gap-x-3">
-              <span className="text-[30px] font-[900] leading-none tracking-[-0.02em] text-[var(--mache-text)]">
+              <span className="text-4xl font-black leading-none tracking-tighter text-[var(--mache-text)]">
                 {formatAmount(price, currency)}
               </span>
               {hasDiscount && (
-                <span className="text-[16px] text-[var(--mache-light)] line-through">
+                <span className="text-lg text-[var(--mache-light)] line-through">
                   {formatAmount(originalPrice, currency)}
                 </span>
               )}
@@ -153,7 +153,7 @@ export default async function ProductPage({
             {/* Variantes */}
             {product.variants.length > 1 && (
               <div className="mt-5">
-                <p className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                <p className="text-sm font-semibold text-[var(--mache-text)]">
                   Choisir une déclinaison
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -162,7 +162,7 @@ export default async function ProductPage({
                       key={variant.id}
                       href={`/product/${product.handle}?variant=${variant.id}`}
                       scroll={false}
-                      className={`rounded-[6px] border px-3 py-1.5 text-[13px] transition-colors ${
+                      className={`rounded-[6px] border px-3 py-1.5 text-base transition-colors ${
                         selected?.id === variant.id
                           ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
                           : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
@@ -186,11 +186,11 @@ export default async function ProductPage({
             */}
             {selected && selected.tiers.length > 0 && (
               <div className="mt-5 overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
-                <p className="border-b border-[var(--mache-line)] bg-[var(--mache-bg)] px-3.5 py-2 text-[12.5px] font-bold text-[var(--mache-text)]">
+                <p className="border-b border-[var(--mache-line)] bg-[var(--mache-bg)] px-3.5 py-2 text-sm font-bold text-[var(--mache-text)]">
                   Tarifs par quantité
                 </p>
 
-                <table className="w-full text-[13px]">
+                <table className="w-full text-base">
                   <tbody>
                     <tr className="border-b border-[var(--mache-line)]">
                       <td className="px-3.5 py-2 text-[var(--mache-muted)]">
@@ -214,7 +214,7 @@ export default async function ProductPage({
                         <td className="px-3.5 py-2 text-right font-semibold text-[var(--mache-success)]">
                           {formatAmount(tier.amount, tier.currency)}
                           {price !== null && tier.amount < price && (
-                            <span className="ml-1.5 text-[11.5px] font-normal text-[var(--mache-muted)]">
+                            <span className="ml-1.5 text-xs font-normal text-[var(--mache-muted)]">
                               −{Math.round((1 - tier.amount / price) * 100)} %
                             </span>
                           )}
@@ -224,7 +224,7 @@ export default async function ProductPage({
                   </tbody>
                 </table>
 
-                <p className="border-t border-[var(--mache-line)] px-3.5 py-2 text-[11.5px] leading-relaxed text-[var(--mache-muted)]">
+                <p className="border-t border-[var(--mache-line)] px-3.5 py-2 text-xs leading-relaxed text-[var(--mache-muted)]">
                   Le tarif s&apos;applique automatiquement au panier dès que la
                   quantité atteint le seuil. Rien à demander.
                 </p>
@@ -248,17 +248,17 @@ export default async function ProductPage({
                     type="number"
                     min={1}
                     defaultValue={1}
-                    className="w-20 rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-[14px]"
+                    className="w-20 rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-md"
                   />
                   <button
                     type="submit"
-                    className="flex-1 rounded-[6px] bg-[var(--mache-primary)] px-6 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+                    className="flex-1 rounded-[6px] bg-[var(--mache-primary)] px-6 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
                   >
                     Ajouter au panier
                   </button>
                 </form>
               ) : (
-                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
+                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base text-[var(--mache-muted)]">
                   Aucun vendeur ne propose actuellement cette déclinaison.
                 </p>
               )}
@@ -271,7 +271,7 @@ export default async function ProductPage({
             */}
             {offers.length > 0 && (
               <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
-                <p className="text-[13px] font-bold text-[var(--mache-text)]">
+                <p className="text-base font-bold text-[var(--mache-text)]">
                   {offers.length > 1
                     ? `${offers.length} boutiques proposent cette déclinaison`
                     : "Vendu par"}
@@ -282,7 +282,7 @@ export default async function ProductPage({
                     <li key={offer.id} className="flex items-center justify-between gap-3">
                       <Link
                         href={`/store/${offer.sellerHandle}`}
-                        className="text-[13px] font-medium text-[var(--mache-text)] hover:underline"
+                        className="text-base font-medium text-[var(--mache-text)] hover:underline"
                       >
                         {offer.sellerName}
                       </Link>
@@ -297,7 +297,7 @@ export default async function ProductPage({
                         />
                         <button
                           type="submit"
-                          className="rounded-[4px] border border-[var(--mache-line)] px-2.5 py-1 text-[12px] font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+                          className="rounded-[4px] border border-[var(--mache-line)] px-2.5 py-1 text-sm font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
                         >
                           Acheter ici
                         </button>
@@ -310,10 +310,10 @@ export default async function ProductPage({
 
             {product.description && (
               <div className="mt-6">
-                <h2 className="text-[15px] font-bold text-[var(--mache-text)]">
+                <h2 className="text-md font-bold text-[var(--mache-text)]">
                   Description
                 </h2>
-                <p className="mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
+                <p className="mt-2 whitespace-pre-line text-base leading-relaxed text-[var(--mache-muted)]">
                   {product.description}
                 </p>
               </div>

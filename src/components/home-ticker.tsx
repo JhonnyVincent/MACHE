@@ -19,10 +19,10 @@ export function HomeTicker() {
           <div className="flex min-w-max animate-[ticker_28s_linear_infinite] gap-10">
             {row.map((item, index) => (
               <div key={`${item.badge}-${index}`} className="flex items-center gap-2 whitespace-nowrap">
-                <span className="rounded-[4px] bg-[var(--mache-primary)] px-2 py-0.5 text-[10px] font-[800] text-white">
+                <span className="rounded-[4px] bg-[var(--mache-primary)] px-2 py-0.5 text-2xs font-black text-white">
                   {item.badge}
                 </span>
-                <span className="text-[11px] text-white/60">{item.text}</span>
+                <span className="text-xs text-white/60">{item.text}</span>
               </div>
             ))}
           </div>

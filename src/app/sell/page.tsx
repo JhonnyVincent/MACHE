@@ -92,7 +92,7 @@ export default function SellPage() {
               Marketplace + SaaS vendeur
             </div>
 
-            <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
+            <h1 className="mt-6 max-w-4xl text-hero font-black tracking-tightest">
               Vendez sur Maché. Gérez votre boutique. Développez votre business.
             </h1>
 
@@ -424,7 +424,7 @@ export default function SellPage() {
                 Devenir vendeur Maché
               </p>
 
-              <h2 className="mt-3 text-3xl font-black sm:text-5xl">
+              <h2 className="mt-3 text-4xl font-black">
                 Commencez petit. Grandissez avec Maché.
               </h2>
 

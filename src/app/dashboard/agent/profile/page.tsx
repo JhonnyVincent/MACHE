@@ -73,7 +73,7 @@ export default async function AgentProfilePage() {
                 <Row>
                   <Cell strong>Code</Cell>
                   <Cell>
-                    <span className="font-semibold tracking-[0.08em]">{agent.code}</span>
+                    <span className="font-semibold tracking-label">{agent.code}</span>
                   </Cell>
                 </Row>
                 <Row>
@@ -112,7 +112,7 @@ export default async function AgentProfilePage() {
         )}
 
         <Panel title="Votre compte">
-          <p className="text-[12.5px] leading-relaxed text-[#565959]">
+          <p className="text-sm leading-relaxed text-[#565959]">
             Connecté en tant que <span className="font-medium text-[#0f1111]">{displayName}</span>
             {email ? ` (${email})` : ""}. Ces informations ne sont pas publiques :
             seule la fiche ci-dessus est visible des clients.
@@ -120,7 +120,7 @@ export default async function AgentProfilePage() {
         </Panel>
 
         <Panel title="Pourquoi vous ne pouvez rien modifier ici">
-          <p className="max-w-2xl text-[12.5px] leading-relaxed text-[#565959]">
+          <p className="max-w-2xl text-sm leading-relaxed text-[#565959]">
             La page{" "}
             <Link href="/verify-agent" className="font-medium text-[#d2162c] hover:underline">
               de vérification

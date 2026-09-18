@@ -31,11 +31,11 @@ export function PageHeader({
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-[#d5d9d9] pb-3">
       <div>
-        <h1 className="text-[20px] font-semibold leading-tight tracking-[-0.01em] text-[#0f1111]">
+        <h1 className="text-xl font-semibold leading-tight tracking-tight text-[#0f1111]">
           {title}
         </h1>
         {subtitle && (
-          <p className="mt-1 text-[12.5px] leading-relaxed text-[#565959]">
+          <p className="mt-1 text-sm leading-relaxed text-[#565959]">
             {subtitle}
           </p>
         )}
@@ -64,10 +64,10 @@ export function Panel({
         <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e3e6e6] px-4 py-2.5">
           <div>
             {title && (
-              <h2 className="text-[13.5px] font-semibold text-[#0f1111]">{title}</h2>
+              <h2 className="text-base font-semibold text-[#0f1111]">{title}</h2>
             )}
             {description && (
-              <p className="mt-0.5 text-[11.5px] text-[#565959]">{description}</p>
+              <p className="mt-0.5 text-xs text-[#565959]">{description}</p>
             )}
           </div>
           {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -119,13 +119,13 @@ export function Stat({
 
   return (
     <div className="bg-white px-3.5 py-3">
-      <p className="text-[10.5px] font-medium uppercase tracking-[0.07em] text-[#565959]">
+      <p className="text-2xs font-medium uppercase tracking-label text-[#565959]">
         {label}
       </p>
-      <p className={`tnum mt-1.5 text-[21px] font-semibold leading-none ${toneClass}`}>
+      <p className={`tnum mt-1.5 text-xl font-semibold leading-none ${toneClass}`}>
         {value}
       </p>
-      {hint && <p className="mt-1.5 text-[11px] leading-snug text-[#767676]">{hint}</p>}
+      {hint && <p className="mt-1.5 text-xs leading-snug text-[#767676]">{hint}</p>}
     </div>
   );
 }
@@ -143,7 +143,7 @@ export function Table({
 }) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[560px] border-collapse text-[12.5px]">
+      <table className="w-full min-w-[560px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-[#d5d9d9] bg-[#f7f8f8]">
             {columns.map((column) => (
@@ -151,7 +151,7 @@ export function Table({
                 key={column.key}
                 scope="col"
                 style={column.width ? { width: column.width } : undefined}
-                className={`px-3 py-2 text-[10.5px] font-semibold uppercase tracking-[0.06em] text-[#565959] ${
+                className={`px-3 py-2 text-2xs font-semibold uppercase tracking-label text-[#565959] ${
                   column.align === "right"
                     ? "text-right"
                     : column.align === "center"
@@ -225,7 +225,7 @@ export function Badge({
 
   return (
     <span
-      className={`inline-flex items-center rounded-[2px] border px-1.5 py-0.5 text-[10.5px] font-medium ${toneClass}`}
+      className={`inline-flex items-center rounded-[2px] border px-1.5 py-0.5 text-2xs font-medium ${toneClass}`}
     >
       {children}
     </span>
@@ -248,7 +248,7 @@ export function Button({
   const base =
     "inline-flex items-center justify-center gap-1.5 rounded-[3px] font-medium transition-colors whitespace-nowrap";
 
-  const sizeClass = size === "sm" ? "px-2.5 py-1 text-[11.5px]" : "px-3 py-1.5 text-[12.5px]";
+  const sizeClass = size === "sm" ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-sm";
 
   const variantClass = {
     primary: "bg-[#d2162c] text-white hover:bg-[#b01124]",
@@ -285,9 +285,9 @@ export function EmptyState({
 }) {
   return (
     <div className="px-4 py-10 text-center">
-      <p className="text-[13.5px] font-semibold text-[#0f1111]">{title}</p>
+      <p className="text-base font-semibold text-[#0f1111]">{title}</p>
       {description && (
-        <p className="mx-auto mt-1.5 max-w-md text-[12.5px] leading-relaxed text-[#565959]">
+        <p className="mx-auto mt-1.5 max-w-md text-sm leading-relaxed text-[#565959]">
           {description}
         </p>
       )}
@@ -313,9 +313,9 @@ export function Notice({
 
   return (
     <div className={`rounded-[3px] border px-3.5 py-3 ${toneClass}`}>
-      <p className="text-[12.5px] font-semibold text-[#0f1111]">{title}</p>
+      <p className="text-sm font-semibold text-[#0f1111]">{title}</p>
       {children && (
-        <div className="mt-1 text-[12px] leading-relaxed text-[#565959]">{children}</div>
+        <div className="mt-1 text-sm leading-relaxed text-[#565959]">{children}</div>
       )}
     </div>
   );
@@ -396,19 +396,19 @@ export function Field({
     <div>
       <label
         htmlFor={htmlFor}
-        className="block text-[12px] font-semibold text-[#0f1111]"
+        className="block text-sm font-semibold text-[#0f1111]"
       >
         {label}
         {required && <span className="ml-1 text-[#b01124]">*</span>}
       </label>
       <div className="mt-1.5">{children}</div>
-      {hint && <p className="mt-1.5 text-[11px] leading-snug text-[#767676]">{hint}</p>}
+      {hint && <p className="mt-1.5 text-xs leading-snug text-[#767676]">{hint}</p>}
     </div>
   );
 }
 
 const CONTROL_CLASS =
-  "w-full rounded-[3px] border border-[#8d9096] bg-white px-2.5 py-1.5 text-[12.5px] text-[#0f1111] outline-none transition-colors placeholder:text-[#9a9a9a] focus:border-[#d2162c] focus:ring-1 focus:ring-[#d2162c]/30 disabled:bg-[#f7f8f8] disabled:text-[#767676]";
+  "w-full rounded-[3px] border border-[#8d9096] bg-white px-2.5 py-1.5 text-sm text-[#0f1111] outline-none transition-colors placeholder:text-[#9a9a9a] focus:border-[#d2162c] focus:ring-1 focus:ring-[#d2162c]/30 disabled:bg-[#f7f8f8] disabled:text-[#767676]";
 
 export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   const { className, ...rest } = props;

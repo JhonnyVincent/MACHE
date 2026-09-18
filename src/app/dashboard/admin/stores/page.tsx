@@ -106,7 +106,7 @@ export default async function AdminStoresPage({
             {search && (
               <Link
                 href="/dashboard/admin/stores"
-                className="self-center text-[12px] text-[#565959] hover:underline"
+                className="self-center text-sm text-[#565959] hover:underline"
               >
                 Réinitialiser
               </Link>
@@ -148,7 +148,7 @@ export default async function AdminStoresPage({
                     >
                       {store.name?.trim() || "Sans nom"}
                     </Link>
-                    <span className="mt-0.5 block text-[10.5px] font-normal text-[#767676]">
+                    <span className="mt-0.5 block text-2xs font-normal text-[#767676]">
                       Créée le {formatDate(store.created_at)}
                     </span>
                   </Cell>
@@ -159,7 +159,7 @@ export default async function AdminStoresPage({
                         href={String(store.legal_doc_url)}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[12px] font-medium text-[#d2162c] hover:underline"
+                        className="text-sm font-medium text-[#d2162c] hover:underline"
                       >
                         Ouvrir
                       </a>

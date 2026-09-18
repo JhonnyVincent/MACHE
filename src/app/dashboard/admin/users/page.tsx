@@ -114,7 +114,7 @@ export default async function AdminUsersPage({
             {(search || roleFilter) && (
               <Link
                 href="/dashboard/admin/users"
-                className="self-center text-[12px] text-[#565959] hover:underline"
+                className="self-center text-sm text-[#565959] hover:underline"
               >
                 Réinitialiser
               </Link>
@@ -154,7 +154,7 @@ export default async function AdminUsersPage({
                   <Row key={user.id}>
                     <Cell strong>
                       {user.full_name?.trim() || "Sans nom"}
-                      <span className="mt-0.5 block text-[10.5px] font-normal text-[#767676]">
+                      <span className="mt-0.5 block text-2xs font-normal text-[#767676]">
                         {user.email}
                       </span>
                     </Cell>
@@ -174,9 +174,9 @@ export default async function AdminUsersPage({
                     <Cell muted>{formatDate(user.created_at)}</Cell>
                     <Cell align="right">
                       {!isSuperAdmin ? (
-                        <span className="text-[11px] text-[#767676]">—</span>
+                        <span className="text-xs text-[#767676]">—</span>
                       ) : locked ? (
-                        <span className="text-[11px] text-[#767676]">
+                        <span className="text-xs text-[#767676]">
                           {isSelf ? "Votre compte" : "Non modifiable ici"}
                         </span>
                       ) : (

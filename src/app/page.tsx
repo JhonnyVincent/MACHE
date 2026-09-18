@@ -22,7 +22,7 @@ import { fetchHomeData } from "@/lib/medusa/home";
 import { FEATURED_CATEGORIES } from "@/lib/categories";
 import {
   ProductRailSection, SellerRailSection, CategoryRailSection,
-  CollectionRailSection, PendingRailsSection, BackendNotice,
+  CollectionRailSection,
 } from "@/components/home/rails";
 
 export const dynamic = "force-dynamic";
@@ -44,6 +44,25 @@ const WHY = [
 export default async function HomePage() {
   const home = await fetchHomeData();
 
+  /*
+    Le diagnostic va au journal du serveur, pas au visiteur.
+
+    Tant que le backend commerce n'est pas branché, l'accueil affichait
+    deux encadrés — « Backend commerce non configuré » et « Rayons à
+    venir » — qui expliquaient au client ce qui manquait à la boutique.
+    C'est une information d'exploitation : elle est utile à qui déploie
+    le site, pas à qui vient acheter. Elle n'est pas perdue pour autant,
+    elle est écrite ici.
+
+    L'accueil ne compense pas pour autant : un rayon sans donnée reste
+    absent, il n'est pas rempli d'exemples.
+  */
+  if (home.problems.length > 0) {
+    console.warn(
+      `[accueil] catalogue incomplet (backend ${home.configured ? "configuré" : "non configuré"}) : ${home.problems.join(" | ")}`
+    );
+  }
+
   const liveCounts = [
     { label: "Boutiques", value: home.newSellers.length },
     { label: "Rayons", value: home.categories.length },
@@ -58,16 +77,16 @@ export default async function HomePage() {
       <section className="border-b border-[var(--mache-line)] bg-gradient-to-br from-white via-white to-[var(--mache-bg-2)]">
         <div className="container-page grid items-center gap-6 py-8 lg:grid-cols-[1.15fr_0.85fr] lg:py-12">
           <div>
-            <span className="inline-block rounded-[3px] bg-[var(--mache-primary)] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.1em] text-white">
+            <span className="inline-block rounded-[3px] bg-[var(--mache-primary)] px-2 py-1 text-xs font-bold uppercase tracking-widest text-white">
               Marketplace haïtienne
             </span>
 
-            <h1 className="mt-4 text-[clamp(28px,4.2vw,46px)] font-[900] leading-[1.05] tracking-[-0.02em] text-[var(--mache-text)]">
+            <h1 className="mt-4 text-hero font-black tracking-tightest text-[var(--mache-text)]">
               Acheter chez les vendeurs d&apos;Haïti,
               <br className="hidden sm:block" /> au même endroit.
             </h1>
 
-            <p className="mt-4 max-w-xl text-[14.5px] leading-relaxed text-[var(--mache-muted)]">
+            <p className="mt-4 max-w-xl text-md leading-relaxed text-[var(--mache-muted)]">
               Des boutiques indépendantes, des marques et des fournisseurs
               réunis sur une seule place de marché. Chaque vendeur garde sa
               boutique ; vous n&apos;avez qu&apos;un panier.
@@ -76,13 +95,13 @@ export default async function HomePage() {
             <div className="mt-6 flex flex-wrap gap-2.5">
               <Link
                 href="/shop"
-                className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+                className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
               >
                 Voir le catalogue
               </Link>
               <Link
                 href="/sell"
-                className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-[14px] font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
+                className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
               >
                 Ouvrir ma boutique
               </Link>
@@ -99,10 +118,10 @@ export default async function HomePage() {
                   .filter((count) => count.value > 0)
                   .map((count) => (
                     <div key={count.label}>
-                      <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--mache-muted)]">
+                      <dt className="text-xs font-semibold uppercase tracking-label text-[var(--mache-muted)]">
                         {count.label}
                       </dt>
-                      <dd className="mt-0.5 text-[22px] font-[900] leading-none text-[var(--mache-text)]">
+                      <dd className="mt-0.5 text-2xl font-black leading-none text-[var(--mache-text)]">
                         {count.value}
                       </dd>
                     </div>
@@ -143,12 +162,12 @@ export default async function HomePage() {
               href={service.href}
               className="flex items-center gap-2.5 bg-[var(--mache-white)] px-3 py-3.5 transition-colors hover:bg-[var(--mache-bg)]"
             >
-              <span className="text-[20px]" aria-hidden="true">{service.icon}</span>
+              <span className="text-xl" aria-hidden="true">{service.icon}</span>
               <span className="min-w-0">
-                <span className="block truncate text-[13px] font-semibold text-[var(--mache-text)]">
+                <span className="block truncate text-base font-semibold text-[var(--mache-text)]">
                   {service.title}
                 </span>
-                <span className="block truncate text-[11.5px] text-[var(--mache-muted)]">
+                <span className="block truncate text-xs text-[var(--mache-muted)]">
                   {service.text}
                 </span>
               </span>
@@ -156,9 +175,6 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
-
-      {/* Panne ou absence de configuration : dite, jamais tue. */}
-      <BackendNotice configured={home.configured} problems={home.problems} />
 
       {/* Rayons réels, dans l'ordre où ils apportent quelque chose. */}
       {home.rails.map((rail) => (
@@ -193,7 +209,7 @@ export default async function HomePage() {
         <CategoryRailSection categories={home.categories} />
       ) : (
         <section className="container-page py-5">
-          <h2 className="mb-3 text-[19px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[22px]">
+          <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
             Parcourir les rayons
           </h2>
           <div className="flex flex-wrap gap-2">
@@ -201,7 +217,7 @@ export default async function HomePage() {
               <Link
                 key={category.slug}
                 href={`/shop?category=${category.slug}`}
-                className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-white)] px-3.5 py-2 text-[13px] font-medium text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+                className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-white)] px-3.5 py-2 text-base font-medium text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
               >
                 <span aria-hidden="true">{category.icon} </span>
                 {category.label}
@@ -213,8 +229,6 @@ export default async function HomePage() {
 
       <CollectionRailSection collections={home.collections} />
 
-      <PendingRailsSection pendingRails={home.pendingRails} />
-
       {/* Pourquoi MACHÉ — quatre affirmations tenues par le produit. */}
       <section className="container-page py-5">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -223,9 +237,9 @@ export default async function HomePage() {
               key={item.title}
               className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4"
             >
-              <span className="text-[22px]" aria-hidden="true">{item.icon}</span>
-              <h3 className="mt-2 text-[14px] font-bold text-[var(--mache-text)]">{item.title}</h3>
-              <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--mache-muted)]">
+              <span className="text-2xl" aria-hidden="true">{item.icon}</span>
+              <h3 className="mt-2 text-md font-bold text-[var(--mache-text)]">{item.title}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
                 {item.text}
               </p>
             </div>
@@ -237,10 +251,10 @@ export default async function HomePage() {
       <section className="container-page py-5">
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[var(--mache-dark)] p-6 text-white">
           <div>
-            <h2 className="text-[20px] font-[900] tracking-[-0.01em]">
+            <h2 className="text-xl font-black tracking-tight">
               Vous vendez quelque chose ?
             </h2>
-            <p className="mt-1.5 max-w-xl text-[13px] leading-relaxed text-white/70">
+            <p className="mt-1.5 max-w-xl text-base leading-relaxed text-white/70">
               Ouvrez votre boutique sur MACHÉ, gardez votre marque, et
               profitez d&apos;un catalogue déjà visité. Particuliers,
               entreprises, fournisseurs et marques officielles.
@@ -249,7 +263,7 @@ export default async function HomePage() {
 
           <Link
             href="/sell"
-            className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-strong)]"
+            className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-strong)]"
           >
             Commencer à vendre
           </Link>

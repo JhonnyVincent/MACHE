@@ -31,27 +31,27 @@ export default async function CartPage({
   return (
     <main className="bg-[var(--mache-bg)] pb-10">
       <div className="container-page py-6">
-        <h1 className="text-[24px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[28px]">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--mache-text)] sm:text-3xl">
           Mon panier
         </h1>
 
         {query.error && (
-          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-[13px] text-[#b01124]">
+          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
             {decodeURIComponent(query.error)}
           </div>
         )}
 
         {isEmpty ? (
           <div className="mt-6 rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
-            <p className="text-[15px] font-bold text-[var(--mache-text)]">
+            <p className="text-md font-bold text-[var(--mache-text)]">
               Votre panier est vide
             </p>
-            <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-[var(--mache-muted)]">
+            <p className="mx-auto mt-2 max-w-md text-base leading-relaxed text-[var(--mache-muted)]">
               Parcourez le catalogue et ajoutez des articles depuis leur fiche.
             </p>
             <Link
               href="/shop"
-              className="mt-5 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+              className="mt-5 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
             >
               Voir le catalogue
             </Link>
@@ -76,23 +76,23 @@ export default async function CartPage({
                     {line.productHandle ? (
                       <Link
                         href={`/product/${line.productHandle}`}
-                        className="text-[14px] font-semibold text-[var(--mache-text)] hover:underline"
+                        className="text-md font-semibold text-[var(--mache-text)] hover:underline"
                       >
                         {line.title}
                       </Link>
                     ) : (
-                      <span className="text-[14px] font-semibold text-[var(--mache-text)]">
+                      <span className="text-md font-semibold text-[var(--mache-text)]">
                         {line.title}
                       </span>
                     )}
 
                     {line.variantTitle && (
-                      <p className="mt-0.5 text-[12px] text-[var(--mache-muted)]">
+                      <p className="mt-0.5 text-sm text-[var(--mache-muted)]">
                         {line.variantTitle}
                       </p>
                     )}
 
-                    <p className="mt-1 text-[12.5px] text-[var(--mache-muted)]">
+                    <p className="mt-1 text-sm text-[var(--mache-muted)]">
                       {formatAmount(line.unitPrice, cart.currency)} l&apos;unité
                     </p>
 
@@ -108,11 +108,11 @@ export default async function CartPage({
                           type="number"
                           min={1}
                           defaultValue={line.quantity}
-                          className="w-16 rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-[13px]"
+                          className="w-16 rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-base"
                         />
                         <button
                           type="submit"
-                          className="rounded-[4px] border border-[var(--mache-line)] px-2.5 py-1 text-[12px] font-semibold text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+                          className="rounded-[4px] border border-[var(--mache-line)] px-2.5 py-1 text-sm font-semibold text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
                         >
                           Mettre à jour
                         </button>
@@ -122,7 +122,7 @@ export default async function CartPage({
                         <input type="hidden" name="line_id" value={line.id} />
                         <button
                           type="submit"
-                          className="text-[12px] text-[var(--mache-muted)] underline-offset-2 hover:text-[var(--mache-danger)] hover:underline"
+                          className="text-sm text-[var(--mache-muted)] underline-offset-2 hover:text-[var(--mache-danger)] hover:underline"
                         >
                           Retirer
                         </button>
@@ -130,7 +130,7 @@ export default async function CartPage({
                     </div>
                   </div>
 
-                  <span className="shrink-0 text-[15px] font-[900] text-[var(--mache-text)]">
+                  <span className="shrink-0 text-md font-black text-[var(--mache-text)]">
                     {formatAmount(line.total, cart.currency)}
                   </span>
                 </div>
@@ -139,11 +139,11 @@ export default async function CartPage({
 
             {/* Récapitulatif */}
             <aside className="h-fit rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
-              <h2 className="text-[15px] font-bold text-[var(--mache-text)]">
+              <h2 className="text-md font-bold text-[var(--mache-text)]">
                 Récapitulatif
               </h2>
 
-              <dl className="mt-3 space-y-2 text-[13px]">
+              <dl className="mt-3 space-y-2 text-base">
                 <div className="flex justify-between">
                   <dt className="text-[var(--mache-muted)]">
                     Sous-total ({cart.itemCount} article{cart.itemCount > 1 ? "s" : ""})
@@ -176,15 +176,15 @@ export default async function CartPage({
                   </div>
                 )}
 
-                <div className="flex justify-between border-t border-[var(--mache-line)] pt-2 text-[16px]">
+                <div className="flex justify-between border-t border-[var(--mache-line)] pt-2 text-lg">
                   <dt className="font-bold">Total</dt>
-                  <dd className="font-[900]">{formatAmount(cart.total, cart.currency)}</dd>
+                  <dd className="font-black">{formatAmount(cart.total, cart.currency)}</dd>
                 </div>
               </dl>
 
               <Link
                 href="/checkout"
-                className="mt-4 block rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-center text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+                className="mt-4 block rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-center text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
               >
                 Commander
               </Link>
@@ -194,14 +194,14 @@ export default async function CartPage({
                 dernière étape : quelqu'un qui n'a pas d'espèces doit le
                 savoir avant de saisir son adresse.
               */}
-              <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--mache-muted)]">
+              <p className="mt-2 text-xs leading-relaxed text-[var(--mache-muted)]">
                 Paiement à la livraison. Aucune donnée bancaire ne vous sera
                 demandée.
               </p>
 
               <Link
                 href="/shop"
-                className="mt-3 block text-center text-[13px] font-semibold text-[var(--mache-primary)] hover:underline"
+                className="mt-3 block text-center text-base font-semibold text-[var(--mache-primary)] hover:underline"
               >
                 Continuer mes achats
               </Link>

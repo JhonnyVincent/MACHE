@@ -20,13 +20,13 @@ export const metadata = {
 export default function ShippingPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
-      <h1 className="text-[26px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[32px]">
+      <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
         Livraison
       </h1>
 
-      <div className="mt-6 space-y-6 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+      <div className="mt-6 space-y-6 text-md leading-relaxed text-[var(--mache-muted)]">
         <section>
-          <h2 className="text-[16px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
             Qui livre votre commande
           </h2>
           <p className="mt-2">
@@ -38,7 +38,7 @@ export default function ShippingPage() {
         </section>
 
         <section>
-          <h2 className="text-[16px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
             Suivi
           </h2>
           <p className="mt-2">
@@ -52,7 +52,7 @@ export default function ShippingPage() {
         </section>
 
         <section>
-          <h2 className="text-[16px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
             Agents MACHÉ
           </h2>
           <p className="mt-2">
@@ -67,10 +67,10 @@ export default function ShippingPage() {
         </section>
 
         <section className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
-          <h2 className="text-[15px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-md font-bold text-[var(--mache-text)]">
             Ce qui n&apos;est pas encore en place
           </h2>
-          <p className="mt-2 text-[13.5px]">
+          <p className="mt-2 text-base">
             Aucun transporteur n&apos;est intégré à MACHÉ : il n&apos;y a donc
             ni numéro de suivi automatique, ni délai garanti, ni grille
             tarifaire par zone. Les délais et frais sont convenus avec le
@@ -80,7 +80,7 @@ export default function ShippingPage() {
           </p>
         </section>
 
-        <p className="text-[13px]">
+        <p className="text-base">
           Une question sur une livraison en cours ?{" "}
           <Link href="/contact" className="font-semibold text-[var(--mache-primary)] hover:underline">
             Contactez-nous

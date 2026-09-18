@@ -44,10 +44,71 @@ const config: Config = {
         }
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"]
+        /*
+          Une seule famille pour tout le site : Inter.
+
+          Le mono n'est plus une seconde famille système, qui changeait de
+          dessin selon la machine du visiteur. Les rares identifiants
+          techniques — référence de commande — se composent en Inter avec
+          des chiffres tabulaires, ce qui suffit à les aligner.
+        */
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-inter)", "system-ui", "sans-serif"]
       },
+
+      /*
+        ÉCHELLE TYPOGRAPHIQUE MACHÉ
+
+        Le site en employait deux en parallèle : l'échelle Tailwind
+        (text-3xl, text-5xl) sur les pages anciennes, et vingt-quatre
+        tailles arbitraires en pixels sur les nouvelles. Passer de
+        l'accueil à « Devenir vendeur » changeait donc de registre
+        typographique, ce qui se lit comme un changement de police.
+
+        Dix crans suffisent, chacun avec son interlignage. Les tailles
+        n'y figurent qu'une fois : plus de 13px ET 13.5px à dix lignes
+        d'écart.
+      */
+      fontSize: {
+        "2xs": ["10.5px", { lineHeight: "1.4" }],
+        xs: ["11.5px", { lineHeight: "1.45" }],
+        sm: ["12.5px", { lineHeight: "1.5" }],
+        base: ["13.5px", { lineHeight: "1.55" }],
+        md: ["14.5px", { lineHeight: "1.6" }],
+        lg: ["16px", { lineHeight: "1.5" }],
+        xl: ["19px", { lineHeight: "1.35" }],
+        "2xl": ["22px", { lineHeight: "1.25" }],
+        "3xl": ["26px", { lineHeight: "1.2" }],
+        "4xl": ["32px", { lineHeight: "1.12" }],
+        /* Réservé au bandeau d'accueil, qui s'adapte à la largeur. */
+        hero: ["clamp(28px, 4.2vw, 46px)", { lineHeight: "1.06" }]
+      },
+
+      fontWeight: {
+        /*
+          Trois graisses, pas huit. `font-black` et `font-[900]`
+          coexistaient, comme `font-bold` et `font-[700]` : la même
+          épaisseur écrite de deux façons, ce qui empêche de voir qu'on
+          en emploie trop.
+        */
+        normal: "400",
+        medium: "500",
+        semibold: "600",
+        bold: "700",
+        black: "800"
+      },
+      /*
+        Cinq crans d'approche, au lieu de dix valeurs arbitraires allant de
+        -0.01em à 0.14em. `label` est l'espacement des petites capitales
+        (badges, intitulés de rayon), qui ont besoin d'air pour rester
+        lisibles à 10 ou 11 pixels.
+      */
       letterSpacing: {
-        tightest: "-0.03em"
+        tightest: "-0.03em",
+        tighter: "-0.02em",
+        tight: "-0.01em",
+        label: "0.08em",
+        widest: "0.11em"
       },
       boxShadow: {
         soft: "0 10px 30px rgba(0,0,0,0.08)",

@@ -23,9 +23,9 @@ import {
 export const dynamic = "force-dynamic";
 
 const input =
-  "mt-1 w-full rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-2 text-[13.5px] outline-none focus:border-[var(--mache-primary)]";
+  "mt-1 w-full rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-2 text-base outline-none focus:border-[var(--mache-primary)]";
 
-const label = "text-[12px] font-semibold text-[var(--mache-text)]";
+const label = "text-sm font-semibold text-[var(--mache-text)]";
 
 /* Champs proposés par type de bloc, avec ce que chacun affiche vraiment. */
 const FIELDS: Record<string, { name: string; label: string; hint?: string; long?: boolean }[]> = {
@@ -80,15 +80,15 @@ export default async function VitrinePage({
   if (!seller) {
     return (
       <main className="mx-auto w-full max-w-md px-4 py-12 sm:py-16">
-        <h1 className="text-[24px] font-bold tracking-[-0.01em] text-[var(--mache-text)]">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--mache-text)]">
           Personnaliser ma vitrine
         </h1>
-        <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
+        <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
           Connectez-vous avec le compte de votre panneau vendeur.
         </p>
 
         {query.error && (
-          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-[13px] text-[#b01124]">
+          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
             {decodeURIComponent(query.error)}
           </div>
         )}
@@ -107,7 +107,7 @@ export default async function VitrinePage({
           <div>
             <label htmlFor="store_handle" className={label}>Adresse de votre boutique</label>
             <input id="store_handle" name="store_handle" required placeholder="ma-boutique" className={input} />
-            <p className="mt-1 text-[11.5px] text-[var(--mache-muted)]">
+            <p className="mt-1 text-xs text-[var(--mache-muted)]">
               La partie après <code>/store/</code> dans l&apos;adresse de votre
               vitrine. Elle est demandée parce que l&apos;API vendeur ne permet
               pas de retrouver vos boutiques sans elle ; votre appartenance est
@@ -117,13 +117,13 @@ export default async function VitrinePage({
 
           <button
             type="submit"
-            className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+            className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
           >
             Se connecter
           </button>
         </form>
 
-        <p className="mt-5 text-[12.5px] text-[var(--mache-muted)]">
+        <p className="mt-5 text-sm text-[var(--mache-muted)]">
           Pas encore de boutique ?{" "}
           {backendUrl ? (
             <a href={`${backendUrl}/seller`} className="font-semibold text-[var(--mache-primary)] hover:underline">
@@ -146,24 +146,24 @@ export default async function VitrinePage({
     <main className="mx-auto w-full max-w-4xl px-4 py-8">
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[var(--mache-line)] pb-4">
         <div>
-          <h1 className="text-[24px] font-bold tracking-[-0.01em] text-[var(--mache-text)]">
+          <h1 className="text-2xl font-bold tracking-tight text-[var(--mache-text)]">
             Ma vitrine
           </h1>
-          <p className="mt-1 text-[13px] text-[var(--mache-muted)]">
+          <p className="mt-1 text-base text-[var(--mache-muted)]">
             {seller.name} · <Link href={`/store/${seller.handle}`} className="text-[var(--mache-primary)] hover:underline">voir la page publique</Link>
             {!isCustom && " · présentation par défaut"}
           </p>
         </div>
 
         <form action={vendorLogoutAction}>
-          <button type="submit" className="text-[12.5px] text-[var(--mache-muted)] hover:underline">
+          <button type="submit" className="text-sm text-[var(--mache-muted)] hover:underline">
             Se déconnecter
           </button>
         </form>
       </div>
 
       {seller.status !== "active" && (
-        <div className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-[13px] leading-relaxed text-[var(--mache-muted)]">
+        <div className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base leading-relaxed text-[var(--mache-muted)]">
           Votre boutique est au statut «&nbsp;{seller.status}&nbsp;». Vous pouvez
           préparer votre vitrine dès maintenant ; elle sera visible du public une
           fois la boutique approuvée par MACHÉ.
@@ -171,13 +171,13 @@ export default async function VitrinePage({
       )}
 
       {query.error && (
-        <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-[13px] text-[#b01124]">
+        <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
           {decodeURIComponent(query.error)}
         </div>
       )}
 
       {query.success && (
-        <div className="mt-4 rounded-[8px] border border-[#b7dfc9] bg-[#f4fbf7] px-4 py-3 text-[13px] text-[#046c4e]">
+        <div className="mt-4 rounded-[8px] border border-[#b7dfc9] bg-[#f4fbf7] px-4 py-3 text-base text-[#046c4e]">
           {decodeURIComponent(query.success)}
         </div>
       )}
@@ -195,11 +195,11 @@ export default async function VitrinePage({
             >
               <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--mache-line)] px-4 py-2.5">
                 <div>
-                  <p className="text-[13.5px] font-bold text-[var(--mache-text)]">
+                  <p className="text-base font-bold text-[var(--mache-text)]">
                     {index + 1}. {meta?.label ?? block.type}
                   </p>
                   {meta && (
-                    <p className="mt-0.5 text-[11.5px] text-[var(--mache-muted)]">
+                    <p className="mt-0.5 text-xs text-[var(--mache-muted)]">
                       {meta.description}
                     </p>
                   )}
@@ -213,7 +213,7 @@ export default async function VitrinePage({
                       type="submit"
                       disabled={index === 0}
                       aria-label="Monter ce bloc"
-                      className="rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-[12px] disabled:opacity-35"
+                      className="rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-sm disabled:opacity-35"
                     >
                       ↑
                     </button>
@@ -226,7 +226,7 @@ export default async function VitrinePage({
                       type="submit"
                       disabled={index === layout.content.length - 1}
                       aria-label="Descendre ce bloc"
-                      className="rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-[12px] disabled:opacity-35"
+                      className="rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-sm disabled:opacity-35"
                     >
                       ↓
                     </button>
@@ -236,7 +236,7 @@ export default async function VitrinePage({
                     <input type="hidden" name="index" value={index} />
                     <button
                       type="submit"
-                      className="rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-[12px] text-[var(--mache-danger)]"
+                      className="rounded-[4px] border border-[var(--mache-line)] px-2 py-1 text-sm text-[var(--mache-danger)]"
                     >
                       Retirer
                     </button>
@@ -282,7 +282,7 @@ export default async function VitrinePage({
                       )}
 
                       {field.hint && (
-                        <p className="mt-1 text-[11px] leading-snug text-[var(--mache-muted)]">
+                        <p className="mt-1 text-xs leading-snug text-[var(--mache-muted)]">
                           {field.hint}
                         </p>
                       )}
@@ -292,7 +292,7 @@ export default async function VitrinePage({
 
                 <button
                   type="submit"
-                  className="rounded-[6px] bg-[var(--mache-text)] px-4 py-2 text-[13px] font-bold text-white hover:bg-black"
+                  className="rounded-[6px] bg-[var(--mache-text)] px-4 py-2 text-base font-bold text-white hover:bg-black"
                 >
                   Enregistrer ce bloc
                 </button>
@@ -304,7 +304,7 @@ export default async function VitrinePage({
 
       {/* Ajouter */}
       <section className="mt-6 rounded-[10px] border border-dashed border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
-        <h2 className="text-[14px] font-bold text-[var(--mache-text)]">
+        <h2 className="text-md font-bold text-[var(--mache-text)]">
           Ajouter un bloc
         </h2>
 
@@ -315,7 +315,7 @@ export default async function VitrinePage({
               <button
                 type="submit"
                 title={entry.description}
-                className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-2 text-[12.5px] font-medium text-[var(--mache-text)] hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+                className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-2 text-sm font-medium text-[var(--mache-text)] hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
               >
                 + {entry.label}
               </button>
@@ -324,7 +324,7 @@ export default async function VitrinePage({
         </div>
       </section>
 
-      <p className="mt-6 text-[11.5px] leading-relaxed text-[var(--mache-muted)]">
+      <p className="mt-6 text-xs leading-relaxed text-[var(--mache-muted)]">
         Cet éditeur enregistre le format de l&apos;éditeur visuel Puck. Le
         glisser-déposer viendra le remplacer sans qu&apos;aucune vitrine ait à
         être refaite : ce sont les mêmes données.

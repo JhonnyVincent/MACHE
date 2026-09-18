@@ -103,7 +103,7 @@ export default async function AgentDeliveriesPage({
                       ? "/dashboard/agent/deliveries"
                       : `?filter=${filter.key}`
                   }
-                  className={`rounded-[3px] px-2.5 py-1 text-[12px] transition-colors ${
+                  className={`rounded-[3px] px-2.5 py-1 text-sm transition-colors ${
                     active === filter.key
                       ? "bg-[#0a0a0a] font-semibold text-white"
                       : "text-[#565959] hover:bg-[#f0f2f2]"
@@ -147,7 +147,7 @@ export default async function AgentDeliveriesPage({
                       {SHIPMENT_STATUS_LABELS[String(shipment.status)] || shipment.status}
                     </Badge>
                     {shipment.failure_reason && (
-                      <span className="mt-0.5 block text-[11px] text-[#b01124]">
+                      <span className="mt-0.5 block text-xs text-[#b01124]">
                         {shipment.failure_reason}
                       </span>
                     )}

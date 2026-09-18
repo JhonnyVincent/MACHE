@@ -19,10 +19,10 @@
   En revanche, « meilleures ventes », « tendances » et « recommandé pour
   vous » supposent respectivement un cumul des ventes, une mesure du
   trafic et un historique par visiteur. Aucun des trois n'est en place.
-  Ils ne sont donc pas inventés : `pendingRails` les nomme, et l'accueil
-  dit franchement ce qui leur manque. Un classement « meilleures ventes »
-  tiré au hasard tromperait à la fois les clients et les vendeurs qui s'y
-  croiraient mis en avant.
+  Ils ne sont donc pas inventés : ces rayons n'apparaissent simplement
+  pas. Un classement « meilleures ventes » tiré au hasard tromperait à la
+  fois les clients et les vendeurs qui s'y croiraient mis en avant. Ils
+  reviendront quand les commandes, l'audience et l'historique existeront.
 
   Tolérance aux pannes
 
@@ -51,31 +51,11 @@ export type HomeData = {
   premiumSellers: StoreSeller[];
   categories: StoreCategory[];
   collections: StoreCollection[];
-  /* Rayons annoncés mais pas encore mesurables, avec leur raison. */
-  pendingRails: { title: string; missing: string }[];
-  /* Raisons de panne, à afficher plutôt qu'à taire. */
+  /* Raisons de panne, écrites au journal du serveur. */
   problems: string[];
   /* Faux si le backend n'est pas configuré du tout. */
   configured: boolean;
 };
-
-const PENDING_RAILS = [
-  {
-    title: "Meilleures ventes",
-    missing:
-      "un cumul des quantités vendues par produit ; il se calcule à partir des commandes, qui commencent tout juste à exister",
-  },
-  {
-    title: "Tendances",
-    missing:
-      "une mesure d'audience — vues, clics, conversion — qui n'est pas installée sur MACHÉ",
-  },
-  {
-    title: "Recommandé pour vous",
-    missing:
-      "un historique de navigation par visiteur, que MACHÉ ne collecte pas aujourd'hui",
-  },
-];
 
 export async function fetchHomeData(): Promise<HomeData> {
   const [latest, discounted, sellers, categories, collections] = await Promise.all([
@@ -141,7 +121,6 @@ export async function fetchHomeData(): Promise<HomeData> {
     premiumSellers: allSellers.filter((seller) => seller.isPremium).slice(0, 6),
     categories: categories.ok ? categories.data : [],
     collections: collections.ok ? collections.data : [],
-    pendingRails: PENDING_RAILS,
     problems,
     configured,
   };

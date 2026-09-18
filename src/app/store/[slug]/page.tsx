@@ -35,15 +35,15 @@ export default async function StorePage({
   if (!sellerResult.ok) {
     return (
       <main className="mx-auto w-full max-w-3xl px-4 py-16">
-        <h1 className="text-[22px] font-bold text-[var(--mache-text)]">
+        <h1 className="text-2xl font-bold text-[var(--mache-text)]">
           Boutique indisponible
         </h1>
-        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+        <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           {sellerResult.reason}
         </p>
         <Link
           href="/shop"
-          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white"
+          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
         >
           Retour au catalogue
         </Link>
@@ -61,6 +61,12 @@ export default async function StorePage({
     order: "-created_at",
   });
 
+  if (!productsResult.ok) {
+    console.warn(
+      `[boutique] catalogue indisponible : ${productsResult.reason}`
+    );
+  }
+
   const products = productsResult.ok ? productsResult.data.products : [];
 
   /*
@@ -75,7 +81,7 @@ export default async function StorePage({
       {/* En-tête de boutique : identité, toujours affichée. */}
       <section className="border-b border-[var(--mache-line)] bg-white">
         <div className="container-page flex flex-wrap items-center gap-4 py-4">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-[15px] font-bold text-[var(--mache-muted)]">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-md font-bold text-[var(--mache-muted)]">
             {seller.logo ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={seller.logo} alt="" className="h-full w-full object-cover" />
@@ -85,17 +91,17 @@ export default async function StorePage({
           </span>
 
           <div className="min-w-0 flex-1">
-            <p className="flex flex-wrap items-center gap-2 text-[18px] font-bold tracking-[-0.01em] text-[var(--mache-text)]">
+            <p className="flex flex-wrap items-center gap-2 text-xl font-bold tracking-tight text-[var(--mache-text)]">
               {seller.name}
               {seller.isPremium && (
-                <span className="rounded-[3px] bg-[var(--mache-gold-soft)] px-2 py-0.5 text-[11px] font-bold text-[var(--mache-gold)]">
+                <span className="rounded-[3px] bg-[var(--mache-gold-soft)] px-2 py-0.5 text-xs font-bold text-[var(--mache-gold)]">
                   Premium
                 </span>
               )}
             </p>
 
             {productsResult.ok && (
-              <p className="mt-0.5 text-[12.5px] text-[var(--mache-muted)]">
+              <p className="mt-0.5 text-sm text-[var(--mache-muted)]">
                 {productsResult.data.count} produit
                 {productsResult.data.count > 1 ? "s" : ""} en ligne
                 {isCustom ? " · vitrine personnalisée" : ""}
@@ -105,14 +111,19 @@ export default async function StorePage({
         </div>
       </section>
 
+      {/*
+        La raison technique va au journal du serveur : le visiteur d'une
+        boutique n'a pas à lire le message d'erreur du backend.
+      */}
       {!productsResult.ok && (
         <div className="container-page py-6">
           <div className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
-            <p className="text-[14px] font-bold text-[var(--mache-text)]">
+            <p className="text-md font-bold text-[var(--mache-text)]">
               Catalogue de la boutique indisponible
             </p>
-            <p className="mt-1 text-[13px] text-[var(--mache-muted)]">
-              {productsResult.reason}
+            <p className="mt-1 text-base text-[var(--mache-muted)]">
+              Les produits de cette boutique ne peuvent pas être affichés pour
+              le moment. Réessayez dans quelques minutes.
             </p>
           </div>
         </div>
@@ -130,12 +141,12 @@ export default async function StorePage({
       {productsResult.ok && products.length === 0 && (
         <div className="container-page py-6">
           <div className="rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
-            <p className="text-[15px] font-bold text-[var(--mache-text)]">
+            <p className="text-md font-bold text-[var(--mache-text)]">
               Cette boutique n&apos;a pas encore de produit en ligne
             </p>
             <Link
               href="/shop"
-              className="mt-4 inline-block text-[13px] font-semibold text-[var(--mache-primary)] hover:underline"
+              className="mt-4 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline"
             >
               Voir le catalogue
             </Link>

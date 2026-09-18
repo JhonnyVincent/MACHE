@@ -76,7 +76,7 @@ export default async function BuyerAddressesPage() {
                   <Cell muted>
                     {address.address1}
                     {address.address2 ? `, ${address.address2}` : ""}
-                    <span className="mt-0.5 block text-[11px]">
+                    <span className="mt-0.5 block text-xs">
                       {[address.city, address.province, address.countryCode]
                         .filter(Boolean)
                         .join(", ")}

@@ -37,7 +37,7 @@ export function SellerSidebarNav({ sections }: { sections: NavSection[] }) {
     <nav className="scrollbar-slim flex-1 overflow-y-auto py-2">
       {sections.map((section) => (
         <div key={section.label} className="mb-4 last:mb-0">
-          <p className="px-4 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/30">
+          <p className="px-4 pb-1.5 text-2xs font-semibold uppercase tracking-widest text-white/30">
             {section.label}
           </p>
 
@@ -50,7 +50,7 @@ export function SellerSidebarNav({ sections }: { sections: NavSection[] }) {
                   <Link
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`flex items-center gap-2 border-l-2 py-1.5 pl-3.5 pr-3 text-[12.5px] transition-colors ${
+                    className={`flex items-center gap-2 border-l-2 py-1.5 pl-3.5 pr-3 text-sm transition-colors ${
                       active
                         ? "border-[#d2162c] bg-white/[0.07] font-semibold text-white"
                         : "border-transparent text-white/60 hover:bg-white/[0.05] hover:text-white"
@@ -58,7 +58,7 @@ export function SellerSidebarNav({ sections }: { sections: NavSection[] }) {
                   >
                     <span className="flex-1 truncate">{item.label}</span>
                     {item.badge ? (
-                      <span className="tnum rounded-[2px] bg-[#d2162c] px-1 py-px text-[10px] font-semibold text-white">
+                      <span className="tnum rounded-[2px] bg-[#d2162c] px-1 py-px text-2xs font-semibold text-white">
                         {item.badge > 99 ? "99+" : item.badge}
                       </span>
                     ) : null}
@@ -87,7 +87,7 @@ export function SellerMobileNav({ sections }: { sections: NavSection[] }) {
           <Link
             key={item.href}
             href={item.href}
-            className={`shrink-0 rounded-[3px] px-2.5 py-1 text-[12px] transition-colors ${
+            className={`shrink-0 rounded-[3px] px-2.5 py-1 text-sm transition-colors ${
               active
                 ? "bg-[#0a0a0a] font-semibold text-white"
                 : "text-[#565959] hover:bg-[#f0f2f2]"

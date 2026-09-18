@@ -20,13 +20,13 @@ export const metadata = {
 export default function ReturnsPage() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
-      <h1 className="text-[26px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[32px]">
+      <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
         Retours et remboursements
       </h1>
 
-      <div className="mt-6 space-y-6 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+      <div className="mt-6 space-y-6 text-md leading-relaxed text-[var(--mache-muted)]">
         <section>
-          <h2 className="text-[16px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
             À qui s&apos;adresser
           </h2>
           <p className="mt-2">
@@ -41,7 +41,7 @@ export default function ReturnsPage() {
         </section>
 
         <section>
-          <h2 className="text-[16px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
             Article non conforme ou abîmé
           </h2>
           <p className="mt-2">
@@ -52,7 +52,7 @@ export default function ReturnsPage() {
         </section>
 
         <section>
-          <h2 className="text-[16px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
             Paiement à la livraison
           </h2>
           <p className="mt-2">
@@ -64,10 +64,10 @@ export default function ReturnsPage() {
         </section>
 
         <section className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
-          <h2 className="text-[15px] font-bold text-[var(--mache-text)]">
+          <h2 className="text-md font-bold text-[var(--mache-text)]">
             Ce qui reste à arrêter
           </h2>
-          <p className="mt-2 text-[13.5px]">
+          <p className="mt-2 text-base">
             Le délai de rétractation, les cas ouvrant droit à remboursement et
             la prise en charge des frais de retour sont des engagements
             juridiques. Ils seront publiés ici une fois fixés par MACHÉ. En
@@ -77,7 +77,7 @@ export default function ReturnsPage() {
           </p>
         </section>
 
-        <p className="text-[13px]">
+        <p className="text-base">
           Un litige à signaler ?{" "}
           <Link href="/contact" className="font-semibold text-[var(--mache-primary)] hover:underline">
             Contactez l&apos;équipe MACHÉ

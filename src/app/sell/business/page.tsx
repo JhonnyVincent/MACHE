@@ -63,7 +63,7 @@ export default function SellBusinessPage() {
               Profil vendeur · Business
             </div>
 
-            <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-tight sm:text-6xl">
+            <h1 className="mt-6 max-w-4xl text-hero font-black tracking-tightest">
               Développez votre boutique avec un vrai espace business.
             </h1>
 

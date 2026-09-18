@@ -151,7 +151,7 @@ export default async function AdminPartnersPage() {
                 <Row key={account.id}>
                   <Cell strong>
                     {account.full_name?.trim() || "Sans nom"}
-                    <span className="mt-0.5 block text-[10.5px] font-normal text-[#767676]">
+                    <span className="mt-0.5 block text-2xs font-normal text-[#767676]">
                       {account.email}
                     </span>
                   </Cell>

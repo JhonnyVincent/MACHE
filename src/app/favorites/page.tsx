@@ -54,30 +54,30 @@ export default async function FavoritesPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
-      <h1 className="text-[26px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[30px]">
+      <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
         Mes favoris
       </h1>
 
       {!signedIn ? (
         <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-6">
-          <p className="text-[14px] text-[var(--mache-muted)]">
+          <p className="text-md text-[var(--mache-muted)]">
             Connectez-vous pour retrouver les articles que vous avez mis de
             côté.
           </p>
           <Link
             href="/login?next=/favorites"
-            className="mt-4 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white"
+            className="mt-4 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
           >
             Se connecter
           </Link>
         </div>
       ) : (
         <div className="mt-6 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
-          <p className="text-[15px] font-bold text-[var(--mache-text)]">
+          <p className="text-md font-bold text-[var(--mache-text)]">
             Favoris en cours de reprise
           </p>
 
-          <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
+          <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
             {savedCount > 0 ? (
               <>
                 Vous avez <strong>{savedCount}</strong> article
@@ -97,7 +97,7 @@ export default async function FavoritesPage() {
 
           <Link
             href="/shop"
-            className="mt-4 inline-block text-[13.5px] font-semibold text-[var(--mache-primary)] hover:underline"
+            className="mt-4 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline"
           >
             Parcourir le catalogue
           </Link>

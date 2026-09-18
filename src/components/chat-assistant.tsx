@@ -69,7 +69,7 @@ export function ChatAssistant() {
           <div className="flex items-center justify-between bg-[var(--mache-dark)] px-4 py-3 text-white">
             <div>
               <h4 className="text-sm font-bold">Assistant IA Mache</h4>
-              <div className="text-[11px] text-white/50">En ligne</div>
+              <div className="text-xs text-white/50">En ligne</div>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -84,7 +84,7 @@ export function ChatAssistant() {
               <button
                 key={question}
                 onClick={() => send(question)}
-                className="whitespace-nowrap rounded-full border border-[var(--mache-line)] px-3 py-1 text-[11px] font-medium text-[var(--mache-muted)] transition hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+                className="whitespace-nowrap rounded-full border border-[var(--mache-line)] px-3 py-1 text-xs font-medium text-[var(--mache-muted)] transition hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
               >
                 {question}
               </button>
@@ -95,7 +95,7 @@ export function ChatAssistant() {
             {messages.map((message, index) => (
               <div
                 key={`${message.role}-${index}`}
-                className={`max-w-[85%] rounded-[14px] px-4 py-3 text-[13px] leading-6 ${
+                className={`max-w-[85%] rounded-[14px] px-4 py-3 text-base leading-6 ${
                   message.role === "ai"
                     ? "self-start rounded-tl-[4px] bg-[var(--mache-bg)] text-[var(--mache-text)]"
                     : "self-end rounded-br-[4px] bg-[var(--mache-primary)] text-white"

@@ -178,7 +178,7 @@ export default async function AgentHomePage({
                     </Badge>
                   }
                 >
-                  <dl className="space-y-1.5 text-[12.5px]">
+                  <dl className="space-y-1.5 text-sm">
                     <div className="flex justify-between gap-3">
                       <dt className="text-[#565959]">Destinataire</dt>
                       <dd className="max-w-[60%] text-right font-medium">
@@ -255,7 +255,7 @@ export default async function AgentHomePage({
 
                       {steps.includes("failed") && (
                         <details className="mt-1">
-                          <summary className="cursor-pointer text-[11.5px] text-[#565959] hover:text-[#0f1111]">
+                          <summary className="cursor-pointer text-xs text-[#565959] hover:text-[#0f1111]">
                             Livraison impossible
                           </summary>
                           <form action={advanceShipmentAction} className="mt-2 space-y-2">
@@ -265,7 +265,7 @@ export default async function AgentHomePage({
                               name="reason"
                               required
                               placeholder="Raison : absent, adresse introuvable, refus…"
-                              className="w-full rounded-[3px] border border-[#8d9096] px-2.5 py-1.5 text-[12.5px] outline-none focus:border-[#d2162c]"
+                              className="w-full rounded-[3px] border border-[#8d9096] px-2.5 py-1.5 text-sm outline-none focus:border-[#d2162c]"
                             />
                             <Button type="submit">Signaler l&apos;échec</Button>
                           </form>

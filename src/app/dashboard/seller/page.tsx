@@ -57,10 +57,10 @@ export default async function SellerEntryPage() {
   if (!backendUrl) {
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-14">
-        <h1 className="text-[24px] font-bold text-[var(--mache-text)]">
+        <h1 className="text-2xl font-bold text-[var(--mache-text)]">
           Espace vendeur indisponible
         </h1>
-        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+        <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           L&apos;adresse du backend commerce n&apos;est pas renseignée
           (NEXT_PUBLIC_MEDUSA_BACKEND_URL). Sans elle, MACHÉ ne sait pas où
           se trouve le panneau vendeur.
@@ -71,17 +71,17 @@ export default async function SellerEntryPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-14">
-      <h1 className="text-[26px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[30px]">
+      <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
         Espace vendeur
       </h1>
 
-      <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+      <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
         Votre boutique se gère depuis le panneau vendeur MACHÉ. Tout y est :
       </p>
 
       <ul className="mt-4 grid gap-1.5 sm:grid-cols-2">
         {CAPABILITIES.map((item) => (
-          <li key={item} className="flex gap-2 text-[13.5px] text-[var(--mache-text)]">
+          <li key={item} className="flex gap-2 text-base text-[var(--mache-text)]">
             <span aria-hidden="true" className="text-[var(--mache-success)]">✓</span>
             {item}
           </li>
@@ -91,7 +91,7 @@ export default async function SellerEntryPage() {
       <div className="mt-6 flex flex-wrap gap-2.5">
         <a
           href={vendorUrl}
-          className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+          className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
         >
           Ouvrir mon panneau vendeur
         </a>
@@ -99,7 +99,7 @@ export default async function SellerEntryPage() {
         {!signedIn && (
           <Link
             href="/sell"
-            className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-[14px] font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
+            className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
           >
             Devenir vendeur
           </Link>
@@ -107,10 +107,10 @@ export default async function SellerEntryPage() {
       </div>
 
       <div className="mt-8 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
-        <h2 className="text-[14px] font-bold text-[var(--mache-text)]">
+        <h2 className="text-md font-bold text-[var(--mache-text)]">
           Un compte vendeur distinct
         </h2>
-        <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--mache-muted)]">
+        <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
           Le panneau vendeur a sa propre inscription. Si vous vendiez déjà sur
           l&apos;ancienne version de MACHÉ, créez-y votre boutique : le
           catalogue a changé de moteur, et les anciennes fiches produit ne
@@ -119,7 +119,7 @@ export default async function SellerEntryPage() {
         </p>
       </div>
 
-      <p className="mt-6 text-[12.5px] text-[var(--mache-muted)]">
+      <p className="mt-6 text-sm text-[var(--mache-muted)]">
         Vous cherchiez plutôt vos achats ?{" "}
         <Link href="/dashboard/buyer" className="font-semibold text-[var(--mache-primary)] hover:underline">
           Espace client

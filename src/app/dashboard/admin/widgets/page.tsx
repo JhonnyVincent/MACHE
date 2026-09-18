@@ -91,14 +91,14 @@ export default async function AdminWidgetsPage({
                 <Row key={widget.id}>
                   <Cell strong>
                     {widget.page} / {widget.zone}
-                    <span className="mt-0.5 block text-[10.5px] font-normal text-[#767676]">
+                    <span className="mt-0.5 block text-2xs font-normal text-[#767676]">
                       {widget.type}
                     </span>
                   </Cell>
                   <Cell>
                     {widget.title || "Sans titre"}
                     {widget.subtitle && (
-                      <span className="mt-0.5 block text-[10.5px] font-normal text-[#767676]">
+                      <span className="mt-0.5 block text-2xs font-normal text-[#767676]">
                         {widget.subtitle}
                       </span>
                     )}
@@ -107,7 +107,7 @@ export default async function AdminWidgetsPage({
                     {widget.button_text ? (
                       <>
                         {widget.button_text}
-                        <span className="mt-0.5 block text-[10.5px] text-[#767676]">
+                        <span className="mt-0.5 block text-2xs text-[#767676]">
                           {widget.button_href || "aucun lien"}
                         </span>
                       </>

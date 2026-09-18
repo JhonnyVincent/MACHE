@@ -52,15 +52,15 @@ export default async function AgentLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#eef1f3] font-sans text-[13px] text-[#0f1111] antialiased">
+    <div className="flex h-screen overflow-hidden bg-[#eef1f3] font-sans text-base text-[#0f1111] antialiased">
       <aside
         data-chrome="dark"
         className="hidden w-[216px] shrink-0 flex-col bg-[#0a0a0a] text-white lg:flex"
       >
         <div className="border-b border-white/10 px-4 py-3">
           <Link href="/" className="block">
-            <p className="text-[15px] font-bold leading-none tracking-[0.12em]">MACHE</p>
-            <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.14em] text-white/40">
+            <p className="text-md font-bold leading-none tracking-widest">MACHE</p>
+            <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/40">
               Espace agent
             </p>
           </Link>
@@ -69,13 +69,13 @@ export default async function AgentLayout({ children }: { children: React.ReactN
         <SellerSidebarNav sections={sections} />
 
         <div className="border-t border-white/10 px-4 py-2.5">
-          <p className="truncate text-[11.5px] font-medium">{displayName}</p>
-          <p className="truncate text-[10.5px] text-white/40">{email}</p>
+          <p className="truncate text-xs font-medium">{displayName}</p>
+          <p className="truncate text-2xs text-white/40">{email}</p>
 
           <form action={signOutAction} className="mt-2">
             <button
               type="submit"
-              className="text-[11px] text-white/45 underline-offset-2 transition-colors hover:text-white hover:underline"
+              className="text-xs text-white/45 underline-offset-2 transition-colors hover:text-white hover:underline"
             >
               Se déconnecter
             </button>
@@ -88,15 +88,15 @@ export default async function AgentLayout({ children }: { children: React.ReactN
           data-chrome="app"
           className="flex h-12 shrink-0 items-center gap-3 border-b border-[#d5d9d9] bg-white px-3 sm:px-4"
         >
-          <Link href="/" className="text-[14px] font-bold tracking-[0.1em] lg:hidden">
+          <Link href="/" className="text-md font-bold tracking-widest lg:hidden">
             MACHE
           </Link>
 
           <div className="ml-auto flex items-center gap-2 border-l border-[#d5d9d9] pl-3">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0a0a0a] text-[10px] font-semibold text-white">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0a0a0a] text-2xs font-semibold text-white">
               {initialsOf(displayName, 1)}
             </span>
-            <span className="hidden text-[12px] font-medium sm:block">{firstName}</span>
+            <span className="hidden text-sm font-medium sm:block">{firstName}</span>
           </div>
         </header>
 

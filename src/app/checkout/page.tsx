@@ -43,7 +43,7 @@ function Step({
     <section className="rounded-[10px] border border-[var(--mache-line)] bg-white">
       <header className="flex items-center gap-2.5 border-b border-[var(--mache-line)] px-4 py-3">
         <span
-          className={`flex h-6 w-6 items-center justify-center rounded-full text-[12px] font-bold ${
+          className={`flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold ${
             done
               ? "bg-[var(--mache-success)] text-white"
               : "bg-[var(--mache-text)] text-white"
@@ -51,7 +51,7 @@ function Step({
         >
           {done ? "✓" : number}
         </span>
-        <h2 className="text-[15px] font-bold text-[var(--mache-text)]">{title}</h2>
+        <h2 className="text-md font-bold text-[var(--mache-text)]">{title}</h2>
       </header>
 
       <div className="p-4">{children}</div>
@@ -60,7 +60,7 @@ function Step({
 }
 
 const inputClass =
-  "w-full rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-2 text-[14px] outline-none focus:border-[var(--mache-primary)]";
+  "w-full rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-2 text-md outline-none focus:border-[var(--mache-primary)]";
 
 export default async function CheckoutPage({
   searchParams,
@@ -79,15 +79,15 @@ export default async function CheckoutPage({
   if (!stateResult.ok) {
     return (
       <main className="mx-auto w-full max-w-3xl px-4 py-14">
-        <h1 className="text-[24px] font-bold text-[var(--mache-text)]">
+        <h1 className="text-2xl font-bold text-[var(--mache-text)]">
           Commande indisponible
         </h1>
-        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+        <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           {stateResult.reason}
         </p>
         <Link
           href="/cart"
-          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white"
+          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
         >
           Retour au panier
         </Link>
@@ -100,12 +100,12 @@ export default async function CheckoutPage({
   return (
     <main className="bg-[var(--mache-bg)] pb-10">
       <div className="container-page py-6">
-        <h1 className="text-[24px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[28px]">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--mache-text)] sm:text-3xl">
           Commander
         </h1>
 
         {query.error && (
-          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-[13px] text-[#b01124]">
+          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
             {decodeURIComponent(query.error)}
           </div>
         )}
@@ -116,59 +116,59 @@ export default async function CheckoutPage({
             <Step number={1} title="Livraison" done={state.hasAddress && state.hasEmail}>
               <form action={saveAddressAction} className="grid gap-3 sm:grid-cols-2">
                 <div className="sm:col-span-2">
-                  <label htmlFor="email" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="email" className="text-sm font-semibold text-[var(--mache-text)]">
                     Adresse e-mail *
                   </label>
                   <input id="email" name="email" type="email" required className={`mt-1 ${inputClass}`} />
-                  <p className="mt-1 text-[11.5px] text-[var(--mache-muted)]">
+                  <p className="mt-1 text-xs text-[var(--mache-muted)]">
                     Elle sert à vous envoyer la confirmation et le suivi.
                   </p>
                 </div>
 
                 <div>
-                  <label htmlFor="first_name" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="first_name" className="text-sm font-semibold text-[var(--mache-text)]">
                     Prénom *
                   </label>
                   <input id="first_name" name="first_name" required className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
-                  <label htmlFor="last_name" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="last_name" className="text-sm font-semibold text-[var(--mache-text)]">
                     Nom *
                   </label>
                   <input id="last_name" name="last_name" required className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label htmlFor="address_1" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="address_1" className="text-sm font-semibold text-[var(--mache-text)]">
                     Adresse *
                   </label>
                   <input id="address_1" name="address_1" required className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label htmlFor="address_2" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="address_2" className="text-sm font-semibold text-[var(--mache-text)]">
                     Complément — repère, étage
                   </label>
                   <input id="address_2" name="address_2" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
-                  <label htmlFor="city" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="city" className="text-sm font-semibold text-[var(--mache-text)]">
                     Ville *
                   </label>
                   <input id="city" name="city" required className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
-                  <label htmlFor="province" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="province" className="text-sm font-semibold text-[var(--mache-text)]">
                     Département
                   </label>
                   <input id="province" name="province" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
-                  <label htmlFor="country_code" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="country_code" className="text-sm font-semibold text-[var(--mache-text)]">
                     Pays *
                   </label>
                   <select id="country_code" name="country_code" required className={`mt-1 ${inputClass}`}>
@@ -181,11 +181,11 @@ export default async function CheckoutPage({
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  <label htmlFor="phone" className="text-sm font-semibold text-[var(--mache-text)]">
                     Téléphone *
                   </label>
                   <input id="phone" name="phone" required inputMode="tel" className={`mt-1 ${inputClass}`} />
-                  <p className="mt-1 text-[11.5px] text-[var(--mache-muted)]">
+                  <p className="mt-1 text-xs text-[var(--mache-muted)]">
                     Le livreur appelle. Sans numéro, la livraison échoue.
                   </p>
                 </div>
@@ -193,7 +193,7 @@ export default async function CheckoutPage({
                 <div className="sm:col-span-2">
                   <button
                     type="submit"
-                    className="rounded-[6px] bg-[var(--mache-text)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-black"
+                    className="rounded-[6px] bg-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-black"
                   >
                     {state.hasAddress ? "Modifier l'adresse" : "Valider l'adresse"}
                   </button>
@@ -204,19 +204,19 @@ export default async function CheckoutPage({
             {/* 2. Livraison par vendeur */}
             <Step number={2} title="Mode de livraison" done={state.allSellersShipped}>
               {!state.hasAddress ? (
-                <p className="text-[13px] text-[var(--mache-muted)]">
+                <p className="text-base text-[var(--mache-muted)]">
                   Renseignez d&apos;abord votre adresse : les modes de livraison
                   en dépendent.
                 </p>
               ) : state.shippingBySeller.length === 0 ? (
-                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-3 py-2.5 text-[13px] text-[var(--mache-muted)]">
+                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-3 py-2.5 text-base text-[var(--mache-muted)]">
                   Aucun mode de livraison ne dessert cette adresse. Vérifiez le
                   pays et la ville, ou contactez MACHÉ.
                 </p>
               ) : (
                 <div className="space-y-4">
                   {state.shippingBySeller.length > 1 && (
-                    <p className="text-[12.5px] leading-relaxed text-[var(--mache-muted)]">
+                    <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
                       Votre panier contient des articles de{" "}
                       {state.shippingBySeller.length} boutiques. Chacune expédie
                       de son côté : choisissez un mode de livraison pour
@@ -227,7 +227,7 @@ export default async function CheckoutPage({
                   {state.shippingBySeller.map((seller) => (
                     <div key={seller.sellerId || seller.sellerName}>
                       {state.shippingBySeller.length > 1 && (
-                        <p className="mb-1.5 text-[12.5px] font-semibold text-[var(--mache-text)]">
+                        <p className="mb-1.5 text-sm font-semibold text-[var(--mache-text)]">
                           {seller.sellerName}
                         </p>
                       )}
@@ -247,11 +247,11 @@ export default async function CheckoutPage({
                                     : "border-[var(--mache-line)] hover:border-[var(--mache-primary)]"
                                 }`}
                               >
-                                <span className="text-[13.5px] font-medium text-[var(--mache-text)]">
+                                <span className="text-base font-medium text-[var(--mache-text)]">
                                   {chosen ? "✓ " : ""}
                                   {option.name}
                                 </span>
-                                <span className="text-[13.5px] font-semibold text-[var(--mache-text)]">
+                                <span className="text-base font-semibold text-[var(--mache-text)]">
                                   {option.amount === null
                                     ? "Tarif à confirmer"
                                     : formatAmount(option.amount, cart.currency)}
@@ -270,10 +270,10 @@ export default async function CheckoutPage({
             {/* 3. Paiement */}
             <Step number={3} title="Paiement">
               <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
-                <p className="text-[13.5px] font-semibold text-[var(--mache-text)]">
+                <p className="text-base font-semibold text-[var(--mache-text)]">
                   Paiement à la livraison
                 </p>
-                <p className="mt-1.5 text-[12.5px] leading-relaxed text-[var(--mache-muted)]">
+                <p className="mt-1.5 text-sm leading-relaxed text-[var(--mache-muted)]">
                   Vous réglez en main propre au moment de recevoir le colis.
                   Vérifiez son contenu avant de payer : c&apos;est le moment où
                   un refus est le plus simple, pour vous comme pour le vendeur.
@@ -286,7 +286,7 @@ export default async function CheckoutPage({
                 pas raccordé, une carte bancaire affichée en grisé ne
                 serait qu'une promesse.
               */}
-              <p className="mt-3 text-[11.5px] leading-relaxed text-[var(--mache-muted)]">
+              <p className="mt-3 text-xs leading-relaxed text-[var(--mache-muted)]">
                 MACHÉ n&apos;a aujourd&apos;hui aucun prestataire de paiement en
                 ligne raccordé. Aucune donnée bancaire ne vous est demandée, ni
                 ne transite par ce site.
@@ -296,13 +296,13 @@ export default async function CheckoutPage({
 
           {/* Récapitulatif */}
           <aside className="h-fit rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
-            <h2 className="text-[15px] font-bold text-[var(--mache-text)]">
+            <h2 className="text-md font-bold text-[var(--mache-text)]">
               Votre commande
             </h2>
 
             <ul className="mt-3 space-y-2">
               {cart.lines.map((line) => (
-                <li key={line.id} className="flex justify-between gap-3 text-[12.5px]">
+                <li key={line.id} className="flex justify-between gap-3 text-sm">
                   <span className="min-w-0 text-[var(--mache-muted)]">
                     {line.quantity} × {line.title}
                   </span>
@@ -313,7 +313,7 @@ export default async function CheckoutPage({
               ))}
             </ul>
 
-            <dl className="mt-3 space-y-2 border-t border-[var(--mache-line)] pt-3 text-[13px]">
+            <dl className="mt-3 space-y-2 border-t border-[var(--mache-line)] pt-3 text-base">
               <div className="flex justify-between">
                 <dt className="text-[var(--mache-muted)]">Sous-total</dt>
                 <dd className="font-medium">{formatAmount(cart.subtotal, cart.currency)}</dd>
@@ -335,9 +335,9 @@ export default async function CheckoutPage({
                 </div>
               )}
 
-              <div className="flex justify-between border-t border-[var(--mache-line)] pt-2 text-[16px]">
+              <div className="flex justify-between border-t border-[var(--mache-line)] pt-2 text-lg">
                 <dt className="font-bold">Total</dt>
-                <dd className="font-[900]">{formatAmount(cart.total, cart.currency)}</dd>
+                <dd className="font-black">{formatAmount(cart.total, cart.currency)}</dd>
               </div>
             </dl>
 
@@ -345,14 +345,14 @@ export default async function CheckoutPage({
               <button
                 type="submit"
                 disabled={!state.readyToPay}
-                className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)] disabled:cursor-not-allowed disabled:bg-[var(--mache-line)] disabled:text-[var(--mache-muted)]"
+                className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)] disabled:cursor-not-allowed disabled:bg-[var(--mache-line)] disabled:text-[var(--mache-muted)]"
               >
                 Confirmer la commande
               </button>
             </form>
 
             {!state.readyToPay && (
-              <p className="mt-2 text-[11.5px] leading-relaxed text-[var(--mache-muted)]">
+              <p className="mt-2 text-xs leading-relaxed text-[var(--mache-muted)]">
                 {!state.hasAddress
                   ? "Complétez l'adresse pour continuer."
                   : "Choisissez un mode de livraison pour chaque boutique."}
@@ -361,7 +361,7 @@ export default async function CheckoutPage({
 
             <Link
               href="/cart"
-              className="mt-3 block text-center text-[12.5px] text-[var(--mache-muted)] hover:underline"
+              className="mt-3 block text-center text-sm text-[var(--mache-muted)] hover:underline"
             >
               Modifier le panier
             </Link>

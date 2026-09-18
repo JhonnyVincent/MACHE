@@ -114,7 +114,7 @@ export default async function AdminAgentsPage({
                 return (
                   <Row key={agent.id}>
                     <Cell strong>
-                      <span className="tracking-[0.06em]">{agent.code}</span>
+                      <span className="tracking-label">{agent.code}</span>
                       {agent.official_badge && (
                         <span className="ml-2">
                           <Badge tone="info">Badge</Badge>
@@ -123,7 +123,7 @@ export default async function AdminAgentsPage({
                     </Cell>
                     <Cell>
                       {agent.display_name}
-                      <span className="mt-0.5 block text-[10.5px] font-normal text-[#767676]">
+                      <span className="mt-0.5 block text-2xs font-normal text-[#767676]">
                         {agent.user_id ? "Compte lié" : "Aucun compte lié"}
                         {agent.phone_public ? ` · ${agent.phone_public}` : ""}
                       </span>
@@ -218,7 +218,7 @@ export default async function AdminAgentsPage({
                   name="code"
                   required
                   placeholder="MCH-AG-1024"
-                  className="uppercase tracking-[0.06em]"
+                  className="uppercase tracking-label"
                 />
               </Field>
 

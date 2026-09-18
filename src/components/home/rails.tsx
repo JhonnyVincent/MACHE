@@ -36,17 +36,17 @@ function RailHeader({
   return (
     <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
       <div>
-        <h2 className="text-[19px] font-bold leading-tight tracking-[-0.01em] text-[var(--mache-text)] sm:text-[22px]">
+        <h2 className="text-xl font-bold leading-tight tracking-tight text-[var(--mache-text)] sm:text-2xl">
           {title}
         </h2>
         {subtitle && (
-          <p className="mt-1 text-[12.5px] text-[var(--mache-muted)]">{subtitle}</p>
+          <p className="mt-1 text-sm text-[var(--mache-muted)]">{subtitle}</p>
         )}
       </div>
       {href && (
         <Link
           href={href}
-          className="shrink-0 text-[13px] font-semibold text-[var(--mache-primary)] hover:underline"
+          className="shrink-0 text-base font-semibold text-[var(--mache-primary)] hover:underline"
         >
           {linkLabel} →
         </Link>
@@ -93,37 +93,37 @@ export function ProductCard({ product }: { product: StoreProduct }) {
             className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-[11.5px] text-[var(--mache-light)]">
+          <div className="flex h-full items-center justify-center text-xs text-[var(--mache-light)]">
             Sans image
           </div>
         )}
 
         {hasDiscount && (
-          <span className="absolute left-2 top-2 rounded-[3px] bg-[var(--mache-primary)] px-1.5 py-0.5 text-[11px] font-bold text-white">
+          <span className="absolute left-2 top-2 rounded-[3px] bg-[var(--mache-primary)] px-1.5 py-0.5 text-xs font-bold text-white">
             −{discountPercent} %
           </span>
         )}
       </div>
 
       <div className="flex flex-1 flex-col p-3">
-        <h3 className="line-clamp-2 text-[13.5px] font-medium leading-snug text-[var(--mache-text)] group-hover:underline">
+        <h3 className="line-clamp-2 text-base font-medium leading-snug text-[var(--mache-text)] group-hover:underline">
           {product.title}
         </h3>
 
         <div className="mt-auto pt-2">
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <span className="text-[17px] font-[900] leading-none tracking-[-0.02em] text-[var(--mache-text)]">
+            <span className="text-lg font-black leading-none tracking-tighter text-[var(--mache-text)]">
               {formatAmount(product.price, product.currency)}
             </span>
             {hasDiscount && (
-              <span className="text-[12px] text-[var(--mache-light)] line-through">
+              <span className="text-sm text-[var(--mache-light)] line-through">
                 {formatAmount(product.originalPrice, product.currency)}
               </span>
             )}
           </div>
 
           {product.variantCount > 1 && (
-            <p className="mt-1 text-[11.5px] text-[var(--mache-muted)]">
+            <p className="mt-1 text-xs text-[var(--mache-muted)]">
               {product.variantCount} variantes
             </p>
           )}
@@ -193,7 +193,7 @@ export function SellerRailSection({
             </div>
 
             <div className="flex items-center gap-2.5 p-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-[12px] font-bold text-[var(--mache-muted)]">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-sm font-bold text-[var(--mache-muted)]">
                 {seller.logo ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img src={seller.logo} alt="" loading="lazy" className="h-full w-full object-cover" />
@@ -203,11 +203,11 @@ export function SellerRailSection({
               </span>
 
               <span className="min-w-0">
-                <span className="block truncate text-[13.5px] font-semibold text-[var(--mache-text)] group-hover:underline">
+                <span className="block truncate text-base font-semibold text-[var(--mache-text)] group-hover:underline">
                   {seller.name}
                 </span>
                 {seller.isPremium && (
-                  <span className="mt-0.5 inline-block rounded-[3px] bg-[var(--mache-gold-soft)] px-1.5 py-px text-[10px] font-bold text-[var(--mache-gold)]">
+                  <span className="mt-0.5 inline-block rounded-[3px] bg-[var(--mache-gold-soft)] px-1.5 py-px text-2xs font-bold text-[var(--mache-gold)]">
                     Premium
                   </span>
                 )}
@@ -239,7 +239,7 @@ export function CategoryRailSection({ categories }: { categories: StoreCategory[
           <Link
             key={category.id}
             href={`/shop?category=${encodeURIComponent(category.handle)}`}
-            className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-white)] px-3.5 py-2 text-[13px] font-medium text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+            className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-white)] px-3.5 py-2 text-base font-medium text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
           >
             {category.name}
           </Link>
@@ -261,110 +261,11 @@ export function CollectionRailSection({ collections }: { collections: StoreColle
           <Link
             key={collection.id}
             href={`/shop?collection=${encodeURIComponent(collection.handle)}`}
-            className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-3 text-[13px] font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)]"
+            className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-3 text-base font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)]"
           >
             {collection.title}
           </Link>
         ))}
-      </div>
-    </section>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* États honnêtes                                                             */
-/* -------------------------------------------------------------------------- */
-
-/*
-  Les rayons annoncés mais pas encore mesurables. Les montrer vides serait
-  malhonnête ; les cacher ferait croire qu'ils n'existent pas au programme.
-  On dit ce qui manque, précisément.
-*/
-export function PendingRailsSection({
-  pendingRails,
-}: {
-  pendingRails: { title: string; missing: string }[];
-}) {
-  if (pendingRails.length === 0) return null;
-
-  return (
-    <section className="container-page py-5">
-      <div className="rounded-[10px] border border-dashed border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
-        <h2 className="text-[14px] font-bold text-[var(--mache-text)]">
-          Rayons à venir
-        </h2>
-        <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--mache-muted)]">
-          Ces classements existent au programme de MACHÉ. Ils ne sont pas
-          affichés tant que la donnée qui les justifie n&apos;existe pas :
-          un classement inventé tromperait les clients autant que les
-          vendeurs qui s&apos;y croiraient mis en avant.
-        </p>
-
-        <ul className="mt-3 space-y-1.5">
-          {pendingRails.map((rail) => (
-            <li key={rail.title} className="text-[12.5px] leading-relaxed">
-              <span className="font-semibold text-[var(--mache-text)]">{rail.title}</span>
-              <span className="text-[var(--mache-muted)]"> — demande {rail.missing}.</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
-export function BackendNotice({
-  configured,
-  problems,
-}: {
-  configured: boolean;
-  problems: string[];
-}) {
-  if (problems.length === 0) return null;
-
-  return (
-    <section className="container-page py-5">
-      <div className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
-        <h2 className="text-[14px] font-bold text-[var(--mache-text)]">
-          {configured
-            ? "Le catalogue ne répond pas"
-            : "Backend commerce non configuré"}
-        </h2>
-        <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--mache-muted)]">
-          {configured
-            ? "Les rayons ci-dessous sont incomplets. Voici ce que le backend a répondu :"
-            : "Le catalogue est servi par le backend commerce, dont l'adresse n'est pas renseignée. Ce n'est pas une marketplace sans vendeurs : c'est une connexion absente."}
-        </p>
-
-        <ul className="mt-2 space-y-1">
-          {problems.map((problem) => (
-            <li key={problem} className="text-[12px] text-[var(--mache-muted)]">
-              {problem}
-            </li>
-          ))}
-        </ul>
-
-        {/*
-          Un message qui nomme le problème sans dire quoi en faire oblige à
-          chercher ailleurs. Les trois variables sont donc listées ici.
-        */}
-        {!configured && (
-          <div className="mt-3 border-t border-black/10 pt-3">
-            <p className="text-[12px] font-semibold text-[var(--mache-text)]">
-              Pour rétablir le catalogue
-            </p>
-            <ol className="mt-1.5 space-y-1 text-[12px] leading-relaxed text-[var(--mache-muted)]">
-              <li>1. Déployer le dossier <code>backend/</code> (le fichier <code>render.yaml</code> est prêt).</li>
-              <li>
-                2. Renseigner dans l&apos;hébergeur du site :{" "}
-                <code>NEXT_PUBLIC_MEDUSA_BACKEND_URL</code>,{" "}
-                <code>NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY</code>,{" "}
-                <code>NEXT_PUBLIC_MEDUSA_REGION_ID</code>.
-              </li>
-              <li>3. Redéployer : ces valeurs sont lues au moment de la construction.</li>
-            </ol>
-          </div>
-        )}
       </div>
     </section>
   );
