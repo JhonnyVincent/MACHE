@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:vitrine": "tsx tests/vitrine-blocs.test.mts"
+    "test:vitrine": "tsx tests/vitrine-blocs.test.mts",
+    "test:config": "tsx tests/config-backend.test.mts",
+    "test": "npm run test:vitrine && npm run test:config"
   },
   "dependencies": {
     "@measured/puck": "^0.20.2",

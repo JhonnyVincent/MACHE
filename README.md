@@ -104,14 +104,17 @@ retard.
 
 ```bash
 npx tsc --noEmit        # types
-npm run test:vitrine    # ce qu'une vitrine a le droit d'enregistrer
+npm test                # vitrines et configuration
 npx next build          # construction complète
 ```
 
 ## Mise en ligne
 
-Voir **[DEPLOIEMENT.md](./DEPLOIEMENT.md)** : où vit le backend, comment
-le déployer, et les trois variables à renseigner côté site.
+Tout est hébergé sur **Render** : le site, le backend commerce et la
+base de données, dans la même région.
+
+Voir **[DEPLOIEMENT.md](./DEPLOIEMENT.md)** : les trois ressources, leur
+ordre de création, et les variables à renseigner de part et d'autre.
 
 Les décisions qui ne sont pas techniques — le taux de taxe, la commission
 MACHÉ, le prestataire de paiement — y sont listées telles quelles, parce

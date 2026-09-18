@@ -24,11 +24,30 @@
   lettres. Une lecture dynamique renverrait undefined dans le navigateur.
 */
 export function medusaBackendUrl() {
-  return (
+  const raw = (
     process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
     process.env.MEDUSA_BACKEND_URL ||
     ""
-  ).replace(/\/+$/, "");
+  ).trim().replace(/\/+$/, "");
+
+  if (!raw) return "";
+
+  /*
+    L'adresse se recopie à la main depuis un tableau de bord
+    d'hébergeur, et ces tableaux affichent souvent l'hôte seul —
+    « mache-backend.onrender.com ». Collée telle quelle, elle produit
+    une adresse relative : chaque appel partait alors vers le site
+    lui-même, qui répondait 404, et le catalogue restait vide sans que
+    rien n'indique l'oubli du « https:// ».
+
+    On le complète. En clair (http) seulement pour localhost : ailleurs,
+    une requête non chiffrée exposerait le jeton de session du client.
+  */
+  if (/^https?:\/\//i.test(raw)) return raw;
+
+  const scheme = /^(localhost|127\.0\.0\.1)(:|$)/.test(raw) ? "http" : "https";
+
+  return `${scheme}://${raw}`;
 }
 
 export function medusaPublishableKey() {

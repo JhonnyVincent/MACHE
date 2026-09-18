@@ -1,169 +1,197 @@
 # Mettre MACHÉ en ligne
 
-MACHÉ est en deux morceaux, et c'est volontaire.
+Tout est hébergé sur **Render**, en trois ressources.
 
-| Morceau | Où il vit | Pourquoi là |
-|---|---|---|
-| **Le site** (`src/`) | Vercel | Next.js, rendu à la demande. C'est déjà le cas. |
-| **Le backend commerce** (`backend/`) | Render, Fly.io, Railway… | Medusa + Mercur : un serveur Node qui tourne en permanence, avec PostgreSQL. Il ne peut pas tourner en *serverless*, donc pas sur Vercel. |
+| Ressource | Ce que c'est |
+|---|---|
+| `mache-site` | le site Next.js, ce que voient les clients |
+| `mache-backend` | le moteur commerce : Medusa + Mercur |
+| `mache-db` | la base PostgreSQL |
 
-Tant que le second n'est pas en ligne, le site fonctionne mais son
-catalogue est vide : il n'a personne à qui demander les produits.
-
----
-
-## Où est le backend
-
-Dans ce dépôt, dossier **`backend/`**. Il n'est pas ailleurs, et il n'y a
-rien à télécharger.
-
-```
-backend/
-├── packages/api/     ← le serveur Medusa + Mercur
-├── apps/admin/       ← le panneau MACHÉ (administration)
-├── apps/vendor/      ← le panneau vendeur
-└── package.json
-```
-
-Le fichier **`render.yaml`**, à la racine du dépôt, décrit déjà le
-service et la base de données pour Render. Lisez-le : il dit sans détour
-ce que le plan gratuit implique (base supprimée au bout de 30 jours,
-service endormi après 15 minutes, pas de Redis).
+Les deux services sont séparés parce qu'ils ne font pas le même
+métier : le site rend des pages, le backend tient le catalogue, les
+stocks et les commandes. Le site ne possède rien ; il demande tout au
+backend.
 
 ---
 
-## 1. Déployer le backend sur Render
+## Avant de commencer : ce que le plan gratuit implique
 
-1. Sur **render.com**, `New` → **`Blueprint`**.
-2. Choisir le dépôt **`JhonnyVincent/MACHE`**, branche **`main`**.
-   Render lit `render.yaml` tout seul et propose deux ressources :
-   le service web `mache-backend` et la base `mache-db`.
-3. Render demande **une seule valeur** :
+- La base PostgreSQL gratuite **expire au bout de 30 jours** et est
+  supprimée. Produits, vendeurs, commandes : tout disparaît. Acceptable
+  pour une démonstration, jamais pour de vraies ventes.
+- Un service gratuit **s'endort après 15 minutes** sans trafic. Le
+  réveil prend environ une minute : la première visite après une période
+  calme paraîtra cassée. Pour une démonstration, ouvrez le site une
+  minute avant.
+- Pas de Redis : Medusa bascule sur une file d'événements en mémoire. Un
+  événement en cours au moment d'un redémarrage est perdu — un e-mail de
+  confirmation, une mise à jour de stock.
 
-   | Variable | Valeur |
-   |---|---|
-   | `STOREFRONT_URL` | `https://VOTRE-SITE.vercel.app` — l'adresse de votre site, sans `/` final |
+Passer aux plans payants est une étape distincte, à faire **avant
+d'accepter le moindre paiement réel**.
 
-   Tout le reste se déduit : les quatre listes d'origines autorisées
-   (`STORE_CORS`, `ADMIN_CORS`, `VENDOR_CORS`, `AUTH_CORS`) et l'adresse
-   des images se calculent à partir de cette adresse et de celle du
-   serveur, que Render fournit lui-même.
+---
 
-   `DATABASE_URL` et les trois secrets (`JWT_SECRET`, `COOKIE_SECRET`,
-   `STOREFRONT_REVALIDATE_SECRET`) sont générés par Render : n'y touchez
-   pas. Les deux premiers signent les sessions ; leur donner une valeur
-   connue reviendrait à laisser la clé sur la porte.
+## 1. Le backend et la base
 
-4. `Apply`. Le premier déploiement prend une dizaine de minutes : il
-   installe les dépendances, construit le serveur, applique les
-   migrations, puis crée la région Haïti et la clé publique du site.
-5. Quand le service est `Live`, ouvrir `https://mache-backend.onrender.com/health`.
-   Il doit répondre. Si oui, le backend tourne.
+Sur **render.com** : `New` → **`Blueprint`** → dépôt
+`JhonnyVincent/MACHE` → branche `main`.
 
-> Vous n'avez pas encore d'adresse Vercel ? Mettez-y n'importe quelle
-> adresse valide et corrigez-la ensuite : `STOREFRONT_URL` se modifie
-> depuis l'onglet `Environment` du service, et Render redéploie seul.
+Render lit `render.yaml` et propose `mache-backend` et `mache-db`.
 
-## 2. Relever les trois valeurs
+Il demande **une seule valeur** :
 
-Le backend se met en place tout seul au démarrage : région **Haïti** en
-**gourdes (HTG)**, région fiscale, canal de vente, et la clé publique
-qui autorise le site à lire le catalogue. Rien à taper dans un terminal.
+| Variable | Valeur |
+|---|---|
+| `STOREFRONT_URL` | l'adresse de votre site, sans `/` final |
+
+Vous ne la connaissez pas encore si le site n'est pas déployé : mettez
+une valeur provisoire et corrigez-la à l'étape 3. Elle se modifie depuis
+l'onglet `Environment`, et Render redéploie seul.
+
+Le reste se déduit : les quatre listes d'origines autorisées
+(`STORE_CORS`, `ADMIN_CORS`, `VENDOR_CORS`, `AUTH_CORS`) et l'adresse
+des images se calculent à partir de cette adresse et de celle du serveur,
+que Render fournit lui-même. `DATABASE_URL` et les trois secrets sont
+générés : n'y touchez pas.
+
+`Apply`. Comptez une dizaine de minutes.
+
+---
+
+## 2. Le site
+
+`New` → **`Web Service`** → même dépôt → branche `main`.
+
+| Réglage | Valeur |
+|---|---|
+| **Root Directory** | *laisser vide* |
+| Build Command | `npm run build` |
+| Start Command | `npm run start` |
+| Region | **`frankfurt`**, la même que le backend |
+
+**Le Root Directory doit rester vide.** S'il contient `backend`, Render
+installe le moteur commerce au lieu du site, et l'installation échoue
+sur un conflit de dépendances qui ne dit pas d'où il vient.
+
+**La région compte.** Chaque page du site fait plusieurs appels au
+backend, côté serveur. Si les deux services sont sur des continents
+différents, chaque appel traverse l'océan : 150 à 200 ms perdues, à
+chaque appel, à chaque page.
+
+Laissez les variables d'environnement vides pour l'instant.
+
+---
+
+## 3. Relier les deux
+
+### Le backend doit connaître le site
+
+`mache-backend` → `Environment` :
+
+| Variable | Valeur |
+|---|---|
+| `STOREFRONT_URL` | l'adresse de `mache-site`, sans `/` final |
+
+Sans elle, le navigateur refusera les appels du site au backend.
+
+### Le site doit connaître le backend
+
+Le backend se met en place seul au démarrage : région **Haïti** en
+**gourdes**, région fiscale, canal de vente, et la clé publique qui
+autorise le site à lire le catalogue. Rien à taper dans un terminal.
 
 Aucun taux de taxe n'est fixé : c'est une décision fiscale, elle vous
 revient.
 
-Ouvrez l'onglet **`Logs`** du service sur Render. Au démarrage, le
-backend affiche un encadré :
+Ouvrez `mache-backend` → onglet **`Logs`**, cherchez `NEXT_PUBLIC`.
+Le backend y affiche :
 
 ```
 ========================================================
   À reporter dans les variables d'environnement du site
-  (Vercel → Settings → Environment Variables), PUIS
-  REDÉPLOYER : ces valeurs sont lues à la construction.
 --------------------------------------------------------
-  NEXT_PUBLIC_MEDUSA_BACKEND_URL=https://mache-backend.onrender.com
+  NEXT_PUBLIC_MEDUSA_BACKEND_URL=https://...onrender.com
   NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
   NEXT_PUBLIC_MEDUSA_REGION_ID=reg_...
 ========================================================
 ```
 
-Copiez ces trois lignes.
+Ne copiez que ce qui suit le `=` : les journaux préfixent chaque ligne.
+
+Reportez les trois dans `mache-site` → `Environment`, puis
+**`Manual Deploy`** → `Deploy latest commit`.
+
+**Ce redéploiement n'est pas optionnel.** Les variables `NEXT_PUBLIC_*`
+sont inscrites dans le code au moment de la construction, pas lues au
+démarrage. Les ajouter sans reconstruire ne change rien — c'est le piège
+qui fait perdre le plus de temps.
+
+### Une quatrième, facultative
+
+| Variable | Valeur |
+|---|---|
+| `STOREFRONT_REVALIDATE_SECRET` | la valeur générée dans `mache-backend` → `Environment` |
+
+Elle autorise le backend à vider le cache du site dès qu'un prix change.
+Sans elle, le site reste juste, avec jusqu'à une minute de retard. Avec
+elle, la modification est visible immédiatement.
+
+---
+
+## 4. Vérifier
+
+Dans cet ordre :
+
+1. `https://VOTRE-BACKEND.onrender.com/health` répond.
+2. `https://VOTRE-SITE.onrender.com/shop` affiche des produits.
+3. L'accueil montre « Nouveautés » et « Nouvelles boutiques ».
+4. Un produit s'ajoute au panier, et le panier le retient d'une page à
+   l'autre.
+
+Si `/shop` dit « Catalogue momentanément indisponible », le site ne joint
+pas le backend : vérifiez les trois variables et le redéploiement. S'il
+dit « Le catalogue est vide », le site joint bien le backend, qui n'a
+simplement aucun produit.
+
+---
+
+## 5. Remplir le catalogue
+
+### Un vrai vendeur
+
+Depuis `https://VOTRE-BACKEND.onrender.com/seller`, créez une boutique
+et ses produits. C'est le parcours réel, celui que suivront vos vendeurs.
 
 Pour entrer dans le panneau d'administration, créez-vous un compte
-depuis l'onglet **`Shell`** du service :
+depuis l'onglet `Shell` de `mache-backend` :
 
 ```bash
 cd packages/api
 ./node_modules/.bin/medusa user --email vous@exemple.ht --password VOTRE_MOT_DE_PASSE
 ```
 
-Le panneau est ensuite sur `https://mache-backend.onrender.com/dashboard`,
-et le panneau vendeur sur `https://mache-backend.onrender.com/seller`.
-
-## 3. Brancher le site sur le backend
-
-Dans **Vercel** → votre projet → `Settings` → `Environment Variables`,
-ajoutez les trois lignes relevées à l'étape 2 :
-
-| Variable | Valeur |
-|---|---|
-| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | `https://mache-backend.onrender.com` |
-| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | la clé `pk_…` |
-| `NEXT_PUBLIC_MEDUSA_REGION_ID` | l'identifiant `reg_…` |
-
-Puis **redéployez**. Ce point n'est pas optionnel : les variables
-`NEXT_PUBLIC_*` sont inscrites dans le code au moment de la
-construction, pas lues au démarrage. Les ajouter sans redéployer ne
-change rien, et c'est le piège le plus courant.
-
-### Une quatrième, facultative
-
-| Variable | Valeur |
-|---|---|
-| `STOREFRONT_REVALIDATE_SECRET` | la valeur générée par Render, onglet `Environment` du service |
-
-Elle autorise le backend à vider le cache du site dès qu'un prix ou un
-produit change. Sans elle, le site reste juste, avec jusqu'à une minute
-de retard. Avec elle, la modification est visible immédiatement.
-
-## 4. Vérifier
-
-Dans cet ordre :
-
-1. `https://VOTRE-SITE.vercel.app/shop` affiche des produits.
-   Vide ? Le backend n'a pas encore de catalogue — voir ci-dessous.
-2. L'accueil montre « Nouveautés » et « Nouvelles boutiques ».
-3. Un produit s'ajoute au panier, et le panier le retient d'une page à
-   l'autre.
-
-Si `/shop` reste vide alors que `/health` répond, c'est que le backend
-n'a aucun produit. Deux façons de le remplir.
-
-### Un vrai vendeur
-
-Depuis `https://VOTRE-BACKEND.onrender.com/seller`, créez une boutique
-et ses produits. C'est le parcours réel, celui que vos vendeurs
-suivront.
+Le panneau est alors sur `https://VOTRE-BACKEND.onrender.com/dashboard`.
 
 ### Le catalogue de démonstration
 
 Pour voir la plateforme vivante tout de suite, sans terminal :
 
-`mache-backend` → `Environment` → `Add Environment Variable`
+`mache-backend` → `Environment` :
 
-| | |
+| Variable | Valeur |
 |---|---|
 | `SEED_DEMO` | `true` |
 
-Render redéploie, et le catalogue se charge au démarrage : 3 boutiques,
-12 produits, 244 offres. **Retirez ensuite la variable.**
+Render redéploie, et le catalogue se charge : 3 boutiques, 12 produits,
+244 offres. **Retirez ensuite la variable.**
 
 Deux garanties, vérifiées :
 
 - il ne charge rien si le catalogue contient déjà un produit. La
-  démonstration ne s'ajoute jamais à un catalogue existant, donc jamais
-  au milieu de vrais produits et de vraies commandes ;
+  démonstration ne s'ajoute jamais au milieu de vrais produits et de
+  vraies commandes ;
 - il ne touche pas à la région Haïti. La démonstration crée une région
   « Europe » en euros et voudrait en faire la région par défaut ; la
   mise en place MACHÉ passe après elle et rétablit Haïti.
@@ -185,5 +213,4 @@ des offres ce qui n'en est pas.
   paiement en main propre est proposée. Aucun paiement en ligne n'est
   simulé : tant qu'aucun prestataire réel n'est branché, le site ne
   prétend pas encaisser.
-- **Le passage aux plans payants**, avant la première vente réelle : sur
-  le plan gratuit, la base de données est supprimée au bout de 30 jours.
+- **Le passage aux plans payants**, avant la première vente réelle.
