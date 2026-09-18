@@ -333,7 +333,7 @@ export function BackendNotice({
         <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--mache-muted)]">
           {configured
             ? "Les rayons ci-dessous sont incomplets. Voici ce que le backend a répondu :"
-            : "Les variables d'environnement du backend commerce ne sont pas renseignées. Tant qu'elles manquent, le catalogue reste vide — ce n'est pas une marketplace sans vendeurs, c'est une connexion absente."}
+            : "Le catalogue est servi par le backend commerce, dont l'adresse n'est pas renseignée. Ce n'est pas une marketplace sans vendeurs : c'est une connexion absente."}
         </p>
 
         <ul className="mt-2 space-y-1">
@@ -343,6 +343,28 @@ export function BackendNotice({
             </li>
           ))}
         </ul>
+
+        {/*
+          Un message qui nomme le problème sans dire quoi en faire oblige à
+          chercher ailleurs. Les trois variables sont donc listées ici.
+        */}
+        {!configured && (
+          <div className="mt-3 border-t border-black/10 pt-3">
+            <p className="text-[12px] font-semibold text-[var(--mache-text)]">
+              Pour rétablir le catalogue
+            </p>
+            <ol className="mt-1.5 space-y-1 text-[12px] leading-relaxed text-[var(--mache-muted)]">
+              <li>1. Déployer le dossier <code>backend/</code> (le fichier <code>render.yaml</code> est prêt).</li>
+              <li>
+                2. Renseigner dans l&apos;hébergeur du site :{" "}
+                <code>NEXT_PUBLIC_MEDUSA_BACKEND_URL</code>,{" "}
+                <code>NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY</code>,{" "}
+                <code>NEXT_PUBLIC_MEDUSA_REGION_ID</code>.
+              </li>
+              <li>3. Redéployer : ces valeurs sont lues au moment de la construction.</li>
+            </ol>
+          </div>
+        )}
       </div>
     </section>
   );
