@@ -17,6 +17,21 @@
 import { medusaFetch, type MedusaResult } from "./client";
 import { medusaRegionId } from "./config";
 
+/*
+  Une variante porte `offer_id` : sur une marketplace, ce n'est pas la
+  variante qu'on met au panier mais l'offre d'un vendeur précis. Sans lui,
+  « chaussure taille 44 » ne désigne aucune ligne de commande.
+*/
+export type StoreVariant = {
+  id: string;
+  title: string;
+  offerId: string | null;
+  price: number | null;
+  originalPrice: number | null;
+  currency: string | null;
+  available: boolean;
+};
+
 export type StoreProduct = {
   id: string;
   handle: string;
@@ -33,6 +48,7 @@ export type StoreProduct = {
   collectionId: string | null;
   createdAt: string | null;
   variantCount: number;
+  variants: StoreVariant[];
 };
 
 export type StoreSeller = {
@@ -95,6 +111,34 @@ function firstVariantPrice(raw: RawProduct) {
   return { price: null, originalPrice: null, currency: null };
 }
 
+function mapVariant(raw: RawProduct): StoreVariant {
+  const calculated = raw.calculated_price as Record<string, unknown> | undefined;
+
+  const amount = Number(calculated?.calculated_amount);
+  const original = Number(calculated?.original_amount);
+
+  return {
+    id: String(raw.id),
+    title: text(raw.title) ?? "Variante",
+    offerId: text(raw.offer_id),
+    price: Number.isFinite(amount) ? amount : null,
+    originalPrice:
+      Number.isFinite(original) && Number.isFinite(amount) && original > amount
+        ? original
+        : null,
+    currency: text(calculated?.currency_code),
+    /*
+      Medusa ne renvoie une quantité que si l'inventaire est suivi. Sans
+      suivi, la variante est disponible : supposer l'inverse masquerait
+      des produits parfaitement vendables.
+    */
+    available:
+      raw.manage_inventory === false ||
+      raw.allow_backorder === true ||
+      Number(raw.inventory_quantity ?? 1) > 0,
+  };
+}
+
 function mapProduct(raw: RawProduct): StoreProduct {
   const { price, originalPrice, currency } = firstVariantPrice(raw);
 
@@ -120,6 +164,50 @@ function mapProduct(raw: RawProduct): StoreProduct {
     collectionId: text(raw.collection_id),
     createdAt: text(raw.created_at),
     variantCount: Array.isArray(raw.variants) ? raw.variants.length : 0,
+    variants: Array.isArray(raw.variants)
+      ? (raw.variants as RawProduct[]).map(mapVariant)
+      : [],
+  };
+}
+
+export type StoreOffer = {
+  id: string;
+  sellerId: string;
+  sellerName: string;
+  sellerHandle: string;
+  variantId: string;
+};
+
+/*
+  Les vendeurs proposant une même variante.
+
+  C'est le cœur du modèle marketplace : quatre boutiques peuvent vendre la
+  même paire de chaussures, et le client choisit laquelle.
+*/
+export async function fetchOffersForVariant(
+  variantId: string
+): Promise<MedusaResult<StoreOffer[]>> {
+  const result = await medusaFetch<{ offers: RawProduct[] }>(
+    "/store/offers",
+    { variant_id: variantId, limit: 20 },
+    { revalidate: 60, tags: ["offers"] }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: (result.data.offers ?? []).map((raw) => {
+      const seller = (raw.seller as Record<string, unknown>) ?? {};
+
+      return {
+        id: String(raw.id),
+        sellerId: String(seller.id ?? ""),
+        sellerName: text(seller.name) ?? "Boutique",
+        sellerHandle: text(seller.handle) ?? "",
+        variantId: String(raw.variant_id ?? ""),
+      };
+    }),
   };
 }
 

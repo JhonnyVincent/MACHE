@@ -1,238 +1,239 @@
 /*
-  PAGE : boutique publique
+  PAGE : catalogue
 
-  Catalogue lu depuis Supabase. La recherche et les filtres sont appliqués
-  côté base, et non sur un tableau chargé en mémoire : le catalogue peut
-  grandir sans que la page ralentisse.
+  Recherche, filtre et tri sont délégués au backend, pas appliqués sur un
+  tableau chargé en mémoire : le catalogue d'une marketplace grandit, et
+  une page qui trie côté navigateur ralentit à mesure qu'elle réussit.
 */
 
 import Link from "next/link";
-import { ProductCard } from "@/components/product-card";
-import { fetchProducts, type CatalogProduct } from "@/lib/catalog";
-import { CATEGORY_TREE, findCategory } from "@/lib/categories";
-import type { Product } from "@/types";
+import { fetchProducts, fetchCategories } from "@/lib/medusa/catalog";
+import { ProductCard } from "@/components/home/rails";
 
 export const dynamic = "force-dynamic";
 
-function toCardProduct(product: CatalogProduct): Product {
-  return {
-    id: product.id,
-    slug: product.handle,
-    title: product.title,
-    price: product.price,
-    currency: "HTG",
-    stock: product.stock,
-    images: product.images,
-    vendorName: product.storeName,
-    category: product.category,
-    description: product.description,
-    rating: product.ratingAverage,
-    reviewCount: product.ratingCount,
-    status: "active",
-  };
-}
-
 /*
-  Les liens du site pointent vers ?sort=new et ?sort=best. Ils étaient
-  silencieusement ignorés : la page retombait sur le tri par défaut sans rien
-  dire. Ils sont désormais des tris déclarés.
+  Les tris exposés. « Meilleures ventes » n'y figure pas : il demande un
+  cumul des quantités vendues qui n'existe pas encore, et proposer un tri
+  qui retomberait en silence sur un autre serait mentir à l'utilisateur.
 */
 const SORTS = [
-  { key: "recent", label: "Plus récents", query: "recent" as const },
-  { key: "new", label: "Nouveautés", query: "recent" as const },
-  { key: "best", label: "Meilleures ventes", query: "recent" as const },
-  { key: "price_asc", label: "Prix croissant", query: "price_asc" as const },
-  { key: "price_desc", label: "Prix décroissant", query: "price_desc" as const },
+  { key: "recent", label: "Plus récents", order: "-created_at" },
+  { key: "oldest", label: "Plus anciens", order: "created_at" },
+  { key: "title", label: "Ordre alphabétique", order: "title" },
 ] as const;
 
-/* Tris proposés dans la barre ; « new » et « best » n'y figurent pas deux fois. */
-const VISIBLE_SORTS = ["recent", "price_asc", "price_desc"] as const;
+const PAGE_SIZE = 24;
 
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; sort?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; sort?: string; page?: string }>;
 }) {
-  const { q, category, sort } = await searchParams;
+  const query = await searchParams;
 
-  const search = (q || "").trim();
+  const search = (query.q || "").trim();
+  const categoryHandle = (query.category || "").trim();
 
-  /*
-    La catégorie arrive sous forme de slug. Les anciens liens passaient un
-    libellé en minuscules ; findCategory les rattache au bon slug, ce qui
-    évite de casser les URL déjà partagées.
-  */
-  const resolved = findCategory(category);
-  const activeCategory = resolved?.slug ?? "Tous";
-  const activeLabel = resolved?.label;
+  const sort =
+    SORTS.find((entry) => entry.key === query.sort) ?? SORTS[0];
 
-  const sortEntry = SORTS.find((s) => s.key === sort);
-  const activeSort = sortEntry?.key ?? "recent";
+  const page = Math.max(1, Number(query.page) || 1);
 
-  const { products, error } = await fetchProducts({
-    search,
-    category: activeCategory,
-    sort: sortEntry?.query ?? "recent",
+  const categoriesResult = await fetchCategories(40);
+  const categories = categoriesResult.ok ? categoriesResult.data : [];
+
+  const category = categories.find((entry) => entry.handle === categoryHandle);
+
+  const result = await fetchProducts({
+    limit: PAGE_SIZE,
+    offset: (page - 1) * PAGE_SIZE,
+    q: search || undefined,
+    categoryId: category?.id,
+    order: sort.order,
   });
 
-  function linkFor(next: { category?: string; sort?: string }) {
+  const products = result.ok ? result.data.products : [];
+  const total = result.ok ? result.data.count : 0;
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  /* Conserve les filtres en changeant un seul paramètre. */
+  const linkWith = (patch: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
 
-    if (search) params.set("q", search);
+    const next = {
+      q: search || undefined,
+      category: categoryHandle || undefined,
+      sort: query.sort,
+      page: page > 1 ? String(page) : undefined,
+      ...patch,
+    };
 
-    const nextCategory = next.category ?? activeCategory;
-    if (nextCategory && nextCategory !== "Tous") params.set("category", nextCategory);
+    for (const [name, value] of Object.entries(next)) {
+      if (value) params.set(name, value);
+    }
 
-    const nextSort = next.sort ?? activeSort;
-    if (nextSort !== "recent") params.set("sort", nextSort);
+    const suffix = params.toString();
 
-    const query = params.toString();
-    return query ? `/shop?${query}` : "/shop";
-  }
+    return suffix ? `/shop?${suffix}` : "/shop";
+  };
 
   return (
-    <main className="container-page py-10">
-      <header>
-        <h1 className="section-title">Boutique</h1>
-        <p className="section-subtitle">
-          Tous les produits des vendeurs de Maché, en Haïti et dans la diaspora.
-        </p>
-      </header>
+    <main className="bg-[var(--mache-bg)] pb-10">
+      <div className="container-page py-6">
+        <h1 className="text-[24px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[28px]">
+          {search
+            ? `Résultats pour « ${search} »`
+            : category
+              ? category.name
+              : "Catalogue"}
+        </h1>
 
-      <form action="/shop" className="mt-6 flex flex-wrap gap-2">
-        {activeCategory !== "Tous" && (
-          <input type="hidden" name="category" value={activeCategory} />
+        {result.ok && (
+          <p className="mt-1 text-[13px] text-[var(--mache-muted)]">
+            {total} produit{total > 1 ? "s" : ""}
+          </p>
         )}
-        {activeSort !== "recent" && <input type="hidden" name="sort" value={activeSort} />}
 
-        <input
-          className="input max-w-md flex-1"
-          type="search"
-          name="q"
-          defaultValue={search}
-          placeholder="Rechercher un produit..."
-          aria-label="Rechercher un produit"
-        />
-        <button className="btn-primary" type="submit">
-          Rechercher
-        </button>
-        {search && (
-          <Link href={linkFor({})} className="btn-secondary">
-            Effacer
-          </Link>
+        {!result.ok && (
+          <div className="mt-4 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+            <p className="text-[14px] font-bold text-[var(--mache-text)]">
+              {result.configured
+                ? "Le catalogue ne répond pas"
+                : "Backend commerce non configuré"}
+            </p>
+            <p className="mt-1 text-[13px] leading-relaxed text-[var(--mache-muted)]">
+              {result.reason}
+            </p>
+          </div>
         )}
-      </form>
 
-      <div className="mt-5 flex flex-wrap gap-2">
-        {[{ slug: "Tous", label: "Tous", icon: undefined }, ...CATEGORY_TREE].map((item) => (
-          <Link
-            key={item.slug}
-            href={linkFor({ category: item.slug })}
-            className={`rounded-full border px-3.5 py-1.5 text-[12.5px] font-[800] transition ${
-              item.slug === activeCategory
-                ? "border-[var(--mache-primary)] bg-[var(--mache-primary)] text-white"
-                : "border-[var(--mache-line)] bg-[var(--mache-white)] hover:border-[var(--mache-primary)]"
-            }`}
+        {/* Recherche */}
+        <form method="GET" className="mt-5 flex flex-col gap-2 sm:flex-row">
+          <input
+            name="q"
+            defaultValue={search}
+            placeholder="Rechercher un produit"
+            aria-label="Rechercher un produit"
+            className="flex-1 rounded-[6px] border border-[var(--mache-line)] bg-white px-3.5 py-2.5 text-[14px] outline-none focus:border-[var(--mache-primary)]"
+          />
+          {categoryHandle && (
+            <input type="hidden" name="category" value={categoryHandle} />
+          )}
+          <button
+            type="submit"
+            className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
           >
-            {item.icon ? `${item.icon} ` : ""}
-            {item.label}
-          </Link>
-        ))}
-      </div>
+            Rechercher
+          </button>
+        </form>
 
-      {/* Sous-catégories de la catégorie choisie. */}
-      {resolved &&
-        (() => {
-          const parent = CATEGORY_TREE.find(
-            (n) => n.slug === resolved.slug || n.slug === resolved.parentSlug
-          );
-          const children = parent?.children ?? [];
-
-          if (children.length === 0) return null;
-
-          return (
-            <div className="mt-2.5 flex flex-wrap gap-2 border-t border-[var(--mache-line)] pt-3">
-              {children.map((child) => (
-                <Link
-                  key={child.slug}
-                  href={linkFor({ category: child.slug })}
-                  className={`rounded-full px-3 py-1 text-[12px] font-[700] transition ${
-                    child.slug === activeCategory
-                      ? "bg-[var(--mache-primary-soft)] text-[var(--mache-primary)]"
-                      : "text-[var(--mache-muted)] hover:text-[var(--mache-primary)]"
-                  }`}
-                >
-                  {child.label}
-                </Link>
-              ))}
-            </div>
-          );
-        })()}
-
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-b border-[var(--mache-line)] pb-4">
-        <p className="text-[13px] text-[var(--mache-muted)]">
-          {products.length} produit{products.length > 1 ? "s" : ""}
-          {search ? ` pour « ${search} »` : ""}
-          {activeLabel ? ` dans ${activeLabel}` : ""}
-        </p>
-
-        <div className="flex flex-wrap gap-2">
-          {SORTS.filter((option) =>
-            (VISIBLE_SORTS as readonly string[]).includes(option.key)
-          ).map((option) => (
+        {/* Catégories */}
+        {categories.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
             <Link
-              key={option.key}
-              href={linkFor({ sort: option.key })}
-              className={`text-[13px] font-[800] ${
-                option.key === activeSort
-                  ? "text-[var(--mache-primary)] underline"
-                  : "text-[var(--mache-muted)] hover:underline"
+              href={linkWith({ category: undefined, page: undefined })}
+              className={`rounded-[6px] border px-3 py-1.5 text-[12.5px] transition-colors ${
+                !categoryHandle
+                  ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
+                  : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
               }`}
             >
-              {option.label}
+              Tout
+            </Link>
+
+            {categories.map((entry) => (
+              <Link
+                key={entry.id}
+                href={linkWith({ category: entry.handle, page: undefined })}
+                className={`rounded-[6px] border px-3 py-1.5 text-[12.5px] transition-colors ${
+                  categoryHandle === entry.handle
+                    ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
+                    : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+                }`}
+              >
+                {entry.name}
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Tri */}
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <span className="text-[12px] text-[var(--mache-muted)]">Trier :</span>
+          {SORTS.map((entry) => (
+            <Link
+              key={entry.key}
+              href={linkWith({ sort: entry.key, page: undefined })}
+              className={`text-[12.5px] transition-colors ${
+                sort.key === entry.key
+                  ? "font-semibold text-[var(--mache-primary)]"
+                  : "text-[var(--mache-muted)] hover:text-[var(--mache-text)]"
+              }`}
+            >
+              {entry.label}
             </Link>
           ))}
         </div>
-      </div>
 
-      {error ? (
-        <div className="card mt-8 p-8 text-center">
-          <p className="text-[16px] font-[900]">Catalogue indisponible</p>
-          <p className="mx-auto mt-2 max-w-md text-[13px] leading-[1.7] text-[var(--mache-muted)]">
-            Les produits n&apos;ont pas pu être chargés. Détail : {error.message}
-          </p>
-        </div>
-      ) : products.length === 0 ? (
-        <div className="card mt-8 p-10 text-center">
-          <p className="text-[18px] font-[900]">
-            {search || activeCategory !== "Tous"
-              ? "Aucun produit ne correspond"
-              : "Le catalogue est encore vide"}
-          </p>
-          <p className="mx-auto mt-2 max-w-lg text-[14px] leading-[1.8] text-[var(--mache-muted)]">
-            {search || activeCategory !== "Tous"
-              ? "Essayez un autre mot-clé ou une autre catégorie."
-              : "Aucun vendeur n'a encore publié d'article. Les produits apparaîtront ici dès la première mise en ligne."}
-          </p>
+        {/* Résultats */}
+        {products.length === 0 ? (
+          <div className="mt-8 rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
+            <p className="text-[15px] font-bold text-[var(--mache-text)]">
+              {result.ok && total === 0 && !search && !categoryHandle
+                ? "Le catalogue est vide"
+                : "Aucun résultat"}
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-[var(--mache-muted)]">
+              {result.ok && total === 0 && !search && !categoryHandle
+                ? "Aucun vendeur n'a encore mis de produit en ligne sur MACHÉ."
+                : "Essayez d'autres mots, ou retirez le filtre de catégorie."}
+            </p>
 
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            {(search || activeCategory !== "Tous") && (
-              <Link href="/shop" className="btn-secondary">
+            {(search || categoryHandle) && (
+              <Link
+                href="/shop"
+                className="mt-4 inline-block text-[13px] font-semibold text-[var(--mache-primary)] hover:underline"
+              >
                 Voir tout le catalogue
               </Link>
             )}
-            <Link href="/sell" className="btn-primary">
-              Devenir vendeur
-            </Link>
           </div>
-        </div>
-      ) : (
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={toCardProduct(product)} />
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pageCount > 1 && (
+          <nav className="mt-8 flex items-center justify-center gap-2" aria-label="Pagination">
+            {page > 1 && (
+              <Link
+                href={linkWith({ page: String(page - 1) })}
+                className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3.5 py-2 text-[13px] font-medium text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+              >
+                ← Précédent
+              </Link>
+            )}
+
+            <span className="px-2 text-[13px] text-[var(--mache-muted)]">
+              Page {page} sur {pageCount}
+            </span>
+
+            {page < pageCount && (
+              <Link
+                href={linkWith({ page: String(page + 1) })}
+                className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3.5 py-2 text-[13px] font-medium text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+              >
+                Suivant →
+              </Link>
+            )}
+          </nav>
+        )}
+      </div>
     </main>
   );
 }

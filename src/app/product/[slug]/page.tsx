@@ -1,169 +1,277 @@
 /*
-  PAGE : fiche produit publique
+  PAGE : fiche produit
 
-  Lit le catalogue Supabase. Cette page affichait auparavant les produits
-  de `mock-data` : les articles réellement publiés par les vendeurs
-  n'étaient jamais visibles.
+  Lit le catalogue Medusa. Le prix affiché est celui que le backend a
+  calculé pour la région : la page n'en recalcule aucun.
+
+  Le bouton d'ajout envoie un `offer_id`, pas un identifiant de variante.
+  Sur une marketplace, « taille 44 » ne désigne pas une ligne de commande
+  tant qu'on ne sait pas de quelle boutique elle vient — et plusieurs
+  boutiques peuvent proposer exactement la même.
 */
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductActions } from "@/components/product-actions";
-import { ProductCard } from "@/components/product-card";
-import { fetchProductByHandle, fetchProducts, formatPrice } from "@/lib/catalog";
-import { fetchProductReviews } from "@/lib/reviews";
-import { ReviewsSection } from "@/components/reviews-section";
-import type { Product } from "@/types";
-import type { CatalogProduct } from "@/lib/catalog";
+import {
+  fetchProductByHandle, fetchProducts, fetchOffersForVariant, formatAmount,
+} from "@/lib/medusa/catalog";
+import { ProductRailSection } from "@/components/home/rails";
+import { addToCartAction } from "@/app/cart/actions";
 
 export const dynamic = "force-dynamic";
 
-/* Adapte un produit du catalogue à la forme attendue par ProductCard. */
-function toCardProduct(product: CatalogProduct): Product {
-  return {
-    id: product.id,
-    slug: product.handle,
-    title: product.title,
-    price: product.price,
-    currency: "HTG",
-    stock: product.stock,
-    images: product.images,
-    vendorName: product.storeName,
-    category: product.category,
-    description: product.description,
-    rating: product.ratingAverage,
-    reviewCount: product.ratingCount,
-    status: "active",
-  };
-}
-
 export default async function ProductPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ variant?: string; error?: string }>;
 }) {
   const { slug } = await params;
+  const query = searchParams ? await searchParams : {};
 
-  const product = await fetchProductByHandle(slug);
+  const result = await fetchProductByHandle(slug);
 
-  if (!product) {
-    notFound();
+  if (!result.ok) {
+    return (
+      <main className="mx-auto w-full max-w-3xl px-4 py-16">
+        <h1 className="text-[22px] font-bold text-[var(--mache-text)]">
+          Fiche indisponible
+        </h1>
+        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+          {result.reason}
+        </p>
+        <Link
+          href="/shop"
+          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white"
+        >
+          Retour au catalogue
+        </Link>
+      </main>
+    );
   }
 
-  const [{ products: related }, { reviews, summary }] = await Promise.all([
-    fetchProducts({ category: product.categorySlug ?? product.category, limit: 5 }),
-    fetchProductReviews(product.id),
-  ]);
+  const product = result.data;
 
-  const others = related.filter((item) => item.id !== product.id).slice(0, 4);
+  if (!product) notFound();
 
-  const image = product.images[0] || "/placeholder-product.png";
-  const inStock = product.stock > 0;
+  /* Variante choisie, ou la première disponible. */
+  const selected =
+    product.variants.find((variant) => variant.id === query.variant) ??
+    product.variants.find((variant) => variant.available) ??
+    product.variants[0] ??
+    null;
+
+  const offersResult = selected
+    ? await fetchOffersForVariant(selected.id)
+    : null;
+
+  const offers = offersResult?.ok ? offersResult.data : [];
+
+  const related = await fetchProducts({ limit: 6 });
+
+  const price = selected?.price ?? product.price;
+  const originalPrice = selected?.originalPrice ?? product.originalPrice;
+  const currency = selected?.currency ?? product.currency;
+
+  const hasDiscount =
+    originalPrice !== null && price !== null && originalPrice > price;
 
   return (
-    <main className="container-page py-10">
-      <nav className="mb-6 text-[13px] text-[var(--mache-muted)]">
-        <Link href="/shop" className="hover:underline">
-          Boutique
-        </Link>
-        <span className="mx-2">/</span>
-        <Link href={`/shop?category=${encodeURIComponent(product.category)}`} className="hover:underline">
-          {product.category}
-        </Link>
-      </nav>
+    <main className="bg-[var(--mache-bg)] pb-10">
+      <div className="container-page py-6">
+        <nav className="mb-4 text-[12.5px] text-[var(--mache-muted)]">
+          <Link href="/shop" className="hover:underline">Catalogue</Link>
+          <span className="mx-1.5">/</span>
+          <span className="text-[var(--mache-text)]">{product.title}</span>
+        </nav>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <div className="card overflow-hidden p-0">
-          <div className="aspect-square bg-[var(--mache-bg)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={image}
-              alt={product.title}
-              className="h-full w-full object-cover"
-            />
+        {query.error && (
+          <div className="mb-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-[13px] text-[#b01124]">
+            {decodeURIComponent(query.error)}
           </div>
-        </div>
+        )}
 
-        <div>
-          <h1 className="text-[clamp(24px,3vw,34px)] font-[950] leading-tight tracking-[-0.03em]">
-            {product.title}
-          </h1>
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr] xl:grid-cols-[1.1fr_0.9fr]">
+          {/* Images */}
+          <div>
+            <div className="overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
+              <div className="aspect-square">
+                {product.thumbnail ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={product.thumbnail}
+                    alt={product.title}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full items-center justify-center text-[13px] text-[var(--mache-light)]">
+                    Aucune image
+                  </div>
+                )}
+              </div>
+            </div>
 
-          <p className="mt-2 text-[13px] text-[var(--mache-muted)]">
-            Vendu par{" "}
-            {product.storeSlug ? (
-              <Link href={`/store/${product.storeSlug}`} className="font-[800] hover:underline">
-                {product.storeName}
-              </Link>
-            ) : (
-              <span className="font-[800]">{product.storeName}</span>
+            {product.images.length > 1 && (
+              <div className="mt-2 grid grid-cols-5 gap-2">
+                {product.images.slice(0, 5).map((image) => (
+                  <span
+                    key={image}
+                    className="aspect-square overflow-hidden rounded-[6px] border border-[var(--mache-line)] bg-white"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={image} alt="" className="h-full w-full object-cover" />
+                  </span>
+                ))}
+              </div>
             )}
-          </p>
+          </div>
 
-          {product.ratingCount > 0 && (
-            <p className="mt-2.5 flex items-center gap-2 text-[13px]">
-              <span className="text-[#d4962a]">
-                {"★".repeat(Math.round(product.ratingAverage))}
-                <span className="text-[var(--mache-line)]">
-                  {"★".repeat(5 - Math.round(product.ratingAverage))}
+          {/* Achat */}
+          <div>
+            <h1 className="text-[24px] font-bold leading-tight tracking-[-0.01em] text-[var(--mache-text)] sm:text-[28px]">
+              {product.title}
+            </h1>
+
+            {product.subtitle && (
+              <p className="mt-1.5 text-[14px] text-[var(--mache-muted)]">
+                {product.subtitle}
+              </p>
+            )}
+
+            <div className="mt-4 flex flex-wrap items-baseline gap-x-3">
+              <span className="text-[30px] font-[900] leading-none tracking-[-0.02em] text-[var(--mache-text)]">
+                {formatAmount(price, currency)}
+              </span>
+              {hasDiscount && (
+                <span className="text-[16px] text-[var(--mache-light)] line-through">
+                  {formatAmount(originalPrice, currency)}
                 </span>
-              </span>
-              <span className="font-[800]">{product.ratingAverage.toFixed(1)}</span>
-              <a href="#avis" className="text-[var(--mache-muted)] hover:underline">
-                {product.ratingCount} avis
-              </a>
-            </p>
-          )}
+              )}
+            </div>
 
-          <p className="mt-5 text-[30px] font-[950] tracking-[-0.03em] text-[var(--mache-primary)]">
-            {formatPrice(product.price)}
-          </p>
-
-          <p className="mt-2 text-[13px]">
-            {inStock ? (
-              <span className="text-[var(--mache-success)]">
-                En stock · {product.stock} disponible{product.stock > 1 ? "s" : ""}
-              </span>
-            ) : (
-              <span className="text-[var(--mache-danger)]">Rupture de stock</span>
+            {/* Variantes */}
+            {product.variants.length > 1 && (
+              <div className="mt-5">
+                <p className="text-[12.5px] font-semibold text-[var(--mache-text)]">
+                  Choisir une déclinaison
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {product.variants.map((variant) => (
+                    <Link
+                      key={variant.id}
+                      href={`/product/${product.handle}?variant=${variant.id}`}
+                      scroll={false}
+                      className={`rounded-[6px] border px-3 py-1.5 text-[13px] transition-colors ${
+                        selected?.id === variant.id
+                          ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
+                          : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+                      }`}
+                    >
+                      {variant.title}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
-          </p>
 
-          {product.description && (
-            <p className="mt-5 text-[14px] leading-[1.8] text-[var(--mache-muted)]">
-              {product.description}
-            </p>
-          )}
+            {/* Ajout au panier */}
+            <div className="mt-6">
+              {selected?.offerId ? (
+                <form action={addToCartAction} className="flex flex-wrap gap-2">
+                  <input type="hidden" name="offer_id" value={selected.offerId} />
+                  <input
+                    type="hidden"
+                    name="return_to"
+                    value={`/product/${product.handle}?variant=${selected.id}`}
+                  />
+                  <label htmlFor="quantity" className="sr-only">Quantité</label>
+                  <input
+                    id="quantity"
+                    name="quantity"
+                    type="number"
+                    min={1}
+                    defaultValue={1}
+                    className="w-20 rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-[14px]"
+                  />
+                  <button
+                    type="submit"
+                    className="flex-1 rounded-[6px] bg-[var(--mache-primary)] px-6 py-2.5 text-[14px] font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+                  >
+                    Ajouter au panier
+                  </button>
+                </form>
+              ) : (
+                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-[13px] text-[var(--mache-muted)]">
+                  Aucun vendeur ne propose actuellement cette déclinaison.
+                </p>
+              )}
+            </div>
 
-          <ProductActions
-            product={{
-              id: product.id,
-              handle: product.handle,
-              title: product.title,
-              price: product.price,
-              image,
-              storeId: product.storeId,
-              storeName: product.storeName,
-              stock: product.stock,
-            }}
-          />
+            {/*
+              Les vendeurs concurrents. C'est ce qui distingue une
+              marketplace d'une boutique : le client choisit chez qui il
+              achète, et le voit.
+            */}
+            {offers.length > 0 && (
+              <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+                <p className="text-[13px] font-bold text-[var(--mache-text)]">
+                  {offers.length > 1
+                    ? `${offers.length} boutiques proposent cette déclinaison`
+                    : "Vendu par"}
+                </p>
+
+                <ul className="mt-2.5 space-y-2">
+                  {offers.map((offer) => (
+                    <li key={offer.id} className="flex items-center justify-between gap-3">
+                      <Link
+                        href={`/store/${offer.sellerHandle}`}
+                        className="text-[13px] font-medium text-[var(--mache-text)] hover:underline"
+                      >
+                        {offer.sellerName}
+                      </Link>
+
+                      <form action={addToCartAction}>
+                        <input type="hidden" name="offer_id" value={offer.id} />
+                        <input type="hidden" name="quantity" value={1} />
+                        <input
+                          type="hidden"
+                          name="return_to"
+                          value={`/product/${product.handle}`}
+                        />
+                        <button
+                          type="submit"
+                          className="rounded-[4px] border border-[var(--mache-line)] px-2.5 py-1 text-[12px] font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+                        >
+                          Acheter ici
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {product.description && (
+              <div className="mt-6">
+                <h2 className="text-[15px] font-bold text-[var(--mache-text)]">
+                  Description
+                </h2>
+                <p className="mt-2 whitespace-pre-line text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
+                  {product.description}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div id="avis">
-        <ReviewsSection reviews={reviews} summary={summary} />
-      </div>
-
-      {others.length > 0 && (
-        <section className="mt-14">
-          <h2 className="section-title">Dans la même catégorie</h2>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {others.map((item) => (
-              <ProductCard key={item.id} product={toCardProduct(item)} />
-            ))}
-          </div>
-        </section>
+      {related.ok && related.data.products.length > 0 && (
+        <ProductRailSection
+          title="Autres produits"
+          href="/shop"
+          products={related.data.products.filter((item) => item.id !== product.id)}
+        />
       )}
     </main>
   );

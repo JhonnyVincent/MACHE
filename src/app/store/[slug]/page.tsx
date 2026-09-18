@@ -1,50 +1,21 @@
 /*
-  PAGE : vitrine publique d'une boutique
+  PAGE : vitrine d'une boutique
 
-  Cette page affichait six produits codés en dur et des statistiques
-  inventées — « 4.8/5 », « 92 % de réponse rapide », « 120+ produits » —
-  identiques pour toutes les boutiques. Tout provient désormais de la base,
-  et ce qui n'est pas mesuré n'est plus affiché.
+  Une boutique est un vendeur Mercur. Cette page affichait auparavant six
+  produits codés en dur et des statistiques inventées — « 4.8/5 », « 92 %
+  de réponse rapide », « 120+ produits » — identiques pour toutes les
+  boutiques, y compris celles qui n'avaient jamais rien vendu.
+
+  Tout ce qui s'affiche ici vient désormais du backend. Ce qui n'est pas
+  mesuré n'est pas affiché.
 */
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ProductCard } from "@/components/product-card";
-import {
-  fetchStoreBySlug,
-  fetchProducts,
-  type CatalogProduct,
-} from "@/lib/catalog";
-import type { Product } from "@/types";
+import { fetchSellerByHandle, fetchProducts } from "@/lib/medusa/catalog";
+import { ProductCard } from "@/components/home/rails";
 
 export const dynamic = "force-dynamic";
-
-function toCardProduct(product: CatalogProduct): Product {
-  return {
-    id: product.id,
-    slug: product.handle,
-    title: product.title,
-    price: product.price,
-    currency: "HTG",
-    stock: product.stock,
-    images: product.images,
-    vendorName: product.storeName,
-    category: product.category,
-    description: product.description,
-    rating: product.ratingAverage,
-    reviewCount: product.ratingCount,
-    status: "active",
-  };
-}
-
-function formatSince(value: string | null) {
-  if (!value) return null;
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-
-  return date.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
-}
 
 export default async function StorePage({
   params,
@@ -53,108 +24,121 @@ export default async function StorePage({
 }) {
   const { slug } = await params;
 
-  const store = await fetchStoreBySlug(slug);
+  const sellerResult = await fetchSellerByHandle(slug);
 
-  if (!store) {
-    notFound();
+  if (!sellerResult.ok) {
+    return (
+      <main className="mx-auto w-full max-w-3xl px-4 py-16">
+        <h1 className="text-[22px] font-bold text-[var(--mache-text)]">
+          Boutique indisponible
+        </h1>
+        <p className="mt-3 text-[14px] leading-relaxed text-[var(--mache-muted)]">
+          {sellerResult.reason}
+        </p>
+        <Link
+          href="/shop"
+          className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-[14px] font-bold text-white"
+        >
+          Retour au catalogue
+        </Link>
+      </main>
+    );
   }
 
-  const { products } = await fetchProducts({ storeId: store.id, limit: 60 });
+  const seller = sellerResult.data;
 
-  const categories = [...new Set(products.map((product) => product.category))].sort(
-    (a, b) => a.localeCompare(b, "fr")
-  );
+  if (!seller) notFound();
 
-  const inStock = products.filter((product) => product.stock > 0).length;
-  const since = formatSince(store.createdAt);
-  const initials = store.name.slice(0, 2).toUpperCase();
+  const productsResult = await fetchProducts({
+    sellerId: seller.id,
+    limit: 48,
+    order: "-created_at",
+  });
+
+  const products = productsResult.ok ? productsResult.data.products : [];
 
   return (
-    <main className="container-page py-10">
-      <header className="card overflow-hidden p-0">
-        <div className="h-28 bg-gradient-to-r from-[#0f1b2e] via-[#152540] to-[var(--mache-primary)]" />
+    <main className="bg-[var(--mache-bg)] pb-10">
+      {/* Bandeau de la boutique */}
+      <section className="border-b border-[var(--mache-line)] bg-white">
+        <div className="relative h-32 bg-[var(--mache-bg)] sm:h-44">
+          {seller.banner && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={seller.banner} alt="" className="h-full w-full object-cover" />
+          )}
+        </div>
 
-        <div className="flex flex-wrap items-end gap-4 px-6 pb-6">
-          <div className="-mt-10 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border-4 border-[var(--mache-white)] bg-[var(--mache-primary)] text-[22px] font-[950] text-white">
-            {store.logoUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={store.logoUrl} alt="" className="h-full w-full object-cover" />
+        <div className="container-page flex flex-wrap items-center gap-4 py-4">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-[16px] font-bold text-[var(--mache-muted)]">
+            {seller.logo ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img src={seller.logo} alt="" className="h-full w-full object-cover" />
             ) : (
-              initials
+              seller.name.slice(0, 2).toUpperCase()
             )}
-          </div>
+          </span>
 
           <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[clamp(22px,2.6vw,30px)] font-[950] tracking-[-0.03em]">
-                {store.name}
-              </h1>
-              {store.isVerified && (
-                <span className="badge border-[#b7dfc9] bg-[#eefaf3] text-[var(--mache-success)]">
-                  Boutique vérifiée
+            <h1 className="flex flex-wrap items-center gap-2 text-[22px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[26px]">
+              {seller.name}
+              {seller.isPremium && (
+                <span className="rounded-[3px] bg-[var(--mache-gold-soft)] px-2 py-0.5 text-[11px] font-bold text-[var(--mache-gold)]">
+                  Premium
                 </span>
               )}
-            </div>
+            </h1>
 
-            <p className="mt-1 text-[13px] text-[var(--mache-muted)]">
-              {store.category ? `${store.category} · ` : ""}
-              {since ? `Sur Maché depuis ${since}` : "Boutique Maché"}
-            </p>
+            {seller.description && (
+              <p className="mt-1 max-w-2xl text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
+                {seller.description}
+              </p>
+            )}
+
+            {productsResult.ok && (
+              <p className="mt-1.5 text-[12.5px] text-[var(--mache-muted)]">
+                {productsResult.data.count} produit
+                {productsResult.data.count > 1 ? "s" : ""} en ligne
+              </p>
+            )}
           </div>
         </div>
-      </header>
+      </section>
 
-      {store.description && (
-        <p className="mt-5 max-w-3xl text-[14px] leading-[1.8] text-[var(--mache-muted)]">
-          {store.description}
-        </p>
-      )}
-
-      <div className="mt-6 grid gap-3 sm:grid-cols-3">
-        <div className="card p-4">
-          <p className="text-[11px] font-[800] uppercase tracking-[0.08em] text-[var(--mache-muted)]">
-            Produits en ligne
-          </p>
-          <p className="mt-1 text-[24px] font-[950]">{products.length}</p>
-        </div>
-        <div className="card p-4">
-          <p className="text-[11px] font-[800] uppercase tracking-[0.08em] text-[var(--mache-muted)]">
-            Disponibles
-          </p>
-          <p className="mt-1 text-[24px] font-[950]">{inStock}</p>
-        </div>
-        <div className="card p-4">
-          <p className="text-[11px] font-[800] uppercase tracking-[0.08em] text-[var(--mache-muted)]">
-            Catégories
-          </p>
-          <p className="mt-1 text-[24px] font-[950]">{categories.length}</p>
-        </div>
-      </div>
-
-      <section className="mt-10">
-        <h2 className="section-title">Les produits de la boutique</h2>
-
-        {products.length === 0 ? (
-          <div className="card mt-6 p-10 text-center">
-            <p className="text-[16px] font-[900]">Aucun produit pour le moment</p>
-            <p className="mx-auto mt-2 max-w-md text-[13px] leading-[1.7] text-[var(--mache-muted)]">
-              Cette boutique n&apos;a pas encore mis d&apos;article en ligne.
-              Revenez bientôt.
+      <div className="container-page py-6">
+        {!productsResult.ok && (
+          <div className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+            <p className="text-[14px] font-bold text-[var(--mache-text)]">
+              Catalogue de la boutique indisponible
             </p>
-            <div className="mt-5">
-              <Link href="/shop" className="btn-secondary">
-                Voir tout le catalogue
-              </Link>
-            </div>
+            <p className="mt-1 text-[13px] text-[var(--mache-muted)]">
+              {productsResult.reason}
+            </p>
+          </div>
+        )}
+
+        {productsResult.ok && products.length === 0 ? (
+          <div className="rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
+            <p className="text-[15px] font-bold text-[var(--mache-text)]">
+              Cette boutique n&apos;a pas encore de produit en ligne
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-[var(--mache-muted)]">
+              Revenez plus tard, ou parcourez les autres boutiques de MACHÉ.
+            </p>
+            <Link
+              href="/shop"
+              className="mt-4 inline-block text-[13px] font-semibold text-[var(--mache-primary)] hover:underline"
+            >
+              Voir le catalogue
+            </Link>
           </div>
         ) : (
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {products.map((product) => (
-              <ProductCard key={product.id} product={toCardProduct(product)} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
-      </section>
+      </div>
     </main>
   );
 }
