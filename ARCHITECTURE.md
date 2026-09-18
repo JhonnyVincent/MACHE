@@ -109,20 +109,28 @@ production.
 
 ---
 
-## 5. Décisions en attente
+## 5. Décisions prises
 
-Elles ne bloquent pas le socle, mais commandent la suite.
+1. **Comptes** — tout sur Medusa. Supabase Auth ne gouverne plus le
+   commerce ; le panneau vendeur Mercur a sa propre inscription.
+2. **Hébergement** — Render, plan gratuit. `render.yaml` est prêt, avec
+   ses limites écrites sans euphémisme : base supprimée au bout de
+   30 jours, service endormi après 15 minutes, pas de Redis. Bon pour
+   montrer la plateforme, pas pour encaisser.
+3. **Visuels** — seuls le logo hibiscus et la carte d'Haïti sont
+   conservés. Les douze liens Unsplash ont été retirés.
+4. **Espace vendeur** — le panneau Mercur. Les 35 pages Next lisaient des
+   tables Supabase qui ne sont plus la source de vérité : elles montraient
+   à chaque vendeur des chiffres morts.
+5. **Administration** — panneau Medusa pour le commerce, et en Next
+   seulement ce que Medusa ne connaît pas : agents, vérification des
+   boutiques, rôles, partenaires.
 
-1. **Comptes et sessions.** Medusa a son propre système
-   (`customer`, `user`, `seller_member`, jetons JWT), dont dépend le
-   panneau vendeur Mercur. Supabase Auth a le vôtre, avec vos comptes
-   actuels. Garder les deux, c'est deux annuaires à synchroniser — la
-   « impression de plusieurs logiciels assemblés » à éviter.
-2. **Hébergeur du backend** — ordre de grandeur 20 à 50 $/mois.
-3. **Sort des données Supabase actuelles.** Les migrations `0001`–`0006`
-   n'ont jamais été appliquées : il n'y a probablement rien à migrer, mais
-   l'environnement de travail n'a pas accès au projet Supabase pour le
-   vérifier.
+### Ce qui n'a pas pu être vérifié
+
+L'environnement de travail n'a pas accès au projet Supabase. Les
+migrations `0001`–`0006` n'ayant jamais été appliquées, il n'y a
+probablement rien à migrer — mais c'est une déduction, pas un constat.
 
 ---
 
@@ -135,9 +143,26 @@ Elles ne bloquent pas le socle, mais commandent la suite.
 | 3. Assets | fait — 2 fichiers, 12 liens Unsplash recensés |
 | 4. Architecture cible | ce document |
 | 5. Installation Medusa / Mercur | fait et vérifié |
-| 6. Connexion storefront ↔ backend | suivant |
-| 7. Homepage marketplace dynamique | suivant |
-| 8 à 20 | Seller Center, admin, paiements, Puck, thèmes, IA, Nango, abonnements, B2B, sécurité, tests, production |
+| 6. Connexion storefront ↔ backend | fait |
+| 7. Homepage marketplace dynamique | fait |
+| 8. Panier, catalogue, fiche produit, vitrines | fait |
+| 9. Espace vendeur → panneau Mercur | fait |
+| 10. Administration élaguée | fait |
+| 11. Tunnel de commande multi-vendeurs | fait |
+| Région Haïti / HTG | fait (`setup-mache.ts`) |
+| 12 à 20 | Puck, thèmes, IA, Nango, abonnements, B2B, sécurité, tests, production |
+
+### Reste à brancher, et nommé comme tel dans l'interface
+
+- **Paiement en ligne** : aucun prestataire raccordé. Les commandes sont
+  créées avec un paiement en attente, encaissé à la livraison.
+- **Historique des commandes côté client** : `/store/orders` exige une
+  session client Medusa, qui n'est pas encore posée par le storefront.
+- **Favoris** : ils pointent vers des identifiants de l'ancien catalogue.
+  Rien n'est supprimé ; la page l'explique.
+- **Meilleures ventes, tendances, recommandations** : demandent
+  respectivement un cumul des ventes, une mesure d'audience et un
+  historique par visiteur. Aucun des trois n'existe.
 
 ---
 
@@ -150,7 +175,8 @@ cd backend && bun install
 cp packages/api/.env.example packages/api/.env   # puis renseigner
 cd packages/api
 ./node_modules/.bin/medusa db:migrate
-./node_modules/.bin/medusa exec ./src/scripts/seed.ts   # données de démonstration
+./node_modules/.bin/medusa exec ./src/scripts/seed.ts        # données de démonstration
+./node_modules/.bin/medusa exec ./src/scripts/setup-mache.ts # région Haïti en gourdes
 ./node_modules/.bin/medusa develop
 ```
 
