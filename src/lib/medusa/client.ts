@@ -34,7 +34,7 @@ type FetchOptions = {
 
 export async function medusaFetch<T>(
   path: string,
-  params: Record<string, string | number | boolean | undefined> = {},
+  params: Record<string, string | number | boolean | string[] | undefined> = {},
   options: FetchOptions = {}
 ): Promise<MedusaResult<T>> {
   const configured = getMedusaConfig();
@@ -49,6 +49,21 @@ export async function medusaFetch<T>(
 
   for (const [name, value] of Object.entries(params)) {
     if (value === undefined || value === "") continue;
+
+    /*
+      Un tableau devient des paramètres RÉPÉTÉS — id=a&id=b — et non une
+      liste séparée par des virgules. Medusa accepte la première forme et
+      rend zéro résultat sur la seconde, sans erreur : le filtre paraît
+      fonctionner et ne filtre rien. C'est exactement ce qui faisait
+      afficher « aucun produit » sur toutes les vitrines.
+    */
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        if (entry) search.append(name, String(entry));
+      }
+      continue;
+    }
+
     search.set(name, String(value));
   }
 

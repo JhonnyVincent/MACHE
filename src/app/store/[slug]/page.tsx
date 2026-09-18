@@ -6,14 +6,20 @@
   de réponse rapide », « 120+ produits » — identiques pour toutes les
   boutiques, y compris celles qui n'avaient jamais rien vendu.
 
-  Tout ce qui s'affiche ici vient désormais du backend. Ce qui n'est pas
-  mesuré n'est pas affiché.
+  Mise en page personnalisée
+
+  Chaque vendeur peut composer sa vitrine : la mise en page est lue dans
+  `seller.metadata.storefront`, au format Puck. Sans mise en page
+  enregistrée, une présentation par défaut s'applique — une boutique neuve
+  ne doit pas être une page blanche.
 */
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchSellerByHandle, fetchProducts } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
+import { parseLayout } from "@/lib/storefront/blocks";
+import { RenderBlock } from "@/components/storefront/blocks";
 
 export const dynamic = "force-dynamic";
 
@@ -57,19 +63,19 @@ export default async function StorePage({
 
   const products = productsResult.ok ? productsResult.data.products : [];
 
+  /*
+    La mise en page est lue depuis le vendeur. `parseLayout` ignore les
+    blocs dont le type est inconnu plutôt que d'échouer : une clé mal
+    saisie ne doit pas rendre une boutique inaccessible.
+  */
+  const { layout, isCustom } = parseLayout(seller.metadata, seller.name);
+
   return (
     <main className="bg-[var(--mache-bg)] pb-10">
-      {/* Bandeau de la boutique */}
+      {/* En-tête de boutique : identité, toujours affichée. */}
       <section className="border-b border-[var(--mache-line)] bg-white">
-        <div className="relative h-32 bg-[var(--mache-bg)] sm:h-44">
-          {seller.banner && (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={seller.banner} alt="" className="h-full w-full object-cover" />
-          )}
-        </div>
-
         <div className="container-page flex flex-wrap items-center gap-4 py-4">
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-[16px] font-bold text-[var(--mache-muted)]">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-[15px] font-bold text-[var(--mache-muted)]">
             {seller.logo ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={seller.logo} alt="" className="h-full w-full object-cover" />
@@ -79,33 +85,28 @@ export default async function StorePage({
           </span>
 
           <div className="min-w-0 flex-1">
-            <h1 className="flex flex-wrap items-center gap-2 text-[22px] font-bold tracking-[-0.01em] text-[var(--mache-text)] sm:text-[26px]">
+            <p className="flex flex-wrap items-center gap-2 text-[18px] font-bold tracking-[-0.01em] text-[var(--mache-text)]">
               {seller.name}
               {seller.isPremium && (
                 <span className="rounded-[3px] bg-[var(--mache-gold-soft)] px-2 py-0.5 text-[11px] font-bold text-[var(--mache-gold)]">
                   Premium
                 </span>
               )}
-            </h1>
-
-            {seller.description && (
-              <p className="mt-1 max-w-2xl text-[13.5px] leading-relaxed text-[var(--mache-muted)]">
-                {seller.description}
-              </p>
-            )}
+            </p>
 
             {productsResult.ok && (
-              <p className="mt-1.5 text-[12.5px] text-[var(--mache-muted)]">
+              <p className="mt-0.5 text-[12.5px] text-[var(--mache-muted)]">
                 {productsResult.data.count} produit
                 {productsResult.data.count > 1 ? "s" : ""} en ligne
+                {isCustom ? " · vitrine personnalisée" : ""}
               </p>
             )}
           </div>
         </div>
       </section>
 
-      <div className="container-page py-6">
-        {!productsResult.ok && (
+      {!productsResult.ok && (
+        <div className="container-page py-6">
           <div className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
             <p className="text-[14px] font-bold text-[var(--mache-text)]">
               Catalogue de la boutique indisponible
@@ -114,15 +115,23 @@ export default async function StorePage({
               {productsResult.reason}
             </p>
           </div>
-        )}
+        </div>
+      )}
 
-        {productsResult.ok && products.length === 0 ? (
+      {/* Les blocs composés par le vendeur. */}
+      {layout.content.map((block, index) => (
+        <RenderBlock
+          key={`${block.type}-${index}`}
+          block={block}
+          context={{ seller, products }}
+        />
+      ))}
+
+      {productsResult.ok && products.length === 0 && (
+        <div className="container-page py-6">
           <div className="rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
             <p className="text-[15px] font-bold text-[var(--mache-text)]">
               Cette boutique n&apos;a pas encore de produit en ligne
-            </p>
-            <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-[var(--mache-muted)]">
-              Revenez plus tard, ou parcourez les autres boutiques de MACHÉ.
             </p>
             <Link
               href="/shop"
@@ -131,14 +140,8 @@ export default async function StorePage({
               Voir le catalogue
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </main>
   );
 }

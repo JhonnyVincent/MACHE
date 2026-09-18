@@ -59,6 +59,8 @@ export type StoreSeller = {
   logo: string | null;
   banner: string | null;
   isPremium: boolean;
+  /* Champ libre du vendeur ; y vit notamment la mise en page de sa vitrine. */
+  metadata: Record<string, unknown> | null;
 };
 
 export type StoreCollection = {
@@ -220,6 +222,10 @@ function mapSeller(raw: RawProduct): StoreSeller {
     logo: text(raw.logo),
     banner: text(raw.banner),
     isPremium: Boolean(raw.is_premium),
+    metadata:
+      raw.metadata && typeof raw.metadata === "object"
+        ? (raw.metadata as Record<string, unknown>)
+        : null,
   };
 }
 
@@ -235,9 +241,59 @@ export type ProductQuery = {
   order?: string;
 };
 
+/*
+  Produits d'un vendeur.
+
+  `/store/products` N'ACCEPTE PAS de filtre `seller_id` : il répond
+  « Unrecognized fields: 'seller_id' ». C'est logique une fois le modèle
+  compris — un produit n'appartient pas à un vendeur, ce sont les OFFRES
+  qui rattachent un vendeur à une variante, et plusieurs boutiques peuvent
+  proposer le même produit.
+
+  On passe donc par les offres pour obtenir les identifiants de produits,
+  puis on demande ces produits-là. Deux requêtes plutôt qu'une, mais qui
+  rendent le bon résultat.
+*/
+async function productIdsForSeller(
+  sellerId: string
+): Promise<MedusaResult<string[]>> {
+  const result = await medusaFetch<{ offers: RawProduct[] }>(
+    "/store/offers",
+    { seller_id: sellerId, limit: 200 },
+    { revalidate: 60, tags: ["offers", `seller:${sellerId}`] }
+  );
+
+  if (!result.ok) return result;
+
+  const ids = [
+    ...new Set(
+      (result.data.offers ?? [])
+        .map((offer) => text(offer.product_id))
+        .filter((id): id is string => Boolean(id))
+    ),
+  ];
+
+  return { ok: true, data: ids };
+}
+
 export async function fetchProducts(
   query: ProductQuery = {}
 ): Promise<MedusaResult<{ products: StoreProduct[]; count: number }>> {
+  let idFilter: string[] | undefined;
+
+  if (query.sellerId) {
+    const ids = await productIdsForSeller(query.sellerId);
+
+    if (!ids.ok) return ids;
+
+    /* Vendeur sans offre : zéro produit, et ce n'est pas une erreur. */
+    if (ids.data.length === 0) {
+      return { ok: true, data: { products: [], count: 0 } };
+    }
+
+    idFilter = ids.data;
+  }
+
   const result = await medusaFetch<{ products: RawProduct[]; count: number }>(
     "/store/products",
     {
@@ -246,7 +302,7 @@ export async function fetchProducts(
       q: query.q,
       collection_id: query.collectionId,
       category_id: query.categoryId,
-      seller_id: query.sellerId,
+      id: idFilter,
       order: query.order,
       /* Sans région, Medusa refuse de calculer les prix, et c'est sain. */
       region_id: medusaRegionId() || undefined,
