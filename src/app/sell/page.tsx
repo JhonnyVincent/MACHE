@@ -77,10 +77,12 @@ export default function SellPage() {
     <main className="bg-white">
       <section className="relative overflow-hidden bg-[#071f3d] text-white">
         <div className="absolute inset-0 opacity-20">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1800&auto=format&fit=crop"
-            alt="Vendre sur Maché"
-            className="h-full w-full object-cover"
+            src="/images/carte-haiti-mache.png"
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-contain object-right"
           />
         </div>
 
@@ -305,7 +307,7 @@ export default function SellPage() {
 
           <div className="overflow-hidden rounded-[2rem] border bg-neutral-100">
             <img
-              src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?q=80&w=1400&auto=format&fit=crop"
+              src="/images/carte-haiti-mache.png"
               alt="Dashboard vendeur Maché"
               className="h-[520px] w-full object-cover"
             />
