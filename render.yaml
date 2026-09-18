@@ -38,7 +38,19 @@ services:
     region: frankfurt
     rootDir: backend
     buildCommand: npm install -g bun && bun install && cd packages/api && ./node_modules/.bin/medusa build
-    startCommand: cd packages/api && ./node_modules/.bin/medusa db:migrate && ./node_modules/.bin/medusa start
+    # Trois temps, dans cet ordre :
+    #   1. migrations   — la base rattrape le code ;
+    #   2. mise en place — région Haïti, canal de vente, clé publique du
+    #      site. Le script est idempotent : au deuxième démarrage il
+    #      constate ce qui existe et ne recrée rien. Il coûte environ
+    #      quatre secondes, et il affiche dans les journaux les trois
+    #      valeurs à reporter côté site ;
+    #   3. le serveur.
+    startCommand: >-
+      cd packages/api &&
+      ./node_modules/.bin/medusa db:migrate &&
+      ./node_modules/.bin/medusa exec ./src/scripts/setup-mache.ts &&
+      ./node_modules/.bin/medusa start
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
@@ -53,24 +65,23 @@ services:
         generateValue: true
       - key: COOKIE_SECRET
         generateValue: true
+      # Partagé avec le site : il autorise le backend à vider le cache du
+      # site quand un prix ou un produit change. À recopier tel quel dans
+      # la variable STOREFRONT_REVALIDATE_SECRET de l'hébergeur du site.
+      # Sans lui, le site reste juste, avec jusqu'à une minute de retard.
       - key: STOREFRONT_REVALIDATE_SECRET
         generateValue: true
-      # Origines autorisées. À remplacer par les domaines réels : une
-      # liste trop large annule l'intérêt du CORS.
-      - key: STORE_CORS
-        sync: false
-      - key: ADMIN_CORS
-        sync: false
-      - key: VENDOR_CORS
-        sync: false
-      - key: AUTH_CORS
-        sync: false
-      # L'URL publique du service, que le fournisseur de fichiers local
-      # inscrit dans chaque adresse d'image. Sans elle, les images
-      # pointent vers localhost et ne s'affichent pas.
-      - key: FILE_BACKEND_URL
-        sync: false
-      - key: STOREFRONT_REVALIDATE_URL
+      # LA SEULE VALEUR À SAISIR : l'adresse publique du site, sans "/"
+      # final. Par exemple https://mache.vercel.app
+      #
+      # Les origines autorisées (STORE_CORS, ADMIN_CORS, VENDOR_CORS,
+      # AUTH_CORS) et l'adresse des images s'en déduisent, avec
+      # RENDER_EXTERNAL_URL que Render fournit tout seul. Elles se
+      # saisissaient une par une : quatre occasions de se tromper, pour
+      # une erreur qui ne se voit qu'au premier appel refusé par le
+      # navigateur. Elles restent déclarables à la main si un domaine
+      # propre ou une préproduction s'ajoute.
+      - key: STOREFRONT_URL
         sync: false
 
 databases:

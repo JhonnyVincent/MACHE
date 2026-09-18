@@ -68,7 +68,7 @@ l'affichage. Ces garanties sont vérifiées par `npm run test:vitrine`.
 cd backend
 bun install                      # Mercur impose bun
 cp packages/api/.env.example packages/api/.env
-# renseigner DATABASE_URL, JWT_SECRET, COOKIE_SECRET
+# renseigner DATABASE_URL, JWT_SECRET, COOKIE_SECRET, STOREFRONT_URL
 cd packages/api
 ./node_modules/.bin/medusa db:migrate
 ./node_modules/.bin/medusa exec ./src/scripts/setup-mache.ts   # région Haïti, en gourdes
@@ -83,6 +83,22 @@ npm run dev                      # http://localhost:3000
 
 Le panneau d'administration est sur `http://localhost:9000/dashboard`,
 le panneau vendeur sur `http://localhost:9000/seller`.
+
+## Cache
+
+Le site met les réponses de Medusa en cache. Quand un vendeur change un
+prix, le backend appelle `/api/revalidate` avec les étiquettes
+concernées et le cache correspondant se vide aussitôt.
+
+Les deux moitiés doivent employer exactement les mêmes noms
+d'étiquettes : `src/lib/medusa/catalog.ts` les écrit,
+`backend/packages/api/src/subscribers/storefront-cache-revalidate.ts`
+les envoie. Une étiquette qui diffère d'un caractère ne correspond à
+rien, sans erreur ni journal. Le vocabulaire est documenté dans les
+deux fichiers.
+
+Sans le secret partagé, le site reste juste, avec jusqu'à une minute de
+retard.
 
 ## Vérifications
 

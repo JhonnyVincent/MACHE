@@ -18,6 +18,32 @@ import { medusaFetch, type MedusaResult } from "./client";
 import { medusaRegionId } from "./config";
 
 /*
+  Vocabulaire des étiquettes de cache.
+
+  Ces noms ne sont pas internes : le backend commerce les envoie à
+  `/api/revalidate` quand un produit ou une offre change, et Next ne vide
+  que ce qui porte exactement le nom reçu. Une étiquette écrite d'un côté
+  « product-<handle> » et de l'autre « product:<handle> » ne correspond
+  jamais — sans erreur, sans journal, et avec un cache qui ne se vide
+  pas. C'est ce qui se passait.
+
+  Toute modification ici doit être reportée dans
+  `backend/packages/api/src/subscribers/storefront-cache-revalidate.ts`.
+
+    products                  tous les produits
+    product:<handle>          une fiche produit
+    offers                    toutes les offres
+    seller-id:<id>            les offres d'une boutique
+    sellers                   toutes les boutiques
+    seller-handle:<handle>    une boutique
+
+  Les deux formes « seller » portaient le même préfixe pour deux choses
+  différentes — un identifiant d'un côté, une adresse de l'autre. Elles
+  sont nommées distinctement : le backend ne connaît que l'identifiant,
+  et devait pouvoir viser sans ambiguïté.
+*/
+
+/*
   Une variante porte `offer_id` : sur une marketplace, ce n'est pas la
   variante qu'on met au panier mais l'offre d'un vendeur précis. Sans lui,
   « chaussure taille 44 » ne désigne aucune ligne de commande.
@@ -333,7 +359,7 @@ async function productIdsForSeller(
   const result = await medusaFetch<{ offers: RawProduct[] }>(
     "/store/offers",
     { seller_id: sellerId, limit: 200 },
-    { revalidate: 60, tags: ["offers", `seller:${sellerId}`] }
+    { revalidate: 60, tags: ["offers", `seller-id:${sellerId}`] }
   );
 
   if (!result.ok) return result;
@@ -450,7 +476,7 @@ export async function fetchSellerByHandle(
   const result = await medusaFetch<{ sellers: RawProduct[] }>(
     "/store/sellers",
     { handle, limit: 1 },
-    { revalidate: 120, tags: ["sellers", `seller:${handle}`] }
+    { revalidate: 120, tags: ["sellers", `seller-handle:${handle}`] }
   );
 
   if (!result.ok) return result;

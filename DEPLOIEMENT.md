@@ -38,77 +38,94 @@ service endormi après 15 minutes, pas de Redis).
 2. Choisir le dépôt **`JhonnyVincent/MACHE`**, branche **`main`**.
    Render lit `render.yaml` tout seul et propose deux ressources :
    le service web `mache-backend` et la base `mache-db`.
-3. Render demande les variables laissées à remplir (`sync: false`).
-   Remplissez-les ainsi, en remplaçant les deux adresses par les vôtres :
+3. Render demande **une seule valeur** :
 
    | Variable | Valeur |
    |---|---|
-   | `STORE_CORS` | `https://VOTRE-SITE.vercel.app` |
-   | `ADMIN_CORS` | `https://mache-backend.onrender.com` |
-   | `VENDOR_CORS` | `https://mache-backend.onrender.com` |
-   | `AUTH_CORS` | `https://VOTRE-SITE.vercel.app,https://mache-backend.onrender.com` |
-   | `FILE_BACKEND_URL` | `https://mache-backend.onrender.com` |
-   | `STOREFRONT_REVALIDATE_URL` | `https://VOTRE-SITE.vercel.app` |
+   | `STOREFRONT_URL` | `https://VOTRE-SITE.vercel.app` — l'adresse de votre site, sans `/` final |
 
-   `DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET` et
-   `STOREFRONT_REVALIDATE_SECRET` sont générés par Render : n'y touchez
-   pas. Les deux secrets signent les sessions ; leur donner une valeur
+   Tout le reste se déduit : les quatre listes d'origines autorisées
+   (`STORE_CORS`, `ADMIN_CORS`, `VENDOR_CORS`, `AUTH_CORS`) et l'adresse
+   des images se calculent à partir de cette adresse et de celle du
+   serveur, que Render fournit lui-même.
+
+   `DATABASE_URL` et les trois secrets (`JWT_SECRET`, `COOKIE_SECRET`,
+   `STOREFRONT_REVALIDATE_SECRET`) sont générés par Render : n'y touchez
+   pas. Les deux premiers signent les sessions ; leur donner une valeur
    connue reviendrait à laisser la clé sur la porte.
 
 4. `Apply`. Le premier déploiement prend une dizaine de minutes : il
-   installe les dépendances, construit le serveur, puis applique les
-   migrations de base de données.
+   installe les dépendances, construit le serveur, applique les
+   migrations, puis crée la région Haïti et la clé publique du site.
 5. Quand le service est `Live`, ouvrir `https://mache-backend.onrender.com/health`.
    Il doit répondre. Si oui, le backend tourne.
 
----
+> Vous n'avez pas encore d'adresse Vercel ? Mettez-y n'importe quelle
+> adresse valide et corrigez-la ensuite : `STOREFRONT_URL` se modifie
+> depuis l'onglet `Environment` du service, et Render redéploie seul.
 
-## 2. Créer la région Haïti et la clé du site
+## 2. Relever les trois valeurs
 
-Le backend est vide au départ. Deux choses à faire une seule fois, depuis
-le `Shell` de Render (onglet **Shell** du service) :
+Le backend se met en place tout seul au démarrage : région **Haïti** en
+**gourdes (HTG)**, région fiscale, canal de vente, et la clé publique
+qui autorise le site à lire le catalogue. Rien à taper dans un terminal.
+
+Aucun taux de taxe n'est fixé : c'est une décision fiscale, elle vous
+revient.
+
+Ouvrez l'onglet **`Logs`** du service sur Render. Au démarrage, le
+backend affiche un encadré :
+
+```
+========================================================
+  À reporter dans les variables d'environnement du site
+  (Vercel → Settings → Environment Variables), PUIS
+  REDÉPLOYER : ces valeurs sont lues à la construction.
+--------------------------------------------------------
+  NEXT_PUBLIC_MEDUSA_BACKEND_URL=https://mache-backend.onrender.com
+  NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_...
+  NEXT_PUBLIC_MEDUSA_REGION_ID=reg_...
+========================================================
+```
+
+Copiez ces trois lignes.
+
+Pour entrer dans le panneau d'administration, créez-vous un compte
+depuis l'onglet **`Shell`** du service :
 
 ```bash
 cd packages/api
-./node_modules/.bin/medusa exec ./src/scripts/setup-mache.ts
-```
-
-Ce script crée la région **Haïti** en **gourdes (HTG)**. Il ne fixe
-aucun taux de taxe : c'est une décision fiscale, elle vous revient. Il ne
-convertit aucun prix existant et ne supprime rien.
-
-Notez l'identifiant de région qu'il affiche (`reg_…`).
-
-Ensuite, créez le compte administrateur et la clé publique du site :
-
-```bash
 ./node_modules/.bin/medusa user --email vous@exemple.ht --password VOTRE_MOT_DE_PASSE
 ```
 
-Puis connectez-vous au panneau d'administration sur
-`https://mache-backend.onrender.com/dashboard` et créez une
-**Publishable API Key** (`Settings` → `Publishable API Keys`). Elle
-commence par `pk_`. C'est elle qui autorise le site à lire le catalogue.
-
----
+Le panneau est ensuite sur `https://mache-backend.onrender.com/dashboard`,
+et le panneau vendeur sur `https://mache-backend.onrender.com/seller`.
 
 ## 3. Brancher le site sur le backend
 
 Dans **Vercel** → votre projet → `Settings` → `Environment Variables`,
-ajoutez trois variables :
+ajoutez les trois lignes relevées à l'étape 2 :
 
 | Variable | Valeur |
 |---|---|
 | `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | `https://mache-backend.onrender.com` |
-| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | la clé `pk_…` de l'étape 2 |
-| `NEXT_PUBLIC_MEDUSA_REGION_ID` | l'identifiant `reg_…` de l'étape 2 |
+| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | la clé `pk_…` |
+| `NEXT_PUBLIC_MEDUSA_REGION_ID` | l'identifiant `reg_…` |
 
 Puis **redéployez**. Ce point n'est pas optionnel : les variables
 `NEXT_PUBLIC_*` sont inscrites dans le code au moment de la
 construction, pas lues au démarrage. Les ajouter sans redéployer ne
 change rien, et c'est le piège le plus courant.
 
----
+### Une quatrième, facultative
+
+| Variable | Valeur |
+|---|---|
+| `STOREFRONT_REVALIDATE_SECRET` | la valeur générée par Render, onglet `Environment` du service |
+
+Elle autorise le backend à vider le cache du site dès qu'un prix ou un
+produit change. Sans elle, le site reste juste, avec jusqu'à une minute
+de retard. Avec elle, la modification est visible immédiatement.
 
 ## 4. Vérifier
 
@@ -123,7 +140,8 @@ Dans cet ordre :
 Si `/shop` reste vide alors que `/health` répond, c'est que le backend
 n'a aucun produit : un vendeur doit en créer depuis
 `https://mache-backend.onrender.com/seller`, ou vous pouvez charger le
-catalogue de démonstration de Mercur (`./node_modules/.bin/medusa exec ./src/scripts/seed.ts`).
+catalogue de démonstration de Mercur, depuis l'onglet `Shell` :
+`cd packages/api && ./node_modules/.bin/medusa exec ./src/scripts/seed.ts`.
 Ce catalogue est une **démonstration** : des chaussures en euros. Ne le
 laissez pas en ligne devant de vrais clients.
 

@@ -8,6 +8,7 @@ import {
 type EventPayload = {
   id?: string
   product_id?: string
+  seller_id?: string
 }
 
 const resolveProductHandle = async (
@@ -31,6 +32,46 @@ const resolveProductHandle = async (
   }
 }
 
+/*
+  Les étiquettes envoyées au site.
+
+  Leur orthographe est celle qu'emploie le site dans
+  `src/lib/medusa/catalog.ts`. Next ne vide que ce qui porte exactement
+  le nom reçu : une étiquette « product-<handle> » envoyée à un site qui
+  range sous « product:<handle> » ne correspond à rien, sans erreur et
+  sans journal. C'était le cas, et le cache ne se vidait donc jamais au
+  niveau d'une fiche produit.
+
+  Toute modification ici doit être reportée là-bas.
+*/
+/*
+  La boutique à laquelle appartient une offre.
+
+  L'évènement ne transporte que l'identifiant de l'offre : le vendeur
+  doit être relu. Sans lui, la page de la boutique gardait en cache une
+  liste de produits que l'offre venait de changer.
+*/
+const resolveOfferSeller = async (
+  container: SubscriberArgs["container"],
+  offerId?: string
+): Promise<string | undefined> => {
+  if (!offerId) {
+    return undefined
+  }
+
+  try {
+    const query = container.resolve(ContainerRegistrationKeys.QUERY)
+    const { data } = await query.graph({
+      entity: "offer",
+      fields: ["seller_id"],
+      filters: { id: offerId },
+    })
+    return data?.[0]?.seller_id
+  } catch {
+    return undefined
+  }
+}
+
 const buildTags = async (
   container: SubscriberArgs["container"],
   eventName: string,
@@ -43,27 +84,72 @@ const buildTags = async (
 
   const handle = await resolveProductHandle(container, productId)
   if (handle) {
-    tags.add(`product-${handle}`)
+    tags.add(`product:${handle}`)
   }
 
   if (isOffer) {
+    /*
+      Une offre qui change modifie aussi ce que la boutique propose : sa
+      page liste ses produits à partir de ses offres.
+    */
     tags.add("offers")
-    if (payload.id) {
-      tags.add(`offer-${payload.id}`)
-    }
-    if (productId) {
-      tags.add(`product-offers-${productId}`)
+
+    const sellerId =
+      payload.seller_id ?? (await resolveOfferSeller(container, payload.id))
+
+    if (sellerId) {
+      tags.add(`seller-id:${sellerId}`)
     }
   }
 
   return [...tags]
 }
 
+/*
+  Où appeler pour invalider le cache du site.
+
+  Le chemin est fixé par le site, pas par une variable d'environnement.
+  STOREFRONT_REVALIDATE_URL se renseignait avec l'adresse du site tout
+  court — c'est ce que disait la documentation de déploiement — et les
+  appels partaient alors sur la page d'accueil, qui répond 200 sans rien
+  invalider. La panne était donc parfaitement invisible : aucune erreur
+  dans les journaux, et un cache qui ne se vidait jamais. Constaté ici en
+  la reproduisant.
+
+  Une adresse sans chemin est donc complétée. Une adresse qui en porte un
+  est respectée telle quelle : c'est le cas d'un site servi depuis un
+  sous-chemin, où deviner serait pire que de laisser faire.
+*/
+const REVALIDATE_PATH = "/api/revalidate"
+
+const resolveRevalidateUrl = (): string => {
+  const explicit = (process.env.STOREFRONT_REVALIDATE_URL || "").trim()
+
+  if (explicit) {
+    try {
+      const parsed = new URL(explicit)
+
+      if (parsed.pathname === "/" || parsed.pathname === "") {
+        parsed.pathname = REVALIDATE_PATH
+        return parsed.toString()
+      }
+
+      return explicit
+    } catch {
+      /* Adresse inexploitable : on retombe sur celle du site. */
+    }
+  }
+
+  const storefront = (process.env.STOREFRONT_URL || "").replace(/\/+$/, "")
+
+  return storefront ? `${storefront}${REVALIDATE_PATH}` : ""
+}
+
 export default async function storefrontCacheRevalidateHandler({
   event,
   container,
 }: SubscriberArgs<EventPayload | EventPayload[]>) {
-  const url = process.env.STOREFRONT_REVALIDATE_URL
+  const url = resolveRevalidateUrl()
   const secret = process.env.STOREFRONT_REVALIDATE_SECRET
 
   if (!url || !secret) {
