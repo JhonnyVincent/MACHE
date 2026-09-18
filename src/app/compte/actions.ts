@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 import {
   registerCustomer, loginCustomer, clearCustomerSession,
 } from "@/lib/medusa/customer";
+import { safeInternalPath } from "@/lib/safe-url";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -58,8 +59,13 @@ export async function loginAction(formData: FormData) {
 
   revalidatePath("/dashboard/buyer", "layout");
 
-  /* Une redirection ne suit que des chemins internes. */
-  redirect(next.startsWith("/") ? next : "/dashboard/buyer");
+  /*
+    `startsWith("/")` ne suffisait pas : « //evil.example » y passe et le
+    navigateur le résout en adresse externe. Renvoyer quelqu'un sur un
+    site tiers juste après sa saisie de mot de passe est le décor idéal
+    d'un hameçonnage.
+  */
+  redirect(safeInternalPath(next, "/dashboard/buyer"));
 }
 
 export async function logoutAction() {

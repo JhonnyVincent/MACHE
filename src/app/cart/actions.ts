@@ -15,6 +15,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { addOfferToCart, updateCartLine, removeCartLine } from "@/lib/medusa/cart";
+import { safeInternalPath } from "@/lib/safe-url";
 
 function back(target: string, error?: string): never {
   revalidatePath("/cart");
@@ -25,7 +26,8 @@ function back(target: string, error?: string): never {
 export async function addToCartAction(formData: FormData) {
   const offerId = String(formData.get("offer_id") || "");
   const quantity = Number(formData.get("quantity") || 1);
-  const returnTo = String(formData.get("return_to") || "/cart");
+  /* Le formulaire fournit ce chemin : il ne doit pas pouvoir sortir du site. */
+  const returnTo = safeInternalPath(formData.get("return_to"), "/cart");
 
   const result = await addOfferToCart(offerId, quantity);
 

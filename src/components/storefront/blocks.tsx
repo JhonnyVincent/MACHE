@@ -17,6 +17,7 @@ import {
   type Block, type ProductSelection,
 } from "@/lib/storefront/blocks";
 import type { StoreProduct, StoreSeller } from "@/lib/medusa/catalog";
+import { safeLinkHref, safeImageSrc } from "@/lib/safe-url";
 import { ProductCard } from "@/components/home/rails";
 
 type RenderContext = {
@@ -30,14 +31,23 @@ function Hero({ props, seller }: { props: Record<string, unknown>; seller: Store
   const title = propString(props, "title", seller.name);
   const subtitle = propString(props, "subtitle", seller.description ?? "");
   const ctaLabel = propString(props, "ctaLabel");
-  const ctaHref = propString(props, "ctaHref", "#produits");
+  /*
+    Lien posé par le vendeur : « javascript:… » s'exécuterait au clic dans
+    la session du visiteur. C'est une faille stockée, déclenchée par
+    n'importe quel client de la boutique.
+  */
+  const ctaHref = safeLinkHref(propString(props, "ctaHref", "#produits"), "#produits");
 
   return (
     <section className="relative overflow-hidden border-b border-[var(--mache-line)] bg-[var(--mache-dark)] text-white">
-      {seller.banner && (
+      {safeImageSrc(seller.banner) && (
         <div className="absolute inset-0 opacity-35">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={seller.banner} alt="" className="h-full w-full object-cover" />
+          <img
+            src={safeImageSrc(seller.banner) as string}
+            alt=""
+            className="h-full w-full object-cover"
+          />
         </div>
       )}
 
@@ -104,9 +114,10 @@ function TextBlock({ props }: { props: Record<string, unknown> }) {
 }
 
 function ImageBlock({ props }: { props: Record<string, unknown> }) {
-  const url = propString(props, "url");
+  /* Seul http(s) : « data: » permettrait un SVG, donc du script. */
+  const url = safeImageSrc(propString(props, "url"));
 
-  if (!/^https?:\/\//i.test(url)) return null;
+  if (!url) return null;
 
   const caption = propString(props, "caption");
   const alt = propString(props, "alt", caption);
