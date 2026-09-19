@@ -12,6 +12,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured } from "@/lib/supabase/env";
 
 export const SHIPMENT_STATUS_LABELS: Record<string, string> = {
   pending: "À prendre en charge",
@@ -127,7 +128,20 @@ export async function requireAgent(nextPath = "/dashboard/agent") {
 }
 
 export type AgentVerification =
+  /*
+    Trois issues, et non deux.
+
+    « Introuvable » et « impossible à vérifier » ne veulent pas dire la
+    même chose sur le pas d'une porte. La première dit que cette personne
+    n'est pas un agent MACHÉ. La seconde dit que MACHÉ n'en sait rien.
+
+    Les confondre ferait accuser un agent honnête, ou — bien pire —
+    laisserait croire qu'un refus est un verdict alors que le service
+    était simplement en panne. Dans les deux cas, la consigne reste la
+    même : ne rien remettre. Mais la raison donnée doit être vraie.
+  */
   | { found: false }
+  | { unavailable: true }
   | {
       found: true;
       code: string;
@@ -154,6 +168,15 @@ export async function verifyAgentCode(rawCode: string): Promise<AgentVerificatio
 
   if (!code) return { found: false };
 
+  /*
+    Sans base de comptes, la page levait une exception serveur : un écran
+    gris, à l'instant précis où quelqu'un hésite à remettre un colis.
+  */
+  if (!supabaseConfigured()) {
+    console.warn("[verify-agent] base des agents non configurée");
+    return { unavailable: true };
+  }
+
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase
@@ -163,8 +186,12 @@ export async function verifyAgentCode(rawCode: string): Promise<AgentVerificatio
     .maybeSingle();
 
   if (error) {
+    /*
+      Une panne de lecture n'est pas une absence d'agent : on ne répond
+      pas « inconnu » quand on n'a pas pu regarder.
+    */
     console.error("[verify-agent]", error.message);
-    return { found: false };
+    return { unavailable: true };
   }
 
   if (!data) return { found: false };

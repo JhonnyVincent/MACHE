@@ -19,10 +19,22 @@ import { formatNumber, formatDate } from "@/lib/seller";
 import {
   PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Stat, StatRow, Notice,
 } from "@/components/seller/ui";
+import { supabaseConfigured } from "@/lib/supabase/env";
+import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPartnersPage() {
+  /*
+    La garde du layout ne suffit pas : Next rend la page et la mise en
+    page en parallèle, donc `require*` s'exécute et lève même quand le
+    layout a déjà décidé de ne pas afficher la page. L'écran était
+    correct, mais les journaux se remplissaient de traces d'erreur pour
+    une situation connue — et du rouge attendu finit par cacher du rouge
+    inattendu.
+  */
+  if (!supabaseConfigured()) return <StaffUnavailable area="Partenaires" />;
+
   const { supabase } = await requireAdmin("/dashboard/admin/partners");
 
   const [linksResult, accountsResult] = await Promise.all([

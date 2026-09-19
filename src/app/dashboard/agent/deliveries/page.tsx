@@ -18,6 +18,8 @@ import { formatNumber, formatDate } from "@/lib/seller";
 import {
   PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Stat, StatRow, Notice,
 } from "@/components/seller/ui";
+import { supabaseConfigured } from "@/lib/supabase/env";
+import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,16 @@ export default async function AgentDeliveriesPage({
 }: {
   searchParams?: Promise<{ filter?: string }>;
 }) {
+  /*
+    La garde du layout ne suffit pas : Next rend la page et la mise en
+    page en parallèle, donc `require*` s'exécute et lève même quand le
+    layout a déjà décidé de ne pas afficher la page. L'écran était
+    correct, mais les journaux se remplissaient de traces d'erreur pour
+    une situation connue — et du rouge attendu finit par cacher du rouge
+    inattendu.
+  */
+  if (!supabaseConfigured()) return <StaffUnavailable area="Tournée" />;
+
   const query = searchParams ? await searchParams : {};
   const active = FILTERS.some((f) => f.key === query.filter) ? query.filter! : "all";
 

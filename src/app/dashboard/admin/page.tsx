@@ -21,10 +21,22 @@ import { medusaBackendUrl } from "@/lib/medusa/config";
 import {
   PageHeader, Panel, Stat, StatRow, Table, Row, Cell, Button, Notice,
 } from "@/components/seller/ui";
+import { supabaseConfigured } from "@/lib/supabase/env";
+import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminHomePage() {
+  /*
+    La garde du layout ne suffit pas : Next rend la page et la mise en
+    page en parallèle, donc `require*` s'exécute et lève même quand le
+    layout a déjà décidé de ne pas afficher la page. L'écran était
+    correct, mais les journaux se remplissaient de traces d'erreur pour
+    une situation connue — et du rouge attendu finit par cacher du rouge
+    inattendu.
+  */
+  if (!supabaseConfigured()) return <StaffUnavailable area="Administration" />;
+
   const { supabase, isSuperAdmin, firstName } = await requireAdmin();
 
   const [users, sellers, stores, unverified, agents] = await Promise.all([

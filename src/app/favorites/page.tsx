@@ -17,6 +17,7 @@
 
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured } from "@/lib/supabase/env";
 
 export const dynamic = "force-dynamic";
 
@@ -33,23 +34,35 @@ export default async function FavoritesPage() {
   let signedIn = false;
   let savedCount = 0;
 
-  try {
-    const supabase = await createSupabaseServerClient();
+  /*
+    On vérifie la configuration avant d'essayer, plutôt que de laisser
+    lever et de rattraper. L'un et l'autre donnaient la bonne page, mais
+    le second écrivait une trace d'erreur complète, en rouge, à chaque
+    visite — pour une situation parfaitement prévue. Des journaux pleins
+    de rouge attendu finissent par cacher le rouge inattendu.
 
-    const { data: userData } = await supabase.auth.getUser();
+    Le `try` reste : il couvre ce qui n'est pas prévu, une base qui ne
+    répond pas par exemple.
+  */
+  if (supabaseConfigured()) {
+    try {
+      const supabase = await createSupabaseServerClient();
 
-    if (userData.user) {
-      signedIn = true;
+      const { data: userData } = await supabase.auth.getUser();
 
-      const { count } = await supabase
-        .from("favorites")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userData.user.id);
+      if (userData.user) {
+        signedIn = true;
 
-      savedCount = count ?? 0;
+        const { count } = await supabase
+          .from("favorites")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userData.user.id);
+
+        savedCount = count ?? 0;
+      }
+    } catch (error) {
+      console.error("[favorites]", error);
     }
-  } catch (error) {
-    console.error("[favorites]", error);
   }
 
   return (

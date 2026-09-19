@@ -1,7 +1,16 @@
+/*
+  Cette page définissait sa propre `forgotPasswordAction`, du même nom
+  que celle importée juste au-dessus. La locale masquait l'importée :
+  c'est elle qui s'exécutait, et elle ne vérifiait pas la configuration
+  avant d'appeler Supabase. Le formulaire répondait donc par une
+  exception serveur — un écran gris — là où l'action du module, elle,
+  avait été protégée.
+
+  Le doublon est retiré. Une seule action, dans ./actions.ts, comme pour
+  les autres formulaires.
+*/
 import { forgotPasswordAction } from "./actions";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured } from "@/lib/supabase/env";
 
 export default async function ForgotPasswordPage({
   searchParams
@@ -10,33 +19,6 @@ export default async function ForgotPasswordPage({
 }) {
   const { error, success } = await searchParams;
 
-  async function forgotPasswordAction(formData: FormData) {
-    "use server";
-
-    const email = String(formData.get("email") || "").trim();
-
-    if (!email) {
-      redirect("/forgot-password?error=missing_email");
-    }
-
-    const supabase = await createSupabaseServerClient();
-
-    const headersList = await headers();
-    const origin =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      headersList.get("origin") ||
-      `https://${headersList.get("host")}`;
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/callback?next=/reset-password`
-    });
-
-    if (error) {
-      redirect(`/forgot-password?error=${encodeURIComponent(error.message)}`);
-    }
-
-    redirect("/forgot-password?success=check_email");
-  }
 
   return (
     <main className="container-page py-12">
@@ -57,6 +39,14 @@ export default async function ForgotPasswordPage({
           </div>
         ) : null}
 
+        {!supabaseConfigured() && (
+          <div className="mt-4 rounded-xl border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-sm leading-relaxed text-neutral-700">
+            La réinitialisation des comptes internes n&apos;est pas disponible
+            pour le moment.
+          </div>
+        )}
+
+        {supabaseConfigured() && (
         <form action={forgotPasswordAction} className="mt-6 space-y-4">
           <input
             className="input"
@@ -70,6 +60,7 @@ export default async function ForgotPasswordPage({
             Envoyer le lien
           </button>
         </form>
+        )}
       </div>
     </main>
   );

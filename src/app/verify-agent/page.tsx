@@ -78,7 +78,36 @@ export default async function VerifyAgentPage({
 
       {result && (
         <div className="mt-8">
-          {!result.found ? (
+          {"unavailable" in result ? (
+            /*
+              MACHÉ n'a pas pu vérifier. La consigne reste la même que
+              pour un code inconnu — ne rien remettre — mais la raison
+              donnée est la vraie : accuser quelqu'un d'imposture parce
+              qu'un service est en panne serait aussi faux que de le
+              laisser passer.
+            */
+            <section className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
+              <p className="text-lg font-bold text-[var(--mache-text)]">
+                Vérification impossible pour le moment
+              </p>
+              <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
+                MACHÉ ne peut pas confirmer ce code en ce moment. Cela ne
+                veut pas dire que cette personne est un imposteur, ni
+                qu&apos;elle est habilitée : nous n&apos;en savons rien.
+              </p>
+              <p className="mt-2 text-base font-semibold leading-relaxed text-[var(--mache-text)]">
+                Dans le doute, ne remettez ni colis ni argent. Réessayez
+                dans quelques minutes, ou appelez MACHÉ pendant que la
+                personne attend.
+              </p>
+              <Link
+                href="/contact"
+                className="mt-4 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline"
+              >
+                Contacter MACHÉ
+              </Link>
+            </section>
+          ) : !result.found ? (
             <section className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
               <p className="text-lg font-bold text-[var(--mache-danger)]">
                 Aucun agent ne correspond à ce code

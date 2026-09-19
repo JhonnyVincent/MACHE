@@ -23,6 +23,7 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import { reportOutage } from "@/lib/medusa/outage";
+import { supabaseConfigured } from "@/lib/supabase/env";
 
 export const dynamic = "force-dynamic";
 
@@ -47,12 +48,14 @@ export default async function SellerEntryPage() {
   */
   let signedIn = false;
 
-  try {
-    const supabase = await createSupabaseServerClient();
-    const { data } = await supabase.auth.getUser();
-    signedIn = Boolean(data.user);
-  } catch {
-    /* Supabase non configuré : la page reste consultable. */
+  if (supabaseConfigured()) {
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { data } = await supabase.auth.getUser();
+      signedIn = Boolean(data.user);
+    } catch {
+      /* Session illisible : la page reste consultable. */
+    }
   }
 
   /*
