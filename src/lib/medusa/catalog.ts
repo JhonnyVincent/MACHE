@@ -336,6 +336,8 @@ export type ProductQuery = {
   collectionId?: string;
   categoryId?: string;
   sellerId?: string;
+  /* Plusieurs boutiques à la fois : filtrer le catalogue par profil. */
+  sellerIds?: string[];
   /* `created_at` décroissant pour les nouveautés, etc. */
   order?: string;
 };
@@ -353,13 +355,18 @@ export type ProductQuery = {
   puis on demande ces produits-là. Deux requêtes plutôt qu'une, mais qui
   rendent le bon résultat.
 */
-async function productIdsForSeller(
-  sellerId: string
+async function productIdsForSellers(
+  sellerIds: string[]
 ): Promise<MedusaResult<string[]>> {
+  if (sellerIds.length === 0) return { ok: true, data: [] };
+
   const result = await medusaFetch<{ offers: RawProduct[] }>(
     "/store/offers",
-    { seller_id: sellerId, limit: 200 },
-    { revalidate: 60, tags: ["offers", `seller-id:${sellerId}`] }
+    { seller_id: sellerIds, limit: 200 },
+    {
+      revalidate: 60,
+      tags: ["offers", ...sellerIds.map((id) => `seller-id:${id}`)],
+    }
   );
 
   if (!result.ok) return result;
@@ -380,8 +387,10 @@ export async function fetchProducts(
 ): Promise<MedusaResult<{ products: StoreProduct[]; count: number }>> {
   let idFilter: string[] | undefined;
 
-  if (query.sellerId) {
-    const ids = await productIdsForSeller(query.sellerId);
+  const sellerIds = query.sellerIds ?? (query.sellerId ? [query.sellerId] : []);
+
+  if (sellerIds.length > 0) {
+    const ids = await productIdsForSellers(sellerIds);
 
     if (!ids.ok) return ids;
 

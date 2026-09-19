@@ -21,6 +21,8 @@ import { fetchSellerByHandle, fetchProducts } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
 import { parseLayout } from "@/lib/storefront/blocks";
 import { RenderBlock } from "@/components/storefront/blocks";
+import { readSellerProfile } from "@/lib/seller-profile";
+import { SellerProfileBadge } from "@/components/seller-profile-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +80,8 @@ export default async function StorePage({
   */
   const { layout, isCustom } = parseLayout(seller.metadata, seller.name);
 
+  const profile = readSellerProfile(seller.metadata);
+
   return (
     <main className="bg-[var(--mache-bg)] pb-10">
       {/* En-tête de boutique : identité, toujours affichée. */}
@@ -100,6 +104,14 @@ export default async function StorePage({
                   Premium
                 </span>
               )}
+
+              {/*
+                Le profil que le vendeur déclare : artisan, boutique,
+                grossiste, marque. Sans lui, un acheteur ne pouvait pas
+                distinguer une personne qui vend trois objets d'un
+                grossiste qui vend par palettes.
+              */}
+              {profile && <SellerProfileBadge profile={profile} />}
             </p>
 
             {productsResult.ok && (

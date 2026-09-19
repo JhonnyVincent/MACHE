@@ -58,9 +58,30 @@ const adminCors = process.env.ADMIN_CORS || selfUrl
 const vendorCors = process.env.VENDOR_CORS || selfUrl
 const authCors = process.env.AUTH_CORS || `${storefrontUrl},${selfUrl}`
 
+/*
+  Taille du pool de connexions à la base.
+
+  Medusa ouvre un pool par module, et il en charge une vingtaine. Sans
+  borne, le total dépasse ce que la base accepte : PostgreSQL refuse
+  alors tout — « sorry, too many clients already » — et le serveur ne
+  démarre pas. Constaté ici, sur une base à cent connexions.
+
+  Ce n'est pas un problème de machine de développement. La base
+  PostgreSQL gratuite de Render plafonne à quelques dizaines de
+  connexions : sans cette borne, le backend s'y comporterait de la même
+  façon, et l'erreur ne désigne pas sa cause.
+
+  Cinq par module tient dans cent connexions avec de la marge. Une base
+  plus large se déclare avec DB_POOL_MAX.
+*/
+const poolMax = Number(process.env.DB_POOL_MAX) || 5
+
 module.exports = withMercur({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    databaseDriverOptions: {
+      pool: { min: 0, max: poolMax },
+    },
     http: {
       storeCors,
       adminCors,

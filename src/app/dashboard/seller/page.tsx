@@ -146,6 +146,21 @@ export default async function SellerEntryPage() {
         </p>
       </div>
 
+      <div className="mt-6 flex flex-wrap gap-4 border-t border-[var(--mache-line)] pt-4 text-sm">
+        <Link
+          href="/dashboard/seller/vitrine"
+          className="font-semibold text-[var(--mache-primary)] hover:underline"
+        >
+          Personnaliser ma vitrine
+        </Link>
+        <Link
+          href="/dashboard/seller/profil"
+          className="font-semibold text-[var(--mache-primary)] hover:underline"
+        >
+          Le profil de ma boutique
+        </Link>
+      </div>
+
       <p className="mt-6 text-sm text-[var(--mache-muted)]">
         Vous cherchiez plutôt vos achats ?{" "}
         <Link href="/dashboard/buyer" className="font-semibold text-[var(--mache-primary)] hover:underline">

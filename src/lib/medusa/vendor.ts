@@ -231,14 +231,16 @@ export async function getVendorSeller(): Promise<VendorSeller | null> {
 }
 
 /*
-  Enregistrement de la vitrine.
+  Écriture d'une clé du champ libre du vendeur.
 
-  On n'envoie QUE `metadata` : une mise à jour qui renverrait tout l'objet
-  écraserait en silence ce que le vendeur vient de changer dans le panneau
-  Mercur — son nom, son logo, sa description.
+  Le champ `metadata` est partagé : la vitrine y vit, le profil aussi, et
+  d'autres écrans pourront s'y ajouter. On relit donc l'existant avant
+  d'écrire, et on ne remplace que la clé visée. Envoyer un objet complet
+  effacerait en silence ce qu'un autre écran y a rangé.
 */
-export async function saveStorefrontLayout(
-  layout: unknown
+async function saveSellerMetadata(
+  key: string,
+  value: unknown
 ): Promise<Result<VendorSeller>> {
   const { token, sellerId } = await readSession();
 
@@ -246,10 +248,6 @@ export async function saveStorefrontLayout(
     return { ok: false, reason: "Session vendeur expirée. Reconnectez-vous." };
   }
 
-  /*
-    Le champ `metadata` est libre : on relit l'existant pour ne pas
-    effacer ce qu'un autre écran y aurait rangé.
-  */
   const current = await request<{ seller: Raw }>("/vendor/sellers/me", {
     token,
     sellerId,
@@ -265,10 +263,34 @@ export async function saveStorefrontLayout(
     method: "POST",
     token,
     sellerId,
-    body: { metadata: { ...existing, storefront: layout } },
+    body: { metadata: { ...existing, [key]: value } },
   });
 
   if (!result.ok) return result;
 
   return { ok: true, data: mapSeller(result.data.seller) };
+}
+
+/*
+  Profil déclaré de la boutique : particulier, business, fournisseur,
+  marque. C'est le vendeur qui le choisit — et l'affichage public le dit
+  comme tel, sans laisser croire à une vérification de MACHÉ.
+*/
+export async function saveSellerProfile(
+  profile: string
+): Promise<Result<VendorSeller>> {
+  return saveSellerMetadata("profile", profile);
+}
+
+/*
+  Enregistrement de la vitrine.
+
+  On n'envoie QUE `metadata` : une mise à jour qui renverrait tout l'objet
+  écraserait en silence ce que le vendeur vient de changer dans le panneau
+  Mercur — son nom, son logo, sa description.
+*/
+export async function saveStorefrontLayout(
+  layout: unknown
+): Promise<Result<VendorSeller>> {
+  return saveSellerMetadata("storefront", layout);
 }

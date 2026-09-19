@@ -121,6 +121,13 @@ export default async function VitrinePage({
 
         <div className="flex items-center gap-4">
           <Link
+            href="/dashboard/seller/profil"
+            className="text-sm font-semibold text-[var(--mache-text)] hover:underline"
+          >
+            Profil de la boutique
+          </Link>
+
+          <Link
             href="/dashboard/seller/vitrine/editeur"
             className="rounded-[6px] bg-[var(--mache-text)] px-4 py-2 text-base font-bold text-white transition-colors hover:bg-black"
           >

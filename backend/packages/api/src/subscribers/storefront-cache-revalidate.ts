@@ -122,6 +122,12 @@ const buildTags = async (
 */
 const REVALIDATE_PATH = "/api/revalidate"
 
+/* Au-delà, le site ne répond pas : attendre davantage ne sert à rien. */
+const REVALIDATE_TIMEOUT_MS = 3_000
+
+/* Compte les échecs consécutifs, pour ne pas répéter la même erreur. */
+let failures = 0
+
 const resolveRevalidateUrl = (): string => {
   const explicit = (process.env.STOREFRONT_REVALIDATE_URL || "").trim()
 
@@ -168,6 +174,16 @@ export default async function storefrontCacheRevalidateHandler({
     return
   }
 
+  /*
+    Un appel sans délai maximal rend le moteur commerce dépendant de la
+    vitesse du site. Trois secondes suffisent largement pour une purge de
+    cache ; au-delà, c'est que le site ne répond pas, et l'attente ne
+    servirait qu'à ralentir la suite.
+
+    Constaté au chargement du catalogue de démonstration : deux cent
+    quarante-quatre offres créées, deux cent quarante-quatre appels vers
+    un site absent, chacun attendant l'expiration par défaut du système.
+  */
   try {
     await fetch(url, {
       method: "POST",
@@ -176,9 +192,25 @@ export default async function storefrontCacheRevalidateHandler({
         "x-revalidate-secret": secret,
       },
       body: JSON.stringify({ tags: [...tagSet] }),
+      signal: AbortSignal.timeout(REVALIDATE_TIMEOUT_MS),
     })
+
+    failures = 0
   } catch (error) {
-    console.error("[storefront-cache-revalidate] revalidation failed:", error)
+    failures += 1
+
+    /*
+      On ne répète pas la même erreur cent fois. Les trois premières
+      sont écrites, puis une sur cinquante : un journal qui se répète
+      cache ce qui s'y passe d'autre, et le chargement d'un catalogue
+      complet le remplissait à lui seul.
+    */
+    if (failures <= 3 || failures % 50 === 0) {
+      console.error(
+        `[storefront-cache-revalidate] échec n°${failures} vers ${url} :`,
+        error instanceof Error ? error.message : error
+      )
+    }
   }
 }
 

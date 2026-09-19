@@ -7,8 +7,11 @@
 */
 
 import Link from "next/link";
+import {
+  SELLER_PROFILES, isSellerProfile, readSellerProfile,
+} from "@/lib/seller-profile";
 import { reportOutage } from "@/lib/medusa/outage";
-import { fetchProducts, fetchCategories } from "@/lib/medusa/catalog";
+import { fetchProducts, fetchCategories, fetchSellers } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
 
 export const dynamic = "force-dynamic";
@@ -29,7 +32,13 @@ const PAGE_SIZE = 24;
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; sort?: string; page?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    category?: string;
+    sort?: string;
+    page?: string;
+    profil?: string;
+  }>;
 }) {
   const query = await searchParams;
 
@@ -41,18 +50,56 @@ export default async function ShopPage({
 
   const page = Math.max(1, Number(query.page) || 1);
 
+  /*
+    Filtre par profil de vendeur.
+
+    Le catalogue mélange des artisans, des boutiques, des grossistes et
+    des marques. Quelqu'un qui cherche à s'approvisionner en gros n'a
+    aucun moyen d'écarter les vendeurs qui proposent trois articles, et
+    inversement.
+
+    Le profil est déclaré par le vendeur et rangé dans son champ libre,
+    que l'API ne sait pas filtrer. On lit donc les boutiques, on retient
+    celles qui correspondent, et on demande les produits de celles-là.
+  */
+  const profil = isSellerProfile(query.profil) ? query.profil : null;
+
+  let sellerIds: string[] | undefined;
+  let profileHasNoShop = false;
+
+  if (profil) {
+    const sellersResult = await fetchSellers(100);
+
+    const matching = sellersResult.ok
+      ? sellersResult.data.sellers.filter(
+          (entry) => readSellerProfile(entry.metadata) === profil
+        )
+      : [];
+
+    sellerIds = matching.map((entry) => entry.id);
+
+    /*
+      Aucune boutique de ce profil : on le dit, au lieu de renvoyer tout
+      le catalogue comme si le filtre n'existait pas.
+    */
+    profileHasNoShop = sellerIds.length === 0;
+  }
+
   const categoriesResult = await fetchCategories(40);
   const categories = categoriesResult.ok ? categoriesResult.data : [];
 
   const category = categories.find((entry) => entry.handle === categoryHandle);
 
-  const result = await fetchProducts({
-    limit: PAGE_SIZE,
-    offset: (page - 1) * PAGE_SIZE,
-    q: search || undefined,
-    categoryId: category?.id,
-    order: sort.order,
-  });
+  const result = profileHasNoShop
+    ? ({ ok: true, data: { products: [], count: 0 } } as const)
+    : await fetchProducts({
+        limit: PAGE_SIZE,
+        offset: (page - 1) * PAGE_SIZE,
+        q: search || undefined,
+        categoryId: category?.id,
+        order: sort.order,
+        sellerIds,
+      });
 
   /*
     La raison technique d'une panne de catalogue va au journal du serveur.
@@ -82,6 +129,7 @@ export default async function ShopPage({
     const next = {
       q: search || undefined,
       category: categoryHandle || undefined,
+      profil: profil || undefined,
       sort: query.sort,
       page: page > 1 ? String(page) : undefined,
       ...patch,
@@ -132,6 +180,44 @@ export default async function ShopPage({
             Rechercher
           </button>
         </form>
+
+        {/*
+          Filtre par profil de vendeur : à qui on achète, et non quoi.
+          Il vient avant les catégories parce qu'il répond à une question
+          antérieure — « je cherche du gros » plutôt que « je cherche des
+          chaussures ».
+        */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="text-sm font-semibold text-[var(--mache-muted)]">
+            Vendeur :
+          </span>
+
+          <Link
+            href={linkWith({ profil: undefined, page: undefined })}
+            className={`rounded-[6px] border px-3 py-1.5 text-sm transition-colors ${
+              !profil
+                ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
+                : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+            }`}
+          >
+            Tous
+          </Link>
+
+          {SELLER_PROFILES.map((entry) => (
+            <Link
+              key={entry.id}
+              href={linkWith({ profil: entry.id, page: undefined })}
+              title={entry.meaning}
+              className={`rounded-[6px] border px-3 py-1.5 text-sm transition-colors ${
+                profil === entry.id
+                  ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
+                  : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
+              }`}
+            >
+              {entry.badge}
+            </Link>
+          ))}
+        </div>
 
         {/* Catégories */}
         {categories.length > 0 && (
@@ -187,19 +273,23 @@ export default async function ShopPage({
             <p className="text-md font-bold text-[var(--mache-text)]">
               {!result.ok
                 ? "Catalogue momentanément indisponible"
-                : total === 0 && !search && !categoryHandle
-                  ? "Le catalogue est vide"
-                  : "Aucun résultat"}
+                : profileHasNoShop
+                  ? `Aucune boutique de ce type pour l'instant`
+                  : total === 0 && !search && !categoryHandle
+                    ? "Le catalogue est vide"
+                    : "Aucun résultat"}
             </p>
             <p className="mx-auto mt-2 max-w-md text-base leading-relaxed text-[var(--mache-muted)]">
               {!result.ok
                 ? "Les produits ne peuvent pas être affichés pour le moment. Réessayez dans quelques minutes."
-                : total === 0 && !search && !categoryHandle
-                  ? "Aucun vendeur n'a encore mis de produit en ligne sur MACHÉ."
-                  : "Essayez d'autres mots, ou retirez le filtre de catégorie."}
+                : profileHasNoShop
+                  ? "Aucun vendeur ne s'est déclaré sous ce profil. Ce n'est pas que leurs produits sont épuisés : il n'y a pas encore de boutique de ce type sur MACHÉ."
+                  : total === 0 && !search && !categoryHandle
+                    ? "Aucun vendeur n'a encore mis de produit en ligne sur MACHÉ."
+                    : "Essayez d'autres mots, ou retirez le filtre de catégorie."}
             </p>
 
-            {(search || categoryHandle) && (
+            {(search || categoryHandle || profil) && (
               <Link
                 href="/shop"
                 className="mt-4 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline"
