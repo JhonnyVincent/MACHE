@@ -187,14 +187,24 @@ Pour voir la plateforme vivante tout de suite, sans terminal :
 Render redéploie, et le catalogue se charge : 3 boutiques, 12 produits,
 244 offres. **Retirez ensuite la variable.**
 
-Deux garanties, vérifiées :
+Trois garanties, vérifiées :
 
 - il ne charge rien si le catalogue contient déjà un produit. La
   démonstration ne s'ajoute jamais au milieu de vrais produits et de
   vraies commandes ;
 - il ne touche pas à la région Haïti. La démonstration crée une région
   « Europe » en euros et voudrait en faire la région par défaut ; la
-  mise en place MACHÉ passe après elle et rétablit Haïti.
+  mise en place MACHÉ passe après elle et rétablit Haïti ;
+- il donne aux articles un prix **en gourdes**. Sans cela, le catalogue
+  s'affichait avec « Prix indisponible » partout et rien ne pouvait
+  entrer dans un panier : Medusa refuse de calculer un prix dans une
+  devise pour laquelle aucun prix n'existe, et la démonstration Mercur
+  est chiffrée en euros.
+
+  Ces montants ne viennent d'**aucun taux de change**. Ce sont des
+  chaussures fictives : les prix en euros sont multipliés par un facteur
+  d'affichage, réglable avec `DEMO_HTG_FACTOR`, pour obtenir des ordres
+  de grandeur plausibles. Le backend l'écrit dans ses journaux.
 
 Ce catalogue est une **démonstration** : des chaussures fictives, en
 euros, avec des vendeurs fictifs. Ne le laissez pas en ligne devant de

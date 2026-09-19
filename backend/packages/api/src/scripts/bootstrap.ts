@@ -9,6 +9,8 @@
      catalogue est vide.
   2. La mise en place MACHÉ : région Haïti, canal de vente, clé publique
      du site.
+  3. Les prix en gourdes du catalogue de démonstration, une fois la
+     région Haïti créée.
 
   Pourquoi cet ordre
 
@@ -16,6 +18,14 @@
   euros et la désigne comme région par défaut de la boutique. Lancé
   après la mise en place, il effacerait donc le choix d'Haïti. Lancé
   avant, c'est la mise en place qui a le dernier mot.
+
+  Et les prix en gourdes viennent en dernier, parce qu'ils supposent les
+  deux : un catalogue à compléter, et la devise dans laquelle le
+  compléter. Sans cette troisième étape, la démonstration s'affichait
+  avec « Prix indisponible » partout et rien ne pouvait entrer dans un
+  panier — Medusa refuse de calculer un prix dans une devise pour
+  laquelle aucun prix n'existe. Constaté sur le site avant d'ajouter
+  cette étape.
 
   Pourquoi ce script existe
 
@@ -41,6 +51,7 @@ import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils";
 
 import seedDemoData from "./seed";
 import setupMache from "./setup-mache";
+import demoPricesHtg from "./demo-prices-htg";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -64,6 +75,14 @@ export default async function bootstrap(args: ExecArgs) {
   */
   try {
     await setupMache(args);
+
+    /*
+      Après la mise en place seulement : la région Haïti doit exister
+      pour que des prix en gourdes servent à quelque chose.
+    */
+    if (asked(process.env.SEED_DEMO)) {
+      await demoPricesHtg(args);
+    }
   } catch (error) {
     logger.error(
       `Mise en place MACHÉ interrompue : ${error instanceof Error ? error.message : String(error)}`

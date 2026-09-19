@@ -277,6 +277,12 @@ export type StoreOffer = {
   sellerName: string;
   sellerHandle: string;
   variantId: string;
+  /*
+    Le champ libre du vendeur, d'où se lit le profil qu'il déclare. Sur
+    une fiche produit, c'est ce qui permet à un acheteur de distinguer
+    les boutiques qui proposent le même article.
+  */
+  sellerMetadata: Record<string, unknown> | null;
 };
 
 /*
@@ -290,7 +296,16 @@ export async function fetchOffersForVariant(
 ): Promise<MedusaResult<StoreOffer[]>> {
   const result = await medusaFetch<{ offers: RawProduct[] }>(
     "/store/offers",
-    { variant_id: variantId, limit: 20 },
+    {
+      variant_id: variantId,
+      limit: 20,
+      /*
+        Sans `*seller`, la réponse ne porte que l'identifiant, le nom et
+        l'adresse de la boutique — pas son champ libre, donc pas le
+        profil qu'elle déclare.
+      */
+      fields: "*seller",
+    },
     { revalidate: 60, tags: ["offers"] }
   );
 
@@ -307,6 +322,10 @@ export async function fetchOffersForVariant(
         sellerName: text(seller.name) ?? "Boutique",
         sellerHandle: text(seller.handle) ?? "",
         variantId: String(raw.variant_id ?? ""),
+        sellerMetadata:
+          seller.metadata && typeof seller.metadata === "object"
+            ? (seller.metadata as Record<string, unknown>)
+            : null,
       };
     }),
   };

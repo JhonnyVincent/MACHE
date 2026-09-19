@@ -11,6 +11,8 @@
 */
 
 import Link from "next/link";
+import { readSellerProfile, type SellerProfile } from "@/lib/seller-profile";
+import { SellerProfileBadge } from "@/components/seller-profile-badge";
 import { reportOutage } from "@/lib/medusa/outage";
 import { notFound } from "next/navigation";
 import {
@@ -284,12 +286,28 @@ export default async function ProductPage({
                 <ul className="mt-2.5 space-y-2">
                   {offers.map((offer) => (
                     <li key={offer.id} className="flex items-center justify-between gap-3">
-                      <Link
-                        href={`/store/${offer.sellerHandle}`}
-                        className="text-base font-medium text-[var(--mache-text)] hover:underline"
-                      >
-                        {offer.sellerName}
-                      </Link>
+                      {/*
+                        Le nom seul ne dit pas à qui on achète. Le profil
+                        déclaré distingue l'artisan du grossiste, ce qui
+                        est précisément la question quand plusieurs
+                        boutiques proposent le même article.
+                      */}
+                      <span className="flex min-w-0 flex-wrap items-center gap-1.5">
+                        <Link
+                          href={`/store/${offer.sellerHandle}`}
+                          className="text-base font-medium text-[var(--mache-text)] hover:underline"
+                        >
+                          {offer.sellerName}
+                        </Link>
+
+                        {readSellerProfile(offer.sellerMetadata) && (
+                          <SellerProfileBadge
+                            profile={
+                              readSellerProfile(offer.sellerMetadata) as SellerProfile
+                            }
+                          />
+                        )}
+                      </span>
 
                       <form action={addToCartAction}>
                         <input type="hidden" name="offer_id" value={offer.id} />

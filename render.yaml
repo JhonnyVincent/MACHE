@@ -97,6 +97,15 @@ services:
       # pas.
       - key: SEED_DEMO
         sync: false
+      # Facteur d'affichage des prix de démonstration en gourdes.
+      #
+      # Ce n'est PAS un taux de change. Le catalogue de démonstration est
+      # chiffré en euros ; sans prix en gourdes, tout s'affiche « Prix
+      # indisponible » et rien n'entre dans un panier. Les montants en
+      # euros sont donc multipliés par ce facteur pour donner des ordres
+      # de grandeur plausibles à une boutique fictive. Par défaut : 140.
+      - key: DEMO_HTG_FACTOR
+        sync: false
 
 databases:
   - name: mache-db
