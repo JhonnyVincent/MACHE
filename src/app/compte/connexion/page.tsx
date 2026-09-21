@@ -84,8 +84,11 @@ export default async function CustomerLoginPage({
 
       <p className="mt-6 border-t border-[var(--mache-line)] pt-4 text-sm leading-relaxed text-[var(--mache-muted)]">
         Vous vendez sur MACHÉ ?{" "}
-        <Link href="/dashboard/seller" className="font-semibold hover:underline">
-          Espace vendeur
+        <Link
+          href="/dashboard/seller/connexion"
+          className="font-semibold hover:underline"
+        >
+          Connexion vendeur
         </Link>
         . Vous faites partie de l&apos;équipe MACHÉ ?{" "}
         <Link href="/login" className="font-semibold hover:underline">

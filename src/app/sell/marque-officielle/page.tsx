@@ -73,7 +73,7 @@ export default function SellMarqueOfficiellePage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/dashboard/seller" className="btn-primary">
+              <Link href="/dashboard/seller/inscription" className="btn-primary">
                 Créer un compte marque
               </Link>
 
@@ -263,7 +263,7 @@ export default function SellMarqueOfficiellePage() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/dashboard/seller" className="btn-primary">
+              <Link href="/dashboard/seller/inscription" className="btn-primary">
                 Créer un compte marque
               </Link>
 

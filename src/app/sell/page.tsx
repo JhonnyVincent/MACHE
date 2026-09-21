@@ -109,7 +109,7 @@ export default function SellPage() {
               de choix.
             */}
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/dashboard/seller" className="btn-primary">
+              <Link href="/dashboard/seller/inscription" className="btn-primary">
                 Ouvrir ma boutique
               </Link>
 
@@ -408,7 +408,7 @@ export default function SellPage() {
                 Contacter l’équipe
               </Link>
 
-              <Link href="/dashboard/seller" className="btn-secondary">
+              <Link href="/dashboard/seller/inscription" className="btn-secondary">
                 Créer mon compte vendeur
               </Link>
             </div>
@@ -435,7 +435,7 @@ export default function SellPage() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-              <Link href="/dashboard/seller" className="btn-primary">
+              <Link href="/dashboard/seller/inscription" className="btn-primary">
                 Ouvrir ma boutique
               </Link>
             </div>

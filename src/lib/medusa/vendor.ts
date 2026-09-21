@@ -49,6 +49,55 @@ function str(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+/*
+  Ce que le backend répond, dit en français.
+
+  Mercur répond en anglais, et ces phrases remontaient telles quelles
+  dans le formulaire : « Seller with name: Bawon Lakwa, already
+  exists. » Un commerçant haïtien n'a pas à déchiffrer un message
+  d'erreur d'un moteur de commerce pour comprendre qu'un nom est déjà
+  pris.
+
+  On ne traduit que ce qu'un vendeur peut rencontrer et corriger
+  lui-même. Le reste passe tel quel : une phrase inconnue déformée en
+  français approximatif serait pire que l'originale, et empêcherait de
+  chercher l'erreur.
+*/
+function translate(message: string): string {
+  const cases: [RegExp, string][] = [
+    [
+      /Seller with name: (.+), already exists/i,
+      "Une boutique porte déjà le nom « $1 ». Choisissez-en un autre.",
+    ],
+    [
+      /Seller with handle: (.+), already exists/i,
+      "L'adresse « $1 » est déjà prise. Choisissez-en une autre.",
+    ],
+    [
+      /already exists/i,
+      "Ces informations correspondent à une boutique existante.",
+    ],
+    [
+      /You must be authenticated to access seller information/i,
+      "Ce compte n'est rattaché à aucune boutique.",
+    ],
+    [/Unauthorized/i, "Adresse e-mail ou mot de passe incorrect."],
+  ];
+
+  for (const [pattern, replacement] of cases) {
+    if (!pattern.test(message)) continue;
+
+    /*
+      Le message d'origine finit par un point, la traduction aussi : on
+      se retrouvait avec « … un autre.. ». On enlève la ponctuation
+      restante plutôt que de compter sur la forme exacte du message.
+    */
+    return message.replace(pattern, replacement).replace(/\.\.+$/, ".");
+  }
+
+  return message;
+}
+
 async function request<T>(
   path: string,
   init: {
@@ -84,7 +133,9 @@ async function request<T>(
     if (!response.ok) {
       return {
         ok: false,
-        reason: str(payload.message) ?? `Le backend a répondu ${response.status}.`,
+        reason: str(payload.message)
+          ? translate(str(payload.message) as string)
+          : `Le backend a répondu ${response.status}.`,
       };
     }
 
@@ -158,29 +209,49 @@ function mapSeller(raw: Raw): VendorSeller {
   pas à la boutique demandée. C'est le backend qui tranche, pas ce
   formulaire.
 */
+/*
+  Les boutiques dont ce compte est membre.
+
+  On ne passe plus par l'API publique des boutiques pour retrouver la
+  sienne : une boutique en attente d'approbation n'y figure pas, et un
+  vendeur qui venait de s'inscrire ne pouvait donc pas se reconnecter —
+  « Aucune boutique ne porte l'adresse … », alors qu'elle existait.
+
+  Cette route-ci rend les boutiques du membre authentifié, approuvées ou
+  non. C'est le backend qui décide de l'appartenance ; on ne la déduit
+  de rien.
+*/
+async function sellersOfMember(token: string): Promise<Result<VendorSeller[]>> {
+  const result = await request<{ seller_members?: Raw[] }>("/vendor/sellers", {
+    token,
+  });
+
+  if (!result.ok) return result;
+
+  const sellers = (result.data.seller_members ?? [])
+    .map((membership) => membership.seller)
+    .filter((seller): seller is Raw => Boolean(seller && typeof seller === "object"))
+    .map(mapSeller);
+
+  return { ok: true, data: sellers };
+}
+
+/*
+  Connexion d'un vendeur.
+
+  `storeHandle` ne sert plus qu'à départager quand un compte est membre
+  de plusieurs boutiques. Laissé vide avec une seule boutique, on entre
+  dans celle-là : demander son adresse à quelqu'un qui n'en a qu'une est
+  une question dont on connaît déjà la réponse.
+*/
 export async function loginVendor(
   email: string,
   password: string,
-  storeHandle: string
+  storeHandle = ""
 ): Promise<Result<VendorSeller>> {
   const configured = getMedusaConfig();
 
   if (!configured.ok) return { ok: false, reason: configured.reason };
-
-  /* Adresse publique de la boutique → identifiant, via l'API boutique. */
-  const lookup = await request<{ sellers?: Raw[] }>(
-    `/store/sellers?handle=${encodeURIComponent(storeHandle)}&limit=1`
-  );
-
-  if (!lookup.ok) return lookup;
-
-  const found = (lookup.data.sellers ?? [])[0];
-
-  if (!found) {
-    return { ok: false, reason: `Aucune boutique ne porte l'adresse « ${storeHandle} ».` };
-  }
-
-  const sellerId = String(found.id);
 
   const auth = await request<{ token?: string }>("/auth/member/emailpass", {
     method: "POST",
@@ -196,22 +267,137 @@ export async function loginVendor(
 
   if (!token) return { ok: false, reason: "Aucun jeton n'a été délivré." };
 
-  /* Le backend vérifie l'appartenance ; on ne la déduit de rien. */
-  const check = await request<{ seller: Raw }>("/vendor/sellers/me", {
-    token,
-    sellerId,
-  });
+  const mine = await sellersOfMember(token);
 
-  if (!check.ok || !check.data.seller) {
+  /*
+    Un membre sans aucune boutique reçoit un 401 de Mercur — « You must
+    be authenticated » — alors qu'il vient précisément de s'authentifier.
+    Le jeton en main, on sait que ce n'est pas un problème
+    d'identifiants : c'est qu'il n'a pas de boutique. Laisser passer le
+    message d'origine enverrait quelqu'un vérifier son mot de passe
+    pendant des heures.
+  */
+  if (!mine.ok || mine.data.length === 0) {
     return {
       ok: false,
-      reason: "Ce compte n'est pas membre de cette boutique.",
+      reason:
+        "Ce compte n'est rattaché à aucune boutique. Ouvrez-en une, ou demandez à son responsable de vous inviter.",
     };
   }
 
-  await writeSession(token, sellerId);
+  const wanted = storeHandle.trim().toLowerCase();
 
-  return { ok: true, data: mapSeller(check.data.seller) };
+  const seller = wanted
+    ? mine.data.find((entry) => entry.handle.toLowerCase() === wanted)
+    : mine.data[0];
+
+  if (!seller) {
+    return {
+      ok: false,
+      reason: `Ce compte n'est pas membre de la boutique « ${storeHandle} ».`,
+    };
+  }
+
+  await writeSession(token, seller.id);
+
+  return { ok: true, data: seller };
+}
+
+/*
+  Ouvrir une boutique depuis MACHÉ.
+
+  Le parcours passait par le panneau Mercur, servi par le backend : une
+  autre application, en anglais, sur une autre adresse. Un commerçant
+  qui cliquait « ouvrir ma boutique » sur MACHÉ se retrouvait ailleurs,
+  sans comprendre s'il était encore chez MACHÉ.
+
+  Deux appels : le compte de la personne, puis la boutique. La session
+  est ouverte dans la foulée — on vient de créer le compte, redemander
+  le mot de passe n'apprendrait rien à personne.
+
+  La boutique naît EN ATTENTE D'APPROBATION et n'est pas visible du
+  public tant que MACHÉ ne l'a pas approuvée. L'écran le dit : sans
+  cela, le vendeur chercherait sa boutique dans le catalogue et la
+  croirait perdue.
+*/
+export async function registerVendor(input: {
+  shopName: string;
+  handle: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  description: string;
+}): Promise<Result<VendorSeller>> {
+  const configured = getMedusaConfig();
+
+  if (!configured.ok) return { ok: false, reason: configured.reason };
+
+  const auth = await request<{ token?: string }>(
+    "/auth/member/emailpass/register",
+    { method: "POST", body: { email: input.email, password: input.password } }
+  );
+
+  /*
+    Le compte existe déjà : on se connecte avec, plutôt que d'annoncer
+    que cette adresse est prise — ce qui révélerait qui a un compte chez
+    MACHÉ. Un mot de passe faux échoue ensuite comme il se doit.
+  */
+  let token = auth.ok ? str(auth.data.token) : null;
+
+  if (!token) {
+    const retry = await request<{ token?: string }>("/auth/member/emailpass", {
+      method: "POST",
+      body: { email: input.email, password: input.password },
+    });
+
+    if (!retry.ok) {
+      return {
+        ok: false,
+        reason:
+          "Ce compte existe déjà avec un autre mot de passe. Connectez-vous, ou choisissez une autre adresse e-mail.",
+      };
+    }
+
+    token = str(retry.data.token);
+  }
+
+  if (!token) return { ok: false, reason: "Aucun jeton n'a été délivré." };
+
+  const created = await request<{ seller: Raw }>("/vendor/sellers", {
+    method: "POST",
+    token,
+    body: {
+      name: input.shopName,
+      handle: input.handle,
+      email: input.email,
+      member_email: input.email,
+      first_name: input.firstName || null,
+      last_name: input.lastName || null,
+      description: input.description || null,
+      /*
+        MACHÉ vend en gourdes. La devise d'une boutique n'est pas un
+        choix d'interface : elle décide dans quelle monnaie ses prix
+        sont saisis, et une boutique haïtienne qui afficherait des
+        euros n'aurait aucun sens ici.
+      */
+      currency_code: "htg",
+    },
+  });
+
+  if (!created.ok) return created;
+
+  const seller = created.data.seller;
+
+  if (!seller) {
+    return { ok: false, reason: "La boutique n'a pas été créée." };
+  }
+
+  const mapped = mapSeller(seller);
+
+  await writeSession(token, mapped.id);
+
+  return { ok: true, data: mapped };
 }
 
 /* Rend null plutôt qu'une erreur : ne pas être connecté est un état normal. */

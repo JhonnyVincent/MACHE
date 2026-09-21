@@ -20,8 +20,13 @@ const footerSellLinks = [
   { label: "Devenir vendeur", href: "/sell" },
 
   {
-    label: "Espace vendeur",
-    href: "/dashboard/seller"
+    label: "Ouvrir ma boutique",
+    href: "/dashboard/seller/inscription"
+  },
+
+  {
+    label: "Connexion vendeur",
+    href: "/dashboard/seller/connexion"
   },
 
   {

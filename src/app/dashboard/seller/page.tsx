@@ -22,6 +22,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { medusaBackendUrl } from "@/lib/medusa/config";
+import { getVendorSeller } from "@/lib/medusa/vendor";
+import { vendorLogoutAction } from "./connexion/actions";
 import { reportOutage } from "@/lib/medusa/outage";
 import { supabaseConfigured } from "@/lib/supabase/env";
 
@@ -36,7 +38,12 @@ const CAPABILITIES = [
   "Avis reçus et réponses",
 ];
 
-export default async function SellerEntryPage() {
+export default async function SellerEntryPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ bienvenue?: string }>;
+}) {
+  const query = searchParams ? await searchParams : {};
   const backendUrl = medusaBackendUrl();
   const vendorUrl = backendUrl ? `${backendUrl}/seller` : "";
 
@@ -46,6 +53,13 @@ export default async function SellerEntryPage() {
     qui a un compte vendeur Mercur mais pas de rôle Supabase serait un
     verrou sans objet.
   */
+  /*
+    La boutique du vendeur connecté, s'il l'est. C'est ce qui permet de
+    dire où il en est — notamment qu'une boutique fraîchement ouverte
+    attend d'être approuvée.
+  */
+  const vendor = await getVendorSeller();
+
   let signedIn = false;
 
   if (supabaseConfigured()) {
@@ -93,8 +107,25 @@ export default async function SellerEntryPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-14">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
-        Espace vendeur
+        {vendor ? vendor.name : "Espace vendeur"}
       </h1>
+
+      {/*
+        Quelle boutique, et à quelle adresse. Un vendeur connecté voyait
+        « Espace vendeur » : rien ne lui disait dans quelle boutique il
+        se trouvait, ce qui compte dès qu'on en gère deux.
+      */}
+      {vendor && (
+        <p className="mt-1 text-md text-[var(--mache-muted)]">
+          Espace vendeur ·{" "}
+          <Link
+            href={`/store/${vendor.handle}`}
+            className="text-[var(--mache-primary)] hover:underline"
+          >
+            /store/{vendor.handle}
+          </Link>
+        </p>
+      )}
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
         Votre boutique se gère depuis le panneau vendeur MACHÉ. Tout y est :
@@ -108,6 +139,48 @@ export default async function SellerEntryPage() {
           </li>
         ))}
       </ul>
+
+      {query.bienvenue && vendor && (
+        <div className="mt-5 rounded-[10px] border border-[#b7dfc9] bg-[#f4fbf7] p-4">
+          <p className="text-md font-bold text-[#046c4e]">
+            Votre boutique « {vendor.name} » est ouverte.
+          </p>
+          <p className="mt-1 text-base leading-relaxed text-[var(--mache-muted)]">
+            Ajoutez vos produits dès maintenant depuis le panneau
+            vendeur, et composez votre vitrine. Elle apparaîtra dans le
+            catalogue MACHÉ une fois approuvée.
+          </p>
+        </div>
+      )}
+
+      {/*
+        L'état réel de la boutique, et non un état supposé. Un vendeur
+        qui ne voit pas sa boutique dans le catalogue doit savoir si
+        c'est une attente ou un refus.
+      */}
+      {vendor && vendor.status !== "active" && (
+        <div className="mt-5 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+          <p className="text-md font-bold text-[var(--mache-text)]">
+            {vendor.status === "rejected"
+              ? "Votre boutique n'a pas été retenue"
+              : "Votre boutique est en attente d'approbation"}
+          </p>
+          <p className="mt-1 text-base leading-relaxed text-[var(--mache-muted)]">
+            {vendor.status === "rejected" ? (
+              <>
+                Elle n&apos;apparaîtra pas dans le catalogue. Écrivez à
+                l&apos;équipe MACHÉ pour en connaître la raison.
+              </>
+            ) : (
+              <>
+                Vous pouvez préparer vos produits et votre vitrine dès
+                maintenant. Elle n&apos;est pas encore visible dans le
+                catalogue, et le sera dès que MACHÉ l&apos;aura relue.
+              </>
+            )}
+          </p>
+        </div>
+      )}
 
       <div className="mt-6 flex flex-wrap gap-2.5">
         <a
@@ -123,27 +196,40 @@ export default async function SellerEntryPage() {
           l'autre font tourner en rond quelqu'un qui cherche simplement où
           s'inscrire. L'inscription se fait dans le panneau vendeur.
         */}
-        {!signedIn && (
+        {!vendor && (
           <Link
-            href="/sell"
+            href="/dashboard/seller/inscription"
             className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
           >
-            Vendre sur MACHÉ : ce qu&apos;il faut savoir
+            Ouvrir ma boutique
           </Link>
         )}
       </div>
 
-      <div className="mt-8 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+      {/*
+        Cet encart disait d'aller créer sa boutique dans le panneau, ce
+        qui n'a plus de sens depuis qu'on l'ouvre depuis MACHÉ. Il dit
+        maintenant ce qui reste vrai : deux connexions, parce que ce
+        sont deux applications.
+      */}
+      <div className="mt-8 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
-          Un compte vendeur distinct
+          Deux connexions, et c&apos;est normal
         </h2>
         <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
-          Le panneau vendeur a sa propre inscription. Si vous vendiez déjà sur
-          l&apos;ancienne version de MACHÉ, créez-y votre boutique : le
-          catalogue a changé de moteur, et les anciennes fiches produit ne
-          sont pas reprises automatiquement. Écrivez à l&apos;équipe MACHÉ si
-          vous avez besoin d&apos;aide pour les transférer.
+          Le panneau vendeur est une application distincte : il vous
+          demandera vos identifiants une première fois. Ce sont les mêmes
+          que ceux de cette page. Vous pouvez y passer l&apos;interface en
+          français depuis votre profil.
         </p>
+        {vendor && (
+          <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
+            Si vous vendiez sur l&apos;ancienne version de MACHÉ, vos
+            anciennes fiches produit ne sont pas reprises
+            automatiquement — le catalogue a changé de moteur. Écrivez à
+            l&apos;équipe pour un transfert.
+          </p>
+        )}
       </div>
 
       <div className="mt-6 flex flex-wrap gap-4 border-t border-[var(--mache-line)] pt-4 text-sm">
@@ -160,6 +246,21 @@ export default async function SellerEntryPage() {
           Le profil de ma boutique
         </Link>
       </div>
+
+      {/*
+        Se déconnecter. Un vendeur connecté n'avait aucun moyen de
+        sortir depuis cette page : il fallait effacer ses cookies.
+      */}
+      {vendor && (
+        <form action={vendorLogoutAction} className="mt-6">
+          <button
+            type="submit"
+            className="text-sm font-semibold text-[var(--mache-muted)] hover:text-[var(--mache-danger)] hover:underline"
+          >
+            Se déconnecter de {vendor.name}
+          </button>
+        </form>
+      )}
 
       <p className="mt-6 text-sm text-[var(--mache-muted)]">
         Vous cherchiez plutôt vos achats ?{" "}

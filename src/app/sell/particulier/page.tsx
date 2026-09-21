@@ -58,7 +58,7 @@ export default function SellParticulierPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/dashboard/seller" className="btn-primary">
+              <Link href="/dashboard/seller/inscription" className="btn-primary">
                 Créer mon compte vendeur
               </Link>
 
@@ -194,7 +194,7 @@ export default function SellParticulierPage() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-              <Link href="/dashboard/seller" className="btn-primary">
+              <Link href="/dashboard/seller/inscription" className="btn-primary">
                 Créer mon compte
               </Link>
 

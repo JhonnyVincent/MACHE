@@ -30,6 +30,7 @@ const translations = {
     searchPlaceholder: "Rechercher un produit, une boutique...",
     login: "Se connecter",
     register: "S’inscrire",
+    sellerLogin: "Espace vendeur",
     account: "Mon compte",
     favorites: "Favoris",
     cart: "Panier",
@@ -44,6 +45,7 @@ const translations = {
     searchPlaceholder: "Chèche yon pwodwi, yon boutik...",
     login: "Konekte",
     register: "Kreye kont",
+    sellerLogin: "Espas vandè",
     account: "Kont mwen",
     favorites: "Favori",
     cart: "Panye",
@@ -129,6 +131,16 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
 
             <Link href="/compte/inscription">
               {t.register}
+            </Link>
+
+            {/*
+              La porte des vendeurs, nommée. Le bandeau ne proposait que
+              la connexion acheteur : un commerçant s'y connectait, puis
+              cherchait sa boutique dans un espace client qui n'en a
+              aucune.
+            */}
+            <Link href="/dashboard/seller/connexion" className="font-semibold">
+              {t.sellerLogin}
             </Link>
           </div>
         </div>
