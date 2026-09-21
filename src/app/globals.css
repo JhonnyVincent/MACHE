@@ -3,7 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --mache-primary: #e91e3a;
+  /*
+    #e91e3a donnait 4,46 de contraste avec du texte blanc — sous le seuil
+    de lisibilité du niveau AA (4,5), sur chaque bouton du site. Deux
+    pour cent plus sombre donne 4,63, et l'œil ne fait pas la différence.
+    Mesuré, pas estimé : `npm run test:themes`.
+  */
+  --mache-primary: #e41d39;
   --mache-primary-soft: #ffe8ee;
   --mache-primary-strong: #ff3f61;
   --mache-primary-dark: #9f1024;

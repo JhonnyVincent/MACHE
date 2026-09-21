@@ -25,6 +25,7 @@ import { ProductCard } from "@/components/home/rails";
 import { parseLayout } from "@/lib/storefront/blocks";
 import { RenderBlock } from "@/components/storefront/blocks";
 import { readSellerProfile } from "@/lib/seller-profile";
+import { readSellerTheme, themeStyle } from "@/lib/storefront/themes";
 import { SellerProfileBadge } from "@/components/seller-profile-badge";
 
 export const dynamic = "force-dynamic";
@@ -86,6 +87,13 @@ export default async function StorePage({
   const profile = readSellerProfile(seller.metadata);
 
   /*
+    Le thème choisi par le vendeur. Il ne redéfinit que la famille de
+    couleurs d'accent : le fond, le texte et les bordures restent ceux
+    de MACHÉ, ce qui garde la boutique lisible et reconnaissable.
+  */
+  const theme = readSellerTheme(seller.metadata);
+
+  /*
     Les avis de la boutique. Ils ne viennent pas de l'API publique de
     Mercur, qui n'en expose aucun, mais de la route `/store/ratings` du
     backend MACHÉ — et seuls les avis modérés et publiés en sortent.
@@ -96,7 +104,10 @@ export default async function StorePage({
     : { count: 0, average: null, reviews: [] };
 
   return (
-    <main className="bg-[var(--mache-bg)] pb-10">
+    <main
+      className="bg-[var(--mache-bg)] pb-10"
+      style={themeStyle(theme) as React.CSSProperties}
+    >
       {/* En-tête de boutique : identité, toujours affichée. */}
       <section className="border-b border-[var(--mache-line)] bg-white">
         <div className="container-page flex flex-wrap items-center gap-4 py-4">

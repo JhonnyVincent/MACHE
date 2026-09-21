@@ -21,7 +21,8 @@ import { revalidatePath } from "next/cache";
 import { saveSellerProfile } from "@/lib/medusa/vendor";
 import { isSellerProfile, profileInfo } from "@/lib/seller-profile";
 import { sanitizeMinimum } from "@/lib/seller-minimum";
-import { saveSellerMinimum } from "@/lib/medusa/vendor";
+import { isThemeId, themeById } from "@/lib/storefront/themes";
+import { saveSellerMinimum, saveSellerTheme } from "@/lib/medusa/vendor";
 
 const BASE = "/dashboard/seller/profil";
 
@@ -74,6 +75,37 @@ export async function saveMinimumAction(formData: FormData) {
       amount > 0
         ? `Commande minimum enregistrée : ${amount.toLocaleString("fr-FR")} HTG.`
         : "Commande minimum retirée : vous vendez sans montant minimum."
+    )}`
+  );
+}
+
+/*
+  ACTION : le thème de la vitrine.
+
+  Seuls les identifiants de la liste sont acceptés. Ce n'est pas une
+  précaution de principe : ce que le navigateur envoie finit en
+  variables CSS sur une page publique, et la liste fermée est ce qui
+  garantit qu'une vitrine reste lisible.
+*/
+export async function saveThemeAction(formData: FormData) {
+  const choice = String(formData.get("theme") || "").trim();
+
+  if (!isThemeId(choice)) {
+    redirect(`${BASE}?error=${encodeURIComponent("Ce thème n'existe pas.")}`);
+  }
+
+  const saved = await saveSellerTheme(choice);
+
+  if (!saved.ok) {
+    redirect(`${BASE}?error=${encodeURIComponent(saved.reason)}`);
+  }
+
+  revalidatePath(BASE);
+  revalidatePath("/store/[slug]", "page");
+
+  redirect(
+    `${BASE}?success=${encodeURIComponent(
+      `Thème enregistré : ${themeById(choice).label}.`
     )}`
   );
 }

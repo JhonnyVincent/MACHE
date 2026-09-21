@@ -489,6 +489,16 @@ export async function saveSellerMinimum(
   return saveSellerMetadata("min_order", Math.max(0, Math.floor(amount)));
 }
 
+/*
+  Thème de la vitrine. L'identifiant est vérifié par l'appelant contre
+  la liste fermée : rien d'autre n'atteint la base.
+*/
+export async function saveSellerTheme(
+  themeId: string
+): Promise<Result<VendorSeller>> {
+  return saveSellerMetadata("theme", themeId);
+}
+
 export async function saveStorefrontLayout(
   layout: unknown
 ): Promise<Result<VendorSeller>> {

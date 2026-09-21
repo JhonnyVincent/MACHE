@@ -23,7 +23,8 @@ import { redirect } from "next/navigation";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { SELLER_PROFILES, readSellerProfile } from "@/lib/seller-profile";
 import { readSellerMinimum } from "@/lib/seller-minimum";
-import { saveProfileAction, saveMinimumAction } from "./actions";
+import { STOREFRONT_THEMES, readSellerTheme } from "@/lib/storefront/themes";
+import { saveProfileAction, saveMinimumAction, saveThemeAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,7 @@ export default async function SellerProfilePage({
 
   const current = readSellerProfile(seller.metadata);
   const minimum = readSellerMinimum(seller.metadata);
+  const theme = readSellerTheme(seller.metadata);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">
@@ -117,6 +119,87 @@ export default async function SellerProfilePage({
           Enregistrer mon profil
         </button>
       </form>
+
+      {/*
+        Le thème de la vitrine.
+
+        Une liste fermée, et non un sélecteur de couleur : un choix
+        libre produit des vitrines illisibles. Chaque thème de cette
+        liste a un contraste mesuré et vérifié — deux candidats ont été
+        écartés pour cette raison.
+      */}
+      <section className="mt-8 border-t border-[var(--mache-line)] pt-6">
+        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)]">
+          Couleurs de ma vitrine
+        </h2>
+
+        <p className="mt-1.5 text-md leading-relaxed text-[var(--mache-muted)]">
+          Les couleurs de vos boutons et de vos bandeaux. Le fond et le
+          texte restent ceux de MACHÉ : c&apos;est ce qui garde votre
+          boutique lisible, et reconnaissable comme une boutique MACHÉ.
+        </p>
+
+        <form action={saveThemeAction} className="mt-4">
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            {STOREFRONT_THEMES.map((entry) => (
+              <label
+                key={entry.id}
+                className={`flex cursor-pointer items-start gap-3 rounded-[10px] border p-3 transition-colors ${
+                  theme.id === entry.id
+                    ? "border-[var(--mache-text)] bg-[var(--mache-bg)]"
+                    : "border-[var(--mache-line)] bg-white hover:border-[var(--mache-text)]"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="theme"
+                  value={entry.id}
+                  defaultChecked={theme.id === entry.id}
+                  className="mt-1 shrink-0"
+                />
+
+                <span className="min-w-0 flex-1">
+                  <span className="block text-base font-bold text-[var(--mache-text)]">
+                    {entry.label}
+                  </span>
+                  <span className="mt-0.5 block text-sm leading-relaxed text-[var(--mache-muted)]">
+                    {entry.hint}
+                  </span>
+
+                  {/* L'aperçu : ce que le client verra vraiment. */}
+                  <span className="mt-2 flex items-center gap-1.5">
+                    <span
+                      className="rounded-[4px] px-2.5 py-1 text-xs font-bold text-white"
+                      style={{ backgroundColor: entry.primary }}
+                    >
+                      Acheter
+                    </span>
+                    <span
+                      className="rounded-[4px] px-2.5 py-1 text-xs font-semibold"
+                      style={{ backgroundColor: entry.soft, color: entry.dark }}
+                    >
+                      Annonce
+                    </span>
+                    <span
+                      className="rounded-[4px] px-2.5 py-1 text-xs font-semibold text-white"
+                      style={{ backgroundColor: entry.hero }}
+                    >
+                      Bandeau
+                    </span>
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+
+          <button
+            type="submit"
+            className="mt-3 rounded-[6px] bg-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-black"
+          >
+            Enregistrer les couleurs
+          </button>
+        </form>
+      </section>
 
       {/*
         La commande minimum. Elle vit sous le profil parce qu'elle en
