@@ -1,120 +1,125 @@
 /*
-  PAGE : favoris
+  PAGE : les articles mis de côté.
 
-  Les favoris sont enregistrés dans Supabase depuis l'ancien catalogue :
-  chaque ligne porte un identifiant de produit Supabase. Le catalogue vit
-  désormais dans Medusa, avec ses propres identifiants — les anciens ne
-  désignent donc plus rien.
+  Elle lisait Supabase, dont les identifiants de produits ne désignent
+  plus rien depuis que le catalogue vit dans Medusa : elle affichait une
+  liste vide à qui avait mis dix articles de côté, et aucun écran ne
+  permettait d'en ajouter. Une entrée de l'en-tête, présente sur chaque
+  page, menait donc à une impasse.
 
-  Deux façons de traiter ça : faire disparaître la page, ou dire ce qui
-  s'est passé. La seconde est la bonne : un client qui avait mis dix
-  articles de côté doit comprendre pourquoi sa liste est vide, plutôt que
-  de croire que MACHÉ a perdu ses données.
+  Les favoris vivent maintenant dans le compte client, et suivent donc
+  la personne d'un appareil à l'autre.
 
-  Ses favoris ne sont pas supprimés. Ils attendent la table de
-  correspondance entre les deux catalogues.
+  Les articles disparus
+
+  Une adresse enregistrée peut ne plus correspondre à rien : le vendeur
+  a retiré l'article, ou l'a renommé. On le dit, ligne par ligne, au
+  lieu de faire disparaître l'entrée en silence — sans quoi la liste
+  rétrécit sans explication.
 */
 
 import Link from "next/link";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { supabaseConfigured } from "@/lib/supabase/env";
+import { getFavorites } from "@/lib/medusa/favorites";
+import { fetchProductByHandle } from "@/lib/medusa/catalog";
+import { ProductCard } from "@/components/home/rails";
+import { toggleFavoriteAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export default async function FavoritesPage() {
-  /*
-    Lecture entièrement défensive.
+export default async function FavoritesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ favori?: string }>;
+}) {
+  const query = searchParams ? await searchParams : {};
+  const handles = await getFavorites();
 
-    `createSupabaseServerClient` lève quand la configuration manque, ce qui
-    renvoyait une erreur 500 sur une page publique. Un visiteur n'a pas à
-    tomber sur une page en panne parce qu'une variable d'environnement
-    manque : il voit l'état « non connecté », qui est la vérité de son
-    point de vue.
-  */
-  let signedIn = false;
-  let savedCount = 0;
+  const results = await Promise.all(
+    handles.map(async (handle) => ({
+      handle,
+      result: await fetchProductByHandle(handle),
+    }))
+  );
 
-  /*
-    On vérifie la configuration avant d'essayer, plutôt que de laisser
-    lever et de rattraper. L'un et l'autre donnaient la bonne page, mais
-    le second écrivait une trace d'erreur complète, en rouge, à chaque
-    visite — pour une situation parfaitement prévue. Des journaux pleins
-    de rouge attendu finissent par cacher le rouge inattendu.
+  const found = results.flatMap(({ result }) =>
+    result.ok && result.data ? [result.data] : []
+  );
 
-    Le `try` reste : il couvre ce qui n'est pas prévu, une base qui ne
-    répond pas par exemple.
-  */
-  if (supabaseConfigured()) {
-    try {
-      const supabase = await createSupabaseServerClient();
-
-      const { data: userData } = await supabase.auth.getUser();
-
-      if (userData.user) {
-        signedIn = true;
-
-        const { count } = await supabase
-          .from("favorites")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", userData.user.id);
-
-        savedCount = count ?? 0;
-      }
-    } catch (error) {
-      console.error("[favorites]", error);
-    }
-  }
+  const missing = results.filter(
+    ({ result }) => result.ok && !result.data
+  ).length;
 
   return (
-    <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
+    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:py-14">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
         Mes favoris
       </h1>
 
-      {!signedIn ? (
+      {query.favori && (
+        <p className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base text-[var(--mache-text)]">
+          {decodeURIComponent(query.favori)}
+        </p>
+      )}
+
+      {handles.length === 0 ? (
         <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-6">
-          <p className="text-md text-[var(--mache-muted)]">
-            Connectez-vous pour retrouver les articles que vous avez mis de
-            côté.
+          <p className="text-md leading-relaxed text-[var(--mache-muted)]">
+            Vous n&apos;avez encore rien mis de côté. Le cœur sur une fiche
+            produit ajoute l&apos;article ici.
           </p>
-          <Link
-            href="/compte/connexion?next=/favorites"
-            className="mt-4 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
-          >
-            Se connecter
-          </Link>
+          <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
+            Vos favoris sont attachés à votre compte : vous les retrouvez
+            sur votre téléphone comme sur votre ordinateur.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2.5">
+            <Link
+              href="/shop"
+              className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+            >
+              Parcourir le catalogue
+            </Link>
+            <Link
+              href="/compte/connexion?next=/favorites"
+              className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
+            >
+              Se connecter
+            </Link>
+          </div>
         </div>
       ) : (
-        <div className="mt-6 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
-          <p className="text-md font-bold text-[var(--mache-text)]">
-            Favoris en cours de reprise
+        <>
+          <p className="mt-1.5 text-md text-[var(--mache-muted)]">
+            {found.length} article{found.length > 1 ? "s" : ""} mis de côté
           </p>
 
-          <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
-            {savedCount > 0 ? (
-              <>
-                Vous avez <strong>{savedCount}</strong> article
-                {savedCount > 1 ? "s" : ""} en favori. Ils ont été enregistrés
-                sur l&apos;ancien catalogue de MACHÉ, dont les identifiants ne
-                correspondent pas à ceux du nouveau. Rien n&apos;est
-                supprimé : la liste réapparaîtra une fois la correspondance
-                établie entre les deux catalogues.
-              </>
-            ) : (
-              <>
-                Vous n&apos;avez encore aucun favori. La mise en favori sera
-                rebranchée sur le nouveau catalogue prochainement.
-              </>
-            )}
-          </p>
+          {missing > 0 && (
+            <p className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
+              {missing} article{missing > 1 ? "s ne sont plus" : " n'est plus"}{" "}
+              en ligne : le vendeur {missing > 1 ? "les" : "l'"}a retiré du
+              catalogue. {missing > 1 ? "Ils restent" : "Il reste"} dans votre
+              liste au cas où {missing > 1 ? "ils reviendraient" : "il reviendrait"}.
+            </p>
+          )}
 
-          <Link
-            href="/shop"
-            className="mt-4 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline"
-          >
-            Parcourir le catalogue
-          </Link>
-        </div>
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {found.map((product) => (
+              <div key={product.id} className="flex flex-col">
+                <ProductCard product={product} />
+
+                <form action={toggleFavoriteAction} className="mt-1.5">
+                  <input type="hidden" name="handle" value={product.handle} />
+                  <input type="hidden" name="return_to" value="/favorites" />
+                  <button
+                    type="submit"
+                    className="w-full rounded-[6px] border border-[var(--mache-line)] px-3 py-1.5 text-sm font-semibold text-[var(--mache-muted)] transition-colors hover:border-[var(--mache-danger)] hover:text-[var(--mache-danger)]"
+                  >
+                    Retirer de mes favoris
+                  </button>
+                </form>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </main>
   );

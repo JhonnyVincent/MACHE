@@ -12,6 +12,9 @@
 
 import Link from "next/link";
 import { fetchProductRatings } from "@/lib/medusa/catalog";
+import { getCustomer } from "@/lib/medusa/customer";
+import { getFavorites } from "@/lib/medusa/favorites";
+import { toggleFavoriteAction } from "@/app/favorites/actions";
 import { RatingSummary, ReviewList } from "@/components/ratings";
 import { readSellerProfile, type SellerProfile } from "@/lib/seller-profile";
 import { SellerProfileBadge } from "@/components/seller-profile-badge";
@@ -30,7 +33,7 @@ export default async function ProductPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ variant?: string; error?: string }>;
+  searchParams?: Promise<{ variant?: string; error?: string; favori?: string }>;
 }) {
   const { slug } = await params;
   const query = searchParams ? await searchParams : {};
@@ -68,6 +71,17 @@ export default async function ProductPage({
     ils viennent de la route `/store/ratings` du backend MACHÉ, et seuls
     les avis modérés et publiés en sortent.
   */
+  /*
+    Le client connecté et sa liste : le cœur doit refléter l'état réel,
+    pas un état par défaut.
+  */
+  const [customer, favorites] = await Promise.all([
+    getCustomer(),
+    getFavorites(),
+  ]);
+
+  const isFavorite = favorites.includes(product.handle);
+
   const ratingsResult = await fetchProductRatings(product.id);
   const ratings = ratingsResult.ok
     ? ratingsResult.data
@@ -288,6 +302,56 @@ export default async function ProductPage({
               ) : (
                 <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base text-[var(--mache-muted)]">
                   Aucun vendeur ne propose actuellement cette déclinaison.
+                </p>
+              )}
+            </div>
+
+            {/*
+              Mettre de côté.
+
+              Le cœur n'est pas un bouton d'état affiché au hasard : il
+              dit si l'article EST déjà dans la liste, et l'action le
+              retire dans ce cas. Un cœur qui ne changerait pas après un
+              clic laisserait croire que rien ne s'est passé.
+
+              Sans compte, il renvoie à la connexion plutôt que
+              d'échouer : les favoris suivent la personne, pas le
+              navigateur, et cela demande un compte.
+            */}
+            <div className="mt-3">
+              {customer ? (
+                <form action={toggleFavoriteAction}>
+                  <input type="hidden" name="handle" value={product.handle} />
+                  <input
+                    type="hidden"
+                    name="return_to"
+                    value={`/product/${product.handle}`}
+                  />
+                  <button
+                    type="submit"
+                    className={`inline-flex items-center gap-2 rounded-[6px] border px-4 py-2 text-base font-semibold transition-colors ${
+                      isFavorite
+                        ? "border-[var(--mache-danger)] bg-[#fdeaec] text-[var(--mache-danger)]"
+                        : "border-[var(--mache-line)] text-[var(--mache-muted)] hover:border-[var(--mache-danger)] hover:text-[var(--mache-danger)]"
+                    }`}
+                  >
+                    <span aria-hidden="true">{isFavorite ? "♥" : "♡"}</span>
+                    {isFavorite ? "Dans mes favoris" : "Mettre de côté"}
+                  </button>
+                </form>
+              ) : (
+                <Link
+                  href={`/compte/connexion?next=${encodeURIComponent(`/product/${product.handle}`)}`}
+                  className="inline-flex items-center gap-2 rounded-[6px] border border-[var(--mache-line)] px-4 py-2 text-base font-semibold text-[var(--mache-muted)] transition-colors hover:border-[var(--mache-danger)] hover:text-[var(--mache-danger)]"
+                >
+                  <span aria-hidden="true">♡</span>
+                  Mettre de côté
+                </Link>
+              )}
+
+              {query.favori && (
+                <p className="mt-2 text-sm text-[var(--mache-danger)]">
+                  {decodeURIComponent(String(query.favori))}
                 </p>
               )}
             </div>
