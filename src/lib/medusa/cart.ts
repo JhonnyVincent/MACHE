@@ -41,6 +41,19 @@ export type CartLine = {
   quantity: number;
   unitPrice: number;
   total: number;
+  /*
+    À quelle boutique appartient cette ligne.
+
+    Un panier MACHÉ mélange les vendeurs : c'est le principe d'une
+    marketplace. Sans cette information, on ne peut ni regrouper les
+    articles par boutique, ni vérifier qu'une commande atteint le
+    minimum que cette boutique exige.
+
+    Null quand la ligne ne porte pas d'offre — cela ne devrait pas
+    arriver, mais on ne l'invente pas.
+  */
+  sellerId: string | null;
+  sellerName: string | null;
 };
 
 export type Cart = {
@@ -66,6 +79,27 @@ function str(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+/*
+  L'offre portée par une ligne de panier, et sa boutique.
+
+  Elles n'arrivent que si on les demande : la réponse par défaut de
+  `/store/carts/:id` ne contient aucun champ vendeur. C'est pourquoi
+  toutes les lectures de panier passent `fields=*items.offer.seller`.
+*/
+function offerOf(item: Raw): Raw | null {
+  return item.offer && typeof item.offer === "object"
+    ? (item.offer as Raw)
+    : null;
+}
+
+function sellerOf(item: Raw): Raw | null {
+  const offer = offerOf(item);
+
+  return offer?.seller && typeof offer.seller === "object"
+    ? (offer.seller as Raw)
+    : null;
+}
+
 function mapCart(raw: Raw): Cart {
   const items = Array.isArray(raw.items) ? (raw.items as Raw[]) : [];
 
@@ -85,6 +119,8 @@ function mapCart(raw: Raw): Cart {
     total: item.total !== null && item.total !== undefined
       ? num(item.total)
       : num(item.unit_price) * num(item.quantity),
+    sellerId: str(sellerOf(item)?.id) ?? str(offerOf(item)?.seller_id),
+    sellerName: str(sellerOf(item)?.name),
   }));
 
   return {
@@ -124,6 +160,22 @@ async function call<T>(
   const store = await cookies();
   const customerToken = store.get(CUSTOMER_TOKEN_COOKIE)?.value;
 
+  /*
+    Le vendeur de chaque ligne, demandé une fois pour toutes.
+
+    La réponse par défaut d'un panier ne contient aucun champ vendeur :
+    il faut le demander. L'ajouter ici plutôt qu'à chaque appel évite
+    l'oubli — et un oubli se traduirait par un panier dont les lignes
+    n'ont plus de boutique, donc par une commande minimum jamais
+    vérifiée. C'est le genre de panne qui ne se voit pas.
+  */
+  const withSeller =
+    path.startsWith("/store/carts") && !path.includes("fields=")
+      ? `${path}${path.includes("?") ? "&" : "?"}fields=${encodeURIComponent(
+          "*items.offer.seller"
+        )}`
+      : path;
+
   const headers: Record<string, string> = {
     "x-publishable-api-key": key,
     "content-type": "application/json",
@@ -133,7 +185,7 @@ async function call<T>(
   if (customerToken) headers.authorization = `Bearer ${customerToken}`;
 
   try {
-    const response = await fetch(`${url}${path}`, {
+    const response = await fetch(`${url}${withSeller}`, {
       method: init.method ?? "GET",
       headers,
       body: init.body ? JSON.stringify(init.body) : undefined,

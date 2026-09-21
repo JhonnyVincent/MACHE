@@ -475,6 +475,20 @@ export async function saveSellerProfile(
   écraserait en silence ce que le vendeur vient de changer dans le panneau
   Mercur — son nom, son logo, sa description.
 */
+/*
+  Commande minimum de la boutique, en gourdes.
+
+  Zéro retire la condition. On l'écrit quand même plutôt que de
+  supprimer la clé : une clé absente et une clé à zéro veulent dire la
+  même chose à la lecture, et garder la trace explicite évite de se
+  demander si le vendeur a choisi ou n'a jamais rien saisi.
+*/
+export async function saveSellerMinimum(
+  amount: number
+): Promise<Result<VendorSeller>> {
+  return saveSellerMetadata("min_order", Math.max(0, Math.floor(amount)));
+}
+
 export async function saveStorefrontLayout(
   layout: unknown
 ): Promise<Result<VendorSeller>> {

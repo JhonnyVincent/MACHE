@@ -13,6 +13,10 @@ import { revalidatePath } from "next/cache";
 import {
   setCustomerDetails, chooseShippingOption, placeOrder,
 } from "@/lib/medusa/checkout";
+import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
+import { blockingGroups } from "@/lib/seller-minimum";
+import { formatAmount } from "@/lib/medusa/catalog";
+import { getCart } from "@/lib/medusa/cart";
 
 const CONFIRMATION_COOKIE = "mache_last_order";
 
@@ -70,6 +74,36 @@ export async function chooseShippingAction(formData: FormData) {
 }
 
 export async function placeOrderAction() {
+  /*
+    Le contrôle qui compte.
+
+    Le panier masque déjà le bouton quand une boutique n'atteint pas son
+    minimum, mais masquer un bouton n'empêche rien : on arrive ici en
+    tapant l'adresse. La condition de vente d'un vendeur doit être
+    tenue par le serveur, sans quoi elle n'est qu'un affichage.
+  */
+  const cart = await getCart();
+
+  if (cart) {
+    const blocked = blockingGroups(await sellerGroupsOf(cart));
+
+    if (blocked.length > 0) {
+      const detail = blocked
+        .map(
+          (group) =>
+            `${group.sellerName} (il manque ${formatAmount(
+              group.missing,
+              cart.currency
+            )})`
+        )
+        .join(", ");
+
+      back(
+        `Une boutique demande une commande minimum non atteinte : ${detail}. Complétez votre panier.`
+      );
+    }
+  }
+
   const result = await placeOrder();
 
   if (!result.ok) back(result.reason);

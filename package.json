@@ -8,8 +8,9 @@
     "start": "next start",
     "test:vitrine": "tsx tests/vitrine-blocs.test.mts",
     "test:config": "tsx tests/config-backend.test.mts",
-    "test": "npm run test:vitrine && npm run test:config && npm run test:profil",
-    "test:profil": "tsx tests/profil-vendeur.test.mts"
+    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum",
+    "test:profil": "tsx tests/profil-vendeur.test.mts",
+    "test:minimum": "tsx tests/commande-minimum.test.mts"
   },
   "dependencies": {
     "@measured/puck": "^0.20.2",

@@ -22,7 +22,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { SELLER_PROFILES, readSellerProfile } from "@/lib/seller-profile";
-import { saveProfileAction } from "./actions";
+import { readSellerMinimum } from "@/lib/seller-minimum";
+import { saveProfileAction, saveMinimumAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,7 @@ export default async function SellerProfilePage({
   if (!seller) redirect("/dashboard/seller/vitrine");
 
   const current = readSellerProfile(seller.metadata);
+  const minimum = readSellerMinimum(seller.metadata);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">
@@ -115,6 +117,62 @@ export default async function SellerProfilePage({
           Enregistrer mon profil
         </button>
       </form>
+
+      {/*
+        La commande minimum. Elle vit sous le profil parce qu'elle en
+        découle : c'est une condition de vente, au même titre que le
+        fait de se présenter comme grossiste.
+      */}
+      <section className="mt-8 border-t border-[var(--mache-line)] pt-6">
+        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)]">
+          Commande minimum
+        </h2>
+
+        <p className="mt-1.5 text-md leading-relaxed text-[var(--mache-muted)]">
+          Le montant en dessous duquel vous ne servez pas une commande.
+          Laissez vide si vous vendez sans minimum — c&apos;est le cas de
+          la plupart des boutiques.
+        </p>
+
+        <form action={saveMinimumAction} className="mt-4 flex flex-wrap items-end gap-3">
+          <label className="block">
+            <span className="text-base font-semibold text-[var(--mache-text)]">
+              Montant minimum
+            </span>
+            <span className="mt-1 flex items-center gap-2">
+              <input
+                name="min_order"
+                inputMode="numeric"
+                defaultValue={minimum > 0 ? String(minimum) : ""}
+                placeholder="0"
+                className="w-40 rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-md outline-none focus:border-[var(--mache-primary)]"
+              />
+              <span className="text-md font-semibold text-[var(--mache-muted)]">
+                HTG
+              </span>
+            </span>
+          </label>
+
+          <button
+            type="submit"
+            className="rounded-[6px] bg-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-black"
+          >
+            Enregistrer
+          </button>
+        </form>
+
+        {/*
+          Ce que cela fait, exactement. Un vendeur doit savoir que cela
+          bloque une commande, et sur quoi porte le calcul.
+        */}
+        <p className="mt-3 text-sm leading-relaxed text-[var(--mache-muted)]">
+          Le montant porte sur <strong>vos articles seuls</strong>. Un
+          client qui achète aussi chez d&apos;autres boutiques doit
+          atteindre votre minimum avec ce qu&apos;il prend chez vous. En
+          dessous, il ne peut pas valider sa commande, et le panier lui
+          dit ce qui manque.
+        </p>
+      </section>
 
       {/*
         Dit avant qu'on le demande : ce badge n'est pas une vérification.

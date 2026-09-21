@@ -14,6 +14,8 @@
 import Link from "next/link";
 import { getCart } from "@/lib/medusa/cart";
 import { formatAmount } from "@/lib/medusa/catalog";
+import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
+import { blockingGroups } from "@/lib/seller-minimum";
 import { updateCartLineAction, removeCartLineAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +27,13 @@ export default async function CartPage({
 }) {
   const query = searchParams ? await searchParams : {};
   const cart = await getCart();
+
+  /*
+    Les boutiques du panier et leurs conditions. Un panier MACHÉ mélange
+    les vendeurs, et chacun pose les siennes.
+  */
+  const groups = cart ? await sellerGroupsOf(cart) : [];
+  const blocked = blockingGroups(groups);
 
   const isEmpty = !cart || cart.lines.length === 0;
 
@@ -182,12 +191,65 @@ export default async function CartPage({
                 </div>
               </dl>
 
-              <Link
-                href="/checkout"
-                className="mt-4 block rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-center text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
-              >
-                Commander
-              </Link>
+              {/*
+                Ce qui manque, boutique par boutique, et avant le bouton.
+
+                Découvrir à la caisse qu'une commande ne peut pas aboutir
+                fait perdre le travail déjà fait — adresse, livraison. Le
+                panier le dit d'abord, avec le montant exact qui manque
+                et chez qui.
+              */}
+              {blocked.length > 0 && (
+                <div className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] p-3.5">
+                  <p className="text-base font-bold text-[var(--mache-text)]">
+                    {blocked.length > 1
+                      ? "Deux boutiques demandent une commande minimum"
+                      : "Cette boutique demande une commande minimum"}
+                  </p>
+
+                  <ul className="mt-2 space-y-1.5">
+                    {blocked.map((group) => (
+                      <li
+                        key={group.sellerId}
+                        className="text-base leading-relaxed text-[var(--mache-muted)]"
+                      >
+                        <strong className="text-[var(--mache-text)]">
+                          {group.sellerName}
+                        </strong>{" "}
+                        : minimum{" "}
+                        {formatAmount(group.minimum, cart.currency)}, vous
+                        en êtes à {formatAmount(group.subtotal, cart.currency)}.
+                        Il manque{" "}
+                        <strong className="text-[var(--mache-text)]">
+                          {formatAmount(group.missing, cart.currency)}
+                        </strong>
+                        .
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
+                    Le minimum porte sur les articles de cette boutique
+                    seulement.
+                  </p>
+                </div>
+              )}
+
+              {blocked.length > 0 ? (
+                <span
+                  aria-disabled="true"
+                  className="mt-4 block cursor-not-allowed rounded-[6px] bg-[var(--mache-line)] px-5 py-3 text-center text-md font-bold text-[var(--mache-muted)]"
+                >
+                  Commander
+                </span>
+              ) : (
+                <Link
+                  href="/checkout"
+                  className="mt-4 block rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-center text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+                >
+                  Commander
+                </Link>
+              )}
 
               {/*
                 Le moyen de paiement est annoncé ici, pas découvert à la

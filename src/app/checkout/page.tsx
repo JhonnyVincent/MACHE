@@ -18,6 +18,8 @@ import { getCart } from "@/lib/medusa/cart";
 import { getCheckoutState } from "@/lib/medusa/checkout";
 import { formatAmount } from "@/lib/medusa/catalog";
 import { saveAddressAction, chooseShippingAction, placeOrderAction } from "./actions";
+import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
+import { blockingGroups } from "@/lib/seller-minimum";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +76,20 @@ export default async function CheckoutPage({
 
   /* Un panier vide n'a rien à commander : on renvoie au catalogue. */
   if (!cart || cart.lines.length === 0) redirect("/cart");
+
+  /*
+    Une boutique dont le minimum n'est pas atteint renvoie au panier,
+    avant de demander quoi que ce soit.
+
+    L'action de validation refuse déjà — c'est elle qui tient la règle.
+    Mais laisser la page s'ouvrir ferait saisir une adresse et choisir
+    une livraison pour rien : le refus arriverait au tout dernier clic,
+    après le travail. Le panier, lui, dit ce qui manque et permet de le
+    corriger.
+  */
+  if (blockingGroups(await sellerGroupsOf(cart)).length > 0) {
+    redirect("/cart");
+  }
 
   const stateResult = await getCheckoutState();
 

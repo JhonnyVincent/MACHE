@@ -20,6 +20,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { saveSellerProfile } from "@/lib/medusa/vendor";
 import { isSellerProfile, profileInfo } from "@/lib/seller-profile";
+import { sanitizeMinimum } from "@/lib/seller-minimum";
+import { saveSellerMinimum } from "@/lib/medusa/vendor";
 
 const BASE = "/dashboard/seller/profil";
 
@@ -43,6 +45,35 @@ export async function saveProfileAction(formData: FormData) {
   redirect(
     `${BASE}?success=${encodeURIComponent(
       `Profil enregistré : ${profileInfo(choice).label}.`
+    )}`
+  );
+}
+
+/*
+  ACTION : la commande minimum de la boutique.
+
+  Zéro veut dire « pas de minimum », et c'est le cas de la plupart des
+  commerces : vendre à qui veut, quelle que soit la somme, est la règle.
+  Un champ vide enregistre donc zéro plutôt que d'être refusé.
+*/
+export async function saveMinimumAction(formData: FormData) {
+  const amount = sanitizeMinimum(formData.get("min_order"));
+
+  const saved = await saveSellerMinimum(amount);
+
+  if (!saved.ok) {
+    redirect(`${BASE}?error=${encodeURIComponent(saved.reason)}`);
+  }
+
+  revalidatePath(BASE);
+  revalidatePath("/store/[slug]", "page");
+  revalidatePath("/cart");
+
+  redirect(
+    `${BASE}?success=${encodeURIComponent(
+      amount > 0
+        ? `Commande minimum enregistrée : ${amount.toLocaleString("fr-FR")} HTG.`
+        : "Commande minimum retirée : vous vendez sans montant minimum."
     )}`
   );
 }
