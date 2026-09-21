@@ -201,6 +201,13 @@ Trois garanties, vérifiées :
   devise pour laquelle aucun prix n'existe, et la démonstration Mercur
   est chiffrée en euros.
 
+  Le catalogue devient aussi **livrable en Haïti** : les zones de
+  livraison de la démonstration ne couvraient que sept pays d'Europe, et
+  le passage en caisse s'arrêtait faute de mode d'expédition. Le tarif
+  posé est un montant de démonstration, réglable avec
+  `DEMO_SHIPPING_HTG` — livrer à Jacmel ne coûte pas ce que coûte
+  livrer à Delmas, et ce n'est pas à ce script d'en décider.
+
   Ces montants ne viennent d'**aucun taux de change**. Ce sont des
   chaussures fictives : les prix en euros sont multipliés par un facteur
   d'affichage, réglable avec `DEMO_HTG_FACTOR`, pour obtenir des ordres

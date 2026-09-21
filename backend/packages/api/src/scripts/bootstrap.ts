@@ -10,7 +10,7 @@
   2. La mise en place MACHÉ : région Haïti, canal de vente, clé publique
      du site.
   3. Les prix en gourdes du catalogue de démonstration, une fois la
-     région Haïti créée.
+     région Haïti créée, et sa livraison vers Haïti.
 
   Pourquoi cet ordre
 
@@ -52,6 +52,7 @@ import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils";
 import seedDemoData from "./seed";
 import setupMache from "./setup-mache";
 import demoPricesHtg from "./demo-prices-htg";
+import demoShippingHaiti from "./demo-shipping-haiti";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -82,6 +83,13 @@ export default async function bootstrap(args: ExecArgs) {
     */
     if (asked(process.env.SEED_DEMO)) {
       await demoPricesHtg(args);
+
+      /*
+        Et la livraison : les zones du catalogue de démonstration ne
+        couvrent que l'Europe. Sans cette étape, on remplit un panier
+        mais on ne peut jamais commander.
+      */
+      await demoShippingHaiti(args);
     }
   } catch (error) {
     logger.error(

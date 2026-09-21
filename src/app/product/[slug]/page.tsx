@@ -11,6 +11,8 @@
 */
 
 import Link from "next/link";
+import { fetchProductRatings } from "@/lib/medusa/catalog";
+import { RatingSummary, ReviewList } from "@/components/ratings";
 import { readSellerProfile, type SellerProfile } from "@/lib/seller-profile";
 import { SellerProfileBadge } from "@/components/seller-profile-badge";
 import { reportOutage } from "@/lib/medusa/outage";
@@ -60,6 +62,16 @@ export default async function ProductPage({
   const product = result.data;
 
   if (!product) notFound();
+
+  /*
+    Les avis du produit. L'API publique de Mercur n'en expose aucun ;
+    ils viennent de la route `/store/ratings` du backend MACHÉ, et seuls
+    les avis modérés et publiés en sortent.
+  */
+  const ratingsResult = await fetchProductRatings(product.id);
+  const ratings = ratingsResult.ok
+    ? ratingsResult.data
+    : { count: 0, average: null, reviews: [] };
 
   /* Variante choisie, ou la première disponible. */
   const selected =
@@ -138,6 +150,16 @@ export default async function ProductPage({
             <h1 className="text-2xl font-bold leading-tight tracking-tight text-[var(--mache-text)] sm:text-3xl">
               {product.title}
             </h1>
+
+            {/*
+              La note du produit, sous son nom. Rien ne s'affiche tant
+              qu'aucun client ne l'a noté : une rangée d'étoiles vides
+              se lit comme une mauvaise note, alors qu'un produit neuf
+              n'a simplement pas encore été jugé.
+            */}
+            <p className="mt-1.5">
+              <RatingSummary ratings={ratings} />
+            </p>
 
             {product.subtitle && (
               <p className="mt-1.5 text-md text-[var(--mache-muted)]">
@@ -343,6 +365,16 @@ export default async function ProductPage({
           </div>
         </div>
       </div>
+
+      {ratings.reviews.length > 0 && (
+        <section className="container-page pb-8">
+          <h2 className="mb-1 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+            Avis sur ce produit
+          </h2>
+          <RatingSummary ratings={ratings} />
+          <ReviewList ratings={ratings} />
+        </section>
+      )}
 
       {related.ok && related.data.products.length > 0 && (
         <ProductRailSection

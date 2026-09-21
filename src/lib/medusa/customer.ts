@@ -61,7 +61,18 @@ export type CustomerOrder = {
   total: number;
   currency: string;
   itemCount: number;
-  items: { id: string; title: string; quantity: number; thumbnail: string | null }[];
+  items: {
+    id: string;
+    title: string;
+    quantity: number;
+    thumbnail: string | null;
+    /*
+      Nécessaire pour déposer un avis : Mercur n'autorise à noter qu'un
+      produit effectivement commandé, et veut son identifiant.
+    */
+    productId: string | null;
+    productHandle: string | null;
+  }[];
 };
 
 type Raw = Record<string, unknown>;
@@ -278,6 +289,8 @@ function mapOrder(raw: Raw): CustomerOrder {
       title: str(item.product_title) ?? str(item.title) ?? "Article",
       quantity: num(item.quantity),
       thumbnail: str(item.thumbnail),
+      productId: str(item.product_id),
+      productHandle: str(item.product_handle),
     })),
   };
 }
@@ -336,4 +349,56 @@ export async function getCustomerAddresses(): Promise<Result<CustomerAddress[]>>
       isDefaultShipping: Boolean(raw.is_default_shipping),
     })),
   };
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Avis                                                                       */
+/* -------------------------------------------------------------------------- */
+
+/*
+  Déposer un avis sur un produit commandé.
+
+  Mercur exige l'identifiant de la commande et vérifie qu'elle appartient
+  bien au client connecté : on ne peut noter que ce qu'on a acheté.
+  Vérifié — un identifiant de commande inventé est refusé.
+
+  L'avis n'apparaît pas tout de suite : il est enregistré « en attente »
+  et n'est publié qu'après modération par MACHÉ. L'écran le dit, sans
+  quoi le client croirait son avis perdu.
+*/
+export async function submitProductReview(input: {
+  orderId: string;
+  productId: string;
+  rating: number;
+  note: string;
+}): Promise<Result<{ pending: true }>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Non connecté." };
+
+  const rating = Math.round(Number(input.rating));
+
+  if (!Number.isFinite(rating) || rating < 1 || rating > 5) {
+    return { ok: false, reason: "La note doit être comprise entre 1 et 5." };
+  }
+
+  /* Mercur refuse au-delà de 300 caractères : on coupe avant de poster. */
+  const note = input.note.trim().slice(0, 300);
+
+  const result = await request<{ review: Raw }>("/store/reviews", {
+    method: "POST",
+    token,
+    body: {
+      order_id: input.orderId,
+      reference: "product",
+      reference_id: input.productId,
+      rating,
+      customer_note: note || null,
+    },
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: { pending: true } };
 }

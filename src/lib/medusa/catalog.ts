@@ -566,3 +566,83 @@ export async function fetchCategories(
   existants.
 */
 export { formatAmount } from "../format";
+
+/* -------------------------------------------------------------------------- */
+/* Avis                                                                       */
+/* -------------------------------------------------------------------------- */
+
+export type StoreReview = {
+  id: string;
+  rating: number;
+  note: string | null;
+  /* La réponse publique du vendeur, quand il en a écrit une. */
+  sellerNote: string | null;
+  createdAt: string | null;
+};
+
+export type StoreRatings = {
+  count: number;
+  /*
+    Null quand il n'y a aucun avis — et non zéro. « 0 sur 5 » se lit
+    comme une très mauvaise note ; l'absence d'avis n'en est pas une.
+  */
+  average: number | null;
+  reviews: StoreReview[];
+};
+
+/*
+  Les avis publiés d'une boutique ou d'un produit.
+
+  Mercur enregistre et modère les avis, et n'autorise à noter que ce
+  qu'on a commandé — mais n'expose rien publiquement. La route
+  `/store/ratings` du backend MACHÉ comble ce trou et ne rend que les
+  avis publiés.
+*/
+async function fetchRatings(
+  params: { sellerId: string } | { productId: string }
+): Promise<MedusaResult<StoreRatings>> {
+  const key = "sellerId" in params ? "seller_id" : "product_id";
+  const value = "sellerId" in params ? params.sellerId : params.productId;
+
+  const result = await medusaFetch<{
+    count: number;
+    average: number | null;
+    reviews: {
+      id: string;
+      rating: number;
+      note: string | null;
+      seller_note: string | null;
+      created_at: string;
+    }[];
+  }>(
+    "/store/ratings",
+    { [key]: value },
+    { revalidate: 120, tags: ["reviews", `${key}:${value}`] }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      count: Number(result.data.count) || 0,
+      average:
+        typeof result.data.average === "number" ? result.data.average : null,
+      reviews: (result.data.reviews ?? []).map((review) => ({
+        id: String(review.id),
+        rating: Number(review.rating) || 0,
+        note: text(review.note),
+        sellerNote: text(review.seller_note),
+        createdAt: text(review.created_at),
+      })),
+    },
+  };
+}
+
+export function fetchSellerRatings(sellerId: string) {
+  return fetchRatings({ sellerId });
+}
+
+export function fetchProductRatings(productId: string) {
+  return fetchRatings({ productId });
+}

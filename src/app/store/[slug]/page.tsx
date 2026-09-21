@@ -17,7 +17,10 @@
 import Link from "next/link";
 import { reportOutage } from "@/lib/medusa/outage";
 import { notFound } from "next/navigation";
-import { fetchSellerByHandle, fetchProducts } from "@/lib/medusa/catalog";
+import {
+  fetchSellerByHandle, fetchProducts, fetchSellerRatings,
+} from "@/lib/medusa/catalog";
+import { RatingSummary, ReviewList } from "@/components/ratings";
 import { ProductCard } from "@/components/home/rails";
 import { parseLayout } from "@/lib/storefront/blocks";
 import { RenderBlock } from "@/components/storefront/blocks";
@@ -82,6 +85,16 @@ export default async function StorePage({
 
   const profile = readSellerProfile(seller.metadata);
 
+  /*
+    Les avis de la boutique. Ils ne viennent pas de l'API publique de
+    Mercur, qui n'en expose aucun, mais de la route `/store/ratings` du
+    backend MACHÉ — et seuls les avis modérés et publiés en sortent.
+  */
+  const ratingsResult = await fetchSellerRatings(seller.id);
+  const ratings = ratingsResult.ok
+    ? ratingsResult.data
+    : { count: 0, average: null, reviews: [] };
+
   return (
     <main className="bg-[var(--mache-bg)] pb-10">
       {/* En-tête de boutique : identité, toujours affichée. */}
@@ -112,6 +125,10 @@ export default async function StorePage({
                 grossiste qui vend par palettes.
               */}
               {profile && <SellerProfileBadge profile={profile} />}
+            </p>
+
+            <p className="mt-1">
+              <RatingSummary ratings={ratings} />
             </p>
 
             {productsResult.ok && (
@@ -151,6 +168,20 @@ export default async function StorePage({
           context={{ seller, products }}
         />
       ))}
+
+      {/*
+        Les avis, après la vitrine composée par le vendeur : il présente
+        sa boutique, puis ses clients parlent.
+      */}
+      {ratings.reviews.length > 0 && (
+        <section className="container-page py-6">
+          <h2 className="mb-1 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+            Avis sur cette boutique
+          </h2>
+          <RatingSummary ratings={ratings} />
+          <ReviewList ratings={ratings} />
+        </section>
+      )}
 
       {productsResult.ok && products.length === 0 && (
         <div className="container-page py-6">

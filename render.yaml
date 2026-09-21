@@ -106,6 +106,12 @@ services:
       # de grandeur plausibles à une boutique fictive. Par défaut : 140.
       - key: DEMO_HTG_FACTOR
         sync: false
+      # Tarif de livraison de démonstration, en gourdes. Les zones de
+      # livraison du catalogue Mercur ne couvrent que l'Europe : sans
+      # cela, un panier ne peut pas aller jusqu'à la commande. Ce n'est
+      # pas un coût de transport étudié. Par défaut : 350.
+      - key: DEMO_SHIPPING_HTG
+        sync: false
 
 databases:
   - name: mache-db

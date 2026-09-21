@@ -20,15 +20,19 @@ import {
   PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Notice,
 } from "@/components/seller/ui";
 import { reportOutage } from "@/lib/medusa/outage";
+import { submitReviewAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function BuyerOrderPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ error?: string; success?: string }>;
 }) {
   const { id } = await params;
+  const query = searchParams ? await searchParams : {};
 
   const customer = await getCustomer();
 
@@ -130,6 +134,87 @@ export default async function BuyerOrderPage({
             ))}
           </Table>
         </Panel>
+
+        {/*
+          Noter ce qu'on a reçu.
+
+          Le formulaire n'apparaît qu'une fois la commande livrée : noter
+          un colis qu'on n'a pas encore ouvert n'a pas de sens, et
+          l'inviter à le faire produirait des avis sans rapport avec le
+          produit.
+        */}
+        {order.fulfillmentStatus === "delivered" && (
+          <Panel title="Donner mon avis">
+            {query.error && (
+              <Notice tone="warning" title="Avis non enregistré">
+                {decodeURIComponent(query.error)}
+              </Notice>
+            )}
+
+            {query.success && (
+              <Notice tone="info" title="Avis reçu">
+                {decodeURIComponent(query.success)}
+              </Notice>
+            )}
+
+            <p className="text-base leading-relaxed text-[#565959]">
+              Votre avis est relu par MACHÉ avant d&apos;être publié.
+              Seuls les avis de clients qui ont réellement commandé
+              l&apos;article peuvent être déposés.
+            </p>
+
+            <div className="mt-4 space-y-4">
+              {order.items
+                .filter((item) => item.productId)
+                .map((item) => (
+                  <form
+                    key={item.id}
+                    action={submitReviewAction}
+                    className="rounded-[8px] border border-[#e3e6e6] p-4"
+                  >
+                    <input type="hidden" name="order_id" value={order.id} />
+                    <input type="hidden" name="product_id" value={item.productId ?? ""} />
+
+                    <p className="text-base font-bold text-[#0f1111]">
+                      {item.title}
+                    </p>
+
+                    <div className="mt-2.5 flex flex-wrap items-center gap-3">
+                      <label className="text-sm text-[#565959]">
+                        Note
+                        <select
+                          name="rating"
+                          defaultValue="5"
+                          className="ml-2 rounded-[4px] border border-[#888c8c] px-2 py-1 text-base"
+                        >
+                          {[5, 4, 3, 2, 1].map((n) => (
+                            <option key={n} value={n}>
+                              {n} sur 5
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+
+                    <textarea
+                      name="note"
+                      rows={2}
+                      maxLength={300}
+                      placeholder="Ce que vous avez pensé de l'article (facultatif, 300 caractères)"
+                      className="mt-2.5 w-full rounded-[4px] border border-[#888c8c] px-3 py-2 text-base"
+                    />
+
+                    <button
+                      type="submit"
+                      className="mt-2.5 rounded-[4px] bg-[#0f1111] px-4 py-2 text-base font-bold text-white hover:bg-black"
+                    >
+                      Envoyer mon avis
+                    </button>
+                  </form>
+                ))}
+            </div>
+          </Panel>
+        )}
 
         {order.paymentStatus !== "captured" && (
           <Notice tone="info" title="Paiement à la livraison">
