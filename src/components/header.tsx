@@ -3,13 +3,24 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+/*
+  Le bandeau défilant renvoie vers Bawon, et annonce ses services.
+
+  « Paiement sécurisé » en a été retiré. Affichée dans l'en-tête de
+  MACHÉ, sur chaque page, cette mention se lit comme une promesse de
+  MACHÉ — or MACHÉ n'encaisse rien : le paiement se fait en main propre
+  à la livraison. Un client qui la lisait pouvait croire que ses données
+  bancaires seraient protégées par un dispositif qui n'existe pas.
+
+  Les cinq autres mentions décrivent des services de Bawon, ce que le
+  lien indique.
+*/
 const tickerTranslations = {
   fr: [
     "Trouver un exportateur / importateur",
     "Trouver un financement",
     "Se faire accompagner pour créer son entreprise",
     "Investir dans des projets",
-    "Paiement sécurisé",
     "Développer son entreprise"
   ],
   ht: [
@@ -17,7 +28,6 @@ const tickerTranslations = {
     "Jwenn finansman",
     "Jwenn sipò pou kreye biznis ou",
     "Envesti nan pwojè",
-    "Peman sekirize",
     "Devlope biznis ou"
   ]
 };
