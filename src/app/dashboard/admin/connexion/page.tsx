@@ -16,6 +16,7 @@
 */
 
 import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/medusa/admin";
 import { adminLoginAction } from "../actions";
@@ -106,12 +107,13 @@ export default async function AdminLoginPage({
           />
         </div>
 
-        <button
-          type="submit"
+        <SubmitButton
           className="w-full rounded-[6px] bg-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-black"
+          pendingLabel="Connexion en cours…"
+          pendingHint="Le backend commerce peut être en veille et mettre jusqu'à une minute à répondre. Ne quittez pas la page."
         >
           Se connecter
-        </button>
+        </SubmitButton>
       </form>
 
       {/*

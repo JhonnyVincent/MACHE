@@ -20,6 +20,11 @@
 */
 
 import { getMedusaConfig } from "./config";
+import {
+  backendTimeoutSignal,
+  isTimeout,
+  TIMEOUT_MESSAGE,
+} from "./timeout";
 
 export type MedusaResult<T> =
   | { ok: true; data: T }
@@ -72,6 +77,8 @@ export async function medusaFetch<T>(
 
   try {
     const response = await fetch(target, {
+      /* Une attente qui ne finit jamais fige l\'écran sans rien dire. */
+      signal: backendTimeoutSignal(),
       headers: {
         "x-publishable-api-key": key,
         accept: "application/json",
@@ -106,6 +113,14 @@ export async function medusaFetch<T>(
 
     return { ok: true, data: (await response.json()) as T };
   } catch (error) {
+    /*
+      Un abandon n\'est pas une panne réseau : il vaut la peine
+      d\'être réessayé, et le dire évite de renoncer.
+    */
+    if (isTimeout(error)) {
+      return { ok: false, reason: TIMEOUT_MESSAGE, configured: true };
+    }
+
     const message = error instanceof Error ? error.message : String(error);
 
     return {

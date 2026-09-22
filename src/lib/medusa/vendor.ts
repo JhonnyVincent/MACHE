@@ -27,6 +27,11 @@
 
 import { cookies } from "next/headers";
 import { getMedusaConfig } from "./config";
+import {
+  backendTimeoutSignal,
+  isTimeout,
+  TIMEOUT_MESSAGE,
+} from "./timeout";
 
 const TOKEN_COOKIE = "mache_vendor_token";
 const SELLER_COOKIE = "mache_vendor_seller";
@@ -122,6 +127,8 @@ async function request<T>(
 
   try {
     const response = await fetch(`${configured.config.url}${path}`, {
+      /* Une attente qui ne finit jamais fige l\'écran sans rien dire. */
+      signal: backendTimeoutSignal(),
       method: init.method ?? "GET",
       headers,
       body: init.body ? JSON.stringify(init.body) : undefined,
@@ -141,6 +148,14 @@ async function request<T>(
 
     return { ok: true, data: payload as T };
   } catch (error) {
+    /*
+      Un abandon n\'est pas une panne réseau : il vaut la peine
+      d\'être réessayé, et le dire évite de renoncer.
+    */
+    if (isTimeout(error)) {
+      return { ok: false, reason: TIMEOUT_MESSAGE };
+    }
+
     const message = error instanceof Error ? error.message : String(error);
     return { ok: false, reason: `Backend injoignable : ${message}` };
   }

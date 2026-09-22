@@ -12,6 +12,7 @@
 */
 
 import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 import { requestQuoteAction } from "../actions";
 import { getCustomer } from "@/lib/medusa/customer";
 
@@ -199,12 +200,13 @@ export default async function NewQuotePage({
           />
         </div>
 
-        <button
-          type="submit"
+        <SubmitButton
           className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+          pendingLabel="Envoi en cours…"
+          pendingHint="Le backend commerce peut être en veille et mettre jusqu'à une minute à répondre. Ne quittez pas la page."
         >
           Envoyer la demande
-        </button>
+        </SubmitButton>
       </form>
 
       <p className="mt-4 text-sm leading-relaxed text-[var(--mache-muted)]">

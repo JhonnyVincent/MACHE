@@ -20,6 +20,7 @@
 */
 
 import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { medusaBackendUrl } from "@/lib/medusa/config";
@@ -200,12 +201,13 @@ export default async function VendorRegistrationPage({
           </label>
         </fieldset>
 
-        <button
-          type="submit"
+        <SubmitButton
           className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+          pendingLabel="Ouverture en cours…"
+          pendingHint="Le backend commerce peut être en veille et mettre jusqu'à une minute à répondre. Ne quittez pas la page."
         >
           Ouvrir ma boutique
-        </button>
+        </SubmitButton>
       </form>
 
       {/*

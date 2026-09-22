@@ -8,6 +8,7 @@
 */
 
 import Link from "next/link";
+import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/lib/medusa/customer";
 import { loginAction } from "../actions";
@@ -67,12 +68,13 @@ export default async function CustomerLoginPage({
           />
         </div>
 
-        <button
-          type="submit"
+        <SubmitButton
           className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+          pendingLabel="Connexion en cours…"
+          pendingHint="Le backend commerce peut être en veille et mettre jusqu'à une minute à répondre. Ne quittez pas la page."
         >
           Se connecter
-        </button>
+        </SubmitButton>
       </form>
 
       <p className="mt-5 text-base text-[var(--mache-muted)]">

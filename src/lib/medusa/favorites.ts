@@ -33,6 +33,11 @@
 
 import { cookies } from "next/headers";
 import { getMedusaConfig } from "./config";
+import {
+  backendTimeoutSignal,
+  isTimeout,
+  TIMEOUT_MESSAGE,
+} from "./timeout";
 
 const CUSTOMER_TOKEN_COOKIE = "mache_customer_token";
 
@@ -58,6 +63,8 @@ async function call<T>(
 
   try {
     const response = await fetch(`${configured.config.url}${path}`, {
+      /* Une attente qui ne finit jamais fige l\'écran sans rien dire. */
+      signal: backendTimeoutSignal(),
       method: init.method ?? "GET",
       headers: {
         "Content-Type": "application/json",
@@ -73,7 +80,16 @@ async function call<T>(
     }
 
     return { ok: true, data: (await response.json()) as T };
-  } catch {
+  } catch (error) {
+    /*
+      Un abandon vaut la peine d'être réessayé ; une panne réseau
+      rarement. Les confondre ferait renoncer quelqu'un dont la
+      demande serait passée au second essai.
+    */
+    if (isTimeout(error)) {
+      return { ok: false, reason: TIMEOUT_MESSAGE };
+    }
+
     return { ok: false, reason: "Le backend commerce ne répond pas." };
   }
 }
