@@ -15,6 +15,7 @@ const locales = ["fr", "en", "es", "ar", "ht"];
 const defaultLocale = "fr";
 
 let warnedAboutMissingEnv = false;
+let warnedAboutRefreshFailure = false;
 
 function detectLocale(request: NextRequest) {
   const savedLocale = request.cookies.get("mache_locale")?.value;
@@ -59,6 +60,50 @@ export async function middleware(request: NextRequest) {
 
     return response;
   }
+
+  /*
+    Tout ce qui suit est enveloppé.
+
+    Ce middleware s'exécute sur CHAQUE page. Une exception ici ne casse
+    pas une fonctionnalité : elle rend « Application error » sur tout le
+    site, y compris l'accueil et le catalogue, qui n'ont rien à voir
+    avec l'authentification.
+
+    Or ce qui se passe ici peut échouer pour des raisons extérieures au
+    code : une adresse Supabase mal formée fait lever `createServerClient`
+    sur-le-champ, et un projet Supabase supprimé, en pause ou
+    injoignable fait échouer l'appel réseau. Des variables héritées d'un
+    ancien déploiement suffisent — elles passent le test de présence,
+    puis pointent vers un projet qui n'existe plus.
+
+    Le rafraîchissement de session est un confort. Le catalogue est le
+    métier. Le premier ne doit jamais emporter le second : en cas
+    d'échec, on sert la page, et la raison part au journal du serveur.
+  */
+  try {
+    return await refreshSession(request, response, credentials, locale);
+  } catch (error) {
+    if (!warnedAboutRefreshFailure) {
+      warnedAboutRefreshFailure = true;
+
+      console.warn(
+        `[middleware] rafraîchissement de session Supabase impossible : ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+
+    return response;
+  }
+}
+
+async function refreshSession(
+  request: NextRequest,
+  initial: NextResponse,
+  credentials: { url: string; key: string },
+  locale: string
+) {
+  let response = initial;
 
   const supabase = createServerClient(credentials.url, credentials.key, {
     cookies: {
