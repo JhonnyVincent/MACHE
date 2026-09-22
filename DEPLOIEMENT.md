@@ -96,6 +96,39 @@ Laissez les variables d'environnement vides pour l'instant.
 
 Sans elle, le navigateur refusera les appels du site au backend.
 
+### « Dashboard not built » sur /seller ou /dashboard
+
+Le backend sert ce message quand les panneaux n'ont pas été construits.
+Sans panneau, un vendeur ne peut ni ajouter un produit, ni voir une
+commande : c'est bloquant.
+
+Deux causes, corrigées toutes les deux dans le dépôt — mais si vous avez
+créé le service à la main, vérifiez sa commande de construction :
+
+| | Valeur attendue |
+|---|---|
+| **Build Command** | `npm install -g bun && bun install && bun run build` |
+| **Start Command** | celle du `render.yaml` (migrations, amorçage, `medusa start`) |
+| **Root Directory** | `backend` |
+
+`medusa build` seul ne suffit pas : il compile le serveur, mais ne
+construit ni les deux panneaux ni leur empaquetage dans l'artefact.
+
+### `MERCUR_BACKEND_URL`, à ne pas oublier
+
+Les panneaux **gravent** l'adresse du backend au moment de la
+construction : c'est celle qu'ils appelleront depuis le navigateur du
+vendeur.
+
+Posez `MERCUR_BACKEND_URL` sur `mache-backend` avec sa propre adresse
+publique (`https://mache-backend.onrender.com`, sans `/` final), puis
+reconstruisez.
+
+Sans elle, les panneaux sont construits en pointant vers
+`http://localhost:9000` : ils s'affichent, et chaque action échoue sans
+que rien ne l'explique. Elle ne peut pas se déduire automatiquement —
+Render ne fournit pas `RENDER_EXTERNAL_URL` pendant la construction.
+
 ### Le compte d'administration MACHÉ
 
 L'administration du site s'authentifie sur les comptes **du personnel

@@ -16,6 +16,18 @@ export default defineConfig(({ mode }) => {
   const backendUrl = env.VITE_MERCUR_BACKEND_URL || env.MERCUR_BACKEND_URL
 
   return {
+    /*
+      Même correctif que pour le panneau vendeur : `dedupe` force Vite à
+      résoudre ces paquets depuis la racine du projet, quel que soit
+      l'endroit d'où ils sont importés.
+
+      Sans cela la construction échoue — « Rollup failed to resolve
+      import "i18next" » — et le backend sert « Dashboard not built »
+      à la place du panneau.
+    */
+    resolve: {
+      dedupe: ['i18next', 'react-i18next', 'react', 'react-dom'],
+    },
     plugins: [
       react(),
       mercurDashboardPlugin({

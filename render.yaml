@@ -41,7 +41,19 @@ services:
     plan: free
     region: frankfurt
     rootDir: backend
-    buildCommand: npm install -g bun && bun install && cd packages/api && ./node_modules/.bin/medusa build
+    # `bun run build` à la racine, et non `medusa build` seul.
+    #
+    # `medusa build` ne compile que le serveur. Il ne construit pas les
+    # deux panneaux (apps/admin et apps/vendor) et ne lance pas
+    # bundle-dashboards.mjs, qui les recopie dans l'artefact. Résultat :
+    # le backend répondait « Dashboard not built » sur /seller et
+    # /dashboard — et sans panneau, un vendeur ne peut ni ajouter un
+    # produit, ni voir une commande.
+    #
+    # Turborepo enchaîne les trois dans l'ordre : les panneaux d'abord,
+    # puis packages/api, dont le script `build` chaîne `medusa build`
+    # et l'empaquetage.
+    buildCommand: npm install -g bun && bun install && bun run build
     # Trois temps, dans cet ordre :
     #   1. migrations — la base rattrape le code ;
     #   2. amorçage   — catalogue de démonstration si SEED_DEMO le
@@ -87,6 +99,18 @@ services:
       # navigateur. Elles restent déclarables à la main si un domaine
       # propre ou une préproduction s'ajoute.
       - key: STOREFRONT_URL
+        sync: false
+      # L'adresse de CE backend, par exemple
+      # https://mache-backend.onrender.com — sans "/" final.
+      #
+      # Les deux panneaux la GRAVENT à la construction : c'est l'adresse
+      # qu'ils appelleront depuis le navigateur du vendeur. Sans elle,
+      # ils sont construits en pointant vers http://localhost:9000, et
+      # chaque appel échoue chez le vendeur sans que rien ne l'explique.
+      #
+      # Elle ne peut pas se déduire de RENDER_EXTERNAL_URL : cette
+      # variable n'est pas fournie pendant la construction.
+      - key: MERCUR_BACKEND_URL
         sync: false
       # Catalogue de démonstration Mercur, pour voir la plateforme
       # vivante avant d'avoir des vendeurs. Mettre "true" une fois, puis
