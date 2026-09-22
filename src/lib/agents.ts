@@ -11,6 +11,8 @@
 */
 
 import { redirect } from "next/navigation";
+import { medusaFetch } from "@/lib/medusa/client";
+import { reportOutage } from "@/lib/medusa/outage";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { supabaseConfigured } from "@/lib/supabase/env";
 
@@ -163,56 +165,75 @@ export type AgentVerification =
   de sa porte n'a pas à interpréter un statut technique. Une habilitation
   expirée vaut « ne pas faire confiance », même si la ligne existe.
 */
+/*
+  Vérification publique d'un code agent, sur Medusa.
+
+  Elle lisait Supabase, dont le projet a été supprimé : la page
+  répondait « impossible à vérifier » à tout le monde, à l'instant
+  précis où quelqu'un hésite à remettre de l'argent liquide.
+
+  Ce qui fait foi, côté backend
+
+  L'appartenance à un groupe de clients, que seule l'administration
+  peut modifier. Un agent est un CLIENT de MACHÉ à qui s'ajoute une
+  fonction — point de relais, livreur, commercial — et non un
+  administrateur.
+
+  Vérifié en conditions réelles : un client qui écrit lui-même un code
+  d'agent dans son champ libre — ce qu'il peut faire, c'est là que
+  vivent ses favoris — obtient « inconnu », parce qu'il n'est dans
+  aucun groupe.
+
+  Les trois issues sont conservées telles quelles : « pas un agent » et
+  « MACHÉ n'en sait rien » appellent le même geste, ne rien remettre,
+  mais pas la même accusation.
+*/
 export async function verifyAgentCode(rawCode: string): Promise<AgentVerification> {
   const code = rawCode.trim().toUpperCase();
 
   if (!code) return { found: false };
 
-  /*
-    Sans base de comptes, la page levait une exception serveur : un écran
-    gris, à l'instant précis où quelqu'un hésite à remettre un colis.
-  */
-  if (!supabaseConfigured()) {
-    console.warn("[verify-agent] base des agents non configurée");
-    return { unavailable: true };
-  }
+  const result = await medusaFetch<{
+    found?: boolean;
+    display_name?: string;
+    function?: string;
+    zone?: string | null;
+    phone_public?: string | null;
+    trustworthy?: boolean;
+    suspended?: boolean;
+  }>("/store/agents/verify", { code }, { revalidate: 0 });
 
-  const supabase = await createSupabaseServerClient();
-
-  const { data, error } = await supabase
-    .from("agent_profiles")
-    .select("code, display_name, photo_url, zone, phone_public, status, valid_until, official_badge")
-    .eq("code", code)
-    .maybeSingle();
-
-  if (error) {
+  if (!result.ok) {
     /*
       Une panne de lecture n'est pas une absence d'agent : on ne répond
       pas « inconnu » quand on n'a pas pu regarder.
     */
-    console.error("[verify-agent]", error.message);
+    reportOutage("vérification agent", result.reason);
+
     return { unavailable: true };
   }
 
-  if (!data) return { found: false };
+  if (!result.data.found) return { found: false };
 
-  const status = String(data.status || "pending") as AgentStatus;
-
-  const expired = Boolean(
-    data.valid_until && new Date(data.valid_until).getTime() < Date.now()
-  );
+  const suspended = result.data.suspended === true;
 
   return {
     found: true,
-    code: data.code,
-    displayName: data.display_name,
-    photoUrl: data.photo_url ?? null,
-    zone: data.zone ?? null,
-    phonePublic: data.phone_public ?? null,
-    status,
-    validUntil: data.valid_until ?? null,
-    officialBadge: Boolean(data.official_badge),
-    expired,
-    trustworthy: status === "active" && !expired,
+    code,
+    displayName: result.data.display_name ?? "Agent MACHÉ",
+    /*
+      Pas de photo : la route publique n'en rend pas. Une photo
+      d'agent est une donnée personnelle, et la publier à qui essaie
+      des codes au hasard constituerait un trombinoscope.
+    */
+    photoUrl: null,
+    /* La fonction remplace la zone quand celle-ci n'est pas renseignée. */
+    zone: result.data.zone ?? result.data.function ?? null,
+    phonePublic: result.data.phone_public ?? null,
+    status: suspended ? "suspended" : "active",
+    validUntil: null,
+    officialBadge: !suspended,
+    expired: false,
+    trustworthy: result.data.trustworthy === true,
   };
 }

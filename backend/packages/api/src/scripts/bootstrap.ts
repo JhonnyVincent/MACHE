@@ -55,6 +55,7 @@ import demoPricesHtg from "./demo-prices-htg";
 import demoShippingHaiti from "./demo-shipping-haiti";
 import adminUser from "./admin-user";
 import commissionRates from "./commission-rates";
+import agentGroups from "./agent-groups";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -106,6 +107,13 @@ export default async function bootstrap(args: ExecArgs) {
       Idempotent : un taux déjà posé n'est jamais réécrit.
     */
     await commissionRates(args);
+
+    /*
+      Les groupes d'agents. Ils n'existent que pour que
+      l'administration puisse y ranger des clients : sans eux, la page
+      de vérification publique n'a rien à interroger.
+    */
+    await agentGroups(args);
 
     /*
       Après la mise en place seulement : la région Haïti doit exister
