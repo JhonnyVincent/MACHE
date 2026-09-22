@@ -16,6 +16,8 @@ import Link from "next/link";
 import {
   TARIFS,
   COMMISSION_RATE,
+  COMMISSION_RATE_REDUCED,
+  commissionFor,
   EUR_TO_HTG_DATE,
   billingLine,
   formatEur,
@@ -85,19 +87,22 @@ export default function TarifsPage() {
             {tarif.billing.kind === "subscription" && (
               <p className="mt-1 text-sm text-[var(--mache-muted)]">
                 soit environ {formatHtg(htgFromEur(tarif.billing.minEur))} à{" "}
-                {formatHtg(htgFromEur(tarif.billing.maxEur))} par mois
+                {formatHtg(htgFromEur(tarif.billing.maxEur))} par mois,
+                plus {commissionFor(tarif.profile)} % de commission
               </p>
             )}
 
             {tarif.billing.kind === "commission" && (
               <p className="mt-1 text-sm text-[var(--mache-muted)]">
-                Vous ne payez que lorsque vous vendez.
+                {commissionFor(tarif.profile)} % de commission. Vous ne
+                payez que lorsque vous vendez.
               </p>
             )}
 
             {tarif.billing.kind === "quote" && (
               <p className="mt-1 text-sm text-[var(--mache-muted)]">
-                Volumes et marges varient trop pour une grille : le tarif
+                {commissionFor(tarif.profile)} % de commission. Volumes et
+                marges varient trop pour une grille : le reste
                 s&apos;arrête avec vous.
               </p>
             )}
@@ -143,10 +148,39 @@ export default function TarifsPage() {
             entre-temps.
           </p>
         ) : (
-          <p className="mt-2 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
-            {COMMISSION_RATE} % du montant de chaque vente, hors
-            livraison.
-          </p>
+          <>
+            <p className="mt-2 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
+              <strong className="text-[var(--mache-text)]">
+                {COMMISSION_RATE} % du montant de chaque vente
+              </strong>
+              , hors livraison. {COMMISSION_RATE_REDUCED} % pour les
+              grossistes et les marques officielles : un grossiste
+              travaille sur des marges fines, et une marque paie déjà un
+              abonnement.
+            </p>
+
+            {/*
+              LE POINT QUI CHANGE TOUT, et qu'une grille de commission
+              laisse habituellement deviner. MACHÉ n'encaisse pas :
+              l'argent va directement du client au vendeur. La
+              commission n'est donc pas retenue sur un versement — elle
+              est calculée, enregistrée, et facturée. Écrit ici parce
+              qu'un vendeur qui découvrirait la différence à la
+              première facture aurait raison de se sentir trompé.
+            */}
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
+              Elle n&apos;est pas retenue sur votre argent : MACHÉ
+              n&apos;encaisse rien, le client vous paie directement à la
+              livraison. La commission est calculée et enregistrée sur
+              chaque commande, puis facturée. Vous la voyez commande par
+              commande dans votre panneau vendeur.
+            </p>
+
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
+              Ce sont des taux de départ. Tout changement sera annoncé
+              avant de s&apos;appliquer, jamais après.
+            </p>
+          </>
         )}
       </section>
 
@@ -182,7 +216,6 @@ export default function TarifsPage() {
         </h2>
 
         <ul className="mt-2 space-y-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
-          <li>Le taux de commission, et s&apos;il varie selon le profil.</li>
           <li>
             Ce qui distingue un abonnement à {formatEur(120)} d&apos;un
             abonnement à {formatEur(300)}.

@@ -54,6 +54,7 @@ import setupMache from "./setup-mache";
 import demoPricesHtg from "./demo-prices-htg";
 import demoShippingHaiti from "./demo-shipping-haiti";
 import adminUser from "./admin-user";
+import commissionRates from "./commission-rates";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -96,6 +97,15 @@ export default async function bootstrap(args: ExecArgs) {
   */
   try {
     await setupMache(args);
+
+    /*
+      Les taux de commission. Après la mise en place : ils n'en
+      dépendent pas, mais une base sans région ni canal de vente n'a
+      de toute façon pas de commande sur laquelle appliquer un taux.
+
+      Idempotent : un taux déjà posé n'est jamais réécrit.
+    */
+    await commissionRates(args);
 
     /*
       Après la mise en place seulement : la région Haïti doit exister

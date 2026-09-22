@@ -18,6 +18,9 @@ import assert from "node:assert/strict";
 import {
   TARIFS,
   COMMISSION_RATE,
+  COMMISSION_RATE_REDUCED,
+  REDUCED_PROFILES,
+  commissionFor,
   EUR_TO_HTG,
   EUR_TO_HTG_DATE,
   billingLine,
@@ -41,6 +44,54 @@ check("un taux non décidé n'est pas zéro", () => {
   */
   assert.notEqual(COMMISSION_RATE, 0);
   assert.equal(COMMISSION_RATE === null || COMMISSION_RATE > 0, true);
+});
+
+check("les taux restent dans ce que pratique le marché", () => {
+  /*
+    Etsy prélève 6,5 %, Amazon de 8 à 15 %, eBay environ 13 %. Un taux
+    qui sortirait de cette fourchette serait soit intenable pour un
+    vendeur, soit impossible à justifier — et dans les deux cas, ce
+    serait une faute de frappe plutôt qu'une décision.
+  */
+  for (const rate of [COMMISSION_RATE, COMMISSION_RATE_REDUCED]) {
+    if (rate === null) continue;
+
+    assert.ok(rate > 0, `taux nul ou négatif : ${rate}`);
+    assert.ok(rate <= 20, `taux invraisemblable : ${rate} %`);
+  }
+});
+
+check("le taux réduit est réellement plus bas", () => {
+  /*
+    S'il devenait supérieur au standard, les grossistes et les marques
+    paieraient plus que tout le monde en croyant l'inverse — et rien
+    dans l'interface ne le dirait.
+  */
+  if (COMMISSION_RATE === null) return;
+
+  assert.ok(
+    COMMISSION_RATE_REDUCED < COMMISSION_RATE,
+    `réduit ${COMMISSION_RATE_REDUCED} % ≥ standard ${COMMISSION_RATE} %`
+  );
+});
+
+check("chaque profil reçoit le taux qui lui revient", () => {
+  for (const tarif of TARIFS) {
+    const expected = REDUCED_PROFILES.includes(tarif.profile)
+      ? COMMISSION_RATE_REDUCED
+      : COMMISSION_RATE;
+
+    assert.equal(commissionFor(tarif.profile), expected, tarif.profile);
+  }
+});
+
+check("le taux réduit va aux grossistes et aux marques, à personne d'autre", () => {
+  /*
+    Le premier travaille sur des marges fines, la seconde paie déjà un
+    abonnement. L'étendre par inadvertance à un particulier se verrait
+    ici.
+  */
+  assert.deepEqual([...REDUCED_PROFILES].sort(), ["fournisseur", "marque"]);
 });
 
 check("les quatre profils ont un tarif, et un seul", () => {

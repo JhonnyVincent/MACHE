@@ -65,10 +65,52 @@ export function formatHtg(amount: number): string {
 }
 
 /*
-  Le taux de commission, quand il sera arrêté. `null` tant qu'il ne
-  l'est pas — et surtout pas zéro, qui se lirait « gratuit ».
+  Les taux de commission.
+
+  Comment ces chiffres ont été choisis
+
+  Sur ce que pratiquent les marketplaces comparables : Etsy prélève
+  6,5 %, Amazon de 8 à 15 % selon la catégorie, eBay environ 13 %, et
+  les marketplaces généralistes africaines se tiennent le plus souvent
+  entre 5 et 20 %. Huit pour cent place MACHÉ dans le bas de cette
+  fourchette, ce qui est la position d'une plateforme qui doit encore
+  convaincre des vendeurs de venir.
+
+  Le taux réduit n'est pas une faveur. Un grossiste travaille sur des
+  marges fines : huit pour cent sur du volume lui coûterait plus que sa
+  marge, et il ne viendrait pas. Une marque officielle, elle, paie déjà
+  un abonnement mensuel.
+
+  CE SONT DES VALEURS DE DÉPART, à revoir. Elles vivent ici, à un seul
+  endroit, et la page de tarifs les lit — changer le chiffre change la
+  page.
+
+  Ce qu'il faut savoir avant de les lire
+
+  MACHÉ n'encaisse pas : l'acheteur paie le vendeur à la livraison. La
+  commission est donc CALCULÉE et ENREGISTRÉE sur chaque commande, puis
+  facturée — elle n'est pas prélevée sur un paiement qui ne passe pas
+  par MACHÉ. La page le dit, sans quoi « 8 % de commission » se lirait
+  comme une retenue automatique.
 */
-export const COMMISSION_RATE: number | null = null;
+export const COMMISSION_RATE: number | null = 8;
+
+/*
+  Le taux réduit, et à qui il s'applique. Écrit ici plutôt que dans la
+  page : deux écrans qui reformulent chacun leur barème finissent par
+  ne plus dire la même chose.
+*/
+export const COMMISSION_RATE_REDUCED = 5;
+
+export const REDUCED_PROFILES: SellerProfile[] = ["fournisseur", "marque"];
+
+export function commissionFor(profile: SellerProfile): number | null {
+  if (COMMISSION_RATE === null) return null;
+
+  return REDUCED_PROFILES.includes(profile)
+    ? COMMISSION_RATE_REDUCED
+    : COMMISSION_RATE;
+}
 
 export type Billing =
   /* Rien à payer d'avance : seule la commission s'applique. */
