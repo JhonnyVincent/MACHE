@@ -53,6 +53,7 @@ import seedDemoData from "./seed";
 import setupMache from "./setup-mache";
 import demoPricesHtg from "./demo-prices-htg";
 import demoShippingHaiti from "./demo-shipping-haiti";
+import adminUser from "./admin-user";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -63,6 +64,25 @@ function asked(value: string | undefined): boolean {
 
 export default async function bootstrap(args: ExecArgs) {
   const logger = args.container.resolve(ContainerRegistrationKeys.LOGGER);
+
+  /*
+    Le compte d'administration d'abord, et à part.
+
+    Il ne dépend de rien — ni région, ni catalogue, ni canal de vente —
+    et c'est justement ce qui compte : si la mise en place échoue, il
+    faut pouvoir entrer dans le panneau pour réparer. Le créer en
+    dernier reviendrait à laisser la clé à l'intérieur.
+
+    Son échec n'interrompt rien d'autre : le serveur doit démarrer même
+    sans lui.
+  */
+  try {
+    await adminUser(args);
+  } catch (error) {
+    logger.error(
+      `Compte d'administration : ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
 
   if (asked(process.env.SEED_DEMO)) {
     await seedDemoIfEmpty(args, logger);
@@ -124,20 +144,20 @@ async function seedDemoIfEmpty(
   try {
     await seedDemoData(args);
 
-    logger.warn("");
+    logger.warn(" ");
     logger.warn("========================================================");
     logger.warn("  CATALOGUE DE DÉMONSTRATION CHARGÉ");
     logger.warn("--------------------------------------------------------");
     logger.warn("  Ce sont des chaussures fictives, en euros, avec des");
     logger.warn("  vendeurs fictifs. Rien de tout cela n'est à MACHÉ.");
-    logger.warn("");
+    logger.warn(" ");
     logger.warn("  À retirer avant d'ouvrir la boutique à de vrais");
     logger.warn("  clients : un catalogue inventé qui reste en ligne");
     logger.warn("  fait passer pour des offres ce qui n'en est pas.");
-    logger.warn("");
+    logger.warn(" ");
     logger.warn("  Pour ne plus le recharger : retirer SEED_DEMO.");
     logger.warn("========================================================");
-    logger.warn("");
+    logger.warn(" ");
   } catch (error) {
     logger.error(
       `Le catalogue de démonstration n'a pas pu être chargé : ${error instanceof Error ? error.message : String(error)}`

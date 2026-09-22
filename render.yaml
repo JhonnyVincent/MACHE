@@ -101,6 +101,22 @@ services:
       # pas.
       - key: SEED_DEMO
         sync: false
+      # Le compte d'administration MACHÉ, créé au premier démarrage.
+      #
+      # Le plan gratuit de Render n'offre pas d'onglet Shell : sans
+      # ces deux variables, il n'y aurait aucun moyen d'ouvrir
+      # l'administration de sa propre marketplace.
+      #
+      # À RETIRER une fois le compte créé. Le compte reste ; le mot de
+      # passe n'a pas à rester lisible par quiconque ouvre ce tableau
+      # de bord.
+      #
+      # Les laisser en place ne casse rien : le mot de passe d'un
+      # compte existant n'est jamais réécrit.
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
       # Facteur d'affichage des prix de démonstration en gourdes.
       #
       # Ce n'est PAS un taux de change. Le catalogue de démonstration est

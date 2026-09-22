@@ -99,21 +99,40 @@ Sans elle, le navigateur refusera les appels du site au backend.
 ### Le compte d'administration MACHÉ
 
 L'administration du site s'authentifie sur les comptes **du personnel
-Medusa**, pas sur Supabase. Elle se crée côté backend, en une commande :
+Medusa**, pas sur Supabase.
 
-```
-medusa user -e vous@mache.ht -p <mot de passe>
-```
+Il n'y a pas d'inscription publique, et c'est délibéré : ouvrir la
+création de comptes d'administration d'une marketplace reviendrait à
+laisser la porte du coffre sur le palier. Le compte se crée donc au
+démarrage du backend, par deux variables.
 
-Sur Render : `mache-backend` → onglet **`Shell`** →
-`cd packages/api && ./node_modules/.bin/medusa user -e ... -p ...`
+Sur `mache-backend` → `Environment` :
+
+| Variable | Valeur |
+|---|---|
+| `ADMIN_EMAIL` | l'adresse qui vous connectera |
+| `ADMIN_PASSWORD` | au moins 8 caractères |
+
+Puis **`Manual Deploy`**. Au démarrage, le backend crée le compte et
+l'annonce dans ses journaux.
+
+**Retirez ensuite les deux variables.** Le compte reste ; le mot de
+passe, lui, n'a pas à rester lisible par quiconque ouvre le tableau de
+bord de l'hébergeur.
 
 Ce compte ouvre `/dashboard/admin` sur le site **et** le panneau complet
 du backend — c'est le même identifiant.
 
-Il n'y a pas d'inscription publique à l'administration, et c'est
-délibéré : ouvrir la création de comptes d'administration d'une
-marketplace reviendrait à laisser la porte du coffre sur le palier.
+**Le mot de passe d'un compte existant n'est jamais réécrit.** Les
+variables peuvent rester en place sans danger : à chaque redémarrage le
+backend constate que l'adresse existe déjà et n'y touche pas. Sans
+cette règle, un redéploiement annulerait silencieusement tout changement
+de mot de passe fait depuis — y compris celui qu'on vient de faire après
+une fuite.
+
+Le terminal reste possible là où l'hébergeur en offre un
+(`medusa user -e ... -p ...`), mais il n'est plus nécessaire : le plan
+gratuit de Render n'a pas d'onglet `Shell`.
 
 ### Deux services, deux jeux de variables — ne pas les mélanger
 
