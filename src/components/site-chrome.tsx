@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Header } from "./header";
-import { Footer } from "./footer";
+import { Footer, type FooterCategory } from "./footer";
 import { ChatAssistant } from "./chat-assistant";
 
 /*
@@ -17,9 +17,11 @@ const BARE_PREFIXES = ["/dashboard"];
 export function SiteChrome({
   children,
   cartCount = 0,
+  categories = [],
 }: {
   children: React.ReactNode;
   cartCount?: number;
+  categories?: FooterCategory[];
 }) {
   const pathname = usePathname() || "/";
 
@@ -35,7 +37,7 @@ export function SiteChrome({
     <>
       <Header cartCount={cartCount} />
       {children}
-      <Footer />
+      <Footer categories={categories} />
       <ChatAssistant />
     </>
   );

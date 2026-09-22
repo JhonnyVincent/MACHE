@@ -1,21 +1,19 @@
 import Link from "next/link";
 
-const footerShopLinks = [
-  { label: "Toute la boutique", href: "/shop" },
-  { label: "Mode", href: "/shop" },
-  { label: "Épicerie", href: "/shop" },
-  { label: "Accessoires", href: "/shop" },
-  { label: "Maison", href: "/shop" },
-  { label: "Beauté", href: "/shop" }
-];
-
 /*
-  « Créer ma boutique » et « Dashboard vendeur » menaient à l'ancienne
-  inscription Supabase, qui ne crée plus ni boutique ni catalogue depuis
-  la bascule sur Medusa. Les deux pointent maintenant vers l'espace
-  vendeur, qui est la seule porte réelle — et une seule entrée, plutôt
-  que deux libellés pour le même endroit.
+  La colonne « Acheter » proposait cinq rayons — Mode, Épicerie,
+  Accessoires, Maison, Beauté — qui menaient TOUS au catalogue entier.
+  Cinq libellés, une seule destination : quelqu'un qui cliquait
+  « Épicerie » recevait des chaussures, et n'avait aucun moyen de
+  comprendre pourquoi.
+
+  Ces rayons étaient écrits en dur, et ne correspondaient à rien :
+  les catégories d'une marketplace sont celles de ce que ses vendeurs
+  vendent, et elles changent avec eux. Elles sont donc lues dans le
+  catalogue, et chacune mène à sa propre page.
 */
+export type FooterCategory = { handle: string; name: string };
+
 const footerSellLinks = [
   { label: "Devenir vendeur", href: "/sell" },
 
@@ -47,6 +45,8 @@ const footerSellLinks = [
 
 const footerHelpLinks = [
   { label: "Centre d’aide", href: "/faq" },
+  { label: "Ce que MACHÉ fait", href: "/services" },
+  { label: "Exporter depuis Haïti", href: "/export" },
   { label: "Politique livraison", href: "/legal/shipping" },
   { label: "Retours", href: "/legal/returns" },
   { label: "À propos", href: "/about" },
@@ -54,7 +54,11 @@ const footerHelpLinks = [
   { label: "Conditions", href: "/legal/terms" }
 ];
 
-export function Footer() {
+export function Footer({
+  categories = [],
+}: {
+  categories?: FooterCategory[];
+}) {
   return (
     <footer className="mt-16 bg-[var(--mache-dark)] px-0 py-12 text-white">
       <div className="container-page">
@@ -64,10 +68,15 @@ export function Footer() {
               Mache<span className="text-[var(--mache-primary)]">.</span>
             </div>
 
+            {/*
+              « exportez » a été retiré : l'export n'est pas ouvert, et
+              l'annoncer dans le pied de page de chaque page en faisait
+              une promesse permanente.
+            */}
             <p className="mt-4 max-w-md text-sm leading-7 text-white/40">
-              La marketplace caribéenne moderne. Achetez, vendez, exportez et
-              développez votre activité avec une plateforme pensée pour Haïti,
-              la Caraïbe et la diaspora.
+              La place de marché d&apos;Haïti. Des boutiques
+              indépendantes, des marques et des fournisseurs d&apos;ici et
+              de la diaspora, réunis au même endroit.
             </p>
 
             <div className="mt-5 flex flex-wrap gap-2">
@@ -106,13 +115,26 @@ export function Footer() {
             </h4>
 
             <div className="space-y-2">
-              {footerShopLinks.map((item) => (
+              <Link
+                href="/shop"
+                className="block text-sm text-white/40 transition hover:text-white"
+              >
+                Tout le catalogue
+              </Link>
+
+              {/*
+                Les rayons réels du catalogue. Quand il n'y en a aucun —
+                catalogue vide, backend injoignable — il ne reste que
+                « Tout le catalogue », ce qui est vrai, plutôt qu'une
+                liste de rayons inventés.
+              */}
+              {categories.map((category) => (
                 <Link
-                  key={item.label}
-                  href={item.href}
+                  key={category.handle}
+                  href={`/shop?category=${encodeURIComponent(category.handle)}`}
                   className="block text-sm text-white/40 transition hover:text-white"
                 >
-                  {item.label}
+                  {category.name}
                 </Link>
               ))}
             </div>
