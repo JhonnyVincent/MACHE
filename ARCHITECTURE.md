@@ -153,7 +153,9 @@ probablement rien à migrer — mais c'est une déduction, pas un constat.
 | 12. Éditeur visuel de vitrine (Puck) | fait |
 | 13. Thèmes de boutique | fait |
 | 14. Devis B2B | fait (module `quote`) |
-| 15 à 20 | IA, Nango, abonnements, sécurité, tests, production |
+| 15. Analytics vendeur | fait (`/vendor/analytics`) |
+| 16. Tarifs : commission + abonnement marques | fait (page publique) |
+| 17 à 20 | IA, Nango, encaissement des abonnements, production |
 
 ### Reste à brancher, et nommé comme tel dans l'interface
 
