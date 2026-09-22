@@ -148,16 +148,40 @@ export default function SellPage() {
             </div>
           </div>
 
+          {/*
+            Aperçu d'une boutique. C'est une illustration, et elle est
+            annoncée comme telle : sans étiquette, un futur vendeur lit
+            « Boutique Soleil » comme une boutique existante.
+          */}
           <div className="rounded-[2rem] border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur">
+            <p className="mb-3 text-center text-xs font-bold uppercase tracking-label text-white/60">
+              Exemple de boutique
+            </p>
+
             <div className="rounded-[1.5rem] bg-white p-5 text-neutral-950">
               <div className="h-32 rounded-3xl bg-gradient-to-r from-orange-100 to-red-100" />
 
               <div className="-mt-10 flex items-end gap-4 px-4">
-                <img
-                  src="/images/logo-haiti-mache-hibiscus.png"
-                  alt="Haiti Maché"
-                  className="h-20 w-20 rounded-3xl border-4 border-white bg-white object-contain"
-                />
+                {/*
+                  Cette vignette portait le logo de MACHÉ.
+
+                  Deux problèmes, et le second se voit à l'usage. Prêter
+                  l'identité de MACHÉ à une boutique fictive laisse
+                  croire que MACHÉ tient boutique. Et surtout : un
+                  visiteur qui voyait le logo au milieu de la page le
+                  prenait pour l'en-tête du site, cliquait dessus pour
+                  revenir à l'accueil — et rien ne se passait, puisque
+                  c'était une image décorative.
+
+                  Des initiales sur un aplat disent « le logo du vendeur
+                  viendra ici » sans emprunter celui de personne.
+                */}
+                <div
+                  aria-hidden="true"
+                  className="flex h-20 w-20 items-center justify-center rounded-3xl border-4 border-white bg-gradient-to-br from-orange-200 to-red-200 text-2xl font-black text-[#071f3d]"
+                >
+                  BS
+                </div>
 
                 <div className="pb-2">
                   <h2 className="text-2xl font-black">Boutique Soleil</h2>
