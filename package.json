@@ -8,9 +8,10 @@
     "start": "next start",
     "test:vitrine": "tsx tests/vitrine-blocs.test.mts",
     "test:config": "tsx tests/config-backend.test.mts",
-    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes",
+    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis",
     "test:profil": "tsx tests/profil-vendeur.test.mts",
     "test:minimum": "tsx tests/commande-minimum.test.mts",
+    "test:devis": "tsx tests/devis.test.mts",
     "test:themes": "tsx tests/themes-vitrine.test.mts"
   },
   "dependencies": {

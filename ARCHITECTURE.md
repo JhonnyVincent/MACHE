@@ -150,7 +150,10 @@ probablement rien à migrer — mais c'est une déduction, pas un constat.
 | 10. Administration élaguée | fait |
 | 11. Tunnel de commande multi-vendeurs | fait |
 | Région Haïti / HTG | fait (`setup-mache.ts`) |
-| 12 à 20 | Puck, thèmes, IA, Nango, abonnements, B2B, sécurité, tests, production |
+| 12. Éditeur visuel de vitrine (Puck) | fait |
+| 13. Thèmes de boutique | fait |
+| 14. Devis B2B | fait (module `quote`) |
+| 15 à 20 | IA, Nango, abonnements, sécurité, tests, production |
 
 ### Reste à brancher, et nommé comme tel dans l'interface
 

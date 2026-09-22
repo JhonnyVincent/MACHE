@@ -395,6 +395,7 @@ export default async function ProductPage({
                         )}
                       </span>
 
+                      <span className="flex shrink-0 items-center gap-3">
                       <form action={addToCartAction}>
                         <input type="hidden" name="offer_id" value={offer.id} />
                         <input type="hidden" name="quantity" value={1} />
@@ -410,6 +411,29 @@ export default async function ProductPage({
                           Acheter ici
                         </button>
                       </form>
+
+                        {/*
+                          Acheter au prix affiché convient pour une
+                          pièce. Pour deux cents, le prix se négocie —
+                          c'est ainsi que se fait une grande part du
+                          commerce ici, et cette demande partait
+                          jusqu'ici sur WhatsApp, où ni l'acheteur ni le
+                          vendeur ne la retrouvent.
+                        */}
+                        <Link
+                          href={`/devis/nouveau?${new URLSearchParams({
+                            boutique: offer.sellerId,
+                            article: product.title,
+                            produit: product.id,
+                            ...(selected?.id
+                              ? { variante: selected.id }
+                              : {}),
+                          }).toString()}`}
+                          className="whitespace-nowrap text-sm font-semibold text-[var(--mache-primary)] hover:underline"
+                        >
+                          Demander un devis
+                        </Link>
+                      </span>
                     </li>
                   ))}
                 </ul>

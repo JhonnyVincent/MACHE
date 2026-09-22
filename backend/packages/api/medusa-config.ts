@@ -95,6 +95,17 @@ module.exports = withMercur({
     seller_registration: true
   },
   modules: [
+    /*
+      Les devis. Mercur n'en propose pas : sur une marketplace grand
+      public, le prix est affiché et l'on achète. En Haïti, une grande
+      part du commerce se négocie avant l'achat — quantité, délai,
+      livraison — et la vente ne commence qu'après cet échange. Ce
+      module l'enregistre au lieu de le laisser se perdre dans
+      WhatsApp.
+    */
+    {
+      resolve: './src/modules/quote',
+    },
     {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
