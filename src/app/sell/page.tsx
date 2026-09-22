@@ -113,6 +113,18 @@ export default function SellPage() {
                 Ouvrir ma boutique
               </Link>
 
+              {/*
+                Le tarif, accessible depuis l'accroche.
+
+                Un vendeur qui envisage d'ouvrir une boutique se demande
+                d'abord ce que ça va lui coûter. Ne pas répondre à cet
+                endroit oblige à s'inscrire pour le savoir, ce qui se
+                lit comme un prix qu'on préfère ne pas montrer.
+              */}
+              <Link href="/sell/tarifs" className="btn-secondary border-white/30 text-white">
+                Voir les tarifs
+              </Link>
+
               <Link href="/contact" className="btn-secondary border-white/30 text-white">
                 Nous contacter
               </Link>

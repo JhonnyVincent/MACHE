@@ -33,6 +33,11 @@ const footerSellLinks = [
   },
 
   {
+    label: "Tarifs vendeurs",
+    href: "/sell/tarifs"
+  },
+
+  {
     label: "Guide vendeur",
     href: "/sell#guide-vendeur"
   },
