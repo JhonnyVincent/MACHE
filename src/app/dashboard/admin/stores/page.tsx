@@ -25,10 +25,17 @@ import {
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import { reportOutage } from "@/lib/medusa/outage";
 import { formatDate } from "@/lib/seller";
+import { approveSellerAction } from "./approve-action";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminStoresPage() {
+export default async function AdminStoresPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ error?: string; approuvee?: string }>;
+}) {
+  const query = searchParams ? await searchParams : {};
+
   const user = await getAdminUser();
 
   if (!user) redirect("/dashboard/admin/connexion");
@@ -62,6 +69,18 @@ export default async function AdminStoresPage() {
         </p>
       </div>
 
+      {query.approuvee && (
+        <div className="rounded-[8px] border border-[#b7e0bf] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+          Boutique approuvée. Ses produits entrent dans le catalogue.
+        </div>
+      )}
+
+      {query.error && (
+        <div className="rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          {decodeURIComponent(query.error)}
+        </div>
+      )}
+
       {!result.ok && (
         <div className="rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
           La liste ne peut pas être lue pour le moment. Réessayez dans
@@ -93,6 +112,7 @@ export default async function AdminStoresPage() {
                 <th className="px-4 py-2.5 font-medium">Contact</th>
                 <th className="px-4 py-2.5 font-medium">État</th>
                 <th className="px-4 py-2.5 font-medium">Inscrite le</th>
+                <th className="px-4 py-2.5 font-medium" />
               </tr>
             </thead>
 
@@ -139,6 +159,25 @@ export default async function AdminStoresPage() {
                     <td className="px-4 py-3 text-[#565959]">
                       {seller.createdAt ? formatDate(seller.createdAt) : "—"}
                     </td>
+
+                    <td className="px-4 py-3 text-right">
+                      {/*
+                        Le bouton n'apparaît que là où il y a une
+                        décision à prendre. Sur une boutique déjà
+                        ouverte, il n'aurait rien à faire.
+                      */}
+                      {waiting && (
+                        <form action={approveSellerAction}>
+                          <input type="hidden" name="seller_id" value={seller.id} />
+                          <button
+                            type="submit"
+                            className="whitespace-nowrap rounded-[6px] bg-[#0f1111] px-3 py-1.5 text-sm font-bold text-white transition-colors hover:bg-black"
+                          >
+                            Approuver
+                          </button>
+                        </form>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
@@ -152,8 +191,10 @@ export default async function AdminStoresPage() {
           Approuver, suspendre, vérifier
         </p>
         <p className="mt-1 text-base leading-relaxed text-[#565959]">
-          Ces décisions se prennent dans le panneau du backend, qui en tient
-          l&apos;historique.
+          Approuver se fait ici, parce que c&apos;est l&apos;attente que
+          cette page signale. Suspendre, refuser ou vérifier les documents
+          se fait dans le panneau du backend, qui en tient l&apos;historique
+          — ce sont des décisions plus lourdes, souvent à motiver.
         </p>
 
         {panelUrl && (

@@ -310,3 +310,37 @@ export const SELLER_STATUS_LABELS: Record<string, string> = {
 export function sellerIsOpen(status: string): boolean {
   return status === "open" || status === "active";
 }
+
+/*
+  Approuver une boutique.
+
+  C'est la seule décision d'administration qui vit ici plutôt que dans
+  le panneau du backend, et elle y vit pour une raison précise : c'est
+  la seule que la vue d'ensemble signale comme urgente. Afficher
+  « 5 boutiques attendent votre décision » sans permettre de décider
+  laisse le commerçant attendre pendant qu'on cherche le bon écran
+  ailleurs.
+
+  Elle n'est pas réimplémentée pour autant : elle appelle la route
+  d'approbation de Mercur, qui exécute son propre workflow. Le panneau
+  et cette page font donc littéralement la même chose, et ne peuvent
+  pas diverger.
+
+  Il n'y a pas de refus ici. Refuser une boutique est une décision
+  lourde, souvent à motiver, parfois à revenir dessus : elle appartient
+  au panneau, qui en tient l'historique.
+*/
+export async function approveSeller(sellerId: string): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(
+    `/admin/sellers/${encodeURIComponent(sellerId)}/approve`,
+    { method: "POST", body: {}, token }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
