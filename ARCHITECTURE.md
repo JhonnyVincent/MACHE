@@ -155,19 +155,30 @@ probablement rien à migrer — mais c'est une déduction, pas un constat.
 | 14. Devis B2B | fait (module `quote`) |
 | 15. Analytics vendeur | fait (`/vendor/analytics`) |
 | 16. Tarifs : commission + abonnement marques | fait (page publique) |
-| 17 à 20 | IA, Nango, encaissement des abonnements, production |
+| 17. Acheter en gros (B2B acheteur) | fait (`/gros`) |
+| 18. Administration sur comptes Medusa | fait |
+| 19 à 20 | IA, Nango, encaissement des abonnements, production |
 
 ### Reste à brancher, et nommé comme tel dans l'interface
 
 - **Paiement en ligne** : aucun prestataire raccordé. Les commandes sont
   créées avec un paiement en attente, encaissé à la livraison.
-- **Historique des commandes côté client** : `/store/orders` exige une
-  session client Medusa, qui n'est pas encore posée par le storefront.
-- **Favoris** : ils pointent vers des identifiants de l'ancien catalogue.
-  Rien n'est supprimé ; la page l'explique.
-- **Meilleures ventes, tendances, recommandations** : demandent
-  respectivement un cumul des ventes, une mesure d'audience et un
-  historique par visiteur. Aucun des trois n'existe.
+- **Envoi d'e-mails** : aucun prestataire raccordé. Conséquence visible :
+  pas de réinitialisation de mot de passe pour les vendeurs, et aucune
+  notification quand un devis reçoit une réponse. Le vendeur doit ouvrir
+  son espace pour le voir.
+- **Meilleures ventes et tendances à l'échelle du site** : demandent un
+  cumul des ventes et une mesure d'audience qui n'existent pas. Le
+  cumul PAR BOUTIQUE, lui, existe — c'est ce que lit `/vendor/analytics`.
+- **Recommandations** : demandent un historique par visiteur. Rien n'est
+  collecté, et c'est un choix à faire avant de l'être.
+
+Deux entrées ont été retirées de cette liste parce qu'elles n'étaient
+plus vraies, et une liste de manques qui se trompe fait chercher là où
+il n'y a rien : l'historique des commandes côté client fonctionne (la
+session client Medusa est bien posée, vérifié sur `/store/orders`), et
+les favoris ne pointent plus vers l'ancien catalogue — ils vivent dans
+le champ libre du client Medusa, sous forme d'adresses de produits.
 
 ---
 
