@@ -27,6 +27,7 @@ import { RenderBlock } from "@/components/storefront/blocks";
 import { readSellerProfile } from "@/lib/seller-profile";
 import { readSellerTheme, themeStyle } from "@/lib/storefront/themes";
 import { SellerProfileBadge } from "@/components/seller-profile-badge";
+import { VerifiedBadge } from "@/components/verified-badge";
 
 export const dynamic = "force-dynamic";
 
@@ -123,11 +124,14 @@ export default async function StorePage({
           <div className="min-w-0 flex-1">
             <p className="flex flex-wrap items-center gap-2 text-xl font-bold tracking-tight text-[var(--mache-text)]">
               {seller.name}
-              {seller.isPremium && (
-                <span className="rounded-[3px] bg-[var(--mache-gold-soft)] px-2 py-0.5 text-xs font-bold text-[var(--mache-gold)]">
-                  Premium
-                </span>
-              )}
+              {/*
+                « Premium » promettait un niveau de service et laissait
+                penser qu'il s'achète — d'autant plus depuis que les
+                marques officielles ont un abonnement. Le champ dit
+                autre chose : MACHÉ a contrôlé les documents de cette
+                entreprise.
+              */}
+              {seller.isPremium && <VerifiedBadge />}
 
               {/*
                 Le profil que le vendeur déclare : artisan, boutique,

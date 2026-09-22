@@ -26,13 +26,14 @@ import { medusaBackendUrl } from "@/lib/medusa/config";
 import { reportOutage } from "@/lib/medusa/outage";
 import { formatDate } from "@/lib/seller";
 import { approveSellerAction } from "./approve-action";
+import { setVerifiedAction } from "./verify-action";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminStoresPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string; approuvee?: string }>;
+  searchParams?: Promise<{ error?: string; approuvee?: string; verifiee?: string }>;
 }) {
   const query = searchParams ? await searchParams : {};
 
@@ -68,6 +69,19 @@ export default async function AdminStoresPage({
           marketplace.
         </p>
       </div>
+
+      {query.verifiee === "1" && (
+        <div className="rounded-[8px] border border-[#b7e0bf] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+          Boutique vérifiée. Le badge apparaît désormais sur sa page et
+          sur ses fiches produit.
+        </div>
+      )}
+
+      {query.verifiee === "0" && (
+        <div className="rounded-[8px] border border-[#d5d9d9] bg-white px-4 py-3 text-base text-[#565959]">
+          Vérification retirée. Le badge n&apos;apparaît plus.
+        </div>
+      )}
 
       {query.approuvee && (
         <div className="rounded-[8px] border border-[#b7e0bf] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
@@ -111,6 +125,7 @@ export default async function AdminStoresPage({
                 <th className="px-4 py-2.5 font-medium">Boutique</th>
                 <th className="px-4 py-2.5 font-medium">Contact</th>
                 <th className="px-4 py-2.5 font-medium">État</th>
+                <th className="px-4 py-2.5 font-medium">Vérifiée</th>
                 <th className="px-4 py-2.5 font-medium">Inscrite le</th>
                 <th className="px-4 py-2.5 font-medium" />
               </tr>
@@ -156,6 +171,37 @@ export default async function AdminStoresPage({
                       </span>
                     </td>
 
+                    {/*
+                      La vérification, séparée de l'état. Une boutique
+                      peut vendre sans être vérifiée ; l'inverse
+                      n'aurait pas de sens.
+                    */}
+                    <td className="px-4 py-3">
+                      <form action={setVerifiedAction}>
+                        <input type="hidden" name="seller_id" value={seller.id} />
+                        <input
+                          type="hidden"
+                          name="verified"
+                          value={seller.verified ? "0" : "1"}
+                        />
+                        <button
+                          type="submit"
+                          className={`whitespace-nowrap rounded-full px-2.5 py-1 text-sm font-semibold transition-colors ${
+                            seller.verified
+                              ? "bg-[#eaf6ec] text-[#116b25] hover:bg-[#d8eedd]"
+                              : "border border-[#d5d9d9] text-[#565959] hover:border-[#0f1111] hover:text-[#0f1111]"
+                          }`}
+                          title={
+                            seller.verified
+                              ? "Retirer la vérification"
+                              : "Marquer comme vérifiée après contrôle des documents"
+                          }
+                        >
+                          {seller.verified ? "✓ Vérifiée" : "Non vérifiée"}
+                        </button>
+                      </form>
+                    </td>
+
                     <td className="px-4 py-3 text-[#565959]">
                       {seller.createdAt ? formatDate(seller.createdAt) : "—"}
                     </td>
@@ -191,10 +237,12 @@ export default async function AdminStoresPage({
           Approuver, suspendre, vérifier
         </p>
         <p className="mt-1 text-base leading-relaxed text-[#565959]">
-          Approuver se fait ici, parce que c&apos;est l&apos;attente que
-          cette page signale. Suspendre, refuser ou vérifier les documents
-          se fait dans le panneau du backend, qui en tient l&apos;historique
-          — ce sont des décisions plus lourdes, souvent à motiver.
+          Approuver et vérifier se font ici. Ce sont deux décisions
+          distinctes : approuver ouvre la boutique à la vente, vérifier
+          affirme aux acheteurs que vous avez contrôlé les documents de
+          l&apos;entreprise. Une boutique peut vendre sans être vérifiée.
+          Suspendre et refuser restent dans le panneau du backend, qui en
+          tient l&apos;historique.
         </p>
 
         {panelUrl && (

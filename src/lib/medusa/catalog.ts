@@ -283,6 +283,13 @@ export type StoreOffer = {
     les boutiques qui proposent le même article.
   */
   sellerMetadata: Record<string, unknown> | null;
+  /*
+    La vérification accordée par MACHÉ. Elle vient de `is_premium`, un
+    champ du modèle vendeur — pas de `metadata`, que le vendeur écrit
+    lui-même. C'est la seule information de cette ligne qui ne vienne
+    pas du vendeur, et c'est ce qui lui donne sa valeur.
+  */
+  sellerVerified: boolean;
 };
 
 /*
@@ -326,6 +333,7 @@ export async function fetchOffersForVariant(
           seller.metadata && typeof seller.metadata === "object"
             ? (seller.metadata as Record<string, unknown>)
             : null,
+        sellerVerified: seller.is_premium === true,
       };
     }),
   };

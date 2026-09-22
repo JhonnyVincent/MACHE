@@ -10,6 +10,7 @@
 */
 
 import Link from "next/link";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { formatAmount } from "@/lib/format";
 import type {
   StoreProduct,
@@ -206,9 +207,14 @@ export function SellerRailSection({
                 <span className="block truncate text-base font-semibold text-[var(--mache-text)] group-hover:underline">
                   {seller.name}
                 </span>
+                {/*
+                  « Premium » laissait croire à un niveau de service
+                  acheté. Le champ dit autre chose : MACHÉ a contrôlé
+                  les documents de cette entreprise.
+                */}
                 {seller.isPremium && (
-                  <span className="mt-0.5 inline-block rounded-[3px] bg-[var(--mache-gold-soft)] px-1.5 py-px text-2xs font-bold text-[var(--mache-gold)]">
-                    Premium
+                  <span className="mt-0.5 inline-block">
+                    <VerifiedBadge compact />
                   </span>
                 )}
               </span>

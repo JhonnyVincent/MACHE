@@ -28,6 +28,7 @@ import { fetchSellers } from "@/lib/medusa/catalog";
 import { readSellerProfile, isWholesaleProfile } from "@/lib/seller-profile";
 import { readSellerMinimum } from "@/lib/seller-minimum";
 import { formatAmount } from "@/lib/format";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
@@ -166,8 +167,14 @@ export default async function WholesalePage() {
                   key={seller.id}
                   className="flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-white p-4"
                 >
-                  <h3 className="text-base font-bold text-[var(--mache-text)]">
+                  <h3 className="flex flex-wrap items-center gap-2 text-base font-bold text-[var(--mache-text)]">
                     {seller.name}
+                    {/*
+                      Sur cette page plus qu'ailleurs : une commande en
+                      gros engage des sommes qu'on ne confie pas à une
+                      entreprise dont on ne sait rien.
+                    */}
+                    {seller.isPremium && <VerifiedBadge compact />}
                   </h3>
 
                   {seller.description && (

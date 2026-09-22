@@ -264,6 +264,17 @@ export type AdminSeller = {
   handle: string;
   email: string | null;
   status: string;
+  /*
+    La vérification par MACHÉ. Elle vit dans `is_premium`, un champ du
+    modèle vendeur — PAS dans `metadata`, que le vendeur écrit
+    lui-même. C'est toute la différence : un badge qu'on peut
+    s'attribuer soi-même ne vérifie rien.
+
+    Vérifié dans le contrat de Mercur avant de s'en servir : ce champ
+    n'apparaît pas dans ce qu'une route vendeur accepte, et apparaît
+    dans ce qu'une route d'administration accepte.
+  */
+  verified: boolean;
   createdAt: string | null;
 };
 
@@ -296,6 +307,7 @@ export async function fetchSellers(): Promise<Result<AdminSeller[]>> {
       handle: str(row.handle) ?? "",
       email: str(row.email),
       status: str(row.status) ?? "unknown",
+      verified: row.is_premium === true,
       createdAt: str(row.created_at),
     })),
   };
@@ -353,6 +365,48 @@ export async function approveSeller(sellerId: string): Promise<Result<true>> {
   const result = await request<Raw>(
     `/admin/sellers/${encodeURIComponent(sellerId)}/approve`,
     { method: "POST", body: {}, token }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
+
+/*
+  Accorder ou retirer la vérification d'une boutique.
+
+  Approuver et vérifier ne sont PAS la même décision, et le site les
+  confondait : il promettait un « badge vérifié, accordé après contrôle
+  des documents » à trois endroits, sans qu'aucun moyen de l'accorder
+  n'existe.
+
+  - Approuver ouvre la boutique : elle peut vendre, elle apparaît dans
+    le catalogue. C'est une décision d'accès.
+  - Vérifier dit que MACHÉ a contrôlé les documents de l'entreprise.
+    C'est une affirmation faite aux acheteurs, et elle engage MACHÉ.
+
+  Une boutique peut vendre sans être vérifiée. L'inverse n'aurait pas
+  de sens.
+
+  Où c'est rangé, et pourquoi là
+
+  Dans `is_premium`, un champ du modèle vendeur — et non dans
+  `metadata`, que le vendeur écrit lui-même. Vérifié dans le contrat de
+  Mercur : ce champ n'existe pas dans ce qu'une route vendeur accepte.
+  Un vendeur ne peut donc pas se déclarer vérifié, ce qui est la seule
+  chose qui donne un sens au badge.
+*/
+export async function setSellerVerified(
+  sellerId: string,
+  verified: boolean
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(
+    `/admin/sellers/${encodeURIComponent(sellerId)}`,
+    { method: "POST", body: { is_premium: verified }, token }
   );
 
   if (!result.ok) return result;

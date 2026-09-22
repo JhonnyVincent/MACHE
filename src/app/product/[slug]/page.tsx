@@ -18,6 +18,7 @@ import { toggleFavoriteAction } from "@/app/favorites/actions";
 import { RatingSummary, ReviewList } from "@/components/ratings";
 import { readSellerProfile, type SellerProfile } from "@/lib/seller-profile";
 import { SellerProfileBadge } from "@/components/seller-profile-badge";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { reportOutage } from "@/lib/medusa/outage";
 import { notFound } from "next/navigation";
 import {
@@ -385,6 +386,16 @@ export default async function ProductPage({
                         >
                           {offer.sellerName}
                         </Link>
+
+                        {/*
+                          La vérification de MACHÉ, quand elle a été
+                          accordée. C'est ici qu'elle sert le plus :
+                          l'acheteur choisit entre plusieurs boutiques
+                          pour le même article, et c'est le seul
+                          élément de la ligne qui ne vienne pas du
+                          vendeur lui-même.
+                        */}
+                        {offer.sellerVerified && <VerifiedBadge compact />}
 
                         {readSellerProfile(offer.sellerMetadata) && (
                           <SellerProfileBadge
