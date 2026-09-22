@@ -115,7 +115,15 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     },
   });
 
-  const rows = orders as OrderRow[];
+  /*
+    `query.graph` est typé avec le modèle complet d'une commande Medusa,
+    alors que la requête n'en demande qu'une poignée de champs. Les deux
+    formes ne se recouvrent donc pas, et TypeScript refuse la conversion
+    directe — à juste titre : ce qui revient ici n'EST pas une commande
+    complète. Le passage par `unknown` dit que la forme attendue est
+    celle des champs demandés juste au-dessus, et rien d'autre.
+  */
+  const rows = orders as unknown as OrderRow[];
 
   const current: Record<string, Bucket> = {};
   const previous: Record<string, Bucket> = {};

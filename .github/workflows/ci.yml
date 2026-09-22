@@ -16,13 +16,20 @@
 # construction cassée mise en ligne remplace un site qui marche par une
 # page d'erreur.
 #
-# Ce qu'il ne vérifie pas
+# Le backend est vérifié par son typage, pas par sa construction
 #
-# Le dossier `backend/`. Sa construction dépend du panneau vendeur
-# Mercur, dont les dépendances ne se résolvent pas de la même façon
-# selon l'installateur — une vérification qui échoue pour cette raison
-# bloquerait tous les déploiements, c'est-à-dire exactement le problème
-# qu'on répare ici. À ajouter quand ce point sera tranché.
+# La construction du panneau vendeur Mercur ne se comporte pas pareil
+# selon l'installateur : `@mercurjs/vendor` importe `i18next` sans le
+# déclarer, ce qui échoue avec une installation isolée et passe avec une
+# installation à plat. Bloquer les déploiements là-dessus reviendrait à
+# recréer le problème qu'on répare ici.
+#
+# Le typage, lui, est fiable et suffit à attraper ce qui compte. Une
+# erreur de type est partie en production une fois — une conversion
+# refusée dans une route d'analytics — parce que rien ne relisait
+# `backend/` avant Render. `tsc -b` sur les deux panneaux couvre aussi
+# `packages/api`, qu'ils référencent : c'est exactement la vérification
+# qui manquait.
 
 name: Vérifications
 
@@ -58,3 +65,35 @@ jobs:
 
       - name: Lancer les tests
         run: npm test
+
+  backend:
+    name: Backend (typage)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Le backend est installé avec bun, et son verrou est un bun.lock.
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Installer les dépendances du backend
+        working-directory: backend
+        run: bun install --frozen-lockfile
+
+      # Les types de routes sont générés, et volontairement absents du
+      # dépôt (`.mercur/` est ignoré). Sans cette étape, les panneaux ne
+      # résolvent pas `@acme/api/_generated` et le typage échoue pour
+      # une raison qui n'a rien à voir avec le code.
+      - name: Générer les types de routes
+        working-directory: backend/packages/api
+        run: ./node_modules/.bin/mercurjs codegen
+
+      # `tsc -b` suit les références de projet : vérifier les panneaux
+      # vérifie aussi packages/api, où vivent les routes.
+      - name: Vérifier le typage du panneau vendeur
+        working-directory: backend/apps/vendor
+        run: ../../node_modules/.bin/tsc -b
+
+      - name: Vérifier le typage du panneau d'administration
+        working-directory: backend/apps/admin
+        run: ../../node_modules/.bin/tsc -b
