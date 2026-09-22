@@ -13,6 +13,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured } from "@/lib/supabase/env";
 
 export const RELATION_LABELS: Record<string, string> = {
   service: "Prestation de service",
@@ -24,6 +25,15 @@ export const RELATION_LABELS: Record<string, string> = {
 };
 
 export async function requirePartner(nextPath = "/dashboard/partner") {
+  /*
+    Sans Supabase, l'appel suivant lève et l'espace partenaire rend une
+    erreur serveur au lieu de dire ce qui manque. Les appelants savent
+    présenter cet état ; encore faut-il qu'ils y arrivent.
+  */
+  if (!supabaseConfigured()) {
+    redirect("/");
+  }
+
   const supabase = await createSupabaseServerClient();
 
   const { data: userData } = await supabase.auth.getUser();

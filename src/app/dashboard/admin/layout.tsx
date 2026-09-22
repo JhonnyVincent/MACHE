@@ -1,72 +1,81 @@
 /*
-  LAYOUT : espace d'administration
+  LAYOUT : espace d'administration.
 
-  Même chrome que les espaces vendeur, client et agent. L'administration
-  était jusqu'ici rendue par le routeur générique /dashboard/[role], au
-  milieu du code des autres espaces ; elle a maintenant ses propres pages.
+  L'authentification est passée de Supabase à Medusa.
+
+  Pourquoi : le projet Supabase a été supprimé, et cet espace
+  authentifiait donc contre un service qui n'existe plus — chaque écran
+  levait une erreur serveur. Les comptes du personnel vivent maintenant
+  dans Medusa, la table `user`, distincte des clients et des vendeurs.
+
+  Ce layout n'authentifie PAS.
+
+  Il enveloppe aussi la page de connexion : y placer une redirection la
+  ferait se rediriger vers elle-même, indéfiniment. Il se contente donc
+  de lire la session — s'il y en a une, il dessine le panneau latéral ;
+  sinon il rend la page nue, ce qui est exactement ce qu'il faut pour un
+  formulaire de connexion.
+
+  Le contrôle appartient à chaque page, comme dans l'espace vendeur.
 */
 
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { requireAdmin } from "@/lib/admin";
+import { getAdminUser, fetchMarketplaceState } from "@/lib/medusa/admin";
+import { adminLogoutAction } from "./actions";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const user = await getAdminUser();
+
   /*
-    Sans Supabase, `requireAdmin` lève et toutes les pages de cet espace
-    rendaient une erreur 500. Le contrôle se fait donc ici, une fois, avant
-    d'essayer : les enfants ne sont pas rendus, et l'écran dit ce qui
-    manque.
+    Pas de session : la page se débrouille seule. C'est le cas de la
+    connexion, et celui d'une session expirée — la page protégée
+    redirigera d'elle-même.
   */
-  if (!supabaseConfigured()) {
-    return <StaffUnavailable area="Administration" />;
+  if (!user) {
+    return <>{children}</>;
   }
 
-  const { supabase, displayName, firstName, email, isSuperAdmin } = await requireAdmin();
+  const displayName =
+    [user.firstName, user.lastName].filter(Boolean).join(" ") || user.email;
+
+  const firstName = user.firstName || user.email.split("@")[0];
 
   /*
-    Compteur des boutiques en attente de vérification : c'est désormais la
-    seule urgence dont cet espace est responsable. Le catalogue et les
-    commandes sont passés au panneau Medusa.
+    Le nombre de boutiques en attente d'approbation : la seule urgence
+    dont cet espace est responsable. Une lecture qui échoue ne met pas
+    de pastille — zéro en attente et « je n'ai pas pu compter » ne
+    doivent pas se ressembler.
   */
-  const { count: unverified } = await supabase
-    .from("stores")
-    .select("id", { count: "exact", head: true })
-    .eq("is_verified", false);
+  const state = await fetchMarketplaceState();
+
+  const pending = state.ok ? state.data.pending : 0;
 
   const sections: NavSection[] = [
     {
       label: "Marketplace",
       items: [
         { label: "Vue d'ensemble", href: "/dashboard/admin" },
-        { label: "Boutiques", href: "/dashboard/admin/stores", badge: unverified ?? 0 },
+        { label: "Boutiques", href: "/dashboard/admin/stores", badge: pending },
+        { label: "Utilisateurs", href: "/dashboard/admin/users" },
       ],
     },
     {
-      label: "Comptes",
+      /*
+        Ces trois-là lisent leurs comptes dans Supabase et restent hors
+        service tant qu'il n'est pas rebranché. Ils sont laissés dans la
+        navigation, et chacun le dit en s'ouvrant : les retirer ferait
+        croire qu'ils n'ont jamais existé.
+      */
+      label: "Sur Supabase",
       items: [
-        { label: "Utilisateurs", href: "/dashboard/admin/users" },
         { label: "Agents", href: "/dashboard/admin/agents" },
         { label: "Partenaires", href: "/dashboard/admin/partners" },
+        { label: "Blocs de contenu", href: "/dashboard/admin/widgets" },
       ],
     },
-    {
-      label: "Site",
-      items: [{ label: "Blocs de contenu", href: "/dashboard/admin/widgets" }],
-    },
   ];
-
-  async function signOutAction() {
-    "use server";
-
-    const supabase = await createSupabaseServerClient();
-    await supabase.auth.signOut();
-    redirect("/login");
-  }
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#eef1f3] font-sans text-base text-[#0f1111] antialiased">
@@ -78,7 +87,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/" className="block">
             <p className="text-md font-bold leading-none tracking-widest">MACHE</p>
             <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/40">
-              {isSuperAdmin ? "Super administration" : "Administration"}
+              Administration
             </p>
           </Link>
         </div>
@@ -87,9 +96,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         <div className="border-t border-white/10 px-4 py-2.5">
           <p className="truncate text-xs font-medium">{displayName}</p>
-          <p className="truncate text-2xs text-white/40">{email}</p>
+          <p className="truncate text-2xs text-white/40">{user.email}</p>
 
-          <form action={signOutAction} className="mt-2">
+          <form action={adminLogoutAction} className="mt-2">
             <button
               type="submit"
               className="text-xs text-white/45 underline-offset-2 transition-colors hover:text-white hover:underline"

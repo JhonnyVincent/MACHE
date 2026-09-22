@@ -96,6 +96,25 @@ Laissez les variables d'environnement vides pour l'instant.
 
 Sans elle, le navigateur refusera les appels du site au backend.
 
+### Le compte d'administration MACHÉ
+
+L'administration du site s'authentifie sur les comptes **du personnel
+Medusa**, pas sur Supabase. Elle se crée côté backend, en une commande :
+
+```
+medusa user -e vous@mache.ht -p <mot de passe>
+```
+
+Sur Render : `mache-backend` → onglet **`Shell`** →
+`cd packages/api && ./node_modules/.bin/medusa user -e ... -p ...`
+
+Ce compte ouvre `/dashboard/admin` sur le site **et** le panneau complet
+du backend — c'est le même identifiant.
+
+Il n'y a pas d'inscription publique à l'administration, et c'est
+délibéré : ouvrir la création de comptes d'administration d'une
+marketplace reviendrait à laisser la porte du coffre sur le palier.
+
 ### Deux services, deux jeux de variables — ne pas les mélanger
 
 C'est l'erreur la plus coûteuse, parce qu'elle ne produit aucun message

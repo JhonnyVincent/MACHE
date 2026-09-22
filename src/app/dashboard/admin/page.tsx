@@ -1,170 +1,167 @@
 /*
-  PAGE : Administration — vue d'ensemble
+  PAGE : vue d'ensemble de l'administration.
 
-  Ce que cet espace couvre, et ce qu'il ne couvre plus
+  Ce qu'elle montre, et ce qu'elle ne refait pas
 
-  Le catalogue, les commandes, les régions, les taxes et la modération des
-  produits sont passés au panneau d'administration de Medusa, qui en est
-  la source de vérité. Les compteurs correspondants ont été retirés
-  d'ici : ils lisaient encore Supabase et affichaient donc des chiffres
-  morts — un catalogue figé, un chiffre d'affaires d'avant la bascule.
+  Les chiffres viennent de Medusa, lus à chaque affichage. Rien n'est
+  estimé : une lecture qui échoue affiche un tiret, pas un zéro —
+  « aucune boutique » et « je n'ai pas pu compter » sont deux choses
+  différentes, et la seconde ne doit pas se déguiser en première.
 
-  Restent les écrans que Medusa ne connaît pas, parce qu'ils sont propres
-  à MACHÉ : l'habilitation des agents, la vérification des boutiques, les
-  rôles des comptes et les partenaires.
+  Pour AGIR — approuver une boutique, ajuster une commission, traiter un
+  versement, modérer un avis — cette page mène au panneau
+  d'administration servi par le backend. Il est plus complet que ce que
+  ce site saurait refaire, et il est maintenu en amont.
+
+  C'est la même décision que pour l'espace vendeur, et elle a la même
+  justification : les pages écrites ici pour redire ce qu'un produit
+  maintenu ailleurs dit déjà finissaient par afficher des chiffres qui
+  ne correspondaient plus à rien.
 */
 
-import { requireAdmin } from "@/lib/admin";
-import { formatNumber } from "@/lib/seller";
-import { SELLER_ROLES } from "@/lib/authz";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getAdminUser, fetchMarketplaceState } from "@/lib/medusa/admin";
 import { medusaBackendUrl } from "@/lib/medusa/config";
-import {
-  PageHeader, Panel, Stat, StatRow, Table, Row, Cell, Button, Notice,
-} from "@/components/seller/ui";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { StaffUnavailable } from "@/components/staff-unavailable";
+import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
 
+/* Ce que le panneau du backend sait faire, pour ne pas le chercher. */
+const PANEL_CAPABILITIES = [
+  "Approuver une boutique, la suspendre, la vérifier",
+  "Commissions et taux par vendeur ou par catégorie",
+  "Versements aux vendeurs et comptes de paiement",
+  "Commandes, groupes de commandes, retours et litiges",
+  "Avis : modération et publication",
+  "Catalogue : produits, catégories, promotions",
+];
+
 export default async function AdminHomePage() {
-  /*
-    La garde du layout ne suffit pas : Next rend la page et la mise en
-    page en parallèle, donc `require*` s'exécute et lève même quand le
-    layout a déjà décidé de ne pas afficher la page. L'écran était
-    correct, mais les journaux se remplissaient de traces d'erreur pour
-    une situation connue — et du rouge attendu finit par cacher du rouge
-    inattendu.
-  */
-  if (!supabaseConfigured()) return <StaffUnavailable area="Administration" />;
+  const user = await getAdminUser();
 
-  const { supabase, isSuperAdmin, firstName } = await requireAdmin();
+  if (!user) redirect("/dashboard/admin/connexion");
 
-  const [users, sellers, stores, unverified, agents] = await Promise.all([
-    supabase.from("users").select("id", { count: "exact", head: true }),
-    supabase.from("users").select("id", { count: "exact", head: true }).in("role", [...SELLER_ROLES]),
-    supabase.from("stores").select("id", { count: "exact", head: true }),
-    supabase.from("stores").select("id", { count: "exact", head: true }).eq("is_verified", false),
-    supabase.from("agent_profiles").select("id", { count: "exact", head: true }),
-  ]);
+  const state = await fetchMarketplaceState();
 
-  const n = (result: { count: number | null }) => result.count ?? 0;
+  if (!state.ok) reportOutage("administration", state.reason);
 
   const backendUrl = medusaBackendUrl();
+  const panelUrl = backendUrl ? `${backendUrl}/dashboard` : "";
 
-  const todo = [
-    n(unverified) > 0 && {
-      label: `${formatNumber(n(unverified))} boutique(s) en attente de vérification`,
-      href: "/dashboard/admin/stores",
-      action: "Vérifier",
+  const figures = [
+    {
+      label: "Boutiques",
+      value: state.ok ? state.data.sellers : null,
+      hint: "Inscrites sur la marketplace",
     },
-    n(agents) === 0 && {
-      label: "Aucun agent enregistré : la vérification publique ne trouvera personne",
-      href: "/dashboard/admin/agents",
-      action: "Enregistrer",
+    {
+      label: "En attente d'approbation",
+      value: state.ok ? state.data.pending : null,
+      hint: "Ouvertes, pas encore validées",
     },
-  ].filter(Boolean) as { label: string; href: string; action: string }[];
-
-  const readErrors = [users, stores, agents]
-    .map((result) => result.error?.message)
-    .filter(Boolean);
+    {
+      label: "Commandes",
+      value: state.ok ? state.data.orders : null,
+      hint: "Depuis l'ouverture",
+    },
+  ];
 
   return (
-    <>
-      <PageHeader
-        title={`Bonjour ${firstName}`}
-        subtitle={
-          isSuperAdmin
-            ? "Accès complet : comptes, rôles, boutiques et agents."
-            : "Accès administrateur : boutiques, agents et partenaires."
-        }
-        actions={
-          backendUrl ? (
-            <Button href={`${backendUrl}/dashboard`} variant="primary">
-              Panneau Medusa
-            </Button>
-          ) : undefined
-        }
-      />
-
-      <div className="space-y-4">
-        {readErrors.length > 0 && (
-          <Notice tone="warning" title="Certains compteurs sont indisponibles">
-            {readErrors[0]}. Vérifiez que les politiques de lecture autorisent
-            ce compte.
-          </Notice>
-        )}
-
-        <StatRow>
-          <Stat label="Comptes" value={formatNumber(n(users))} hint={`${formatNumber(n(sellers))} vendeur(s)`} />
-          <Stat label="Boutiques" value={formatNumber(n(stores))} />
-          <Stat
-            label="À vérifier"
-            value={formatNumber(n(unverified))}
-            tone={n(unverified) ? "warning" : "success"}
-          />
-          <Stat
-            label="Agents habilités"
-            value={formatNumber(n(agents))}
-            tone={n(agents) ? "default" : "warning"}
-          />
-        </StatRow>
-
-        {todo.length > 0 && (
-          <Panel title="Décisions en attente" padded={false}>
-            <Table
-              columns={[
-                { key: "l", label: "Point" },
-                { key: "a", label: "", align: "right", width: "140px" },
-              ]}
-            >
-              {todo.map((task) => (
-                <Row key={task.label}>
-                  <Cell strong>{task.label}</Cell>
-                  <Cell align="right">
-                    <Button href={task.href} size="sm">{task.action}</Button>
-                  </Cell>
-                </Row>
-              ))}
-            </Table>
-          </Panel>
-        )}
-
-        <Panel
-          title="Le commerce se pilote ailleurs"
-          description="Catalogue, commandes, régions, taxes, promotions et modération."
-        >
-          {backendUrl ? (
-            <>
-              <p className="max-w-2xl text-sm leading-relaxed text-[#565959]">
-                Ces domaines sont tenus par le backend commerce, qui en est la
-                seule source de vérité. Les dupliquer ici reviendrait à
-                entretenir deux vérités sur un même stock.
-              </p>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button href={`${backendUrl}/dashboard`}>
-                  Administration Medusa
-                </Button>
-                <Button href={`${backendUrl}/seller`}>
-                  Panneau vendeur Mercur
-                </Button>
-              </div>
-            </>
-          ) : (
-            <p className="max-w-2xl text-sm leading-relaxed text-[#565959]">
-              L&apos;adresse du backend commerce n&apos;est pas renseignée
-              (NEXT_PUBLIC_MEDUSA_BACKEND_URL) : MACHÉ ne sait pas où trouver
-              le panneau d&apos;administration.
-            </p>
-          )}
-        </Panel>
-
-        <Notice tone="info" title="Ce que cette page ne dit pas">
-          Aucune évolution dans le temps n&apos;est affichée : MACHÉ ne
-          conserve pas d&apos;historique de ces compteurs, et une variation
-          calculée sans point de comparaison serait inventée.
-        </Notice>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-[#0f1111]">
+          Vue d&apos;ensemble
+        </h1>
+        <p className="mt-1 text-base text-[#565959]">
+          L&apos;état de la marketplace, lu dans le backend commerce.
+        </p>
       </div>
-    </>
+
+      {!state.ok && (
+        <div className="rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          Les chiffres ne peuvent pas être lus pour le moment. Rien
+          n&apos;est perdu : réessayez dans quelques minutes.
+        </div>
+      )}
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        {figures.map((figure) => (
+          <div
+            key={figure.label}
+            className="rounded-[8px] border border-[#d5d9d9] bg-white p-4"
+          >
+            <p className="text-sm font-medium text-[#565959]">{figure.label}</p>
+
+            <p className="mt-1 text-3xl font-bold text-[#0f1111]">
+              {/*
+                Un tiret quand la lecture a échoué. Zéro serait une
+                affirmation — et elle serait fausse.
+              */}
+              {figure.value === null ? "—" : figure.value}
+            </p>
+
+            <p className="mt-1 text-xs text-[#565959]">{figure.hint}</p>
+          </div>
+        ))}
+      </div>
+
+      {state.ok && state.data.pending > 0 && (
+        <div className="rounded-[8px] border border-[#f5d9a8] bg-[#fff8ed] px-4 py-3">
+          <p className="text-base font-bold text-[#8a5a00]">
+            {state.data.pending} boutique{state.data.pending > 1 ? "s" : ""} attend
+            {state.data.pending > 1 ? "ent" : ""} votre décision
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-[#8a5a00]">
+            Tant qu&apos;une boutique n&apos;est pas approuvée, ses produits
+            n&apos;apparaissent pas dans le catalogue. Son propriétaire, lui,
+            attend.
+          </p>
+        </div>
+      )}
+
+      <div className="rounded-[8px] border border-[#d5d9d9] bg-white p-5">
+        <h2 className="text-lg font-bold text-[#0f1111]">
+          Panneau d&apos;administration
+        </h2>
+
+        <p className="mt-1.5 text-base leading-relaxed text-[#565959]">
+          Les décisions se prennent dans le panneau servi par le backend
+          commerce. Il n&apos;est pas dupliqué ici : ce serait réécrire, écran
+          par écran, un outil déjà maintenu en amont — et deux versions d&apos;un
+          même écran finissent toujours par dire deux choses différentes.
+        </p>
+
+        <ul className="mt-3 grid gap-1.5 text-base text-[#565959] sm:grid-cols-2">
+          {PANEL_CAPABILITIES.map((item) => (
+            <li key={item} className="flex gap-2">
+              <span aria-hidden="true" className="text-[#0f1111]">·</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        {panelUrl ? (
+          <a
+            href={panelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-block rounded-[6px] bg-[#0f1111] px-5 py-2.5 text-base font-bold text-white transition-colors hover:bg-black"
+          >
+            Ouvrir le panneau
+          </a>
+        ) : (
+          <p className="mt-4 text-sm text-[#565959]">
+            L&apos;adresse du backend commerce n&apos;est pas renseignée sur ce
+            déploiement : le panneau ne peut pas être ouvert d&apos;ici.
+          </p>
+        )}
+
+        <p className="mt-3 text-sm leading-relaxed text-[#565959]">
+          Il demande ses propres identifiants — les mêmes que ceux de cette
+          page.
+        </p>
+      </div>
+    </div>
   );
 }

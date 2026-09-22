@@ -8,6 +8,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured } from "@/lib/supabase/env";
 import { SUPER_ADMIN_LIMIT } from "@/lib/authz";
 
 export const ROLE_LABELS: Record<string, string> = {
@@ -43,6 +44,15 @@ export const ASSIGNABLE_ROLES = [
 export { SUPER_ADMIN_LIMIT };
 
 export async function requireAdmin(nextPath = "/dashboard/admin") {
+  /*
+    Sans Supabase, l'appel suivant lève et la page rend une erreur
+    serveur. On renvoie vers la connexion : l'administration est passée
+    sur les comptes Medusa, et c'est là que la session se prend.
+  */
+  if (!supabaseConfigured()) {
+    redirect("/dashboard/admin/connexion");
+  }
+
   const supabase = await createSupabaseServerClient();
 
   const { data: userData } = await supabase.auth.getUser();

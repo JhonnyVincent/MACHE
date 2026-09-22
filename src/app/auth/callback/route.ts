@@ -21,6 +21,7 @@
 import { NextResponse } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { supabaseConfigured } from "@/lib/supabase/env";
 
 const EMAIL_OTP_TYPES: EmailOtpType[] = [
   "signup",
@@ -91,6 +92,25 @@ export async function GET(request: Request) {
   const code = params.get("code");
 
   const next = params.get("next") || defaultNextFor(type);
+
+  /*
+    Sans Supabase, `createSupabaseServerClient` lève — et comme il
+    s'agit ici d'un gestionnaire de route, l'exception remonte telle
+    quelle : le navigateur affiche « Application error » avec un
+    digest, sans rien indiquer de la cause.
+
+    C'est une adresse publique : un lien périmé gardé dans un e-mail,
+    un signet, un robot d'indexation suffisent à l'atteindre. Elle ne
+    peut donc pas supposer que Supabase est branché.
+
+    On renvoie vers la connexion avec un motif, comme pour toutes les
+    autres défaillances de cette route.
+  */
+  if (!supabaseConfigured()) {
+    console.warn("[auth/callback] Supabase n'est pas configuré.");
+
+    return failure(origin, "link_invalid", flow);
+  }
 
   const supabase = await createSupabaseServerClient();
 

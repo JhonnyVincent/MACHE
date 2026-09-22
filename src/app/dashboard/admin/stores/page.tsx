@@ -1,227 +1,172 @@
 /*
-  PAGE : Administration — boutiques
+  PAGE : les boutiques de la marketplace.
 
-  Sert à :
-  - voir les boutiques de la marketplace et l'état de leur dossier ;
-  - accorder ou retirer la vérification.
+  En lecture seule, et volontairement.
 
-  L'ordre de tri n'est pas anodin : les boutiques ayant fourni un document
-  et attendant une décision remontent, parce que ce sont celles qui
-  attendent quelque chose de vous.
+  Approuver, suspendre ou vérifier une boutique se fait dans le panneau
+  du backend. Refaire ces gestes ici reviendrait à entretenir deux
+  versions de la même décision — et deux versions d'un même écran
+  finissent toujours par diverger, l'une approuvant ce que l'autre croit
+  encore en attente.
+
+  Ce que cette page apporte, c'est la liste et l'attente : qui s'est
+  inscrit, et qui attend une réponse. C'est ce qu'on veut voir en
+  ouvrant l'administration.
 */
 
 import Link from "next/link";
-import { requireAdmin } from "@/lib/admin";
-import { categoryLabel } from "@/lib/categories";
-import { formatNumber, formatDate } from "@/lib/seller";
+import { redirect } from "next/navigation";
 import {
-  PageHeader, Panel, Table, Row, Cell, Badge, Button, EmptyState, Stat, StatRow,
-  Notice, Input, FormFeedback,
-} from "@/components/seller/ui";
-import { setStoreVerificationAction } from "./actions";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { StaffUnavailable } from "@/components/staff-unavailable";
+  getAdminUser,
+  fetchSellers,
+  SELLER_STATUS_LABELS,
+  sellerIsOpen,
+} from "@/lib/medusa/admin";
+import { medusaBackendUrl } from "@/lib/medusa/config";
+import { reportOutage } from "@/lib/medusa/outage";
+import { formatDate } from "@/lib/seller";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminStoresPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ q?: string; success?: string; error?: string }>;
-}) {
-  /*
-    La garde du layout ne suffit pas : Next rend la page et la mise en
-    page en parallèle, donc `require*` s'exécute et lève même quand le
-    layout a déjà décidé de ne pas afficher la page. L'écran était
-    correct, mais les journaux se remplissaient de traces d'erreur pour
-    une situation connue — et du rouge attendu finit par cacher du rouge
-    inattendu.
-  */
-  if (!supabaseConfigured()) return <StaffUnavailable area="Boutiques" />;
+export default async function AdminStoresPage() {
+  const user = await getAdminUser();
 
-  const query = searchParams ? await searchParams : {};
-  const search = String(query.q || "").trim();
+  if (!user) redirect("/dashboard/admin/connexion");
 
-  const { supabase } = await requireAdmin("/dashboard/admin/stores");
+  const result = await fetchSellers();
 
-  let request = supabase
-    .from("stores")
-    .select("id, name, slug, category, seller_type, is_active, is_verified, legal_doc_url, created_at, rating_average, rating_count")
-    .order("created_at", { ascending: false })
-    .limit(200);
+  if (!result.ok) reportOutage("boutiques (administration)", result.reason);
 
-  if (search) {
-    request = request.or(`name.ilike.%${search}%,slug.ilike.%${search}%`);
-  }
+  const sellers = result.ok ? result.data : [];
 
-  const { data: stores, error } = await request;
-  const list = stores ?? [];
+  /* Celles qui attendent d'abord : c'est la raison d'ouvrir cette page. */
+  const sorted = [...sellers].sort((a, b) => {
+    const waiting = (seller: typeof a) =>
+      seller.status === "pending_approval" ? 0 : 1;
 
-  /*
-    Boutiques à traiter d'abord : document fourni, vérification pas encore
-    accordée.
-  */
-  const waiting = list.filter((store) => store.legal_doc_url && !store.is_verified);
-  const rest = list.filter((store) => !(store.legal_doc_url && !store.is_verified));
-  const ordered = [...waiting, ...rest];
+    return waiting(a) - waiting(b);
+  });
 
-  const verified = list.filter((store) => store.is_verified).length;
-  const closed = list.filter((store) => store.is_active === false).length;
-  const noDoc = list.filter((store) => !store.legal_doc_url).length;
+  const backendUrl = medusaBackendUrl();
+  const panelUrl = backendUrl ? `${backendUrl}/dashboard` : "";
 
   return (
-    <>
-      <PageHeader
-        title="Boutiques"
-        subtitle="Dossiers et vérifications."
-      />
-
-      <div className="space-y-4">
-        <FormFeedback
-          success={query.success}
-          error={query.error}
-          successMessages={{
-            verified: "La boutique est désormais vérifiée.",
-            unverified: "La vérification a été retirée.",
-          }}
-        />
-
-        {error && (
-          <Notice tone="warning" title="Boutiques indisponibles">
-            {error.message}
-          </Notice>
-        )}
-
-        <StatRow>
-          <Stat label="Boutiques" value={formatNumber(list.length)} />
-          <Stat label="Vérifiées" value={formatNumber(verified)} tone="success" />
-          <Stat
-            label="En attente de décision"
-            value={formatNumber(waiting.length)}
-            tone={waiting.length ? "warning" : "default"}
-          />
-          <Stat label="Sans document" value={formatNumber(noDoc)} />
-          <Stat label="Fermées" value={formatNumber(closed)} />
-        </StatRow>
-
-        <Panel title="Rechercher">
-          <form method="GET" className="flex flex-col gap-2 sm:flex-row sm:items-end">
-            <div className="flex-1">
-              <Input
-                name="q"
-                defaultValue={search}
-                placeholder="Nom ou adresse de la boutique"
-                aria-label="Rechercher une boutique"
-              />
-            </div>
-            <Button type="submit" variant="primary">Chercher</Button>
-            {search && (
-              <Link
-                href="/dashboard/admin/stores"
-                className="self-center text-sm text-[#565959] hover:underline"
-              >
-                Réinitialiser
-              </Link>
-            )}
-          </form>
-        </Panel>
-
-        <Panel
-          title="Boutiques"
-          description="Celles qui ont fourni un document et attendent une décision sont en tête."
-          padded={false}
-        >
-          {ordered.length === 0 ? (
-            <EmptyState
-              title="Aucune boutique"
-              description={
-                search
-                  ? "Aucune boutique ne correspond à cette recherche."
-                  : "Aucune boutique n'a encore été créée."
-              }
-            />
-          ) : (
-            <Table
-              columns={[
-                { key: "n", label: "Boutique" },
-                { key: "c", label: "Catégorie" },
-                { key: "d", label: "Document" },
-                { key: "r", label: "Note" },
-                { key: "s", label: "État" },
-                { key: "a", label: "", align: "right", width: "200px" },
-              ]}
-            >
-              {ordered.map((store) => (
-                <Row key={store.id}>
-                  <Cell strong>
-                    <Link
-                      href={`/store/${store.slug || store.id}`}
-                      className="hover:underline"
-                    >
-                      {store.name?.trim() || "Sans nom"}
-                    </Link>
-                    <span className="mt-0.5 block text-2xs font-normal text-[#767676]">
-                      Créée le {formatDate(store.created_at)}
-                    </span>
-                  </Cell>
-                  <Cell muted>{store.category ? categoryLabel(store.category) : "—"}</Cell>
-                  <Cell>
-                    {store.legal_doc_url ? (
-                      <a
-                        href={String(store.legal_doc_url)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-sm font-medium text-[#d2162c] hover:underline"
-                      >
-                        Ouvrir
-                      </a>
-                    ) : (
-                      <Badge tone="danger">Manquant</Badge>
-                    )}
-                  </Cell>
-                  <Cell muted numeric>
-                    {store.rating_count
-                      ? `${Number(store.rating_average).toFixed(1)} (${formatNumber(store.rating_count)})`
-                      : "—"}
-                  </Cell>
-                  <Cell>
-                    <span className="flex flex-wrap gap-1">
-                      <Badge tone={store.is_verified ? "success" : "warning"}>
-                        {store.is_verified ? "Vérifiée" : "Non vérifiée"}
-                      </Badge>
-                      {store.is_active === false && <Badge tone="neutral">Fermée</Badge>}
-                    </span>
-                  </Cell>
-                  <Cell align="right">
-                    <form action={setStoreVerificationAction} className="flex justify-end">
-                      <input type="hidden" name="store_id" value={store.id} />
-                      <input
-                        type="hidden"
-                        name="verified"
-                        value={String(!store.is_verified)}
-                      />
-                      <Button
-                        type="submit"
-                        size="sm"
-                        variant={store.is_verified ? "secondary" : "primary"}
-                      >
-                        {store.is_verified ? "Retirer la vérification" : "Vérifier"}
-                      </Button>
-                    </form>
-                  </Cell>
-                </Row>
-              ))}
-            </Table>
-          )}
-        </Panel>
-
-        <Notice tone="info" title="Ce que la vérification déclenche">
-          Le badge apparaît sur la vitrine et les fiches produit, et les
-          produits de cette boutique passent en publication directe au lieu
-          d&apos;attendre un examen. Elle ne peut pas être accordée à une
-          boutique n&apos;ayant fourni aucun document.
-        </Notice>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-[#0f1111]">
+          Boutiques
+        </h1>
+        <p className="mt-1 text-base text-[#565959]">
+          {sellers.length} inscrite{sellers.length > 1 ? "s" : ""} sur la
+          marketplace.
+        </p>
       </div>
-    </>
+
+      {!result.ok && (
+        <div className="rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          La liste ne peut pas être lue pour le moment. Réessayez dans
+          quelques minutes.
+        </div>
+      )}
+
+      {result.ok && sellers.length === 0 && (
+        <div className="rounded-[8px] border border-[#d5d9d9] bg-white p-5">
+          <p className="text-base font-semibold text-[#0f1111]">
+            Aucune boutique inscrite.
+          </p>
+          <p className="mt-1 text-base text-[#565959]">
+            Les commerçants ouvrent leur boutique depuis{" "}
+            <Link href="/sell" className="font-medium text-[#0f1111] underline">
+              la page « Vendre »
+            </Link>
+            .
+          </p>
+        </div>
+      )}
+
+      {sorted.length > 0 && (
+        <div className="overflow-hidden rounded-[8px] border border-[#d5d9d9] bg-white">
+          <table className="w-full text-left text-base">
+            <thead className="border-b border-[#d5d9d9] bg-[#f7f8f8] text-sm text-[#565959]">
+              <tr>
+                <th className="px-4 py-2.5 font-medium">Boutique</th>
+                <th className="px-4 py-2.5 font-medium">Contact</th>
+                <th className="px-4 py-2.5 font-medium">État</th>
+                <th className="px-4 py-2.5 font-medium">Inscrite le</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {sorted.map((seller) => {
+                const waiting = seller.status === "pending_approval";
+
+                return (
+                  <tr
+                    key={seller.id}
+                    className="border-b border-[#eceef0] last:border-0"
+                  >
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-[#0f1111]">{seller.name}</p>
+
+                      {seller.handle && (
+                        <Link
+                          href={`/store/${seller.handle}`}
+                          className="text-sm text-[#565959] underline-offset-2 hover:underline"
+                        >
+                          /store/{seller.handle}
+                        </Link>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-3 text-[#565959]">
+                      {seller.email ?? "—"}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-sm font-semibold ${
+                          waiting
+                            ? "bg-[#fff8ed] text-[#8a5a00]"
+                            : sellerIsOpen(seller.status)
+                              ? "bg-[#eaf6ec] text-[#116b25]"
+                              : "bg-[#f1f2f3] text-[#565959]"
+                        }`}
+                      >
+                        {SELLER_STATUS_LABELS[seller.status] ?? seller.status}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3 text-[#565959]">
+                      {seller.createdAt ? formatDate(seller.createdAt) : "—"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div className="rounded-[8px] border border-[#d5d9d9] bg-white p-4">
+        <p className="text-base font-semibold text-[#0f1111]">
+          Approuver, suspendre, vérifier
+        </p>
+        <p className="mt-1 text-base leading-relaxed text-[#565959]">
+          Ces décisions se prennent dans le panneau du backend, qui en tient
+          l&apos;historique.
+        </p>
+
+        {panelUrl && (
+          <a
+            href={panelUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-block rounded-[6px] bg-[#0f1111] px-4 py-2 text-base font-bold text-white transition-colors hover:bg-black"
+          >
+            Ouvrir le panneau
+          </a>
+        )}
+      </div>
+    </div>
   );
 }
