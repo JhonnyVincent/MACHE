@@ -39,11 +39,37 @@ import {
 } from "../../quote-helpers";
 
 /*
-  Garde-fou contre l'envoi en masse. Dix demandes par heure et par
-  adresse : largement au-dessus de ce qu'un acheteur fait réellement,
-  largement en dessous de ce qu'il faut pour noyer la boîte d'un vendeur.
+  Garde-fous contre l'envoi en masse.
+
+  Cette route est ouverte : elle écrit en base sans authentification,
+  parce qu'un acheteur doit pouvoir demander un prix sans compte. Elle
+  a donc besoin de bornes.
+
+  Deux, et il en faut deux. La première limite ce qu'une adresse
+  e-mail peut envoyer — dix par heure, largement au-dessus de ce qu'un
+  acheteur fait réellement. Elle ne suffit pas : l'adresse est saisie
+  par l'expéditeur, et il suffit d'en changer à chaque envoi pour
+  qu'elle ne borne plus rien.
+
+  La seconde limite ce qu'une boutique peut RECEVOIR. C'est elle qui
+  protège ce qui compte : un vendeur dont la page de devis est noyée
+  sous des demandes fictives ne voit plus les vraies.
+
+  Ce que ces bornes ne font pas
+
+  Elles ne remplacent pas une limitation par adresse IP, qui se pose
+  devant l'application — sur l'hébergeur ou un pare-feu applicatif.
+  Quelqu'un de déterminé reste capable de saturer dans les limites
+  posées ici. Ce sont des ralentisseurs honnêtes, pas une défense.
 */
 const MAX_PER_HOUR = 10;
+
+/*
+  Soixante demandes reçues par heure et par boutique. Une boutique très
+  demandée n'en reçoit pas dix dans une journée ; au-delà de soixante
+  dans l'heure, ce n'est plus de la demande, c'est du bruit.
+*/
+const MAX_PER_SELLER_PER_HOUR = 60;
 
 /*
   La liste des demandes du client connecté.
@@ -129,6 +155,27 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return res.status(429).json({
       message:
         "Trop de demandes envoyées depuis cette adresse. Réessayez dans une heure.",
+    });
+  }
+
+  /*
+    Et ce que cette boutique a reçu, toutes adresses confondues. Sans
+    cette seconde borne, changer d'adresse à chaque envoi suffisait à
+    remplir sa page de devis sans aucune limite.
+
+    Le message ne dit pas que la boutique est saturée : ce serait
+    renseigner celui qui la sature. Il dit ce que l'acheteur peut
+    faire.
+  */
+  const received = await service.listQuotes({
+    seller_id: sellerId,
+    created_at: { $gt: since },
+  });
+
+  if (received.length >= MAX_PER_SELLER_PER_HOUR) {
+    return res.status(429).json({
+      message:
+        "Cette boutique ne peut pas recevoir de nouvelle demande pour le moment. Réessayez dans une heure.",
     });
   }
 
