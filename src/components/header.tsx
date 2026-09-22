@@ -46,6 +46,7 @@ const translations = {
     cart: "Panier",
     newArrivals: "Nouveautés",
     catalog: "Tout le catalogue",
+    wholesale: "Acheter en gros",
     sellers: "Vendre sur MACHÉ",
     verifyAgent: "Vérifier un agent",
     help: "Aide"
@@ -61,6 +62,7 @@ const translations = {
     cart: "Panye",
     newArrivals: "Nouvo pwodwi",
     catalog: "Tout katalòg la",
+    wholesale: "Achte an gwo",
     sellers: "Vann sou MACHÉ",
     verifyAgent: "Verifye yon ajan",
     help: "Èd"
@@ -220,6 +222,10 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
 
           <Link href="/shop?sort=recent">
             🟢 {t.newArrivals}
+          </Link>
+
+          <Link href="/gros">
+            📦 {t.wholesale}
           </Link>
 
           <Link href="/sell">

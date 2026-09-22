@@ -124,3 +124,21 @@ export function isSellerProfile(value: unknown): value is SellerProfile {
     SELLER_PROFILES.some((entry) => entry.id === value)
   );
 }
+
+/*
+  Les profils qui vendent en gros.
+
+  Le champ `wholesale` existait depuis la création de ce fichier sans
+  être lu nulle part : il décrivait une intention — « cette boutique
+  vend d'abord à d'autres entreprises » — que rien n'exploitait. Une
+  déclaration qu'aucun écran ne lit ne sert à personne, ni à
+  l'acheteur qui cherche un grossiste, ni au vendeur qui s'est
+  déclaré comme tel.
+
+  Il sert maintenant à répondre à la question : qui vend en gros ?
+*/
+export function isWholesaleProfile(profile: SellerProfile | null): boolean {
+  if (!profile) return false;
+
+  return profileInfo(profile).wholesale;
+}

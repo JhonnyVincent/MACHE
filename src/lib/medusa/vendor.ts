@@ -410,7 +410,45 @@ export async function registerVendor(input: {
 
   const mapped = mapSeller(seller);
 
-  await writeSession(token, mapped.id);
+  /*
+    LE JETON D'ENREGISTREMENT NE VAUT RIEN UNE FOIS LA BOUTIQUE CRÉÉE.
+
+    `/auth/member/emailpass/register` délivre un jeton dont
+    `actor_id` est VIDE : au moment où il est émis, aucun membre
+    n'existe encore. Il sert exactement une fois, à créer la boutique,
+    et le backend refuse ensuite tout appel `/vendor/*` fait avec lui —
+    « You must be authenticated to access seller information. »
+
+    Conservé tel quel, il donnait à chaque nouveau vendeur une session
+    morte : l'inscription réussissait, la boutique était bien créée,
+    puis son espace l'accueillait comme un visiteur non connecté. On
+    concluait que l'inscription avait échoué — alors qu'elle avait
+    abouti, et qu'une seconde tentative butait sur une adresse déjà
+    prise.
+
+    On se ré-authentifie donc, une fois le membre existant, pour
+    obtenir un jeton qui porte son identité.
+  */
+  const session = await request<{ token?: string }>(
+    "/auth/member/emailpass",
+    { method: "POST", body: { email: input.email, password: input.password } }
+  );
+
+  const sessionToken = session.ok ? str(session.data.token) : null;
+
+  /*
+    La boutique est créée : c'est l'essentiel, et on ne le perd pas
+    parce que la session a échoué. On renvoie le succès, et le vendeur
+    se connectera — plutôt que de lui annoncer un échec devant une
+    boutique qui existe.
+  */
+  if (!sessionToken) {
+    await clearVendorSession();
+
+    return { ok: true, data: mapped };
+  }
+
+  await writeSession(sessionToken, mapped.id);
 
   return { ok: true, data: mapped };
 }

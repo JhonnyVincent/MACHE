@@ -128,6 +128,19 @@ export function Footer({
               </Link>
 
               {/*
+                L'entrée pour les acheteurs professionnels. Sans elle,
+                les devis, les prix dégressifs et les commandes
+                minimum existaient sans que personne puisse les
+                trouver.
+              */}
+              <Link
+                href="/gros"
+                className="block text-sm text-white/40 transition hover:text-white"
+              >
+                Acheter en gros
+              </Link>
+
+              {/*
                 Les rayons réels du catalogue. Quand il n'y en a aucun —
                 catalogue vide, backend injoignable — il ne reste que
                 « Tout le catalogue », ce qui est vrai, plutôt qu'une

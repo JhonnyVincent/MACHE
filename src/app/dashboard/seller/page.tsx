@@ -127,8 +127,21 @@ export default async function SellerEntryPage({
         </p>
       )}
 
+      {/*
+        Cette phrase disait « Votre boutique se gère depuis… » à tout le
+        monde, y compris à quelqu'un qui n'a pas de boutique et que la
+        page ne reconnaît pas. Elle lui affirmait qu'il en possédait
+        une, puis lui proposait d'en créer une juste en dessous.
+      */}
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-        Votre boutique se gère depuis le panneau vendeur MACHÉ. Tout y est :
+        {vendor ? (
+          <>Votre boutique se gère depuis le panneau vendeur MACHÉ. Tout y est :</>
+        ) : (
+          <>
+            Vous n&apos;êtes pas connecté. Une boutique sur MACHÉ se gère
+            depuis le panneau vendeur, qui réunit :
+          </>
+        )}
       </p>
 
       <ul className="mt-4 grid gap-1.5 sm:grid-cols-2">
@@ -182,27 +195,40 @@ export default async function SellerEntryPage({
         </div>
       )}
 
-      <div className="mt-6 flex flex-wrap gap-2.5">
-        <a
-          href={vendorUrl}
-          className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
-        >
-          Ouvrir mon panneau vendeur
-        </a>
+      {/*
+        Deux boutons qui commençaient tous les deux par « Ouvrir » et
+        faisaient l'inverse l'un de l'autre : l'un entrait dans une
+        boutique existante, l'autre en créait une. Le premier était mis
+        en avant même pour quelqu'un sans boutique, à qui le panneau
+        n'aurait fait que redemander des identifiants qu'il n'a pas.
 
-        {/*
-          Ce lien dit « en savoir plus » et non « devenir vendeur » : la
-          page /sell renvoie ici, et deux boutons qui se renvoient l'un à
-          l'autre font tourner en rond quelqu'un qui cherche simplement où
-          s'inscrire. L'inscription se fait dans le panneau vendeur.
-        */}
-        {!vendor && (
-          <Link
-            href="/dashboard/seller/inscription"
-            className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
+        L'action principale dépend donc de l'état, et les verbes ne se
+        ressemblent plus : on ENTRE, ou on CRÉE.
+      */}
+      <div className="mt-6 flex flex-wrap gap-2.5">
+        {vendor ? (
+          <a
+            href={vendorUrl}
+            className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
           >
-            Ouvrir ma boutique
-          </Link>
+            Ouvrir mon panneau vendeur
+          </a>
+        ) : (
+          <>
+            <Link
+              href="/dashboard/seller/connexion"
+              className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+            >
+              J&apos;ai déjà une boutique : me connecter
+            </Link>
+
+            <Link
+              href="/dashboard/seller/inscription"
+              className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
+            >
+              Créer ma boutique
+            </Link>
+          </>
         )}
       </div>
 
@@ -212,6 +238,7 @@ export default async function SellerEntryPage({
         maintenant ce qui reste vrai : deux connexions, parce que ce
         sont deux applications.
       */}
+      {vendor && (
       <div className="mt-8 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           Deux connexions, et c&apos;est normal
@@ -231,7 +258,14 @@ export default async function SellerEntryPage({
           </p>
         )}
       </div>
+      )}
 
+      {/*
+        Ces deux pages exigent une session : les proposer à quelqu'un
+        qui n'en a pas l'enverrait vers un écran de connexion sans
+        qu'il comprenne pourquoi.
+      */}
+      {vendor && (
       <div className="mt-6 flex flex-wrap gap-4 border-t border-[var(--mache-line)] pt-4 text-sm">
         <Link
           href="/dashboard/seller/vitrine"
@@ -246,6 +280,7 @@ export default async function SellerEntryPage({
           Le profil de ma boutique
         </Link>
       </div>
+      )}
 
       {/*
         Se déconnecter. Un vendeur connecté n'avait aucun moyen de
