@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AuthDoors } from "@/components/auth-doors";
 import { supabaseConfigured } from "@/lib/supabase/env";
 import { registerAction } from "./actions";
 
@@ -53,6 +54,15 @@ export default async function RegisterPage({
 }: {
   searchParams: Promise<{ error?: string; role?: string }>;
 }) {
+  /*
+    Sans Supabase, le formulaire de cette page ne peut pas
+    aboutir : on ne l'affiche pas. Un formulaire qui échoue à
+    l'envoi fait recommencer en croyant s'être trompé.
+  */
+  if (!supabaseConfigured()) {
+    return <AuthDoors what='Elle servait à créer un compte interne.' />;
+  }
+
   const { error, role } = await searchParams;
 
   const safeError = error ? decodeURIComponent(error) : "";

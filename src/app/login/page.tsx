@@ -1,4 +1,5 @@
 import { supabaseConfigured } from "@/lib/supabase/env";
+import { AuthDoors } from "@/components/auth-doors";
 import Link from "next/link";
 import { loginAction } from "./actions";
 
@@ -35,6 +36,15 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ error?: string; next?: string }>;
 }) {
+  /*
+    Sans Supabase, le formulaire de cette page ne peut pas
+    aboutir : on ne l'affiche pas. Un formulaire qui échoue à
+    l'envoi fait recommencer en croyant s'être trompé.
+  */
+  if (!supabaseConfigured()) {
+    return <AuthDoors what='Elle servait à se connecter avec un compte interne.' />;
+  }
+
   const { error, next } = await searchParams;
 
   const safeError = error ? decodeURIComponent(error) : "";

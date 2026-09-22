@@ -10,6 +10,8 @@
 */
 
 import Link from "next/link";
+import { AuthDoors } from "@/components/auth-doors";
+import { supabaseConfigured } from "@/lib/supabase/env";
 import { requestCodeAction, verifyCodeAction } from "./actions";
 
 const errorMessages: Record<string, string> = {
@@ -39,6 +41,15 @@ export default async function LoginWithCodePage({
     sent?: string;
   }>;
 }) {
+  /*
+    Sans Supabase, le formulaire de cette page ne peut pas
+    aboutir : on ne l'affiche pas. Un formulaire qui échoue à
+    l'envoi fait recommencer en croyant s'être trompé.
+  */
+  if (!supabaseConfigured()) {
+    return <AuthDoors what='Elle servait à se connecter par code reçu par e-mail.' />;
+  }
+
   const { error, email, next, sent } = await searchParams;
 
   const message = error ? errorMessages[error] || error : "";

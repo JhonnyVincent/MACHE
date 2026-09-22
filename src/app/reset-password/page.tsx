@@ -1,11 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { AuthDoors } from "@/components/auth-doors";
+import { supabaseConfigured } from "@/lib/supabase/env";
 import { useCallback, useEffect, useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function ResetPasswordPage() {
+  /*
+    Sans Supabase, le formulaire de cette page ne peut pas
+    aboutir : on ne l'affiche pas. Un formulaire qui échoue à
+    l'envoi fait recommencer en croyant s'être trompé.
+  */
+  if (!supabaseConfigured()) {
+    return <AuthDoors what='Elle servait à choisir un nouveau mot de passe interne.' />;
+  }
+
   const router = useRouter();
 
   // Le client Supabase est créé à la demande, jamais pendant le rendu :
