@@ -13,7 +13,7 @@
 */
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { approveSeller, getAdminUser } from "@/lib/medusa/admin";
 
 export async function approveSellerAction(formData: FormData) {
@@ -41,11 +41,23 @@ export async function approveSellerAction(formData: FormData) {
   }
 
   /*
-    Le catalogue change : les produits de cette boutique y entrent. Les
-    pages qui le lisent doivent être relues, sinon l'approbation reste
-    invisible jusqu'à expiration du cache.
+    Le catalogue change : les produits de cette boutique y entrent, et
+    la boutique elle-même apparaît. Sans invalidation, l'approbation
+    reste invisible jusqu'à expiration du cache — on la croit sans
+    effet, et on recommence.
+
+    L'ÉTIQUETTE d'abord, et c'est elle qui manquait. Les listes de
+    boutiques sont mises en cache sous « sellers » pendant deux
+    minutes, indépendamment de la page qui les demande : invalider
+    seulement des chemins laissait la boutique absente de l'accueil et
+    de « Acheter en gros ». Constaté en approuvant une boutique
+    déclarée grossiste, qui n'y figurait toujours pas.
   */
+  revalidateTag("sellers");
+  revalidateTag("products");
+
   revalidatePath("/shop");
+  revalidatePath("/gros");
   revalidatePath("/");
   revalidatePath(back);
 
