@@ -4,7 +4,7 @@ Tout est hébergé sur **Render**, en trois ressources.
 
 | Ressource | Ce que c'est |
 |---|---|
-| `mache-site` | le site Next.js, ce que voient les clients |
+| `MACHE-1` | le site Next.js, ce que voient les clients |
 | `mache-backend` | le moteur commerce : Medusa + Mercur |
 | `mache-db` | la base PostgreSQL |
 
@@ -92,9 +92,49 @@ Laissez les variables d'environnement vides pour l'instant.
 
 | Variable | Valeur |
 |---|---|
-| `STOREFRONT_URL` | l'adresse de `mache-site`, sans `/` final |
+| `STOREFRONT_URL` | l'adresse de `MACHE-1`, sans `/` final |
 
 Sans elle, le navigateur refusera les appels du site au backend.
+
+### Deux services, deux jeux de variables — ne pas les mélanger
+
+C'est l'erreur la plus coûteuse, parce qu'elle ne produit aucun message
+d'erreur : une variable posée sur le mauvais service est simplement
+ignorée, et le service se comporte comme si elle n'existait pas.
+
+| Sur le **backend** (`mache-backend`) | Sur le **site** (`MACHE-1`) |
+|---|---|
+| `DATABASE_URL`, `JWT_SECRET`, `COOKIE_SECRET` | `NEXT_PUBLIC_MEDUSA_BACKEND_URL` |
+| `STOREFRONT_URL` | `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` |
+| `STOREFRONT_REVALIDATE_URL`, `STOREFRONT_REVALIDATE_SECRET` | `NEXT_PUBLIC_MEDUSA_REGION_ID` |
+| `STORE_CORS`, `ADMIN_CORS`, `VENDOR_CORS`, `AUTH_CORS` | `STOREFRONT_REVALIDATE_SECRET` |
+| `SEED_DEMO`, `DEMO_HTG_FACTOR`, `DEMO_SHIPPING_HTG` | |
+
+`STORE_CORS`, `VENDOR_CORS` et `STOREFRONT_REVALIDATE_URL` sur le site
+ne font rien : ce sont des réglages du serveur commerce. Les y laisser
+n'abîme rien, mais donne l'impression que le site est configuré alors
+qu'il ne l'est pas.
+
+Et si une variable `*_CORS` du backend pointe encore vers une ancienne
+adresse — un déploiement Vercel abandonné, par exemple — elle prend le
+pas sur celle que `STOREFRONT_URL` déduit, et le navigateur refusera
+tous les appels du site au backend. Supprimez-la plutôt que de la
+corriger : sans elle, l'adresse se déduit toute seule.
+
+### Auto-Deploy : le piège « After CI Checks Pass »
+
+Render propose de ne déployer qu'une fois les vérifications
+d'intégration continue réussies. Réglé ainsi sur un dépôt qui n'en a
+aucune, il attend des vérifications qui ne viendront jamais — et ne
+déploie plus, sans rien signaler. De son point de vue il attend
+patiemment ; du vôtre, le site se fige sur une vieille version pendant
+que les commits s'accumulent.
+
+Le dépôt fournit désormais ces vérifications
+(`.github/workflows/ci.yml` : construction du site et suite de tests),
+donc ce réglage fonctionne. Si un déploiement ne part toujours pas,
+basculez sur **`On Commit`** et regardez l'onglet `Actions` de GitHub
+pour savoir ce qui échoue.
 
 ### Le site doit connaître le backend
 
@@ -120,7 +160,7 @@ Le backend y affiche :
 
 Ne copiez que ce qui suit le `=` : les journaux préfixent chaque ligne.
 
-Reportez les trois dans `mache-site` → `Environment`, puis
+Reportez les trois dans `MACHE-1` → `Environment`, puis
 **`Manual Deploy`** → `Deploy latest commit`.
 
 **Ce redéploiement n'est pas optionnel.** Les variables `NEXT_PUBLIC_*`

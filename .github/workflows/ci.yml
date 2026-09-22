@@ -1,0 +1,60 @@
+# Vérifications avant déploiement.
+#
+# Pourquoi ce fichier existe
+#
+# Render était réglé sur « After CI Checks Pass » : il attend que les
+# vérifications d'intégration continue réussissent avant de déployer.
+# Le dépôt n'en avait aucune. Render attendait donc des vérifications
+# qui ne venaient jamais, et le site est resté treize commits en
+# arrière — sans qu'aucune erreur ne soit signalée nulle part, puisque
+# de son point de vue il attendait patiemment.
+#
+# Ce que ce workflow vérifie
+#
+# Que le site se construit, et que la suite de tests passe. C'est
+# exactement ce qui doit barrer la route à un déploiement : une
+# construction cassée mise en ligne remplace un site qui marche par une
+# page d'erreur.
+#
+# Ce qu'il ne vérifie pas
+#
+# Le dossier `backend/`. Sa construction dépend du panneau vendeur
+# Mercur, dont les dépendances ne se résolvent pas de la même façon
+# selon l'installateur — une vérification qui échoue pour cette raison
+# bloquerait tous les déploiements, c'est-à-dire exactement le problème
+# qu'on répare ici. À ajouter quand ce point sera tranché.
+
+name: Vérifications
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  site:
+    name: Site (construction et tests)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      # `npm ci` installe exactement ce que décrit package-lock.json.
+      # `npm install` pourrait résoudre autrement que la production.
+      - name: Installer les dépendances
+        run: npm ci
+
+      # La construction n'a pas besoin du backend commerce : sans lui, le
+      # site se construit en mode dégradé, ce qui est précisément le
+      # comportement qu'on veut garantir.
+      - name: Construire le site
+        run: npm run build
+
+      - name: Lancer les tests
+        run: npm test

@@ -1,8 +1,12 @@
 # Déploiement du backend commerce MACHÉ sur Render.
 #
-# Le storefront Next.js reste sur Vercel : ce fichier ne concerne que
-# backend/ (Medusa + Mercur), qui est un serveur Node persistant et ne
-# peut pas tourner en serverless.
+# Ce fichier ne concerne que backend/ (Medusa + Mercur), un serveur Node
+# persistant. Le site Next.js est déployé à côté, comme un second
+# service Render, créé à la main — il n'est pas décrit ici.
+#
+# Les deux services n'ont PAS les mêmes variables, et une variable posée
+# sur le mauvais service est ignorée sans aucun message. Le partage est
+# dans DEPLOIEMENT.md, section « Deux services, deux jeux de variables ».
 #
 # ---------------------------------------------------------------------
 # LIRE AVANT DE DÉPLOYER — ce que le plan gratuit implique réellement
