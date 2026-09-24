@@ -545,3 +545,100 @@ aside:not([data-chrome="dark"]) a:active {
     scroll-behavior: auto !important;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Impression : le contrat sur papier, ou en PDF                              */
+/* -------------------------------------------------------------------------- */
+
+/*
+  Pourquoi une feuille d'impression plutôt qu'un générateur de PDF
+
+  MACHÉ n'a pas besoin de fabriquer lui-même un fichier PDF : tout
+  navigateur sait imprimer vers un PDF, et le fichier obtenu s'envoie à
+  Adobe, DocuSign ou n'importe quel service de signature.
+
+  Ce que cela évite : une dépendance de plus sur le chemin d'un document
+  juridique, et surtout les ennuis d'accents. Les bibliothèques de PDF
+  demandent d'embarquer une police pour rendre « é », « à », « ç »
+  correctement ; mal fait, le contrat sort avec des carrés à la place
+  des accents — sur un document qui engage.
+
+  Ici, ce qui est imprimé est exactement ce qui est affiché.
+
+  `.mache-print` marque le document à imprimer. Tout le reste disparaît.
+*/
+@media print {
+  /*
+    Le décor de l'administration n'a rien à faire sur un contrat : ni
+    barre latérale, ni en-tête, ni bouton.
+  */
+  aside[data-chrome="dark"],
+  header[data-chrome="app"],
+  nav,
+  .mache-no-print {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    /*
+      Les hauteurs fixes du tableau de bord tronqueraient le document à
+      la première page : une page imprimée n'a pas de hauteur d'écran.
+    */
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /*
+    Les conteneurs du tableau de bord défilent ; à l'impression, ils
+    doivent laisser couler le texte sur autant de pages qu'il en faut.
+  */
+  .mache-print,
+  .mache-print * {
+    overflow: visible !important;
+  }
+
+  .mache-print {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #000000 !important;
+    /*
+      Une police à empattements pour un document contractuel : c'est la
+      convention, et elle se lit mieux sur papier.
+    */
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  /*
+    Ce qui ne doit pas être coupé entre deux pages : un bloc de
+    signature à cheval sur deux feuilles se signe mal, et une empreinte
+    coupée en deux ne se recopie plus.
+  */
+  .mache-print-keep {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .mache-print-break {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  /*
+    Les liens gardent leur couleur d'encre : un contrat imprimé en noir
+    et blanc avec des mots bleus se lit comme une page web photocopiée.
+  */
+  .mache-print a {
+    color: #000000 !important;
+    text-decoration: none !important;
+  }
+}
+
+@page {
+  /* Marges d'un document qu'on peut agrafer ou relier. */
+  margin: 20mm 18mm;
+}

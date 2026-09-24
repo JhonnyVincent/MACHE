@@ -116,9 +116,23 @@ export default async function AdminContractPage({
         title={contract.title}
         subtitle={`Version ${contract.version} · ${CONTRACT_STATUS_LABELS[contract.status]}`}
         actions={
-          <Button href="/dashboard/admin/contrats" variant="secondary">
-            Tous les contrats
-          </Button>
+          <div className="flex flex-wrap gap-1.5">
+            {/*
+              Le document imprimable. Proposé même en brouillon — on
+              relit une mise en page avant de publier, pas après — mais
+              la page elle-même avertit qu'un brouillon n'a pas
+              d'empreinte et ne devrait pas être signé.
+            */}
+            <Button
+              href={`/dashboard/admin/contrats/${contract.id}/document`}
+              variant="secondary"
+            >
+              Document à imprimer
+            </Button>
+            <Button href="/dashboard/admin/contrats" variant="secondary">
+              Tous les contrats
+            </Button>
+          </div>
         }
       />
 
@@ -330,6 +344,21 @@ export default async function AdminContractPage({
                             proposer un geste impossible est une
                             promesse qu'on ne tient pas.
                           */}
+                          {/*
+                            Le document au nom de cette boutique. Utile
+                            quand la signature se fait ailleurs — Adobe,
+                            DocuSign, ou sur papier : le nom du
+                            destinataire y est déjà, et l'empreinte
+                            imprimée rattache le document signé au texte
+                            que MACHÉ détient.
+                          */}
+                          <Button
+                            href={`/dashboard/admin/contrats/${contract.id}/document?seller=${encodeURIComponent(item.sellerId)}`}
+                            variant="secondary"
+                          >
+                            Document
+                          </Button>
+
                           {["sent", "viewed"].includes(item.status) && (
                             <form action={revokeSignatureAction}>
                               <input type="hidden" name="contract_id" value={contract.id} />
