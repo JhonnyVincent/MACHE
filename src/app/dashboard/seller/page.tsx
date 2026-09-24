@@ -261,9 +261,9 @@ export default async function SellerEntryPage({
       )}
 
       {/*
-        Ces deux pages exigent une session : les proposer à quelqu'un
-        qui n'en a pas l'enverrait vers un écran de connexion sans
-        qu'il comprenne pourquoi.
+        Ces pages exigent une session : les proposer à quelqu'un qui n'en
+        a pas l'enverrait vers un écran de connexion sans qu'il
+        comprenne pourquoi.
       */}
       {vendor && (
       <div className="mt-6 flex flex-wrap gap-4 border-t border-[var(--mache-line)] pt-4 text-sm">
@@ -278,6 +278,16 @@ export default async function SellerEntryPage({
           className="font-semibold text-[var(--mache-primary)] hover:underline"
         >
           Le profil de ma boutique
+        </Link>
+        {/*
+          Les contrats n'existent pas dans le panneau Mercur : c'est une
+          fonction propre à MACHÉ, comme les devis et les livraisons.
+        */}
+        <Link
+          href="/dashboard/seller/contrats"
+          className="font-semibold text-[var(--mache-primary)] hover:underline"
+        >
+          Contrats de MACHÉ
         </Link>
       </div>
       )}

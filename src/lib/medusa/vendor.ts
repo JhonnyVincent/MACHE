@@ -557,3 +557,158 @@ export async function saveStorefrontLayout(
 ): Promise<Result<VendorSeller>> {
   return saveSellerMetadata("storefront", layout);
 }
+
+/* -------------------------------------------------------------------------- */
+/* Contrats reçus de MACHÉ                                                    */
+/* -------------------------------------------------------------------------- */
+
+export type VendorContract = {
+  id: string;
+  displayId: number;
+  title: string;
+  version: number;
+  contentHash: string;
+  status: "sent" | "viewed" | "signed" | "declined" | "revoked";
+  sentAt: string | null;
+  viewedAt: string | null;
+  signedAt: string | null;
+  declinedAt: string | null;
+  signerName: string | null;
+  signerRole: string | null;
+  declineReason: string | null;
+  proofHash: string | null;
+  dueAt: string | null;
+};
+
+function mapContract(raw: Raw): VendorContract {
+  return {
+    id: String(raw.id),
+    displayId: Number(raw.display_id) || 0,
+    title: str(raw.contract_title) ?? "Contrat",
+    version: Number(raw.contract_version) || 1,
+    contentHash: str(raw.content_hash) ?? "",
+    status: (str(raw.status) ?? "sent") as VendorContract["status"],
+    sentAt: str(raw.sent_at),
+    viewedAt: str(raw.viewed_at),
+    signedAt: str(raw.signed_at),
+    declinedAt: str(raw.declined_at),
+    signerName: str(raw.signer_name),
+    signerRole: str(raw.signer_role),
+    declineReason: str(raw.decline_reason),
+    proofHash: str(raw.proof_hash),
+    dueAt: str(raw.due_at),
+  };
+}
+
+export async function getVendorContracts(): Promise<Result<VendorContract[]>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ contracts?: Raw[] }>("/vendor/contracts", {
+    token,
+    sellerId,
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: (result.data.contracts ?? []).map(mapContract) };
+}
+
+/*
+  Le texte intégral, avec son empreinte.
+
+  Le backend refuse de servir le texte si son empreinte ne correspond
+  plus à celle figée à l'envoi — il répond alors une erreur, qui remonte
+  telle quelle. C'est le cas qu'il ne faut surtout pas masquer : un
+  contrat dont le texte a bougé ne doit pas pouvoir être signé, et le
+  marchand doit savoir pourquoi.
+*/
+export async function getVendorContract(
+  id: string
+): Promise<Result<{ contract: VendorContract; body: string; summary: string | null }>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{
+    contract?: Raw;
+    body?: string;
+    summary?: string | null;
+  }>(`/vendor/contracts/${encodeURIComponent(id)}`, { token, sellerId });
+
+  if (!result.ok) return result;
+
+  if (!result.data.contract) {
+    return { ok: false, reason: "Contrat introuvable." };
+  }
+
+  return {
+    ok: true,
+    data: {
+      contract: mapContract(result.data.contract),
+      body: typeof result.data.body === "string" ? result.data.body : "",
+      summary: str(result.data.summary),
+    },
+  };
+}
+
+export async function signVendorContract(
+  id: string,
+  input: { signerName: string; signerRole?: string; signerEmail?: string }
+): Promise<Result<VendorContract>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ contract?: Raw }>(
+    `/vendor/contracts/${encodeURIComponent(id)}`,
+    {
+      method: "POST",
+      token,
+      sellerId,
+      body: {
+        action: "sign",
+        signer_name: input.signerName,
+        signer_role: input.signerRole,
+        signer_email: input.signerEmail,
+        /*
+          La confirmation est envoyée comme un booléen distinct du nom.
+          Le backend exige les deux : c'est ce qui fait que signer
+          demande deux gestes et non un réflexe.
+        */
+        agreed: true,
+      },
+    }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapContract(result.data.contract ?? {}) };
+}
+
+export async function declineVendorContract(
+  id: string,
+  reason: string
+): Promise<Result<VendorContract>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ contract?: Raw }>(
+    `/vendor/contracts/${encodeURIComponent(id)}`,
+    { method: "POST", token, sellerId, body: { action: "decline", reason } }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapContract(result.data.contract ?? {}) };
+}
+
+export const CONTRACT_STATUS: Record<string, string> = {
+  sent: "À lire",
+  viewed: "Lu, non signé",
+  signed: "Signé",
+  declined: "Refusé",
+  revoked: "Retiré par MACHÉ",
+};
