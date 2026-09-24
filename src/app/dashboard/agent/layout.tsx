@@ -1,50 +1,51 @@
 /*
-  LAYOUT : espace agent
+  LAYOUT : espace agent.
 
-  Même chrome que les espaces vendeur et client — un seul système visuel
-  dans tout le back-office. La navigation est courte à dessein : un agent
-  travaille debout, souvent sur téléphone, et n'a que trois choses à
-  faire ici.
+  Il lisait Supabase pour savoir qui était connecté, et comptait la
+  tournée du jour dans une table d'un projet supprimé. Il est passé sur
+  Medusa : un agent est un client, il a une session client.
+
+  Pourquoi il ne garde plus la porte
+
+  Parce qu'il enveloppe aussi la page de connexion. Un layout qui exige
+  une session pour afficher ses enfants renverrait vers la connexion la
+  page de connexion elle-même — une boucle. Les pages se gardent
+  elles-mêmes, et le backend refuse de toute façon tout appel sans
+  session : le contrôle qui compte est là, pas dans une mise en page.
+
+  La navigation a maigri. Les deux écrans supprimés — « historique » et
+  « ma carte » — lisaient Supabase eux aussi. Leur contenu tient
+  maintenant dans l'écran des colis : l'historique est le même écran
+  avec un autre filtre, et la carte est le bandeau du haut.
 */
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { requireAgent } from "@/lib/agents";
+import { getCustomer, clearCustomerSession } from "@/lib/medusa/customer";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { StaffUnavailable } from "@/components/staff-unavailable";
 
 export default async function AgentLayout({ children }: { children: React.ReactNode }) {
-  if (!supabaseConfigured()) {
-    return <StaffUnavailable area="Espace agent" />;
-  }
+  const customer = await getCustomer();
 
-  const { supabase, uid, displayName, firstName, email } = await requireAgent();
-
-  /*
-    Compteur de la tournée du jour. S'il échoue — migrations non
-    appliquées — il retombe à zéro plutôt que de casser tout l'espace.
-  */
-  const { count: todo } = await supabase
-    .from("shipments")
-    .select("id", { count: "exact", head: true })
-    .eq("agent_id", uid)
-    .in("status", ["assigned", "picked_up", "in_transit"]);
+  const displayName =
+    [customer?.firstName, customer?.lastName].filter(Boolean).join(" ") ||
+    customer?.email ||
+    "Agent MACHÉ";
 
   const sections: NavSection[] = [
     {
       label: "Ma tournée",
       items: [
-        { label: "Courses du jour", href: "/dashboard/agent", badge: todo ?? 0 },
-        { label: "Historique", href: "/dashboard/agent/deliveries" },
+        { label: "Mes colis", href: "/dashboard/agent" },
+        { label: "Tout l'historique", href: "/dashboard/agent?scope=all" },
       ],
     },
     {
       label: "Mon compte",
       items: [
-        { label: "Ma carte d'agent", href: "/dashboard/agent/profile" },
+        { label: "Mes commandes", href: "/dashboard/buyer" },
+        { label: "Vérifier un agent", href: "/verify-agent" },
       ],
     },
   ];
@@ -52,9 +53,8 @@ export default async function AgentLayout({ children }: { children: React.ReactN
   async function signOutAction() {
     "use server";
 
-    const supabase = await createSupabaseServerClient();
-    await supabase.auth.signOut();
-    redirect("/login");
+    await clearCustomerSession();
+    redirect("/dashboard/agent/connexion");
   }
 
   return (
@@ -74,19 +74,21 @@ export default async function AgentLayout({ children }: { children: React.ReactN
 
         <SellerSidebarNav sections={sections} />
 
-        <div className="border-t border-white/10 px-4 py-2.5">
-          <p className="truncate text-xs font-medium">{displayName}</p>
-          <p className="truncate text-2xs text-white/40">{email}</p>
+        {customer && (
+          <div className="border-t border-white/10 px-4 py-2.5">
+            <p className="truncate text-xs font-medium">{displayName}</p>
+            <p className="truncate text-2xs text-white/40">{customer.email}</p>
 
-          <form action={signOutAction} className="mt-2">
-            <button
-              type="submit"
-              className="text-xs text-white/45 underline-offset-2 transition-colors hover:text-white hover:underline"
-            >
-              Se déconnecter
-            </button>
-          </form>
-        </div>
+            <form action={signOutAction} className="mt-2">
+              <button
+                type="submit"
+                className="text-xs text-white/45 underline-offset-2 transition-colors hover:text-white hover:underline"
+              >
+                Se déconnecter
+              </button>
+            </form>
+          </div>
+        )}
       </aside>
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -98,15 +100,19 @@ export default async function AgentLayout({ children }: { children: React.ReactN
             MACHE
           </Link>
 
-          <div className="ml-auto flex items-center gap-2 border-l border-[#d5d9d9] pl-3">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0a0a0a] text-2xs font-semibold text-white">
-              {initialsOf(displayName, 1)}
-            </span>
-            <span className="hidden text-sm font-medium sm:block">{firstName}</span>
-          </div>
+          {customer && (
+            <div className="ml-auto flex items-center gap-2 border-l border-[#d5d9d9] pl-3">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0a0a0a] text-2xs font-semibold text-white">
+                {initialsOf(displayName, 1)}
+              </span>
+              <span className="hidden text-sm font-medium sm:block">
+                {customer.firstName ?? customer.email}
+              </span>
+            </div>
+          )}
         </header>
 
-        <SellerMobileNav sections={sections} />
+        {customer && <SellerMobileNav sections={sections} />}
 
         <main className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-[1100px] p-3 sm:p-5">{children}</div>

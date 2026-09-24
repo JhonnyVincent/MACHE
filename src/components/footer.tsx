@@ -52,9 +52,12 @@ const footerHelpLinks = [
   { label: "Centre d’aide", href: "/faq" },
   { label: "Ce que MACHÉ fait", href: "/services" },
   { label: "Exporter depuis Haïti", href: "/export" },
-  { label: "Politique livraison", href: "/legal/shipping" },
+  { label: "Livraison", href: "/legal/shipping" },
   { label: "Retours", href: "/legal/returns" },
+  { label: "Vérifier un agent", href: "/verify-agent" },
+  { label: "Espace agent", href: "/dashboard/agent/connexion" },
   { label: "À propos", href: "/about" },
+  { label: "Partenaires", href: "/partenaires" },
   { label: "Confidentialité", href: "/legal/privacy" },
   { label: "Conditions", href: "/legal/terms" }
 ];

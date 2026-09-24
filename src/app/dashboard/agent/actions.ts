@@ -1,117 +1,81 @@
 "use server";
 
 /*
-  ACTIONS : avancement d'une expédition par l'agent.
+  ACTIONS : l'agent fait avancer un colis, ou confirme une remise.
 
-  Règle de sécurité : rien de ce qui vient du formulaire n'est cru.
-  L'expédition est relue en base, son agent_id comparé au compte connecté,
-  et la transition demandée vérifiée contre l'enchaînement autorisé. Un
-  agent ne peut donc ni toucher la course d'un autre, ni déclarer livré un
-  colis qu'il n'a jamais récupéré, quel que soit le bouton envoyé.
+  Ce que ces actions NE vérifient pas, et pourquoi c'est correct
+
+  Elles ne vérifient ni l'habilitation de l'agent, ni que le colis lui
+  appartient, ni que la transition demandée est permise. Le backend le
+  fait, sur chaque appel, à partir de la session — pas du formulaire.
+
+  Refaire ces contrôles ici donnerait deux jugements pour une seule
+  question, et le jour où l'un des deux évoluerait seul, c'est le plus
+  permissif qui déciderait. Un seul arbitre, côté serveur, où vit la
+  donnée.
+
+  Ce qui est vérifié ici : que le formulaire contient ce qu'il faut.
 */
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { AGENT_NEXT_STATUS } from "@/lib/agents";
+import { advanceAgentDelivery, confirmAgentDelivery } from "@/lib/medusa/agent";
+import { isControlFlow, reasonOf } from "@/lib/safe-action";
 
 function back(message: string, key: "error" | "success"): never {
   redirect(`/dashboard/agent?${key}=${encodeURIComponent(message)}`);
 }
 
-export async function advanceShipmentAction(formData: FormData) {
-  const shipmentId = String(formData.get("shipment_id") || "");
-  const nextStatus = String(formData.get("next_status") || "");
+export async function advanceDeliveryAction(formData: FormData) {
+  const id = String(formData.get("delivery_id") || "");
+  const status = String(formData.get("next_status") || "");
   const reason = String(formData.get("reason") || "").trim();
 
-  if (!shipmentId || !nextStatus) {
-    back("Course ou étape manquante.", "error");
+  if (!id || !status) back("Colis ou étape manquante.", "error");
+
+  try {
+    const result = await advanceAgentDelivery(id, status, reason || undefined);
+
+    if (!result.ok) back(result.reason, "error");
+
+    revalidatePath("/dashboard/agent");
+  } catch (error) {
+    if (isControlFlow(error)) throw error;
+    back(reasonOf(error), "error");
   }
 
-  if (!supabaseConfigured()) {
-    back(
-      "L'espace agent n'est pas relié à sa base de comptes : la course ne peut pas être mise à jour.",
-      "error"
-    );
+  back("Colis mis à jour.", "success");
+}
+
+/*
+  La saisie du code, celui que l'acheteur remet à la livraison.
+
+  Le message d'erreur du backend est repris TEL QUEL, y compris le
+  nombre d'essais restants. Le remplacer par un « code incorrect »
+  générique priverait l'agent de la seule information qui compte
+  lorsqu'il approche du plafond : après cinq erreurs, le colis se
+  bloque et il faut appeler MACHÉ. Mieux vaut qu'il l'apprenne au
+  quatrième essai qu'au sixième.
+*/
+export async function confirmDeliveryAction(formData: FormData) {
+  const id = String(formData.get("delivery_id") || "");
+  const code = String(formData.get("code") || "").trim();
+  const note = String(formData.get("note") || "").trim();
+
+  if (!id) back("Colis manquant.", "error");
+
+  if (!code) back("Demandez son code à l'acheteur, puis saisissez-le.", "error");
+
+  try {
+    const result = await confirmAgentDelivery(id, code, note || undefined);
+
+    if (!result.ok) back(result.reason, "error");
+
+    revalidatePath("/dashboard/agent");
+  } catch (error) {
+    if (isControlFlow(error)) throw error;
+    back(reasonOf(error), "error");
   }
 
-  const supabase = await createSupabaseServerClient();
-
-  const { data: userData } = await supabase.auth.getUser();
-
-  if (!userData.user) {
-    redirect("/login?next=/dashboard/agent");
-  }
-
-  const uid = userData.user.id;
-
-  const { data: profile } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", uid)
-    .maybeSingle();
-
-  if (String(profile?.role || "").trim() !== "agent") {
-    redirect("/dashboard");
-  }
-
-  /* État réel de la course, relu en base. */
-  const { data: shipment, error: readError } = await supabase
-    .from("shipments")
-    .select("id, agent_id, status")
-    .eq("id", shipmentId)
-    .eq("agent_id", uid)
-    .maybeSingle();
-
-  if (readError) back(readError.message, "error");
-
-  if (!shipment) {
-    back("Cette course ne vous est pas assignée.", "error");
-  }
-
-  const allowed = AGENT_NEXT_STATUS[String(shipment.status)] ?? [];
-
-  if (!allowed.includes(nextStatus)) {
-    back(
-      `Passage impossible de « ${shipment.status} » à « ${nextStatus} ».`,
-      "error"
-    );
-  }
-
-  if (nextStatus === "failed" && !reason) {
-    back("Indiquez la raison de l'échec de livraison.", "error");
-  }
-
-  const patch: Record<string, unknown> = {
-    status: nextStatus,
-    updated_at: new Date().toISOString(),
-  };
-
-  if (nextStatus === "picked_up") patch.picked_up_at = new Date().toISOString();
-  if (nextStatus === "delivered") patch.delivered_at = new Date().toISOString();
-  if (nextStatus === "failed") patch.failure_reason = reason;
-
-  /*
-    Le filtre sur le statut attendu évite d'écraser une mise à jour faite
-    entre-temps : si la course a bougé depuis l'affichage de la page, la
-    modification ne s'applique pas plutôt que d'écraser en silence.
-  */
-  const { data: updated, error } = await supabase
-    .from("shipments")
-    .update(patch)
-    .eq("id", shipmentId)
-    .eq("agent_id", uid)
-    .eq("status", shipment.status)
-    .select("id")
-    .maybeSingle();
-
-  if (error) back(error.message, "error");
-
-  if (!updated) {
-    back("Cette course a changé entre-temps. Rechargez la page.", "error");
-  }
-
-  revalidatePath("/dashboard/agent", "layout");
-  back("Course mise à jour.", "success");
+  back("Remise confirmée. Le colis est marqué livré.", "success");
 }

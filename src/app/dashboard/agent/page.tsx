@@ -1,303 +1,287 @@
 /*
-  PAGE : Espace agent — courses du jour
+  PAGE : les colis d'un agent.
 
-  Sert à :
-  - lister les expéditions assignées à cet agent et encore ouvertes ;
-  - les faire avancer étape par étape.
+  Ce qu'elle était
 
-  Les courses sont des fiches plutôt qu'un tableau : un agent consulte
-  cette page sur un téléphone, une main occupée par un colis.
+  Elle lisait une table Supabase d'un projet supprimé, et affichait
+  donc « espace indisponible » à tout le monde. Elle est passée sur
+  Medusa, comme le reste du compte : un agent est un client à qui
+  s'ajoute une fonction, il n'a qu'une porte.
+
+  Pourquoi des fiches et pas un tableau
+
+  Un agent lit cet écran debout, sur un téléphone, une main occupée par
+  un colis. Un tableau à sept colonnes se consulte assis.
+
+  Le code n'est pas affiché ici
+
+  Il ne l'est nulle part du côté de l'agent. C'est l'acheteur qui le
+  détient et le donne au moment de la remise. Un agent qui pourrait le
+  lire pourrait confirmer une livraison sans livrer — et la
+  confirmation ne prouverait plus rien.
 */
 
-import { requireAgent, SHIPMENT_STATUS_LABELS, SHIPMENT_STATUS_TONES, AGENT_NEXT_STATUS, AGENT_ACTION_LABELS, AGENT_STATUS_LABELS } from "@/lib/agents";
-import { formatHTG, formatNumber, formatDate } from "@/lib/seller";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCustomer } from "@/lib/medusa/customer";
 import {
-  PageHeader, Panel, Stat, StatRow, Badge, Button, EmptyState, Notice, FormFeedback,
+  getAgentDeliveries,
+  DELIVERY_STATUS,
+  DELIVERY_METHOD,
+  AGENT_NEXT,
+  type AgentDelivery,
+} from "@/lib/medusa/agent";
+import {
+  PageHeader, Panel, Badge, Button, EmptyState, Notice, Input, Field,
 } from "@/components/seller/ui";
-import { advanceShipmentAction } from "./actions";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { StaffUnavailable } from "@/components/staff-unavailable";
+import { SubmitButton } from "@/components/submit-button";
+import { advanceDeliveryAction, confirmDeliveryAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-const OPEN_STATUSES = ["assigned", "picked_up", "in_transit"];
+const TONES: Record<string, "neutral" | "info" | "success" | "warning" | "danger"> = {
+  pending: "neutral",
+  assigned: "info",
+  in_transit: "info",
+  ready_for_pickup: "warning",
+  delivered: "success",
+  failed: "danger",
+  cancelled: "neutral",
+};
+
+function DeliveryCard({ delivery }: { delivery: AgentDelivery }) {
+  const next = AGENT_NEXT[delivery.status] ?? [];
+
+  /*
+    Le colis peut-il être remis maintenant ? Le backend tranche pour de
+    bon ; ici on n'affiche le formulaire que là où il a une chance
+    d'aboutir, pour ne pas faire saisir un code qui serait refusé.
+  */
+  const canConfirm =
+    delivery.method !== "carrier" &&
+    ["assigned", "in_transit", "ready_for_pickup"].includes(delivery.status);
+
+  return (
+    <div className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-md font-bold text-[var(--mache-text)]">
+            Colis n° {delivery.displayId}
+          </p>
+          <p className="mt-0.5 text-sm text-[var(--mache-muted)]">
+            {DELIVERY_METHOD[delivery.method] ?? delivery.method}
+          </p>
+        </div>
+
+        <Badge tone={TONES[delivery.status] ?? "neutral"}>
+          {DELIVERY_STATUS[delivery.status] ?? delivery.status}
+        </Badge>
+      </div>
+
+      <dl className="mt-3 space-y-1.5 text-sm">
+        {delivery.recipientName && (
+          <div className="flex gap-2">
+            <dt className="shrink-0 text-[var(--mache-muted)]">Destinataire</dt>
+            <dd className="font-medium text-[var(--mache-text)]">{delivery.recipientName}</dd>
+          </div>
+        )}
+        {delivery.recipientAddress && (
+          <div className="flex gap-2">
+            <dt className="shrink-0 text-[var(--mache-muted)]">Adresse</dt>
+            <dd className="text-[var(--mache-text)]">
+              {delivery.recipientAddress}
+              {delivery.recipientDepartment ? ` — ${delivery.recipientDepartment}` : ""}
+            </dd>
+          </div>
+        )}
+        {delivery.recipientPhone && (
+          <div className="flex gap-2">
+            <dt className="shrink-0 text-[var(--mache-muted)]">Téléphone</dt>
+            <dd>
+              <a
+                href={`tel:${delivery.recipientPhone}`}
+                className="font-medium text-[var(--mache-primary)] underline"
+              >
+                {delivery.recipientPhone}
+              </a>
+            </dd>
+          </div>
+        )}
+      </dl>
+
+      {delivery.failureReason && (
+        <p className="mt-3 rounded-[6px] bg-[#fdecec] px-3 py-2 text-sm text-[#8a1c1c]">
+          Échec précédent : {delivery.failureReason}
+        </p>
+      )}
+
+      {next.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {next.map((step) => (
+            <form key={step.status} action={advanceDeliveryAction}>
+              <input type="hidden" name="delivery_id" value={delivery.id} />
+              <input type="hidden" name="next_status" value={step.status} />
+              <SubmitButton pendingLabel="…">{step.label}</SubmitButton>
+            </form>
+          ))}
+        </div>
+      )}
+
+      {canConfirm && (
+        <form
+          action={confirmDeliveryAction}
+          className="mt-4 rounded-[8px] border border-dashed border-[var(--mache-line)] bg-[var(--mache-bg)] p-3"
+        >
+          <input type="hidden" name="delivery_id" value={delivery.id} />
+
+          <p className="text-sm font-semibold text-[var(--mache-text)]">
+            Remettre le colis
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-[var(--mache-muted)]">
+            Demandez son code à l&apos;acheteur au moment où vous lui remettez le
+            colis. Vous ne l&apos;avez pas : c&apos;est ce qui fait que votre
+            confirmation prouve la remise.
+            {delivery.attemptsLeft > 0 && delivery.attemptsLeft < 5 && (
+              <> Il vous reste {delivery.attemptsLeft} essai
+                {delivery.attemptsLeft > 1 ? "s" : ""}.</>
+            )}
+          </p>
+
+          <div className="mt-2.5 flex flex-wrap items-end gap-2">
+            <Field label="Code de l'acheteur">
+              <Input
+                name="code"
+                required
+                autoComplete="off"
+                inputMode="text"
+                maxLength={12}
+                placeholder="6 caractères"
+                className="font-mono uppercase tracking-widest"
+              />
+            </Field>
+            <SubmitButton pendingLabel="Vérification…">Confirmer la remise</SubmitButton>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
 
 export default async function AgentHomePage({
   searchParams,
 }: {
-  searchParams?: Promise<{ success?: string; error?: string }>;
+  searchParams?: Promise<{ success?: string; error?: string; scope?: string }>;
 }) {
-  /*
-    La garde du layout ne suffit pas : Next rend la page et la mise en
-    page en parallèle, donc `require*` s'exécute et lève même quand le
-    layout a déjà décidé de ne pas afficher la page. L'écran était
-    correct, mais les journaux se remplissaient de traces d'erreur pour
-    une situation connue — et du rouge attendu finit par cacher du rouge
-    inattendu.
-  */
-  if (!supabaseConfigured()) return <StaffUnavailable area="Espace agent" />;
-
   const query = searchParams ? await searchParams : {};
-  const { supabase, uid, agent, firstName } = await requireAgent();
 
-  const { data: shipments, error } = await supabase
-    .from("shipments")
-    .select("id, order_id, store_id, status, zone, fee, carrier, tracking_number, assigned_at, picked_up_at, created_at")
-    .eq("agent_id", uid)
-    .in("status", OPEN_STATUSES)
-    .order("assigned_at", { ascending: true })
-    .limit(100);
-
-  const list = shipments ?? [];
+  const customer = await getCustomer();
 
   /*
-    Adresse et téléphone du destinataire : lus depuis la commande, et
-    seulement pour les courses réellement assignées à cet agent. Un agent
-    n'a pas d'accès général aux commandes.
+    Pas connecté : on envoie vers la porte des agents, pas vers la
+    connexion client générique. Les deux mènent au même compte, mais
+    l'agent doit reconnaître l'endroit où on lui demande d'entrer.
   */
-  const orderIds = [...new Set(list.map((item) => String(item.order_id)))];
+  if (!customer) redirect("/dashboard/agent/connexion");
 
-  const ordersResult = orderIds.length
-    ? await supabase
-        .from("orders")
-        .select("id, reference, contact_phone, shipping_address_id, total_price, payment_status")
-        .in("id", orderIds)
-    : { data: [], error: null };
+  const scope = query.scope === "all" ? "all" : "open";
 
-  const orders = ordersResult.data ?? [];
-  const orderById = new Map(orders.map((order) => [String(order.id), order]));
-
-  /*
-    L'adresse est dans une table à part. La politique ajoutée par la
-    migration 0006 n'ouvre que celles des courses en cours de cet agent :
-    une course close ne donne plus accès à l'adresse du client.
-  */
-  const addressIds = [
-    ...new Set(
-      orders
-        .map((order) => order.shipping_address_id)
-        .filter((value): value is string => Boolean(value))
-    ),
-  ];
-
-  const addressesResult = addressIds.length
-    ? await supabase
-        .from("addresses")
-        .select("id, full_name, phone, line1, line2, city, department, instructions")
-        .in("id", addressIds)
-    : { data: [], error: null };
-
-  const addressById = new Map(
-    (addressesResult.data ?? []).map((address) => [String(address.id), address])
-  );
-
-  function addressLines(orderId: string) {
-    const order = orderById.get(orderId);
-    const address = order?.shipping_address_id
-      ? addressById.get(String(order.shipping_address_id))
-      : undefined;
-
-    if (!address) return null;
-
-    return {
-      name: address.full_name,
-      phone: address.phone,
-      street: [address.line1, address.line2].filter(Boolean).join(", "),
-      city: [address.city, address.department].filter(Boolean).join(", "),
-      instructions: address.instructions,
-    };
-  }
-
-  const count = (status: string) => list.filter((item) => item.status === status).length;
-
-  const { count: deliveredTotal } = await supabase
-    .from("shipments")
-    .select("id", { count: "exact", head: true })
-    .eq("agent_id", uid)
-    .eq("status", "delivered");
+  const result = await getAgentDeliveries(scope);
 
   return (
-    <>
+    <div className="space-y-5">
       <PageHeader
-        title={`Bonjour ${firstName}`}
-        subtitle={
-          agent
-            ? `${AGENT_STATUS_LABELS[agent.status as "active"]} · code ${agent.code}${agent.zone ? ` · ${agent.zone}` : ""}`
-            : "Compte agent sans carte enregistrée."
-        }
-        actions={<Button href="/dashboard/agent/deliveries">Historique</Button>}
+        title="Mes colis"
+        subtitle="Ce qui vous a été confié, et ce qui attend dans votre point de retrait."
       />
 
-      <div className="space-y-4">
-        <FormFeedback
-          success={query.success}
-          error={query.error}
-          successMessages={{ "Course mise à jour.": "Course mise à jour." }}
-        />
-
-        {error && (
-          <Notice tone="warning" title="Courses indisponibles">
-            {error.message}. La migration 0001 doit être appliquée.
-          </Notice>
-        )}
-
-        {!agent && (
-          <Notice tone="warning" title="Carte d'agent non enregistrée">
-            Votre compte a le rôle agent, mais aucune carte n&apos;a encore été
-            créée à votre nom. Les clients ne pourront pas vérifier votre
-            identité sur la page publique tant que l&apos;équipe MACHÉ ne
-            l&apos;aura pas enregistrée.
-          </Notice>
-        )}
-
-        {agent && agent.status !== "active" && (
-          <Notice tone="danger" title="Habilitation non active">
-            Votre carte est au statut «&nbsp;{AGENT_STATUS_LABELS[agent.status as "pending"]}&nbsp;».
-            Un client qui vérifie votre code verra qu&apos;il ne doit rien vous
-            remettre. Contactez l&apos;équipe MACHÉ.
-          </Notice>
-        )}
-
-        <StatRow>
-          <Stat label="Courses ouvertes" value={formatNumber(list.length)} tone={list.length ? "warning" : "success"} />
-          <Stat label="À récupérer" value={formatNumber(count("assigned"))} />
-          <Stat label="En main" value={formatNumber(count("picked_up"))} />
-          <Stat label="En route" value={formatNumber(count("in_transit"))} />
-          <Stat label="Livrées au total" value={formatNumber(deliveredTotal || 0)} tone="success" />
-        </StatRow>
-
-        {list.length === 0 ? (
-          <Panel padded={false}>
-            <EmptyState
-              title="Aucune course en cours"
-              description="Les expéditions qui vous seront assignées apparaîtront ici."
-            />
-          </Panel>
-        ) : (
-          <div className="grid gap-3 lg:grid-cols-2">
-            {list.map((shipment) => {
-              const order = orderById.get(String(shipment.order_id));
-              const address = addressLines(String(shipment.order_id));
-              const steps = AGENT_NEXT_STATUS[String(shipment.status)] ?? [];
-
-              return (
-                <Panel
-                  key={shipment.id}
-                  title={order?.reference || `Course #${String(shipment.id).slice(0, 8)}`}
-                  actions={
-                    <Badge tone={SHIPMENT_STATUS_TONES[String(shipment.status)] || "neutral"}>
-                      {SHIPMENT_STATUS_LABELS[String(shipment.status)] || shipment.status}
-                    </Badge>
-                  }
-                >
-                  <dl className="space-y-1.5 text-sm">
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[#565959]">Destinataire</dt>
-                      <dd className="max-w-[60%] text-right font-medium">
-                        {address?.name || "Non renseigné"}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[#565959]">Adresse</dt>
-                      <dd className="max-w-[60%] text-right font-medium">
-                        {address ? (
-                          <>
-                            <span className="block">{address.street}</span>
-                            <span className="block text-[#565959]">{address.city}</span>
-                          </>
-                        ) : (
-                          "Non renseignée"
-                        )}
-                      </dd>
-                    </div>
-                    {address?.instructions && (
-                      <div className="flex justify-between gap-3">
-                        <dt className="text-[#565959]">Consignes</dt>
-                        <dd className="max-w-[60%] text-right font-medium">
-                          {address.instructions}
-                        </dd>
-                      </div>
-                    )}
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[#565959]">Téléphone</dt>
-                      <dd className="font-medium">
-                        {address?.phone || order?.contact_phone ? (
-                          <a
-                            href={`tel:${address?.phone || order?.contact_phone}`}
-                            className="text-[#d2162c] hover:underline"
-                          >
-                            {address?.phone || order?.contact_phone}
-                          </a>
-                        ) : (
-                          "—"
-                        )}
-                      </dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[#565959]">Zone</dt>
-                      <dd className="font-medium">{shipment.zone || "—"}</dd>
-                    </div>
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[#565959]">Assignée le</dt>
-                      <dd className="font-medium">{formatDate(shipment.assigned_at || shipment.created_at)}</dd>
-                    </div>
-                    {order?.payment_status === "cash_on_delivery" && (
-                      <div className="flex justify-between gap-3 border-t border-[#e3e6e6] pt-1.5">
-                        <dt className="font-semibold text-[#b45309]">À encaisser</dt>
-                        <dd className="tnum font-semibold text-[#b45309]">
-                          {formatHTG(Number(order.total_price) || 0)}
-                        </dd>
-                      </div>
-                    )}
-                  </dl>
-
-                  {steps.length > 0 && (
-                    <div className="mt-4 space-y-2 border-t border-[#e3e6e6] pt-3">
-                      {steps
-                        .filter((step) => step !== "failed")
-                        .map((step) => (
-                          <form key={step} action={advanceShipmentAction}>
-                            <input type="hidden" name="shipment_id" value={shipment.id} />
-                            <input type="hidden" name="next_status" value={step} />
-                            <Button type="submit" variant="primary">
-                              {AGENT_ACTION_LABELS[step]}
-                            </Button>
-                          </form>
-                        ))}
-
-                      {steps.includes("failed") && (
-                        <details className="mt-1">
-                          <summary className="cursor-pointer text-xs text-[#565959] hover:text-[#0f1111]">
-                            Livraison impossible
-                          </summary>
-                          <form action={advanceShipmentAction} className="mt-2 space-y-2">
-                            <input type="hidden" name="shipment_id" value={shipment.id} />
-                            <input type="hidden" name="next_status" value="failed" />
-                            <input
-                              name="reason"
-                              required
-                              placeholder="Raison : absent, adresse introuvable, refus…"
-                              className="w-full rounded-[3px] border border-[#8d9096] px-2.5 py-1.5 text-sm outline-none focus:border-[#d2162c]"
-                            />
-                            <Button type="submit">Signaler l&apos;échec</Button>
-                          </form>
-                        </details>
-                      )}
-                    </div>
-                  )}
-                </Panel>
-              );
-            })}
-          </div>
-        )}
-
-        <Notice tone="info" title="Ce que MACHÉ ne suit pas encore">
-          Aucun itinéraire, aucune position en temps réel et aucune preuve de
-          livraison photographiée : ces fonctions demandent une application
-          mobile et un suivi de localisation qui ne sont pas en place. Les
-          étapes ci-dessus sont déclarées par vous, et horodatées.
+      {query.success && (
+        <Notice tone="info" title="C'est enregistré">
+          {query.success}
         </Notice>
-      </div>
-    </>
+      )}
+      {query.error && (
+        <Notice tone="danger" title="Ça n'a pas marché">
+          {query.error}
+        </Notice>
+      )}
+
+      {!result.ok ? (
+        /*
+          Trois causes possibles, trois phrases : ce compte n'est pas
+          agent, l'habilitation est suspendue, ou le backend ne répond
+          pas. Le backend les distingue déjà ; on transmet sa réponse
+          plutôt que de la réduire à « accès refusé », qui enverrait un
+          agent suspendu vérifier son mot de passe.
+        */
+        <Notice tone="warning" title="Vos colis ne s'affichent pas">
+          {result.reason}
+        </Notice>
+      ) : (
+        <>
+          {result.data.card.suspended && (
+            <Notice tone="danger" title="Habilitation suspendue">
+              Votre habilitation d&apos;agent est suspendue. Vous voyez encore vos
+              colis — il faut bien pouvoir dire où ils sont — mais vous ne pouvez
+              plus les faire avancer. Contactez MACHÉ.
+            </Notice>
+          )}
+
+          <Panel
+            title={result.data.card.function}
+            description={
+              [
+                result.data.card.code ? `Code ${result.data.card.code}` : null,
+                result.data.card.zone,
+                result.data.relayPointIds.length
+                  ? `${result.data.relayPointIds.length} point de retrait tenu`
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(" · ") || undefined
+            }
+          >
+            <div className="flex flex-wrap gap-2">
+              <Button
+                href={`/dashboard/agent?scope=${scope === "open" ? "all" : "open"}`}
+                variant="secondary"
+              >
+                {scope === "open" ? "Voir tout l'historique" : "Voir seulement les colis en cours"}
+              </Button>
+              {result.data.card.code && (
+                <Button href={`/verify-agent?code=${result.data.card.code}`} variant="secondary">
+                  Ce que voit un client qui vérifie mon code
+                </Button>
+              )}
+            </div>
+          </Panel>
+
+          {result.data.deliveries.length === 0 ? (
+            <EmptyState
+              title={scope === "open" ? "Aucun colis en cours" : "Aucun colis"}
+              description={
+                scope === "open"
+                  ? "Rien ne vous est confié pour le moment, et rien n'attend dans votre point de retrait."
+                  : "Aucun colis ne vous a encore été confié."
+              }
+            />
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2">
+              {result.data.deliveries.map((delivery) => (
+                <DeliveryCard key={delivery.id} delivery={delivery} />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
+        Un client peut vérifier votre code sur{" "}
+        <Link href="/verify-agent" className="font-medium text-[var(--mache-primary)] underline">
+          la page de vérification
+        </Link>
+        {" "}avant de vous remettre quoi que ce soit. C&apos;est normal, et
+        c&apos;est ce qui vous protège aussi.
+      </p>
+    </div>
   );
 }
