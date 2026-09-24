@@ -47,6 +47,7 @@ const translations = {
     newArrivals: "Nouveautés",
     catalog: "Tout le catalogue",
     wholesale: "Acheter en gros",
+    regions: "Haïti",
     sellers: "Vendre sur MACHÉ",
     verifyAgent: "Vérifier un agent",
     help: "Aide"
@@ -63,6 +64,7 @@ const translations = {
     newArrivals: "Nouvo pwodwi",
     catalog: "Tout katalòg la",
     wholesale: "Achte an gwo",
+    regions: "Ayiti",
     sellers: "Vann sou MACHÉ",
     verifyAgent: "Verifye yon ajan",
     help: "Èd"
@@ -226,6 +228,10 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
 
           <Link href="/gros">
             📦 {t.wholesale}
+          </Link>
+
+          <Link href="/haiti">
+            🗺️ {t.regions}
           </Link>
 
           <Link href="/sell">

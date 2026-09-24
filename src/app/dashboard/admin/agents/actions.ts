@@ -1,19 +1,26 @@
 "use server";
 
 /*
-  ACTIONS : habilitation des agents MACHÉ.
+  ACTIONS : les agents MACHÉ.
 
-  Ce qui se décide ici engage la sécurité des clients : un code enregistré
-  comme « actif » fait répondre « agent habilité » à la page publique de
-  vérification, et un client remettra alors son colis ou son argent. Les
-  écritures sont donc réservées au personnel, revérifié en base à chaque
-  appel, et le rattachement à un compte impose que ce compte ait bien le
-  rôle agent.
+  Un agent est un client à qui l'administration ajoute une fonction.
+  Toutes ces actions revérifient la session : une action serveur est une
+  adresse comme une autre, et s'en remettre au contrôle fait par la page
+  laisserait nommer un agent à qui sait former la requête — c'est-à-dire
+  exactement ce que la vérification publique est censée empêcher.
 */
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireAdminForWrite } from "@/lib/admin";
+import { getAdminUser } from "@/lib/medusa/admin";
+import {
+  makeAgent,
+  setAgentSuspended,
+  revokeAgent,
+  AGENT_FUNCTIONS,
+} from "@/lib/medusa/agents-admin";
+import { isControlFlow, reasonOf } from "@/lib/safe-action";
+import { reportOutage } from "@/lib/medusa/outage";
 
 const BASE = "/dashboard/admin/agents";
 
@@ -21,145 +28,101 @@ function fail(message: string): never {
   redirect(`${BASE}?error=${encodeURIComponent(message)}`);
 }
 
-function done(code: string): never {
-  revalidatePath(BASE);
-  revalidatePath("/verify-agent");
-  redirect(`${BASE}?success=${encodeURIComponent(code)}`);
+async function requireSession() {
+  const user = await getAdminUser();
+
+  if (!user) redirect("/dashboard/admin/connexion");
 }
 
-function normalizeCode(value: string) {
-  return value.trim().toUpperCase().replace(/\s+/g, "");
-}
+export async function makeAgentAction(formData: FormData) {
+  try {
+    await requireSession();
 
-export async function createAgentAction(formData: FormData) {
-  const { supabase } = await requireAdminForWrite(BASE);
+    const email = String(formData.get("email") || "").trim().toLowerCase();
+    const functionSlug = String(formData.get("function") || "").trim();
 
-  const code = normalizeCode(String(formData.get("code") || ""));
-  const displayName = String(formData.get("display_name") || "").trim();
-  const zone = String(formData.get("zone") || "").trim();
-  const phonePublic = String(formData.get("phone_public") || "").trim();
-  const photoUrl = String(formData.get("photo_url") || "").trim();
-  const validUntil = String(formData.get("valid_until") || "").trim();
-  const userEmail = String(formData.get("user_email") || "").trim().toLowerCase();
+    if (!email.includes("@")) fail("Indiquez une adresse e-mail valide.");
 
-  if (!code) fail("Le code de l'agent est obligatoire.");
-  if (!/^[A-Z0-9-]{4,32}$/.test(code)) {
-    fail("Le code ne peut contenir que des lettres, des chiffres et des tirets.");
-  }
-  if (!displayName) fail("Le nom affiché est obligatoire.");
-
-  if (photoUrl && !/^https?:\/\//i.test(photoUrl)) {
-    fail("L'adresse de la photo doit commencer par http:// ou https://");
-  }
-
-  const { data: existing } = await supabase
-    .from("agent_profiles")
-    .select("id")
-    .eq("code", code)
-    .maybeSingle();
-
-  if (existing) fail(`Le code ${code} est déjà attribué.`);
-
-  /*
-    Rattachement facultatif à un compte. Il n'est accepté que si ce compte
-    porte le rôle agent : rattacher la carte à un client ou à un vendeur
-    lui ouvrirait l'espace agent et les adresses de livraison.
-  */
-  let userId: string | null = null;
-
-  if (userEmail) {
-    const { data: account } = await supabase
-      .from("users")
-      .select("id, role")
-      .eq("email", userEmail)
-      .maybeSingle();
-
-    if (!account) fail(`Aucun compte ne correspond à ${userEmail}.`);
-
-    if (String(account.role || "").trim() !== "agent") {
-      fail(
-        `Le compte ${userEmail} n'a pas le rôle agent. Changez son rôle avant de lui attribuer une carte.`
-      );
+    if (!AGENT_FUNCTIONS.some((entry) => entry.slug === functionSlug)) {
+      fail("Choisissez une fonction.");
     }
 
-    userId = String(account.id);
+    const result = await makeAgent({
+      email,
+      functionSlug,
+      zone: String(formData.get("zone") || "").trim() || null,
+      phonePublic: String(formData.get("phone") || "").trim() || null,
+    });
+
+    if (!result.ok) fail(result.reason);
+
+    revalidatePath(BASE);
+
+    /*
+      Le code est renvoyé dans l'adresse pour être affiché UNE fois,
+      bien en évidence : c'est lui qu'il faut recopier sur la carte de
+      l'agent. Il n'est pas secret — un client le saisit pour vérifier —
+      mais il est à transmettre, et une valeur à transmettre qu'on ne
+      montre pas se perd.
+    */
+    redirect(
+      `${BASE}?cree=${encodeURIComponent(result.data.code)}&nom=${encodeURIComponent(result.data.name)}`
+    );
+  } catch (error) {
+    if (isControlFlow(error)) throw error;
+
+    reportOutage("nomination agent", reasonOf(error));
+
+    fail("La nomination n'a pas abouti. Réessayez dans quelques minutes.");
   }
-
-  const { error } = await supabase.from("agent_profiles").insert({
-    code,
-    display_name: displayName,
-    zone: zone || null,
-    phone_public: phonePublic || null,
-    photo_url: photoUrl || null,
-    valid_until: validUntil || null,
-    user_id: userId,
-    // Une carte naît « en cours d'habilitation » : l'activer est une
-    // décision distincte, prise en connaissance de cause.
-    status: "pending",
-    official_badge: false,
-  });
-
-  if (error) fail(error.message);
-
-  done("created");
 }
 
-export async function setAgentStatusAction(formData: FormData) {
-  const { supabase } = await requireAdminForWrite(BASE);
+export async function suspendAgentAction(formData: FormData) {
+  try {
+    await requireSession();
 
-  const agentId = String(formData.get("agent_id") || "");
-  const status = String(formData.get("status") || "");
+    const customerId = String(formData.get("customer_id") || "").trim();
+    const suspended = String(formData.get("suspended") || "") === "1";
 
-  if (!agentId) fail("Agent inconnu.");
+    if (!customerId) fail("Agent introuvable.");
 
-  if (!["pending", "active", "suspended", "revoked"].includes(status)) {
-    fail("Statut d'habilitation inconnu.");
+    const result = await setAgentSuspended(customerId, suspended);
+
+    if (!result.ok) fail(result.reason);
+
+    revalidatePath(BASE);
+
+    redirect(`${BASE}?suspendu=${suspended ? "1" : "0"}`);
+  } catch (error) {
+    if (isControlFlow(error)) throw error;
+
+    reportOutage("suspension agent", reasonOf(error));
+
+    fail("La décision n'a pas pu être enregistrée.");
   }
-
-  const { data: updated, error } = await supabase
-    .from("agent_profiles")
-    .update({
-      status,
-      // Le badge officiel ne survit pas à une habilitation retirée.
-      ...(status === "revoked" ? { official_badge: false } : {}),
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", agentId)
-    .select("id")
-    .maybeSingle();
-
-  if (error) fail(error.message);
-  if (!updated) fail("Cette carte n'existe plus.");
-
-  done("status");
 }
 
-export async function setAgentBadgeAction(formData: FormData) {
-  const { supabase } = await requireAdminForWrite(BASE);
+export async function revokeAgentAction(formData: FormData) {
+  try {
+    await requireSession();
 
-  const agentId = String(formData.get("agent_id") || "");
-  const badge = String(formData.get("badge") || "") === "true";
+    const customerId = String(formData.get("customer_id") || "").trim();
+    const functionSlug = String(formData.get("function") || "").trim();
 
-  if (!agentId) fail("Agent inconnu.");
+    if (!customerId || !functionSlug) fail("Agent introuvable.");
 
-  const { data: agent } = await supabase
-    .from("agent_profiles")
-    .select("id, status")
-    .eq("id", agentId)
-    .maybeSingle();
+    const result = await revokeAgent(customerId, functionSlug);
 
-  if (!agent) fail("Cette carte n'existe plus.");
+    if (!result.ok) fail(result.reason);
 
-  if (badge && String(agent.status) !== "active") {
-    fail("Le badge officiel ne s'accorde qu'à une carte active.");
+    revalidatePath(BASE);
+
+    redirect(`${BASE}?retire=1`);
+  } catch (error) {
+    if (isControlFlow(error)) throw error;
+
+    reportOutage("retrait agent", reasonOf(error));
+
+    fail("Le retrait n'a pas pu être enregistré.");
   }
-
-  const { error } = await supabase
-    .from("agent_profiles")
-    .update({ official_badge: badge, updated_at: new Date().toISOString() })
-    .eq("id", agentId);
-
-  if (error) fail(error.message);
-
-  done("badge");
 }
