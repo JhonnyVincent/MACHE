@@ -60,6 +60,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { label: "Messages", href: "/dashboard/admin/messages" },
         { label: "Ce que MACHÉ gagne", href: "/dashboard/admin/revenus" },
         { label: "Boutiques", href: "/dashboard/admin/stores", badge: pending },
+        { label: "Modération", href: "/dashboard/admin/moderation" },
         { label: "Utilisateurs", href: "/dashboard/admin/users" },
         { label: "Apparence du site", href: "/dashboard/admin/apparence" },
         { label: "Contrats", href: "/dashboard/admin/contrats" },

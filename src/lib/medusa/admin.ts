@@ -1411,3 +1411,159 @@ export function terminateSeller(sellerId: string, reason?: string) {
 export function unterminateSeller(sellerId: string) {
   return sellerAction(sellerId, "unterminate");
 }
+
+/* -------------------------------------------------------------------------- */
+/* Modération : avis et articles                                              */
+/* -------------------------------------------------------------------------- */
+
+export type AdminReview = {
+  id: string;
+  rating: number;
+  customerNote: string | null;
+  sellerNote: string | null;
+  status: "pending" | "published" | "rejected";
+  reference: string;
+  sellerId: string | null;
+  customerId: string | null;
+  createdAt: string | null;
+};
+
+function mapReview(raw: Raw): AdminReview {
+  return {
+    id: String(raw.id ?? ""),
+    rating: Number(raw.rating) || 0,
+    customerNote: str(raw.customer_note),
+    sellerNote: str(raw.seller_note),
+    status: (str(raw.status) ?? "pending") as AdminReview["status"],
+    reference: str(raw.reference) ?? "",
+    sellerId: str(raw.seller_id),
+    customerId: str(raw.customer_id),
+    createdAt: str(raw.created_at),
+  };
+}
+
+export async function fetchReviews(status?: string): Promise<Result<AdminReview[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const search = status ? `&status=${encodeURIComponent(status)}` : "";
+
+  const result = await request<{ reviews?: Raw[] }>(
+    `/admin/reviews?limit=100&order=-created_at${search}`,
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: (result.data.reviews ?? []).map(mapReview) };
+}
+
+/*
+  Masquer un avis, ou le rétablir.
+
+  « rejected » plutôt qu'une suppression : un avis effacé ne laisse
+  aucune trace de ce qui a été retiré ni pourquoi. Rejeté, il disparaît
+  du site mais reste consultable ici — ce qui compte le jour où son
+  auteur demande pourquoi son avis n'apparaît plus.
+
+  Masquer un avis est une décision délicate : c'est la parole d'un
+  acheteur qu'on retire. Elle doit pouvoir s'expliquer, et donc se
+  relire.
+*/
+export async function setReviewStatus(
+  reviewId: string,
+  status: "published" | "rejected" | "pending"
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(
+    `/admin/reviews/${encodeURIComponent(reviewId)}`,
+    { method: "POST", body: { status }, token }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
+
+export type AdminProduct = {
+  id: string;
+  title: string;
+  handle: string;
+  status: string;
+  thumbnail: string | null;
+  createdAt: string | null;
+};
+
+export async function searchProducts(term: string): Promise<Result<AdminProduct[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const search = term ? `&q=${encodeURIComponent(term)}` : "";
+
+  const result = await request<{ products?: Raw[] }>(
+    `/admin/products?limit=50&order=-created_at${search}`,
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: (result.data.products ?? []).map((raw) => ({
+      id: String(raw.id ?? ""),
+      title: str(raw.title) ?? "",
+      handle: str(raw.handle) ?? "",
+      status: str(raw.status) ?? "draft",
+      thumbnail: str(raw.thumbnail),
+      createdAt: str(raw.created_at),
+    })),
+  };
+}
+
+/*
+  Retirer un article du site, ou le remettre.
+
+  « rejected » est l'état prévu par Medusa pour un produit refusé, et
+  il se distingue de « draft » : un brouillon est un article que le
+  vendeur n'a pas fini, un article rejeté est un article que MACHÉ a
+  retiré. Les confondre ferait croire au vendeur qu'il a oublié de
+  publier, et il republierait.
+
+  Rien n'est supprimé : les commandes qui portent cet article restent
+  lisibles. Supprimer le produit les rendrait incompréhensibles.
+*/
+export async function setProductStatus(
+  productId: string,
+  status: "published" | "rejected" | "draft"
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(
+    `/admin/products/${encodeURIComponent(productId)}`,
+    { method: "POST", body: { status }, token }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
+
+export const REVIEW_STATUS_LABELS: Record<string, string> = {
+  pending: "En attente",
+  published: "Visible sur le site",
+  rejected: "Masqué par MACHÉ",
+};
+
+export const PRODUCT_STATUS_LABELS: Record<string, string> = {
+  draft: "Brouillon du vendeur",
+  proposed: "Proposé",
+  published: "En vente",
+  rejected: "Retiré par MACHÉ",
+};
