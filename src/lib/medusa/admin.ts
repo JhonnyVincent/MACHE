@@ -447,6 +447,8 @@ export const SELLER_STATUS_LABELS: Record<string, string> = {
   open: "Ouverte",
   active: "Ouverte",
   suspended: "Suspendue",
+  /* Mercur distingue la résiliation de la suspension. Le site aussi. */
+  terminated: "Résiliée",
   rejected: "Refusée",
   unknown: "Statut inconnu",
 };
@@ -1331,3 +1333,81 @@ export const ADMIN_THREAD_STATUS: Record<string, string> = {
   answered: "Répondu",
   closed: "Close",
 };
+
+/* -------------------------------------------------------------------------- */
+/* Suspendre, rétablir, résilier une boutique                                 */
+/* -------------------------------------------------------------------------- */
+
+/*
+  Ces gestes passent par les routes DÉDIÉES de Mercur — /suspend,
+  /unsuspend, /terminate, /unterminate — et non par une écriture
+  directe du statut.
+
+  La différence n'est pas cosmétique. Ces routes déclenchent chacune un
+  workflow : ce qui doit accompagner une suspension — retirer la
+  boutique du catalogue, ce que Mercur décide d'y attacher aujourd'hui
+  et demain — s'exécute. Écrire `status: "suspended"` à la main
+  changerait une colonne et laisserait le reste en place : une boutique
+  marquée suspendue qui continuerait de vendre.
+
+  RIEN N'EST SUPPRIMÉ, ET C'EST DÉLIBÉRÉ
+
+  Supprimer un vendeur emporterait ses commandes passées et les
+  commissions qu'il doit à MACHÉ. Les deux états de Mercur préservent
+  l'historique comptable :
+
+  - SUSPENDRE est réversible. La boutique ne vend plus ; elle peut
+    revenir.
+  - RÉSILIER met fin à la relation. Réversible aussi, techniquement,
+    mais ce n'est pas le même acte : l'écran les présente séparément
+    pour qu'on ne résilie pas en croyant suspendre.
+
+  Le motif est facultatif côté Mercur. L'écran le demande quand même :
+  six mois plus tard, une boutique suspendue sans motif est une
+  décision que plus personne ne sait justifier — ni défendre si le
+  vendeur la conteste.
+*/
+async function sellerAction(
+  sellerId: string,
+  verb: "suspend" | "unsuspend" | "terminate" | "unterminate",
+  reason?: string
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(
+    `/admin/sellers/${encodeURIComponent(sellerId)}/${verb}`,
+    {
+      method: "POST",
+      /*
+        Le motif n'est envoyé que s'il y en a un : Mercur l'accepte
+        optionnel, et transmettre une chaîne vide l'enregistrerait comme
+        un motif — un motif vide, qui se lirait plus tard comme « on
+        n'avait rien à dire ».
+      */
+      body: reason ? { reason } : {},
+      token,
+    }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
+
+export function suspendSeller(sellerId: string, reason?: string) {
+  return sellerAction(sellerId, "suspend", reason);
+}
+
+export function unsuspendSeller(sellerId: string) {
+  return sellerAction(sellerId, "unsuspend");
+}
+
+export function terminateSeller(sellerId: string, reason?: string) {
+  return sellerAction(sellerId, "terminate", reason);
+}
+
+export function unterminateSeller(sellerId: string) {
+  return sellerAction(sellerId, "unterminate");
+}
