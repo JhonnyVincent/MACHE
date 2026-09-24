@@ -1191,3 +1191,143 @@ export const POLICY_STATUS_LABELS: Record<string, string> = {
   live: "En vigueur",
   archived: "Version précédente",
 };
+
+/* -------------------------------------------------------------------------- */
+/* Messagerie                                                                 */
+/* -------------------------------------------------------------------------- */
+
+export type AdminMessage = {
+  id: string;
+  author: "sender" | "mache";
+  authorName: string;
+  body: string;
+  internal: boolean;
+  createdAt: string | null;
+};
+
+export type AdminThread = {
+  id: string;
+  displayId: number;
+  subject: string;
+  category: string;
+  fromName: string;
+  fromEmail: string;
+  fromPhone: string | null;
+  customerId: string | null;
+  sellerId: string | null;
+  status: "open" | "answered" | "closed";
+  awaitingMache: boolean;
+  awaitingSender: boolean;
+  lastMessageAt: string | null;
+  createdAt: string | null;
+  messages: AdminMessage[];
+};
+
+function mapAdminThread(raw: Raw): AdminThread {
+  const messages = Array.isArray(raw.messages) ? (raw.messages as Raw[]) : [];
+
+  return {
+    id: String(raw.id ?? ""),
+    displayId: Number(raw.display_id) || 0,
+    subject: str(raw.subject) ?? "",
+    category: str(raw.category) ?? "question",
+    fromName: str(raw.from_name) ?? "",
+    fromEmail: str(raw.from_email) ?? "",
+    fromPhone: str(raw.from_phone),
+    customerId: str(raw.customer_id),
+    sellerId: str(raw.seller_id),
+    status: (str(raw.status) ?? "open") as AdminThread["status"],
+    awaitingMache: raw.awaiting_mache === true,
+    awaitingSender: raw.awaiting_sender === true,
+    lastMessageAt: str(raw.last_message_at),
+    createdAt: str(raw.created_at),
+    messages: messages.map((message) => ({
+      id: String(message.id ?? ""),
+      author: (str(message.author) ?? "sender") as AdminMessage["author"],
+      authorName: str(message.author_name) ?? "",
+      body: typeof message.body === "string" ? message.body : "",
+      internal: message.internal === true,
+      createdAt: str(message.created_at),
+    })),
+  };
+}
+
+export async function fetchThreads(
+  status?: string
+): Promise<Result<{ threads: AdminThread[]; waiting: number }>> {
+  const search = status ? `?status=${encodeURIComponent(status)}` : "";
+
+  const result = await contractRequest<{ threads?: Raw[]; waiting?: number }>(
+    `/admin/mache/messages${search}`
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      threads: (result.data.threads ?? []).map(mapAdminThread),
+      waiting: Number(result.data.waiting) || 0,
+    },
+  };
+}
+
+export async function fetchThread(id: string): Promise<Result<AdminThread>> {
+  const result = await contractRequest<{ thread?: Raw }>(
+    `/admin/mache/messages/${encodeURIComponent(id)}`
+  );
+
+  if (!result.ok) return result;
+
+  if (!result.data.thread) return { ok: false, reason: "Conversation introuvable." };
+
+  return { ok: true, data: mapAdminThread(result.data.thread) };
+}
+
+async function threadAction(
+  id: string,
+  payload: Record<string, unknown>
+): Promise<Result<AdminThread>> {
+  const result = await contractRequest<{ thread?: Raw }>(
+    `/admin/mache/messages/${encodeURIComponent(id)}`,
+    { method: "POST", body: payload }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapAdminThread(result.data.thread ?? {}) };
+}
+
+export function replyToCustomer(id: string, message: string) {
+  return threadAction(id, { action: "reply", message });
+}
+
+/*
+  Une note interne ne part chez personne. Elle porte le nom de celui qui
+  l'écrit, pour qu'on sache plus tard qui a vérifié quoi.
+*/
+export function addInternalNote(id: string, message: string, authorName: string) {
+  return threadAction(id, { action: "note", message, author_name: authorName });
+}
+
+export function closeThread(id: string) {
+  return threadAction(id, { action: "close" });
+}
+
+export function reopenThread(id: string) {
+  return threadAction(id, { action: "reopen" });
+}
+
+export const THREAD_CATEGORY_LABELS: Record<string, string> = {
+  question: "Question",
+  commande: "Commande",
+  boutique: "Boutique",
+  signalement: "Signalement",
+  autre: "Autre",
+};
+
+export const ADMIN_THREAD_STATUS: Record<string, string> = {
+  open: "À traiter",
+  answered: "Répondu",
+  closed: "Close",
+};
