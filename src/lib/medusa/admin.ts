@@ -413,3 +413,155 @@ export async function setSellerVerified(
 
   return { ok: true, data: true };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Ce que MACHÉ gagne                                                         */
+/* -------------------------------------------------------------------------- */
+
+/*
+  Le mot juste : DÛ, pas encaissé.
+
+  MACHÉ ne perçoit pas les paiements — l'acheteur règle le vendeur en
+  main propre. Ces montants sont donc des créances, pas de la trésorerie.
+  Le type porte ce nom pour que personne ne puisse l'oublier en lisant
+  l'écran qui s'en sert.
+*/
+export type RevenueBucket = {
+  currencyCode: string;
+  /* Ce que les acheteurs ont payé aux vendeurs, dans cette devise. */
+  volume: number;
+  /* Ce que MACHÉ a gagné dessus, et doit facturer. */
+  commission: number;
+  orders: number;
+  /*
+    Le taux réellement constaté, commission divisée par volume. Il tient
+    compte des taux réduits et des commandes passées sous un ancien
+    barème — un écart avec le taux affiché est une information, pas une
+    erreur d'arrondi.
+  */
+  effectiveRate: number | null;
+};
+
+export type MacheRevenue = {
+  days: number;
+  current: RevenueBucket[];
+  previous: RevenueBucket[];
+  /* Commissions sur frais de port, qu'on ne sait pas rattacher à une devise. */
+  unattributed: number;
+  subscriptionsNote: string;
+  ordersRead: number;
+  truncated: boolean;
+};
+
+function bucket(raw: Raw): RevenueBucket {
+  const rate = raw.effective_rate;
+
+  return {
+    currencyCode: str(raw.currency_code) ?? "—",
+    volume: Number(raw.volume) || 0,
+    commission: Number(raw.commission) || 0,
+    orders: Number(raw.orders) || 0,
+    effectiveRate: typeof rate === "number" && Number.isFinite(rate) ? rate : null,
+  };
+}
+
+export async function fetchMacheRevenue(days = 30): Promise<Result<MacheRevenue>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{
+    period?: { days?: number };
+    currencies?: Raw[];
+    previous?: Raw[];
+    unattributed_commission?: number;
+    subscriptions?: { note?: string };
+    orders_read?: number;
+    truncated?: boolean;
+  }>(`/admin/mache/revenue?days=${days}`, { token });
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      days: Number(result.data.period?.days) || days,
+      current: (result.data.currencies ?? []).map(bucket),
+      previous: (result.data.previous ?? []).map(bucket),
+      unattributed: Number(result.data.unattributed_commission) || 0,
+      subscriptionsNote: str(result.data.subscriptions?.note) ?? "",
+      ordersRead: Number(result.data.orders_read) || 0,
+      truncated: result.data.truncated === true,
+    },
+  };
+}
+
+/* -------------------------------------------------------------------------- */
+/* L'habillage saisonnier du site                                             */
+/* -------------------------------------------------------------------------- */
+
+export type AdminTheme = {
+  key: string;
+  label: string;
+  description: string;
+  banner: string | null;
+  variables: Record<string, string>;
+};
+
+export async function fetchThemes(): Promise<
+  Result<{ active: string; themes: AdminTheme[] }>
+> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ active?: string; themes?: Raw[] }>(
+    "/admin/mache/theme",
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      active: str(result.data.active) ?? "default",
+      themes: (result.data.themes ?? []).map((raw) => ({
+        key: str(raw.key) ?? "default",
+        label: str(raw.label) ?? "",
+        description: str(raw.description) ?? "",
+        banner: str(raw.banner),
+        variables:
+          raw.variables && typeof raw.variables === "object"
+            ? (raw.variables as Record<string, string>)
+            : {},
+      })),
+    },
+  };
+}
+
+/*
+  Le storefront garde l'habillage cinq minutes en cache. Après un
+  changement, il faut donc vider cette entrée — sinon l'administrateur
+  voit « enregistré », recharge l'accueil, et ne constate rien pendant
+  cinq minutes. Il en conclurait que ça n'a pas marché, et
+  recommencerait.
+
+  L'invalidation appartient à l'appelant (une action serveur), car
+  `revalidateTag` n'a de sens que dans ce contexte.
+*/
+export async function setSiteTheme(key: string): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>("/admin/mache/theme", {
+    method: "POST",
+    token,
+    body: { theme: key },
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
