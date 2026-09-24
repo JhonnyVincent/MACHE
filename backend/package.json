@@ -2,7 +2,7 @@
   "name": "mache-backend",
   "private": true,
   "scripts": {
-    "build": "npm run codegen && ./node_modules/.bin/turbo run build",
+    "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
