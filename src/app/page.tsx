@@ -154,7 +154,7 @@ export default async function HomePage() {
       </section>
 
       {/* Services : quatre liens qui mènent tous à une page réelle. */}
-      <section className="border-b border-[var(--mache-line)] bg-[var(--mache-white)]">
+      <section className="mache-reveal border-b border-[var(--mache-line)] bg-[var(--mache-white)]">
         <div className="container-page grid grid-cols-2 gap-px bg-[var(--mache-line)] sm:grid-cols-4">
           {SERVICES.map((service) => (
             <Link
@@ -208,7 +208,7 @@ export default async function HomePage() {
       {home.categories.length > 0 ? (
         <CategoryRailSection categories={home.categories} />
       ) : (
-        <section className="container-page py-5">
+        <section className="mache-reveal container-page py-5">
           <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
             Parcourir les rayons
           </h2>
@@ -230,7 +230,7 @@ export default async function HomePage() {
       <CollectionRailSection collections={home.collections} />
 
       {/* Pourquoi MACHÉ — quatre affirmations tenues par le produit. */}
-      <section className="container-page py-5">
+      <section className="mache-reveal container-page py-5">
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {WHY.map((item) => (
             <div
@@ -248,7 +248,7 @@ export default async function HomePage() {
       </section>
 
       {/* Appel aux vendeurs. */}
-      <section className="container-page py-5">
+      <section className="mache-reveal container-page py-5">
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[var(--mache-dark)] p-6 text-white">
           <div>
             <h2 className="text-xl font-black tracking-tight">

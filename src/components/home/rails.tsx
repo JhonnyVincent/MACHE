@@ -82,7 +82,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
   return (
     <Link
       href={`/product/${product.handle}`}
-      className="group flex h-full flex-col overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow hover:shadow-[0_6px_20px_rgba(16,24,32,0.10)]"
+      className="group flex h-full flex-col overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(16,24,32,0.12)] motion-reduce:transform-none motion-reduce:transition-none"
     >
       <div className="relative aspect-square overflow-hidden bg-[var(--mache-bg)]">
         {product.thumbnail ? (

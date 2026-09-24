@@ -420,3 +420,128 @@ aside:not([data-chrome="dark"]) a:active {
   line-height: 1.5;
   color: var(--mache-muted);
 }
+
+/* ---------------------------------------------------------------------------
+   Mouvement
+
+   Ce que ces règles font, et ce qu'elles ne font pas
+
+   Elles donnent de la vie à la navigation : une carte qui se soulève
+   sous le doigt, une section qui se découvre en arrivant à l'écran.
+   Rien de plus. Aucune animation ne prétend qu'il se passe quelque
+   chose — pas de compteur qui s'agite, pas de « 3 personnes regardent
+   cet article ». Une animation qui invente une activité est un
+   mensonge, simplement plus difficile à démentir qu'une phrase.
+
+   Le mouvement n'est pas neutre
+
+   Un défilement infini, un élément qui surgit, une translation large :
+   pour une personne sujette aux troubles vestibulaires, cela provoque
+   des vertiges et des nausées. Les systèmes d'exploitation permettent
+   de le signaler, et le navigateur transmet ce réglage.
+
+   Tout ce qui bouge ici le respecte — y compris le bandeau défilant,
+   qui tournait jusqu'ici quoi qu'il arrive.
+   --------------------------------------------------------------------------- */
+
+@keyframes macheReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+  L'élément est invisible AVANT d'être révélé — mais seulement si le
+  navigateur sait le révéler. Sans JavaScript, `.is-revealed` ne serait
+  jamais posée et le contenu resterait caché pour toujours : c'est la
+  façon la plus courante de rendre un site illisible en croyant
+  l'embellir.
+
+  D'où `.js-reveal` posée par le script lui-même : tant qu'il n'a pas
+  tourné, rien n'est masqué.
+*/
+.js-reveal .mache-reveal {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.js-reveal .mache-reveal.is-revealed {
+  animation: macheReveal 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Un léger décalage entre voisins : l'œil suit, au lieu de tout recevoir. */
+.js-reveal .mache-reveal.is-revealed[data-delay="1"] { animation-delay: 0.07s; }
+.js-reveal .mache-reveal.is-revealed[data-delay="2"] { animation-delay: 0.14s; }
+.js-reveal .mache-reveal.is-revealed[data-delay="3"] { animation-delay: 0.21s; }
+
+/*
+  La vignette d'un produit s'agrandit doucement au survol, à l'intérieur
+  de son cadre. C'est le geste qu'on attend d'une image de catalogue :
+  regarder de plus près.
+*/
+.mache-zoom {
+  overflow: hidden;
+}
+
+.mache-zoom img {
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.mache-zoom:hover img,
+.mache-zoom:focus-within img {
+  transform: scale(1.045);
+}
+
+/*
+  Le focus clavier reste visible et net. Une animation qui l'estompe
+  rend le site inutilisable sans souris.
+*/
+.mache-reveal:focus-within {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+    Tout s'arrête. Le contenu reste ENTIÈREMENT visible : réduire le
+    mouvement ne veut pas dire réduire l'information.
+  */
+  .js-reveal .mache-reveal,
+  .js-reveal .mache-reveal.is-revealed {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+
+  .mache-zoom img {
+    transition: none;
+  }
+
+  .mache-zoom:hover img,
+  .mache-zoom:focus-within img {
+    transform: none;
+  }
+
+  /*
+    Le bandeau cesse de défiler. Il reste lisible — les mentions sont
+    simplement fixes, et le lien fonctionne toujours.
+  */
+  .mache-ticker {
+    animation: none;
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}

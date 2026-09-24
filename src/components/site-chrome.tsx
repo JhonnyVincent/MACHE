@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Header } from "./header";
 import { Footer, type FooterCategory } from "./footer";
 import { ChatAssistant } from "./chat-assistant";
+import { RevealProvider } from "./reveal";
 
 /*
   Les dashboards affichent leur propre en-tête et leur propre sidebar en
@@ -35,6 +36,14 @@ export function SiteChrome({
 
   return (
     <>
+      {/*
+        Le révélateur est posé ici, une fois pour tout le site public.
+        Il ne rend rien : il observe. Les tableaux de bord en sont
+        exclus, comme le reste du chrome — on n'anime pas un outil de
+        travail qu'on ouvre vingt fois par jour.
+      */}
+      <RevealProvider />
+
       <Header cartCount={cartCount} />
       {children}
       <Footer categories={categories} />
