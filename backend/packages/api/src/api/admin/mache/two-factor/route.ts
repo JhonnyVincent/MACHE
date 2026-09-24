@@ -1,6 +1,19 @@
 /*
   ROUTES : le second facteur de l'administration.
 
+  Pourquoi ce dossier ne s'appelle pas « 2fa »
+
+  Il s'est appelé ainsi, et la compilation des panneaux d'administration
+  a échoué. Le générateur de types de Mercur transcrit chaque segment
+  d'URL en nom de propriété TypeScript, sans guillemets : « 2fa » y
+  devenait `2fa: typeof import(...)`, ce qu'aucun analyseur n'accepte —
+  un nom ne commence pas par un chiffre.
+
+  Le piège est qu'on ne le voit pas en construisant le backend seul :
+  seuls les panneaux lisent ce fichier généré. Un test du dépôt surveille
+  désormais les noms de segments, pour que la prochaine fois se
+  remarque avant d'être poussée.
+
   Ce que ce compte commande
 
   L'approbation des boutiques, le chiffre d'affaires, l'apparence du

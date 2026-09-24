@@ -8,7 +8,7 @@
     "start": "next start",
     "test:vitrine": "tsx tests/vitrine-blocs.test.mts",
     "test:config": "tsx tests/config-backend.test.mts",
-    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:attente",
+    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:routes && npm run test:attente",
     "test:profil": "tsx tests/profil-vendeur.test.mts",
     "test:minimum": "tsx tests/commande-minimum.test.mts",
     "test:devis": "tsx tests/devis.test.mts",
@@ -17,7 +17,8 @@
     "test:themes": "tsx tests/themes-vitrine.test.mts",
     "test:habillage": "tsx tests/habillage-site.test.mts",
     "test:codes": "tsx tests/codes-administration.test.mts",
-    "test:contrats": "tsx tests/preuve-contrats.test.mts"
+    "test:contrats": "tsx tests/preuve-contrats.test.mts",
+    "test:routes": "tsx tests/noms-de-routes.test.mts"
   },
   "dependencies": {
     "@measured/puck": "^0.20.2",

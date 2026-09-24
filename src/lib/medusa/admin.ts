@@ -200,7 +200,7 @@ export async function loginAdmin(
     s'il faut un code, supposer que non annulerait la protection
     exactement le jour où le backend hoquette.
   */
-  const status = await request<{ enabled?: boolean }>("/admin/mache/2fa", { token });
+  const status = await request<{ enabled?: boolean }>("/admin/mache/two-factor", { token });
 
   if (!status.ok) {
     return {
@@ -272,7 +272,7 @@ export async function verifyAdminSecondFactor(input: {
   }
 
   const result = await request<{ used?: string; recovery_left?: number }>(
-    "/admin/mache/2fa",
+    "/admin/mache/two-factor",
     {
       method: "POST",
       token,
@@ -704,7 +704,7 @@ export async function fetchTwoFactor(): Promise<Result<TwoFactorState>> {
 
   if (!token) return { ok: false, reason: "Session expirée." };
 
-  const result = await request<Raw>("/admin/mache/2fa", { token });
+  const result = await request<Raw>("/admin/mache/two-factor", { token });
 
   if (!result.ok) return result;
 
@@ -732,7 +732,7 @@ export async function startTwoFactor(): Promise<
   if (!token) return { ok: false, reason: "Session expirée." };
 
   const result = await request<{ secret?: string; uri?: string }>(
-    "/admin/mache/2fa",
+    "/admin/mache/two-factor",
     { method: "POST", token, body: { action: "start" } }
   );
 
@@ -759,7 +759,7 @@ export async function confirmTwoFactor(
 
   if (!token) return { ok: false, reason: "Session expirée." };
 
-  const result = await request<{ recovery_codes?: unknown }>("/admin/mache/2fa", {
+  const result = await request<{ recovery_codes?: unknown }>("/admin/mache/two-factor", {
     method: "POST",
     token,
     body: { action: "confirm", code },
@@ -784,7 +784,7 @@ export async function disableTwoFactor(input: {
 
   if (!token) return { ok: false, reason: "Session expirée." };
 
-  const result = await request<Raw>("/admin/mache/2fa", {
+  const result = await request<Raw>("/admin/mache/two-factor", {
     method: "POST",
     token,
     body: { action: "disable", ...input },
