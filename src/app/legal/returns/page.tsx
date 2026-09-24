@@ -11,13 +11,14 @@
 */
 
 import Link from "next/link";
+import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
   title: "Retours et remboursements — MACHÉ",
   description: "Comment demander un retour ou un remboursement sur MACHÉ.",
 };
 
-export default function ReturnsPage() {
+function ReturnsPageEcrit() {
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
@@ -86,5 +87,25 @@ export default function ReturnsPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+/*
+  La page telle qu'elle s'affiche.
+
+  Si un texte a été publié depuis l'administration pour « retours »,
+  c'est lui qui s'affiche. Sinon — rien de publié, ou backend muet —
+  c'est le texte ci-dessus, écrit dans le code.
+
+  Ce texte n'est donc pas un vestige : c'est le filet. Une page légale
+  qui afficherait « service indisponible » serait pire qu'inutile,
+  puisque c'est justement la page qu'on consulte quand quelque chose ne
+  va pas.
+*/
+export default async function ReturnsPage() {
+  return (
+    <LegalPage slug="retours" fallbackTitle="Retours et remboursements">
+      <ReturnsPageEcrit />
+    </LegalPage>
   );
 }

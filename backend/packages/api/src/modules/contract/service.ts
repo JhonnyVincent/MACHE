@@ -1,5 +1,5 @@
 import { MedusaService } from "@medusajs/framework/utils";
-import { Contract, ContractSignature } from "./models";
+import { Contract, ContractSignature, Policy } from "./models";
 
 /*
   Le service par défaut, comme pour les devis et les livraisons.
@@ -13,6 +13,7 @@ import { Contract, ContractSignature } from "./models";
 class ContractModuleService extends MedusaService({
   Contract,
   ContractSignature,
+  Policy,
 }) {}
 
 export default ContractModuleService;

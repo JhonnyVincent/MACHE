@@ -1038,3 +1038,156 @@ export const SIGNATURE_STATUS_LABELS: Record<string, string> = {
   declined: "Refusé",
   revoked: "Retiré",
 };
+
+/* -------------------------------------------------------------------------- */
+/* Les textes publics du site                                                 */
+/* -------------------------------------------------------------------------- */
+
+export type PolicyPage = {
+  slug: string;
+  label: string;
+  path: string;
+  hint: string;
+};
+
+export type AdminPolicy = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string | null;
+  body: string;
+  version: number;
+  contentHash: string | null;
+  status: "draft" | "live" | "archived";
+  publishedAt: string | null;
+  changeNote: string | null;
+  updatedAt: string | null;
+};
+
+function mapPolicy(raw: Raw): AdminPolicy {
+  return {
+    id: String(raw.id ?? ""),
+    slug: str(raw.slug) ?? "",
+    title: str(raw.title) ?? "",
+    summary: str(raw.summary),
+    body: typeof raw.body === "string" ? raw.body : "",
+    version: Number(raw.version) || 1,
+    contentHash: str(raw.content_hash),
+    status: (str(raw.status) ?? "draft") as AdminPolicy["status"],
+    publishedAt: str(raw.published_at),
+    changeNote: str(raw.change_note),
+    updatedAt: str(raw.updated_at),
+  };
+}
+
+export async function fetchPolicies(): Promise<
+  Result<{ policies: AdminPolicy[]; pages: PolicyPage[] }>
+> {
+  const result = await contractRequest<{ policies?: Raw[]; pages?: Raw[] }>(
+    "/admin/mache/policies"
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      policies: (result.data.policies ?? []).map(mapPolicy),
+      pages: (result.data.pages ?? []).map((raw) => ({
+        slug: str(raw.slug) ?? "",
+        label: str(raw.label) ?? "",
+        path: str(raw.path) ?? "",
+        hint: str(raw.hint) ?? "",
+      })),
+    },
+  };
+}
+
+export async function fetchPolicyVersion(id: string): Promise<Result<AdminPolicy>> {
+  const result = await contractRequest<{ policy?: Raw }>(
+    `/admin/mache/policies/${encodeURIComponent(id)}`
+  );
+
+  if (!result.ok) return result;
+
+  if (!result.data.policy) return { ok: false, reason: "Texte introuvable." };
+
+  return { ok: true, data: mapPolicy(result.data.policy) };
+}
+
+export async function createPolicy(input: {
+  slug: string;
+  title: string;
+  summary?: string;
+  body: string;
+  changeNote?: string;
+}): Promise<Result<AdminPolicy>> {
+  const result = await contractRequest<{ policy?: Raw }>("/admin/mache/policies", {
+    method: "POST",
+    body: {
+      slug: input.slug,
+      title: input.title,
+      summary: input.summary,
+      body: input.body,
+      change_note: input.changeNote,
+    },
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapPolicy(result.data.policy ?? {}) };
+}
+
+async function policyAction(
+  id: string,
+  payload: Record<string, unknown>
+): Promise<Result<AdminPolicy>> {
+  const result = await contractRequest<{ policy?: Raw }>(
+    `/admin/mache/policies/${encodeURIComponent(id)}`,
+    { method: "POST", body: payload }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapPolicy(result.data.policy ?? {}) };
+}
+
+export function editPolicy(
+  id: string,
+  input: { title?: string; summary?: string; body?: string; changeNote?: string }
+) {
+  return policyAction(id, {
+    action: "edit",
+    title: input.title,
+    summary: input.summary,
+    body: input.body,
+    change_note: input.changeNote,
+  });
+}
+
+export function publishPolicy(id: string) {
+  return policyAction(id, { action: "publish" });
+}
+
+export function newPolicyVersion(
+  id: string,
+  input: { body: string; title?: string; summary?: string; changeNote?: string }
+) {
+  return policyAction(id, {
+    action: "new_version",
+    body: input.body,
+    title: input.title,
+    summary: input.summary,
+    change_note: input.changeNote,
+  });
+}
+
+export function archivePolicy(id: string) {
+  return policyAction(id, { action: "archive" });
+}
+
+export const POLICY_STATUS_LABELS: Record<string, string> = {
+  draft: "Brouillon",
+  live: "En vigueur",
+  archived: "Version précédente",
+};
