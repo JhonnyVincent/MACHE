@@ -794,3 +794,247 @@ export async function disableTwoFactor(input: {
 
   return { ok: true, data: true };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Contrats                                                                   */
+/* -------------------------------------------------------------------------- */
+
+export type AdminContract = {
+  id: string;
+  displayId: number;
+  title: string;
+  summary: string | null;
+  body: string;
+  version: number;
+  family: string;
+  contentHash: string | null;
+  status: "draft" | "published" | "archived";
+  publishedAt: string | null;
+  createdAt: string | null;
+};
+
+export type AdminSignature = {
+  id: string;
+  sellerId: string;
+  status: "sent" | "viewed" | "signed" | "declined" | "revoked";
+  sentAt: string | null;
+  viewedAt: string | null;
+  signedAt: string | null;
+  declinedAt: string | null;
+  signerName: string | null;
+  signerRole: string | null;
+  signerEmail: string | null;
+  signerIp: string | null;
+  declineReason: string | null;
+  proofHash: string | null;
+  dueAt: string | null;
+};
+
+export type SignatureTally = {
+  sent: number;
+  viewed: number;
+  signed: number;
+  declined: number;
+  revoked: number;
+};
+
+function mapAdminContract(raw: Raw): AdminContract {
+  return {
+    id: String(raw.id ?? ""),
+    displayId: Number(raw.display_id) || 0,
+    title: str(raw.title) ?? "Contrat",
+    summary: str(raw.summary),
+    body: typeof raw.body === "string" ? raw.body : "",
+    version: Number(raw.version) || 1,
+    family: str(raw.family) ?? "",
+    contentHash: str(raw.content_hash),
+    status: (str(raw.status) ?? "draft") as AdminContract["status"],
+    publishedAt: str(raw.published_at),
+    createdAt: str(raw.created_at),
+  };
+}
+
+function mapAdminSignature(raw: Raw): AdminSignature {
+  return {
+    id: String(raw.id ?? ""),
+    sellerId: str(raw.seller_id) ?? "",
+    status: (str(raw.status) ?? "sent") as AdminSignature["status"],
+    sentAt: str(raw.sent_at),
+    viewedAt: str(raw.viewed_at),
+    signedAt: str(raw.signed_at),
+    declinedAt: str(raw.declined_at),
+    signerName: str(raw.signer_name),
+    signerRole: str(raw.signer_role),
+    signerEmail: str(raw.signer_email),
+    signerIp: str(raw.signer_ip),
+    declineReason: str(raw.decline_reason),
+    proofHash: str(raw.proof_hash),
+    dueAt: str(raw.due_at),
+  };
+}
+
+async function contractRequest<T>(
+  path: string,
+  init: { method?: string; body?: unknown } = {}
+): Promise<Result<T>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  return request<T>(path, { ...init, token });
+}
+
+export async function fetchContracts(): Promise<Result<AdminContract[]>> {
+  const result = await contractRequest<{ contracts?: Raw[] }>(
+    "/admin/mache/contracts?limit=100"
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: (result.data.contracts ?? []).map(mapAdminContract) };
+}
+
+export async function fetchContract(id: string): Promise<Result<AdminContract>> {
+  const result = await contractRequest<{ contract?: Raw }>(
+    `/admin/mache/contracts/${encodeURIComponent(id)}`
+  );
+
+  if (!result.ok) return result;
+
+  if (!result.data.contract) return { ok: false, reason: "Contrat introuvable." };
+
+  return { ok: true, data: mapAdminContract(result.data.contract) };
+}
+
+export async function createContract(input: {
+  title: string;
+  summary?: string;
+  body: string;
+}): Promise<Result<AdminContract>> {
+  const result = await contractRequest<{ contract?: Raw }>("/admin/mache/contracts", {
+    method: "POST",
+    body: { title: input.title, summary: input.summary, body: input.body },
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapAdminContract(result.data.contract ?? {}) };
+}
+
+/*
+  Les quatre verbes du cycle de vie. Ils passent par la même route, avec
+  une `action` — c'est le backend qui décide si l'état courant permet le
+  geste demandé. Le storefront ne rejoue pas cette décision : deux
+  jugements pour une question finissent par diverger, et c'est le plus
+  permissif qui gagnerait.
+*/
+async function contractAction(
+  id: string,
+  payload: Record<string, unknown>
+): Promise<Result<AdminContract>> {
+  const result = await contractRequest<{ contract?: Raw }>(
+    `/admin/mache/contracts/${encodeURIComponent(id)}`,
+    { method: "POST", body: payload }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapAdminContract(result.data.contract ?? {}) };
+}
+
+export function editContract(
+  id: string,
+  input: { title?: string; summary?: string; body?: string }
+) {
+  return contractAction(id, { action: "edit", ...input });
+}
+
+export function publishContract(id: string) {
+  return contractAction(id, { action: "publish" });
+}
+
+export function newContractVersion(
+  id: string,
+  input: { body: string; title?: string; summary?: string }
+) {
+  return contractAction(id, { action: "new_version", ...input });
+}
+
+export function archiveContract(id: string) {
+  return contractAction(id, { action: "archive" });
+}
+
+export async function sendContract(
+  id: string,
+  sellerIds: string[],
+  dueAt?: string
+): Promise<Result<{ sent: number; skipped: number }>> {
+  const result = await contractRequest<{ sent?: number; skipped?: number }>(
+    `/admin/mache/contracts/${encodeURIComponent(id)}/send`,
+    { method: "POST", body: { seller_ids: sellerIds, due_at: dueAt } }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      sent: Number(result.data.sent) || 0,
+      skipped: Number(result.data.skipped) || 0,
+    },
+  };
+}
+
+export async function fetchContractSignatures(
+  id: string
+): Promise<Result<{ signatures: AdminSignature[]; tally: SignatureTally }>> {
+  const result = await contractRequest<{ signatures?: Raw[]; tally?: Raw }>(
+    `/admin/mache/contracts/${encodeURIComponent(id)}/signatures`
+  );
+
+  if (!result.ok) return result;
+
+  const raw = result.data.tally ?? {};
+
+  return {
+    ok: true,
+    data: {
+      signatures: (result.data.signatures ?? []).map(mapAdminSignature),
+      tally: {
+        sent: Number(raw.sent) || 0,
+        viewed: Number(raw.viewed) || 0,
+        signed: Number(raw.signed) || 0,
+        declined: Number(raw.declined) || 0,
+        revoked: Number(raw.revoked) || 0,
+      },
+    },
+  };
+}
+
+export async function revokeSignature(
+  contractId: string,
+  signatureId: string
+): Promise<Result<true>> {
+  const result = await contractRequest<Raw>(
+    `/admin/mache/contracts/${encodeURIComponent(contractId)}/signatures`,
+    { method: "POST", body: { signature_id: signatureId } }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
+
+export const CONTRACT_STATUS_LABELS: Record<string, string> = {
+  draft: "Brouillon",
+  published: "Publié",
+  archived: "Archivé",
+};
+
+export const SIGNATURE_STATUS_LABELS: Record<string, string> = {
+  sent: "Envoyé, non lu",
+  viewed: "Lu, sans réponse",
+  signed: "Signé",
+  declined: "Refusé",
+  revoked: "Retiré",
+};
