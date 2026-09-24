@@ -50,6 +50,15 @@
 
 import { ExecArgs } from "@medusajs/framework/types";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+/*
+  L'énumération de Mercur, et non la chaîne « percentage ».
+
+  Les deux valent la même chose à l'exécution — mais `medusa build`
+  vérifie les types, et une chaîne littérale y est refusée. C'est ce qui
+  a fait échouer un déploiement : l'erreur n'apparaît pas au
+  développement, seulement à la construction.
+*/
+import { CommissionRateType } from "@mercurjs/types";
 
 /*
   Les mêmes valeurs que la page de tarifs du site. Elles sont écrites
@@ -126,7 +135,7 @@ export default async function commissionRates({ container }: ExecArgs) {
       {
         name: REDUCED.name,
         code: REDUCED.code,
-        type: "percentage",
+        type: CommissionRateType.PERCENTAGE,
         value: REDUCED.value,
         is_default: false,
         is_enabled: true,
