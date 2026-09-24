@@ -106,6 +106,19 @@ module.exports = withMercur({
     {
       resolve: './src/modules/quote',
     },
+    /*
+      Les livraisons. Mercur suit l'expédition d'une commande, mais ne
+      sait pas dire QUI l'a portée ni prouver qu'elle est arrivée. En
+      Haïti, où l'acheteur règle en main propre à la remise, c'est
+      précisément ce qui manque : sans preuve de remise, un désaccord
+      sur « livré ou pas » n'a aucun arbitre. Ce module enregistre par
+      quel chemin le colis passe — le vendeur, un agent MACHÉ, un point
+      de retrait, un transporteur extérieur — et garde le code que
+      l'acheteur remet à la livraison.
+    */
+    {
+      resolve: './src/modules/delivery',
+    },
     {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
