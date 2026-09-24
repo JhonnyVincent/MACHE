@@ -193,11 +193,11 @@ export default async function HomePage() {
         sellers={home.newSellers}
       />
 
-      {home.premiumSellers.length > 0 && (
+      {home.verifiedSellers.length > 0 && (
         <SellerRailSection
-          title="Boutiques premium"
-          subtitle="Vendeurs disposant d'un abonnement étendu"
-          sellers={home.premiumSellers}
+          title="Boutiques vérifiées"
+          subtitle="Entreprises dont MACHÉ a contrôlé les documents"
+          sellers={home.verifiedSellers}
         />
       )}
 

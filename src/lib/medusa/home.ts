@@ -48,7 +48,7 @@ export type HomeData = {
   /* Rayons de produits réellement alimentés. */
   rails: ProductRail[];
   newSellers: StoreSeller[];
-  premiumSellers: StoreSeller[];
+  verifiedSellers: StoreSeller[];
   categories: StoreCategory[];
   collections: StoreCollection[];
   /* Raisons de panne, écrites au journal du serveur. */
@@ -118,7 +118,7 @@ export async function fetchHomeData(): Promise<HomeData> {
   return {
     rails,
     newSellers: allSellers.slice(0, 8),
-    premiumSellers: allSellers.filter((seller) => seller.isPremium).slice(0, 6),
+    verifiedSellers: allSellers.filter((seller) => seller.isPremium).slice(0, 6),
     categories: categories.ok ? categories.data : [],
     collections: collections.ok ? collections.data : [],
     problems,
