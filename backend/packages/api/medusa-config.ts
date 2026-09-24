@@ -130,6 +130,16 @@ module.exports = withMercur({
     {
       resolve: './src/modules/contract',
     },
+    /*
+      La messagerie. La page contact affichait quatre adresses en
+      @mache.local — un domaine qui n'existe pas : personne ne recevait
+      rien. MACHÉ n'a pas de fournisseur d'e-mail et n'en aura pas
+      demain ; la conversation vit donc dans le site plutôt que
+      d'attendre un domaine.
+    */
+    {
+      resolve: './src/modules/support',
+    },
     {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
