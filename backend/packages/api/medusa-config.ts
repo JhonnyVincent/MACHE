@@ -119,6 +119,17 @@ module.exports = withMercur({
     {
       resolve: './src/modules/delivery',
     },
+    /*
+      Les contrats. MACHÉ doit pouvoir faire accepter des conditions à
+      ses marchands — commission, engagements, conformité — et prouver
+      plus tard QUE l'on a accepté, et SURTOUT QUOI. Un contrat publié
+      ne se modifie donc plus : le corriger crée une version suivante,
+      et chaque acceptation garde l'empreinte du texte exact qu'elle
+      visait.
+    */
+    {
+      resolve: './src/modules/contract',
+    },
     {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
