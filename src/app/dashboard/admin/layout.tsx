@@ -61,6 +61,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { label: "Boutiques", href: "/dashboard/admin/stores", badge: pending },
         { label: "Utilisateurs", href: "/dashboard/admin/users" },
         { label: "Apparence du site", href: "/dashboard/admin/apparence" },
+        { label: "Sécurité du compte", href: "/dashboard/admin/securite" },
       ],
     },
     {

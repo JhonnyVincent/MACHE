@@ -36,7 +36,26 @@ import {
 
 const TOKEN_COOKIE = "mache_admin_token";
 
+/*
+  Le jeton d'une connexion qui attend son second facteur.
+
+  Il est SÉPARÉ du cookie de session, et c'est tout l'intérêt : tant
+  qu'il est là et pas l'autre, aucune page d'administration ne
+  s'ouvre — `getAdminUser` ne lit que le cookie de session.
+
+  Ce qu'il faut savoir et ne pas se cacher : ce jeton est un vrai jeton
+  d'administration, délivré par Medusa sur le seul mot de passe. Le
+  second facteur l'empêche d'ouvrir les écrans MACHÉ ; il ne le rend
+  pas inopérant face à l'API du backend. D'où sa durée très courte.
+*/
+const PENDING_COOKIE = "mache_admin_pending";
+
+/* Dix minutes : le temps de sortir son téléphone, pas celui d'oublier l'onglet. */
+const PENDING_MAX_AGE = 60 * 10;
+
 export type AdminUser = {
+  /* Vrai quand la connexion attend encore son code à usage unique. */
+  needsCode?: boolean;
   id: string;
   email: string;
   firstName: string | null;
@@ -173,9 +192,111 @@ export async function loginAdmin(
     };
   }
 
+  /*
+    Le second facteur, s'il est actif sur ce compte.
+
+    Une lecture qui ÉCHOUE n'ouvre pas la porte : on refuse la
+    connexion. C'est le sens du garde-fou — si l'on ne peut pas savoir
+    s'il faut un code, supposer que non annulerait la protection
+    exactement le jour où le backend hoquette.
+  */
+  const status = await request<{ enabled?: boolean }>("/admin/mache/2fa", { token });
+
+  if (!status.ok) {
+    return {
+      ok: false,
+      reason:
+        "Impossible de vérifier si ce compte demande un code. Par précaution, la connexion est refusée. Réessayez dans un instant.",
+    };
+  }
+
+  if (status.data.enabled === true) {
+    await writePending(token);
+
+    return { ok: true, data: { ...parseUser(me.data.user), needsCode: true } };
+  }
+
   await writeToken(token);
 
-  return { ok: true, data: parseUser(me.data.user) };
+  return { ok: true, data: { ...parseUser(me.data.user), needsCode: false } };
+}
+
+async function writePending(token: string) {
+  const store = await cookies();
+
+  store.set(PENDING_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: PENDING_MAX_AGE,
+  });
+}
+
+async function readPending() {
+  const store = await cookies();
+
+  return store.get(PENDING_COOKIE)?.value ?? null;
+}
+
+export async function clearPendingAdmin() {
+  const store = await cookies();
+
+  store.delete(PENDING_COOKIE);
+}
+
+/* Y a-t-il une connexion qui attend son code ? */
+export async function adminAwaitingCode(): Promise<boolean> {
+  return (await readPending()) !== null;
+}
+
+/*
+  Le second facteur est présenté. S'il passe, la connexion en attente
+  devient une session.
+
+  La promotion se fait ICI et nulle part ailleurs : c'est le seul
+  endroit du storefront qui transforme un jeton en attente en session
+  d'administration.
+*/
+export async function verifyAdminSecondFactor(input: {
+  code?: string;
+  recovery?: string;
+}): Promise<Result<{ usedRecovery: boolean; recoveryLeft: number | null }>> {
+  const token = await readPending();
+
+  if (!token) {
+    return {
+      ok: false,
+      reason: "La connexion a expiré. Saisissez à nouveau votre mot de passe.",
+    };
+  }
+
+  const result = await request<{ used?: string; recovery_left?: number }>(
+    "/admin/mache/2fa",
+    {
+      method: "POST",
+      token,
+      body: input.recovery
+        ? { action: "verify", recovery: input.recovery }
+        : { action: "verify", code: input.code },
+    }
+  );
+
+  if (!result.ok) return result;
+
+  await writeToken(token);
+  await clearPendingAdmin();
+
+  return {
+    ok: true,
+    data: {
+      usedRecovery: result.data.used === "recovery",
+      recoveryLeft:
+        typeof result.data.recovery_left === "number"
+          ? result.data.recovery_left
+          : null,
+    },
+  };
 }
 
 function parseUser(raw: Raw): AdminUser {
@@ -559,6 +680,114 @@ export async function setSiteTheme(key: string): Promise<Result<true>> {
     method: "POST",
     token,
     body: { theme: key },
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Réglage du second facteur                                                  */
+/* -------------------------------------------------------------------------- */
+
+export type TwoFactorState = {
+  enabled: boolean;
+  pending: boolean;
+  recoveryLeft: number;
+  locked: boolean;
+  scopeNote: string;
+};
+
+export async function fetchTwoFactor(): Promise<Result<TwoFactorState>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>("/admin/mache/2fa", { token });
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      enabled: result.data.enabled === true,
+      pending: result.data.pending === true,
+      recoveryLeft: Number(result.data.recovery_left) || 0,
+      locked: result.data.locked === true,
+      scopeNote: str(result.data.scope_note) ?? "",
+    },
+  };
+}
+
+/*
+  Démarre l'inscription. C'est le seul appel qui rend le secret : il
+  faut bien que l'application d'authentification puisse le lire.
+*/
+export async function startTwoFactor(): Promise<
+  Result<{ secret: string; uri: string }>
+> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ secret?: string; uri?: string }>(
+    "/admin/mache/2fa",
+    { method: "POST", token, body: { action: "start" } }
+  );
+
+  if (!result.ok) return result;
+
+  const secret = str(result.data.secret);
+  const uri = str(result.data.uri);
+
+  if (!secret || !uri) {
+    return { ok: false, reason: "Le backend n'a pas rendu de secret." };
+  }
+
+  return { ok: true, data: { secret, uri } };
+}
+
+/*
+  Confirme l'inscription avec un premier code valide, et rend les codes
+  de secours — la seule et unique fois où ils sont lisibles.
+*/
+export async function confirmTwoFactor(
+  code: string
+): Promise<Result<string[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ recovery_codes?: unknown }>("/admin/mache/2fa", {
+    method: "POST",
+    token,
+    body: { action: "confirm", code },
+  });
+
+  if (!result.ok) return result;
+
+  const codes = Array.isArray(result.data.recovery_codes)
+    ? result.data.recovery_codes.filter(
+        (item): item is string => typeof item === "string"
+      )
+    : [];
+
+  return { ok: true, data: codes };
+}
+
+export async function disableTwoFactor(input: {
+  code?: string;
+  recovery?: string;
+}): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>("/admin/mache/2fa", {
+    method: "POST",
+    token,
+    body: { action: "disable", ...input },
   });
 
   if (!result.ok) return result;
