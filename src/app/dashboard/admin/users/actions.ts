@@ -1,63 +1,74 @@
 "use server";
 
 /*
-  ACTION : changement de rôle d'un compte.
+  ACTION : bloquer ou débloquer un compte client.
 
-  Réservée au super administrateur, revérifié en base. Trois garde-fous
-  volontaires :
+  CE QUE LE BLOCAGE FAIT
 
-  - `super_admin` n'est pas attribuable ici. Leur nombre est plafonné et
-    cette décision se prend en base, délibérément ;
-  - on ne retire pas son rôle à un super administrateur depuis un écran ;
-  - un super administrateur ne peut pas modifier son propre rôle : c'est
-    la façon la plus simple de se verrouiller hors de l'administration.
+  Il empêche CE COMPTE d'agir : commander en étant connecté, déposer un
+  avis, écrire à MACHÉ, se servir de l'espace agent. Le backend refuse
+  toute écriture faite avec sa session ; la lecture de son propre
+  historique reste possible, ce qui compte pour régler un litige en
+  cours.
+
+  CE QU'IL NE FAIT PAS
+
+  Il n'empêche pas la PERSONNE de revenir : on peut acheter sans compte,
+  et rien n'interdit d'en créer un autre. L'écran le dit — promettre une
+  barrière qui n'existe pas est pire que ne rien promettre, parce qu'on
+  cesse alors de surveiller.
+
+  RIEN N'EST SUPPRIMÉ
+
+  Un compte effacé emporterait ses commandes, et avec elles les
+  commissions dues à MACHÉ.
+
+  La session est revérifiée ici : entre l'affichage de la page et le
+  clic, elle a pu expirer.
 */
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { requireAdminForWrite, ASSIGNABLE_ROLES } from "@/lib/admin";
+import { getAdminUser, setCustomerBlocked } from "@/lib/medusa/admin";
+import { isControlFlow, reasonOf } from "@/lib/safe-action";
 
-const BASE = "/dashboard/admin/users";
+const PAGE = "/dashboard/admin/users";
 
-function fail(message: string): never {
-  redirect(`${BASE}?error=${encodeURIComponent(message)}`);
+function done(params: Record<string, string>): never {
+  redirect(`${PAGE}?${new URLSearchParams(params).toString()}`);
 }
 
-export async function setUserRoleAction(formData: FormData) {
-  const { supabase, uid } = await requireAdminForWrite(BASE, true);
+export async function setCustomerBlockedAction(formData: FormData) {
+  const customerId = String(formData.get("customer_id") || "").trim();
+  const blocked = String(formData.get("blocked") || "") === "true";
+  const term = String(formData.get("q") || "").trim();
 
-  const targetId = String(formData.get("user_id") || "");
-  const role = String(formData.get("role") || "");
+  if (!customerId) done({ erreur: "Compte manquant." });
 
-  if (!targetId) fail("Compte inconnu.");
+  const user = await getAdminUser();
 
-  if (!(ASSIGNABLE_ROLES as readonly string[]).includes(role)) {
-    fail("Ce rôle ne peut pas être attribué depuis cet écran.");
+  if (!user) redirect("/dashboard/admin/connexion");
+
+  try {
+    const result = await setCustomerBlocked(customerId, blocked);
+
+    if (!result.ok) done({ ...(term ? { q: term } : {}), erreur: result.reason });
+
+    revalidatePath(PAGE);
+  } catch (error) {
+    if (isControlFlow(error)) throw error;
+
+    done({ ...(term ? { q: term } : {}), erreur: reasonOf(error) });
   }
 
-  if (targetId === uid) {
-    fail("Vous ne pouvez pas modifier votre propre rôle.");
-  }
-
-  const { data: target } = await supabase
-    .from("users")
-    .select("id, role, email")
-    .eq("id", targetId)
-    .maybeSingle();
-
-  if (!target) fail("Ce compte n'existe plus.");
-
-  if (String(target.role) === "super_admin") {
-    fail("Le rôle d'un super administrateur ne se modifie pas depuis cet écran.");
-  }
-
-  const { error } = await supabase
-    .from("users")
-    .update({ role })
-    .eq("id", targetId);
-
-  if (error) fail(error.message);
-
-  revalidatePath(BASE);
-  redirect(`${BASE}?success=role`);
+  /*
+    La recherche est reportée : sans cela, bloquer un compte ferait
+    perdre la liste qu'on était en train d'examiner.
+  */
+  done({
+    ...(term ? { q: term } : {}),
+    fait: blocked
+      ? "Compte bloqué. Il ne peut plus commander, déposer d'avis ni écrire à MACHÉ. Son historique reste lisible."
+      : "Compte débloqué. Il peut de nouveau commander et écrire.",
+  });
 }

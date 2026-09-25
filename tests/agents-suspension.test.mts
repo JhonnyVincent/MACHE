@@ -54,16 +54,17 @@ const BACKEND_CONTEXT = "backend/packages/api/src/api/agent-context.ts";
 const BACKEND_VERIFY =
   "backend/packages/api/src/api/store/agents/verify/route.ts";
 const SITE_ADMIN = "src/lib/medusa/agents-admin.ts";
+const SITE_ACCOUNTS = "src/lib/medusa/admin.ts";
+const BACKEND_MIDDLEWARES = "backend/packages/api/src/api/middlewares.ts";
+const BACKEND_BLOCKED = "backend/packages/api/src/api/blocked-customers.ts";
 
 function read(path: string): string {
   return readFileSync(path, "utf8");
 }
 
 /* La valeur littérale déclarée dans un fichier, quel que soit son nom. */
-function marker(source: string): string | null {
-  const match = source.match(
-    /SUSPENDED_MARKER\s*=\s*"([^"]+)"/
-  );
+function marker(source: string, name = "SUSPENDED_MARKER"): string | null {
+  const match = source.match(new RegExp(`${name}\\s*=\\s*"([^"]+)"`));
 
   return match ? match[1] : null;
 }
@@ -143,6 +144,87 @@ check("l'administration suspend en déplaçant l'agent dans un groupe", () => {
     /body:\s*\{\s*metadata:\s*\{[^}]*agent_suspended:\s*true/.test(source),
     false,
     "plus rien ne doit écrire « agent_suspended: true » dans le champ libre du client"
+  );
+});
+
+/* ------------------------------------------------------------------ */
+/* Le blocage d'un compte client                                       */
+/* ------------------------------------------------------------------ */
+
+check("le site bloque un compte avec la même étiquette que le backend", () => {
+  /*
+    Même raisonnement, et même conséquence en cas de divergence :
+    l'écran dirait « bloqué » et le compte continuerait de commander.
+  */
+  assert.equal(
+    marker(read(BACKEND_IDENTITY), "BLOCKED_MARKER"),
+    "mache_customer_blocked",
+    "l'étiquette du groupe des comptes bloqués a disparu ou changé côté backend"
+  );
+
+  assert.equal(
+    marker(read(SITE_ACCOUNTS), "BLOCKED_MARKER"),
+    marker(read(BACKEND_IDENTITY), "BLOCKED_MARKER"),
+    "le site et le backend ne désignent pas le même groupe : un blocage serait écrit là où personne ne le lit"
+  );
+});
+
+check("le backend refuse réellement les écritures d'un compte bloqué", () => {
+  /*
+    Sans ce middleware, le bouton « bloquer » écrirait une appartenance
+    que rien ne ferait respecter : l'écran afficherait « bloqué » et le
+    compte continuerait de commander. Un bouton qui ment est pire que
+    pas de bouton.
+  */
+  const middlewares = read(BACKEND_MIDDLEWARES);
+
+  /*
+    Cherché DANS le tableau `middlewares`, et non n'importe où dans le
+    fichier : la ligne d'import contient elle aussi ce nom, et un test
+    qui s'en contenterait resterait vert avec un tableau vide. Vérifié
+    en le vidant.
+  */
+  assert.match(
+    middlewares,
+    /middlewares:\s*\[[^\]]*refuseBlockedCustomer/,
+    "le contrôle des comptes bloqués n'est plus branché"
+  );
+
+  assert.match(
+    middlewares,
+    /matcher:\s*"\/store\/\*"/,
+    "le contrôle doit couvrir toutes les routes boutique"
+  );
+
+  /*
+    Les LECTURES restent permises : un compte bloqué doit pouvoir
+    consulter son historique, ne serait-ce que pour régler un litige.
+  */
+  assert.equal(
+    /method:\s*\[[^\]]*"GET"/.test(middlewares),
+    false,
+    "bloquer la lecture rendrait son propre historique inaccessible au client"
+  );
+});
+
+check("un blocage ne s'applique jamais à une requête d'invité", () => {
+  /*
+    Un panier anonyme n'a pas de session client. Le vérifier évite une
+    lecture inutile à chaque achat — et surtout, un `actor_type` non
+    filtré bloquerait l'administration elle-même.
+  */
+  const source = read(BACKEND_BLOCKED);
+
+  assert.match(
+    source,
+    /actor_type !== "customer"/,
+    "seule une session CLIENT doit être contrôlée"
+  );
+
+  assert.match(
+    source,
+    /if \(!id\) return next\(\);/,
+    "une requête sans session client doit passer sans lecture"
   );
 });
 

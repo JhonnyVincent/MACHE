@@ -1861,3 +1861,141 @@ export async function setRelayPointKeeper(
 
   return { ok: true, data: true };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Bloquer un compte client                                                   */
+/* -------------------------------------------------------------------------- */
+
+/*
+  CE QU'UN BLOCAGE FAIT
+
+  Il empêche CE COMPTE d'agir : commander en étant connecté, déposer un
+  avis, écrire à MACHÉ, se servir de l'espace agent. Le backend refuse
+  toute écriture faite avec sa session.
+
+  CE QU'IL NE FAIT PAS
+
+  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHÉ
+  sans compte, et rien n'interdit d'en créer un autre avec une autre
+  adresse. L'écran le dit, parce que promettre une barrière qui n'existe
+  pas est pire que ne rien promettre : on cesse de surveiller.
+
+  RIEN N'EST SUPPRIMÉ
+
+  Un compte effacé emporterait ses commandes, et avec elles les
+  commissions dues à MACHÉ. Bloqué, l'historique reste lisible et la
+  décision se revient.
+*/
+export type AdminCustomer = {
+  id: string;
+  email: string;
+  name: string;
+  blocked: boolean;
+  createdAt: string | null;
+};
+
+/*
+  L'étiquette du groupe des comptes bloqués.
+
+  Sa source de vérité est `backend/packages/api/src/api/agent-identity.ts` :
+  c'est le backend qui refuse les requêtes. Elle est recopiée ici parce
+  que le `tsconfig` du site exclut `backend/`. Une divergence serait
+  silencieuse — l'écran dirait « bloqué » et le compte continuerait
+  d'agir — alors un test compare les deux fichiers.
+*/
+const BLOCKED_MARKER = "mache_customer_blocked";
+
+async function blockedGroupId(token: string): Promise<Result<string>> {
+  const result = await request<{ customer_groups?: Raw[] }>(
+    "/admin/customer-groups?fields=id,metadata&limit=50",
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  const group = (result.data.customer_groups ?? []).find(
+    (entry) => (entry.metadata as Raw)?.[BLOCKED_MARKER] === true
+  );
+
+  if (!group?.id) {
+    return {
+      ok: false,
+      reason:
+        "Le groupe « comptes bloqués » n'existe pas encore. Lancez le script des groupes sur le backend : sans lui, un blocage ne tiendrait pas.",
+    };
+  }
+
+  return { ok: true, data: String(group.id) };
+}
+
+/*
+  La recherche se fait par adresse ou par nom. La liste n'est pas
+  affichée par défaut : on arrive ici avec un compte précis en tête,
+  généralement signalé par quelqu'un. Dérouler tous les clients
+  inviterait à bloquer au hasard.
+*/
+export async function searchCustomers(
+  term: string
+): Promise<Result<AdminCustomer[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const clean = term.trim();
+
+  if (!clean) return { ok: true, data: [] };
+
+  const result = await request<{ customers?: Raw[] }>(
+    `/admin/customers?q=${encodeURIComponent(clean)}&fields=id,email,first_name,last_name,created_at,groups.metadata&limit=20`,
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: (result.data.customers ?? []).map((raw) => ({
+      id: str(raw.id) ?? "",
+      email: str(raw.email) ?? "",
+      name:
+        [str(raw.first_name), str(raw.last_name)].filter(Boolean).join(" ") ||
+        "Sans nom",
+      blocked: (((raw.groups as Raw[]) ?? [])).some(
+        (group) => (group?.metadata as Raw)?.[BLOCKED_MARKER] === true
+      ),
+      createdAt: str(raw.created_at),
+    })),
+  };
+}
+
+export async function setCustomerBlocked(
+  customerId: string,
+  blocked: boolean
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const group = await blockedGroupId(token);
+
+  if (!group.ok) return group;
+
+  /*
+    Une appartenance à un groupe, que seule l'administration modifie.
+    Écrire le blocage dans le champ libre du client le lui rendrait
+    révocable : c'est la faille qui avait été trouvée sur la suspension
+    des agents.
+  */
+  const moved = await request(
+    `/admin/customer-groups/${group.data}/customers`,
+    {
+      method: "POST",
+      token,
+      body: blocked ? { add: [customerId] } : { remove: [customerId] },
+    }
+  );
+
+  if (!moved.ok) return moved;
+
+  return { ok: true, data: true };
+}

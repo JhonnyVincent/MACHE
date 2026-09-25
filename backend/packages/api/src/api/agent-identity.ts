@@ -45,3 +45,23 @@ export const AGENT_GROUPS: Record<string, string> = {
   la bonne réponse est « ne lui remettez rien ».
 */
 export const SUSPENDED_MARKER = "mache_agent_suspended";
+
+/*
+  L'étiquette du groupe « comptes bloqués ».
+
+  Elle ne concerne pas les agents mais les CLIENTS, et vit ici pour la
+  même raison : c'est une appartenance à un groupe, que seule
+  l'administration modifie, et plusieurs fichiers doivent la nommer de
+  la même façon.
+
+  CE QU'UN BLOCAGE FAIT, ET CE QU'IL NE FAIT PAS
+
+  Il empêche CE COMPTE d'agir : commander en étant connecté, déposer un
+  avis, ouvrir une conversation, se servir de l'espace agent.
+
+  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHÉ
+  sans compte, et rien n'interdit d'en créer un autre. Prétendre le
+  contraire serait promettre une barrière qui n'existe pas — et c'est
+  écrit sur l'écran qui bloque, pas seulement ici.
+*/
+export const BLOCKED_MARKER = "mache_customer_blocked";

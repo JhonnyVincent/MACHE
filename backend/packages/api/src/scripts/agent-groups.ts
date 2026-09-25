@@ -27,7 +27,7 @@
 
 import { ExecArgs } from "@medusajs/framework/types";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
-import { SUSPENDED_MARKER } from "../api/agent-identity";
+import { SUSPENDED_MARKER, BLOCKED_MARKER } from "../api/agent-identity";
 
 const GROUPS = [
   { slug: "mache-point-relais", name: "MACHÉ — Points de relais" },
@@ -59,6 +59,17 @@ const SUSPENDED_GROUP = {
   name: "MACHÉ — Agents suspendus",
 };
 
+/*
+  Le groupe des comptes bloqués. Il vise les CLIENTS, pas les agents :
+  un acheteur dont MACHÉ ne veut plus. Même mécanique, et pour la même
+  raison — une appartenance à un groupe ne se modifie que depuis
+  l'administration.
+*/
+const BLOCKED_GROUP = {
+  marker: BLOCKED_MARKER,
+  name: "MACHÉ — Comptes bloqués",
+};
+
 export default async function agentGroups({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
@@ -80,11 +91,17 @@ export default async function agentGroups({ container }: ExecArgs) {
 
   const missing = GROUPS.filter((group) => !known.has(group.slug));
 
-  const hasSuspended = ((existing ?? []) as {
-    metadata?: Record<string, unknown>;
-  }[]).some((group) => group.metadata?.[SUSPENDED_MARKER] === true);
+  const rows = (existing ?? []) as { metadata?: Record<string, unknown> }[];
 
-  if (missing.length === 0 && hasSuspended) {
+  const hasSuspended = rows.some(
+    (group) => group.metadata?.[SUSPENDED_MARKER] === true
+  );
+
+  const hasBlocked = rows.some(
+    (group) => group.metadata?.[BLOCKED_MARKER] === true
+  );
+
+  if (missing.length === 0 && hasSuspended && hasBlocked) {
     logger.info("Groupes d'agents MACHÉ déjà en place. Inchangés.");
     return;
   }
@@ -107,6 +124,13 @@ export default async function agentGroups({ container }: ExecArgs) {
     toCreate.push({
       name: SUSPENDED_GROUP.name,
       metadata: { [SUSPENDED_MARKER]: true },
+    });
+  }
+
+  if (!hasBlocked) {
+    toCreate.push({
+      name: BLOCKED_GROUP.name,
+      metadata: { [BLOCKED_MARKER]: true },
     });
   }
 
