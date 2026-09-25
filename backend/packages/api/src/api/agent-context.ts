@@ -15,11 +15,22 @@
   ou l'inverse.
 
   Le champ libre reste lu pour ce qui n'habilite à rien — le code de la
-  carte, la zone, la suspension posée par MACHÉ.
+  carte, la zone.
+
+  LA SUSPENSION AUSSI VIENT D'UN GROUPE
+
+  Elle a vécu dans le champ libre, et c'était une faille : ce champ est
+  écrit par le client, et la route publique accepte n'importe quelle
+  clé. Un agent suspendu n'avait qu'à s'écrire « non suspendu » pour
+  recommencer à confirmer des livraisons.
+
+  Le champ libre est encore LU, mais il ne peut plus que SUSPENDRE, et
+  jamais lever une suspension. Un agent suspendu à l'ancienne le reste
+  donc, et un agent qui s'écrirait « non suspendu » n'y gagne rien.
 */
 
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
-import { AGENT_GROUPS } from "./store/agents/verify/route";
+import { AGENT_GROUPS, SUSPENDED_MARKER } from "./agent-identity";
 
 type Raw = Record<string, unknown>;
 
@@ -61,7 +72,23 @@ export async function resolveAgent(
     fields: ["id", "metadata", "customers.id", "customers.metadata"],
   });
 
-  for (const group of ((groups ?? []) as Raw[])) {
+  const rows = (groups ?? []) as Raw[];
+
+  /*
+    La suspension se lit AVANT la fonction : les deux appartenances sont
+    indépendantes, et l'ordre des groupes n'est pas garanti. La chercher
+    en chemin ferait dépendre le résultat de cet ordre — un agent
+    suspendu passerait pour actif un jour sur deux.
+  */
+  const suspendedByGroup = rows.some((group) => {
+    if ((group.metadata as Raw)?.[SUSPENDED_MARKER] !== true) return false;
+
+    return (((group.customers as Raw[]) ?? [])).some(
+      (customer) => customer.id === customerId
+    );
+  });
+
+  for (const group of rows) {
     const slug = str((group.metadata as Raw)?.mache_agent_group);
 
     if (!slug || !AGENT_GROUPS[slug]) continue;
@@ -77,7 +104,11 @@ export async function resolveAgent(
         function: AGENT_GROUPS[slug],
         code: str(metadata.agent_code),
         zone: str(metadata.agent_zone),
-        suspended: metadata.agent_suspended === true,
+        /*
+          Le OU est le point entier. Le champ libre, écrit par le
+          client, ne peut que RENFORCER la suspension, jamais la lever.
+        */
+        suspended: suspendedByGroup || metadata.agent_suspended === true,
       };
     }
   }

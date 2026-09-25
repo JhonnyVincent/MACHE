@@ -33,17 +33,8 @@
 
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import { AGENT_GROUPS, SUSPENDED_MARKER } from "../../../agent-identity";
 
-/*
-  Les groupes qui désignent un agent, et la fonction que chacun porte.
-  Un client qui n'appartient à aucun d'eux n'est pas un agent, quoi que
-  dise son champ libre.
-*/
-export const AGENT_GROUPS: Record<string, string> = {
-  "mache-point-relais": "Point de relais",
-  "mache-livreur": "Livreur",
-  "mache-commercial": "Commercial",
-};
 
 type Raw = Record<string, unknown>;
 
@@ -91,7 +82,33 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     ],
   });
 
-  for (const group of (groups ?? []) as Raw[]) {
+  const rows = (groups ?? []) as Raw[];
+
+  /*
+    Qui MACHÉ a suspendu. C'est une APPARTENANCE À UN GROUPE, que seule
+    l'administration modifie.
+
+    Auparavant ce statut se lisait dans le champ libre du client — et
+    ce champ, le client l'écrit lui-même. Un agent suspendu n'avait
+    donc qu'à s'y déclarer « non suspendu » pour que cette page le
+    redéclare digne de confiance, juste avant qu'on lui remette de
+    l'argent liquide sur le pas d'une porte. Le commentaire promettait
+    déjà « jamais le statut que l'agent déclarerait » ; le code ne le
+    tenait pas.
+  */
+  const suspendedIds = new Set<string>();
+
+  for (const group of rows) {
+    if ((group.metadata as Raw)?.[SUSPENDED_MARKER] !== true) continue;
+
+    for (const customer of ((group.customers as Raw[]) ?? [])) {
+      const id = str(customer.id);
+
+      if (id) suspendedIds.add(id);
+    }
+  }
+
+  for (const group of rows) {
     const slug = str((group.metadata as Raw)?.mache_agent_group);
 
     /* Un groupe qui n'est pas un groupe d'agents ne rend personne agent. */
@@ -106,8 +123,14 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         Trouvé. On ne rend que ce qu'un client a besoin de recouper, et
         le statut que MACHÉ a posé — jamais celui que l'agent
         déclarerait.
+
+        Le champ libre est encore lu, mais il ne peut plus que
+        SUSPENDRE : un agent suspendu avant ce changement le reste, et
+        aucun agent ne peut se rétablir en s'écrivant « non suspendu ».
       */
-      const suspended = metadata.agent_suspended === true;
+      const suspended =
+        suspendedIds.has(str(customer.id) ?? "") ||
+        metadata.agent_suspended === true;
 
       return res.json({
         found: true,

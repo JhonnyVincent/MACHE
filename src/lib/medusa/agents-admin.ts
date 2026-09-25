@@ -32,6 +32,23 @@ import {
 
 const TOKEN_COOKIE = "mache_admin_token";
 
+/*
+  L'ÉTIQUETTE DU GROUPE DES AGENTS SUSPENDUS.
+
+  Sa source de vérité est `backend/packages/api/src/api/agent-identity.ts`
+  — c'est le backend qui applique la suspension. Elle est recopiée ici
+  parce que le `tsconfig` du site exclut `backend/`, et qu'importer ce
+  dossier ferait entrer les dépendances de Medusa dans la construction
+  du site pour lire une chaîne de caractères.
+
+  Une divergence entre les deux serait silencieuse et grave : le site
+  écrirait une suspension dans un groupe que le backend ne regarde pas,
+  l'écran afficherait « suspendu », et l'agent continuerait de
+  confirmer des livraisons. Un test compare donc les deux fichiers
+  (`npm run test:agents`).
+*/
+const SUSPENDED_MARKER = "mache_agent_suspended";
+
 type Raw = Record<string, unknown>;
 type Result<T> = { ok: true; data: T } | { ok: false; reason: string };
 
@@ -151,7 +168,25 @@ export async function fetchAgents(): Promise<Result<Agent[]>> {
 
   const agents: Agent[] = [];
 
-  for (const group of result.data.customer_groups ?? []) {
+  const groups = result.data.customer_groups ?? [];
+
+  /*
+    Qui MACHÉ a suspendu — une appartenance à un groupe, que seule
+    l'administration modifie. Ce statut a vécu dans le champ libre du
+    client, qui l'écrit lui-même : un agent suspendu n'avait qu'à s'y
+    déclarer « non suspendu » pour se rétablir.
+  */
+  const suspendedIds = new Set<string>();
+
+  for (const group of groups) {
+    if ((group.metadata as Raw)?.[SUSPENDED_MARKER] !== true) continue;
+
+    for (const customer of ((group.customers as Raw[]) ?? [])) {
+      if (customer.id) suspendedIds.add(String(customer.id));
+    }
+  }
+
+  for (const group of groups) {
     const slug = str((group.metadata as Raw)?.mache_agent_group);
 
     if (!slug) continue;
@@ -171,12 +206,49 @@ export async function fetchAgents(): Promise<Result<Agent[]>> {
         functionLabel: functionLabel(slug),
         zone: str(metadata.agent_zone),
         phonePublic: str(metadata.agent_phone_public),
-        suspended: metadata.agent_suspended === true,
+        /*
+          Le champ libre est encore lu, mais il ne peut plus que
+          SUSPENDRE : une suspension posée avant ce changement tient
+          toujours, et personne ne se rétablit en s'écrivant
+          « non suspendu ».
+        */
+        suspended:
+          suspendedIds.has(String(customer.id ?? "")) ||
+          metadata.agent_suspended === true,
       });
     }
   }
 
   return { ok: true, data: agents };
+}
+
+/*
+  L'identifiant du groupe des suspendus.
+
+  Il est désigné par une ÉTIQUETTE et non par son nom : un nom se
+  renomme depuis le panneau, et la suspension cesserait de fonctionner
+  sans que personne ne fasse le lien.
+*/
+async function suspendedGroupId(): Promise<Result<string>> {
+  const result = await request<{ customer_groups?: Raw[] }>(
+    "/admin/customer-groups?fields=id,metadata&limit=50"
+  );
+
+  if (!result.ok) return result;
+
+  const group = (result.data.customer_groups ?? []).find(
+    (entry) => (entry.metadata as Raw)?.[SUSPENDED_MARKER] === true
+  );
+
+  if (!group?.id) {
+    return {
+      ok: false,
+      reason:
+        "Le groupe « agents suspendus » n'existe pas encore. Lancez le script des groupes d'agents sur le backend : sans lui, une suspension ne tiendrait pas.",
+    };
+  }
+
+  return { ok: true, data: String(group.id) };
 }
 
 /* Les identifiants des groupes, pour y ranger quelqu'un. */
@@ -247,7 +319,16 @@ export async function makeAgent(input: {
     effet, puisqu'il n'est dans aucun groupe. L'ordre inverse
     produirait un agent reconnu sans code, donc invérifiable.
   */
-  const existing = (customer.metadata as Raw) ?? {};
+  const existing = { ...((customer.metadata as Raw) ?? {}) };
+
+  /*
+    La suspension ne vit plus ici — elle est une appartenance à un
+    groupe. Le champ libre est encore LU, et seulement pour ajouter une
+    suspension : une valeur « true » qu'une habilitation précédente y
+    aurait laissée ferait naître ce nouvel agent suspendu, sans que
+    rien à l'écran ne l'explique. On l'efface donc.
+  */
+  delete existing.agent_suspended;
 
   const saved = await request(`/admin/customers/${customer.id}`, {
     method: "POST",
@@ -257,7 +338,6 @@ export async function makeAgent(input: {
         agent_code: code,
         agent_zone: input.zone,
         agent_phone_public: input.phonePublic,
-        agent_suspended: false,
       },
     },
   });
@@ -296,23 +376,51 @@ export async function setAgentSuspended(
   customerId: string,
   suspended: boolean
 ): Promise<Result<true>> {
-  const found = await request<{ customer?: Raw }>(
-    `/admin/customers/${encodeURIComponent(customerId)}`
-  );
+  const group = await suspendedGroupId();
 
-  if (!found.ok) return found;
+  if (!group.ok) return group;
 
-  const existing = (found.data.customer?.metadata as Raw) ?? {};
-
-  const saved = await request(
-    `/admin/customers/${encodeURIComponent(customerId)}`,
+  /*
+    Ajouter au groupe, ou l'en retirer. C'est la seule écriture qui
+    compte : elle n'est possible que depuis l'administration.
+  */
+  const moved = await request(
+    `/admin/customer-groups/${group.data}/customers`,
     {
       method: "POST",
-      body: { metadata: { ...existing, agent_suspended: suspended } },
+      body: suspended ? { add: [customerId] } : { remove: [customerId] },
     }
   );
 
-  if (!saved.ok) return saved;
+  if (!moved.ok) return moved;
+
+  /*
+    Le champ libre est nettoyé au rétablissement.
+
+    Il ne sert plus à suspendre — il est seulement encore LU, et
+    seulement pour ajouter une suspension, jamais pour en lever une.
+    Mais une valeur « true » qui y traînerait continuerait donc de
+    suspendre l'agent après son rétablissement, et personne ne
+    comprendrait pourquoi le bouton ne fait rien.
+  */
+  if (!suspended) {
+    const found = await request<{ customer?: Raw }>(
+      `/admin/customers/${encodeURIComponent(customerId)}`
+    );
+
+    if (found.ok) {
+      const existing = { ...((found.data.customer?.metadata as Raw) ?? {}) };
+
+      if ("agent_suspended" in existing) {
+        delete existing.agent_suspended;
+
+        await request(`/admin/customers/${encodeURIComponent(customerId)}`, {
+          method: "POST",
+          body: { metadata: existing },
+        });
+      }
+    }
+  }
 
   return { ok: true, data: true };
 }

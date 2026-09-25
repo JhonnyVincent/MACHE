@@ -62,6 +62,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { label: "Promotions", href: "/dashboard/admin/promotions" },
         { label: "Boutiques", href: "/dashboard/admin/stores", badge: pending },
         { label: "Modération", href: "/dashboard/admin/moderation" },
+        { label: "Agents", href: "/dashboard/admin/agents" },
         { label: "Points de retrait", href: "/dashboard/admin/points-de-retrait" },
         { label: "Utilisateurs", href: "/dashboard/admin/users" },
         { label: "Apparence du site", href: "/dashboard/admin/apparence" },
@@ -72,14 +73,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     },
     {
       /*
-        Ces trois-là lisent leurs comptes dans Supabase et restent hors
+        Ces deux-là lisent leurs données dans Supabase et restent hors
         service tant qu'il n'est pas rebranché. Ils sont laissés dans la
         navigation, et chacun le dit en s'ouvrant : les retirer ferait
         croire qu'ils n'ont jamais existé.
+
+        « Agents » ne figure plus ici : cet écran est passé sur Medusa,
+        où un agent est un client à qui s'ajoute une fonction. Le
+        laisser dans cette section annonçait un écran hors service
+        alors qu'il marche — un faux sur la page même où l'on pilote.
       */
       label: "Sur Supabase",
       items: [
-        { label: "Agents", href: "/dashboard/admin/agents" },
         { label: "Partenaires", href: "/dashboard/admin/partners" },
         { label: "Blocs de contenu", href: "/dashboard/admin/widgets" },
       ],

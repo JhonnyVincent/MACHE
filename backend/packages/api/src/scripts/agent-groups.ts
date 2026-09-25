@@ -27,12 +27,37 @@
 
 import { ExecArgs } from "@medusajs/framework/types";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import { SUSPENDED_MARKER } from "../api/agent-identity";
 
 const GROUPS = [
   { slug: "mache-point-relais", name: "MACHÉ — Points de relais" },
   { slug: "mache-livreur", name: "MACHÉ — Livreurs" },
   { slug: "mache-commercial", name: "MACHÉ — Commerciaux" },
 ];
+
+/*
+  LA SUSPENSION EST UN GROUPE, PAS UN CHAMP LIBRE.
+
+  Elle l'a été, et c'était une faille : le champ libre d'un client est
+  écrit PAR LE CLIENT — c'est là que vivent ses favoris, et la route
+  publique accepte n'importe quelle clé. Un agent suspendu n'avait donc
+  qu'à s'écrire « non suspendu » pour recommencer à confirmer des
+  livraisons, et pour que la vérification publique le déclare de
+  nouveau digne de confiance.
+
+  Exactement le raisonnement qui a fait choisir les groupes pour
+  l'habilitation elle-même, et qui n'avait pas été appliqué à son
+  retrait.
+
+  L'agent reste dans son groupe de fonction : la vérification publique
+  doit répondre « connu MAIS suspendu », et non « inconnu » — qui se
+  lit comme une faute de frappe et pousse à réessayer, alors que la
+  bonne réponse est « ne lui remettez rien ».
+*/
+const SUSPENDED_GROUP = {
+  marker: SUSPENDED_MARKER,
+  name: "MACHÉ — Agents suspendus",
+};
 
 export default async function agentGroups({ container }: ExecArgs) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
@@ -55,29 +80,42 @@ export default async function agentGroups({ container }: ExecArgs) {
 
   const missing = GROUPS.filter((group) => !known.has(group.slug));
 
-  if (missing.length === 0) {
+  const hasSuspended = ((existing ?? []) as {
+    metadata?: Record<string, unknown>;
+  }[]).some((group) => group.metadata?.[SUSPENDED_MARKER] === true);
+
+  if (missing.length === 0 && hasSuspended) {
     logger.info("Groupes d'agents MACHÉ déjà en place. Inchangés.");
     return;
   }
 
+  const toCreate: { name: string; metadata: Record<string, unknown> }[] = [
+    ...missing.map((group) => ({
+      name: group.name,
+      /*
+        L'étiquette qui dit « ce groupe désigne des agents », et
+        laquelle des trois fonctions. Le NOM du groupe ne sert pas à
+        cela : il se renomme depuis le panneau, et la vérification
+        publique s'arrêterait sans que personne ne comprenne
+        pourquoi.
+      */
+      metadata: { mache_agent_group: group.slug },
+    })),
+  ];
+
+  if (!hasSuspended) {
+    toCreate.push({
+      name: SUSPENDED_GROUP.name,
+      metadata: { [SUSPENDED_MARKER]: true },
+    });
+  }
+
   await createCustomerGroupsWorkflow(container).run({
-    input: {
-      customersData: missing.map((group) => ({
-        name: group.name,
-        /*
-          L'étiquette qui dit « ce groupe désigne des agents », et
-          laquelle des trois fonctions. Le NOM du groupe ne sert pas à
-          cela : il se renomme depuis le panneau, et la vérification
-          publique s'arrêterait sans que personne ne comprenne
-          pourquoi.
-        */
-        metadata: { mache_agent_group: group.slug },
-      })),
-    },
+    input: { customersData: toCreate },
   });
 
-  for (const group of missing) {
-    logger.info(`Groupe d'agents créé : ${group.name}`);
+  for (const group of toCreate) {
+    logger.info(`Groupe créé : ${group.name}`);
   }
 
   logger.info(
