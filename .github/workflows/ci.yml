@@ -63,6 +63,20 @@ jobs:
       - name: Construire le site
         run: npm run build
 
+      # Les tests lisent aussi du code de `backend/` — la règle qui
+      # décide combien MACHÉ verse sur une promotion, l'algorithme des
+      # codes à usage unique. Certains de ces fichiers importent des
+      # paquets du backend, absents de l'installation du site.
+      #
+      # L'installation vient APRÈS la construction, volontairement : le
+      # site doit continuer de se construire sans rien du backend, et
+      # avancer cette étape masquerait une régression sur ce point.
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Installer les dépendances du backend
+        working-directory: backend
+        run: bun install --frozen-lockfile
+
       - name: Lancer les tests
         run: npm test
 
