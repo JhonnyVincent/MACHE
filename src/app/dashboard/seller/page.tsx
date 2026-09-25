@@ -289,6 +289,12 @@ export default async function SellerEntryPage({
         >
           Contrats de MACHÉ
         </Link>
+        <Link
+          href="/dashboard/seller/livraisons"
+          className="font-semibold text-[var(--mache-primary)] hover:underline"
+        >
+          Mes livraisons
+        </Link>
       </div>
       )}
 

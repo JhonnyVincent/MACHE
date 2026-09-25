@@ -1712,3 +1712,152 @@ export async function setPromotionCostBearer(input: {
 
   return { ok: true, data: true };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Les points de retrait                                                      */
+/* -------------------------------------------------------------------------- */
+
+/*
+  UN LIEU, PAS UNE PERSONNE.
+
+  C'est ce qui justifie que le point ne soit pas une propriété de
+  l'agent. L'agent qui le tient peut être absent, remplacé, ou en tenir
+  deux. Si le point n'était qu'un attribut de l'agent, les colis qui y
+  attendent deviendraient introuvables le jour où l'agent change — et
+  personne ne saurait dire où ils sont.
+
+  `agentCustomerId` dit donc qui le tient AUJOURD'HUI, et peut être
+  vide sans que ce soit une anomalie.
+*/
+export type RelayPoint = {
+  id: string;
+  name: string;
+  /* Le code court que le client répète au téléphone : « PAP-DEL-02 ». */
+  code: string;
+  department: string;
+  commune: string | null;
+  address: string;
+  landmark: string | null;
+  phonePublic: string | null;
+  openingHours: string | null;
+  agentCustomerId: string | null;
+  active: boolean;
+  note: string | null;
+};
+
+function relayPoint(raw: Raw): RelayPoint {
+  return {
+    id: str(raw.id) ?? "",
+    name: str(raw.name) ?? "",
+    code: str(raw.code) ?? "",
+    department: str(raw.department) ?? "",
+    commune: str(raw.commune),
+    address: str(raw.address) ?? "",
+    landmark: str(raw.landmark),
+    phonePublic: str(raw.phone_public),
+    openingHours: str(raw.opening_hours),
+    agentCustomerId: str(raw.agent_customer_id),
+    active: raw.active !== false,
+    note: str(raw.note),
+  };
+}
+
+export async function fetchRelayPoints(): Promise<Result<RelayPoint[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ relay_points?: Raw[] }>(
+    "/admin/mache/relay-points",
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: (result.data.relay_points ?? []).map(relayPoint) };
+}
+
+export async function createRelayPoint(input: {
+  name: string;
+  code: string;
+  department: string;
+  address: string;
+  commune?: string | null;
+  landmark?: string | null;
+  phonePublic?: string | null;
+  openingHours?: string | null;
+  agentCustomerId?: string | null;
+  note?: string | null;
+}): Promise<Result<RelayPoint>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ relay_point?: Raw }>(
+    "/admin/mache/relay-points",
+    {
+      method: "POST",
+      token,
+      body: {
+        name: input.name,
+        code: input.code,
+        department: input.department,
+        address: input.address,
+        commune: input.commune || null,
+        landmark: input.landmark || null,
+        phone_public: input.phonePublic || null,
+        opening_hours: input.openingHours || null,
+        agent_customer_id: input.agentCustomerId || null,
+        note: input.note || null,
+      },
+    }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: relayPoint(result.data.relay_point ?? {}) };
+}
+
+/*
+  Ouvrir ou fermer un point.
+
+  Il n'y a pas de suppression, et ce n'est pas un oubli : un point
+  fermé garde les livraisons qui y ont transité. Effacer la ligne
+  rendrait illisible un suivi qui dirait « déposé chez » suivi de rien.
+*/
+export async function setRelayPointOpen(
+  id: string,
+  open: boolean
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(
+    `/admin/mache/relay-points/${encodeURIComponent(id)}`,
+    { method: "POST", token, body: { active: open } }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
+
+/* Désigner — ou retirer — l'agent qui tient le point. */
+export async function setRelayPointKeeper(
+  id: string,
+  agentCustomerId: string | null
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(
+    `/admin/mache/relay-points/${encodeURIComponent(id)}`,
+    { method: "POST", token, body: { agent_customer_id: agentCustomerId || null } }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}

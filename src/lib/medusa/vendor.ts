@@ -712,3 +712,283 @@ export const CONTRACT_STATUS: Record<string, string> = {
   declined: "Refusé",
   revoked: "Retiré par MACHÉ",
 };
+
+/* -------------------------------------------------------------------------- */
+/* Les livraisons de la boutique                                              */
+/* -------------------------------------------------------------------------- */
+
+/*
+  CE QUE CE TYPE NE CONTIENT PAS : LE CODE DE REMISE.
+
+  Le backend ne le donne à personne d'autre qu'à l'acheteur, et c'est
+  toute la valeur du dispositif. Si le vendeur pouvait le lire, il
+  pourrait confirmer lui-même une livraison qu'il n'a pas faite — et la
+  confirmation ne prouverait plus rien du tout.
+
+  Le vendeur SAISIT ce code, il ne le consulte pas. Pour le saisir, il
+  doit l'avoir obtenu de l'acheteur, en main propre. C'est là que se
+  situe la preuve.
+*/
+export type VendorDelivery = {
+  id: string;
+  orderId: string;
+  status: string;
+  method: string;
+  recipientName: string | null;
+  recipientPhone: string | null;
+  recipientAddress: string | null;
+  recipientDepartment: string | null;
+  carrierName: string | null;
+  trackingNumber: string | null;
+  trackingUrl: string | null;
+  relayPointId: string | null;
+  confirmedBy: string | null;
+  confirmedAt: string | null;
+  /* Combien d'essais de code restent avant blocage. */
+  attemptsLeft: number;
+  /*
+    L'état du versement : « held » tant que la remise n'est pas
+    prouvée, « releasable » une fois le code saisi. C'est la réponse à
+    « quand serai-je payé », et elle est mécanique.
+  */
+  payoutState: string;
+  createdAt: string | null;
+};
+
+function mapDelivery(raw: Raw): VendorDelivery {
+  return {
+    id: str(raw.id) ?? "",
+    orderId: str(raw.order_id) ?? "",
+    status: str(raw.status) ?? "pending",
+    method: str(raw.method) ?? "seller",
+    recipientName: str(raw.recipient_name),
+    recipientPhone: str(raw.recipient_phone),
+    recipientAddress: str(raw.recipient_address),
+    recipientDepartment: str(raw.recipient_department),
+    carrierName: str(raw.carrier_name),
+    trackingNumber: str(raw.tracking_number),
+    trackingUrl: str(raw.tracking_url),
+    relayPointId: str(raw.relay_point_id),
+    confirmedBy: str(raw.confirmed_by),
+    confirmedAt: str(raw.confirmed_at),
+    attemptsLeft: Number(raw.attempts_left) || 0,
+    payoutState: str(raw.payout_state) ?? "held",
+    createdAt: str(raw.created_at),
+  };
+}
+
+export async function getVendorDeliveries(): Promise<Result<VendorDelivery[]>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ deliveries?: Raw[] }>("/vendor/deliveries", {
+    token,
+    sellerId,
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: (result.data.deliveries ?? []).map(mapDelivery) };
+}
+
+/*
+  Ouvrir un acheminement.
+
+  Le jeton de suivi revient UNE SEULE FOIS, ici. C'est le lien qu'un
+  acheteur sans compte utilisera pour voir où en est son colis — et y
+  lire son code. Ne pas le transmettre le laisse sans aucun moyen de
+  suivre sa commande ; le backend ne le redonnera pas.
+*/
+export async function createVendorDelivery(input: {
+  orderId: string;
+  method: "seller" | "agent" | "relay" | "carrier";
+  recipientName?: string | null;
+  recipientPhone?: string | null;
+  recipientAddress?: string | null;
+  recipientDepartment?: string | null;
+  relayPointId?: string | null;
+  carrierName?: string | null;
+  trackingNumber?: string | null;
+  trackingUrl?: string | null;
+}): Promise<Result<{ delivery: VendorDelivery; accessToken: string | null }>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ delivery?: Raw; access_token?: string }>(
+    "/vendor/deliveries",
+    {
+      method: "POST",
+      token,
+      sellerId,
+      body: {
+        order_id: input.orderId,
+        method: input.method,
+        recipient_name: input.recipientName || null,
+        recipient_phone: input.recipientPhone || null,
+        recipient_address: input.recipientAddress || null,
+        recipient_department: input.recipientDepartment || null,
+        relay_point_id: input.relayPointId || null,
+        carrier_name: input.carrierName || null,
+        tracking_number: input.trackingNumber || null,
+        tracking_url: input.trackingUrl || null,
+      },
+    }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      delivery: mapDelivery(result.data.delivery ?? {}),
+      accessToken: str(result.data.access_token),
+    },
+  };
+}
+
+/*
+  Faire avancer un acheminement.
+
+  `delivered` n'est jamais accepté ici : on n'y arrive qu'en saisissant
+  le code de l'acheteur. C'est refusé par le backend, et l'écran ne le
+  propose pas non plus — pour qu'aucun des deux ne soit le seul rempart.
+*/
+export async function advanceVendorDelivery(
+  id: string,
+  status: string
+): Promise<Result<VendorDelivery>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ delivery?: Raw }>(
+    `/vendor/deliveries/${encodeURIComponent(id)}`,
+    { method: "POST", token, sellerId, body: { status } }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapDelivery(result.data.delivery ?? {}) };
+}
+
+/*
+  Confirmer la remise avec le code de l'acheteur.
+
+  Chaque essai raté est compté, y compris celui-ci — le backend
+  l'incrémente avant de répondre. Cinq essais et la confirmation par
+  code est close : un code à six caractères se devine, en quelques
+  milliers d'essais, si on laisse essayer indéfiniment.
+*/
+export async function confirmVendorDelivery(
+  id: string,
+  code: string,
+  note?: string | null
+): Promise<Result<VendorDelivery>> {
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ delivery?: Raw }>(
+    `/vendor/deliveries/${encodeURIComponent(id)}/confirm`,
+    { method: "POST", token, sellerId, body: { code, note: note || null } }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: mapDelivery(result.data.delivery ?? {}) };
+}
+
+export const DELIVERY_METHOD_LABELS: Record<string, string> = {
+  seller: "Livrée par la boutique",
+  agent: "Confiée à un agent MACHÉ",
+  relay: "Déposée en point de retrait",
+  carrier: "Confiée à un transporteur",
+};
+
+export const DELIVERY_STATUS_LABELS: Record<string, string> = {
+  pending: "Pas encore partie",
+  assigned: "Remise à l'agent ou au point",
+  in_transit: "En route",
+  ready_for_pickup: "À retirer",
+  delivered: "Remise, prouvée par code",
+  failed: "Échec de remise",
+  cancelled: "Annulée",
+};
+
+/*
+  Les suites possibles, par méthode. La liste vient du backend, qui la
+  fait respecter ; la reproduire ici sert à ne pas proposer un bouton
+  qui sera refusé — pas à décider à sa place.
+
+  `delivered` n'y figure nulle part, et c'est le point entier du
+  dispositif.
+*/
+export const DELIVERY_NEXT: Record<string, Record<string, string[]>> = {
+  seller: {
+    pending: ["in_transit", "cancelled"],
+    in_transit: ["failed"],
+    failed: ["in_transit"],
+  },
+  agent: {
+    pending: ["assigned", "cancelled"],
+    assigned: ["in_transit", "failed"],
+    in_transit: ["failed"],
+    failed: ["in_transit"],
+  },
+  relay: {
+    pending: ["assigned", "cancelled"],
+    assigned: ["in_transit", "failed"],
+    in_transit: ["ready_for_pickup", "failed"],
+    ready_for_pickup: ["failed"],
+    failed: ["ready_for_pickup"],
+  },
+  carrier: {
+    pending: ["in_transit", "cancelled"],
+    in_transit: ["failed"],
+    failed: ["in_transit"],
+  },
+};
+
+/* Une livraison peut-elle être confirmée par code, maintenant ? */
+export function awaitsDeliveryCode(delivery: VendorDelivery): boolean {
+  if (delivery.method === "carrier") return false;
+
+  return ["in_transit", "ready_for_pickup", "assigned"].includes(delivery.status);
+}
+
+/*
+  Les points de retrait ouverts, pour le choix du vendeur.
+
+  La route est publique : un point de retrait est une adresse qu'on
+  publie, et le vendeur n'a pas besoin d'un privilège pour savoir où il
+  peut déposer un colis. Elle ne rend que les points OUVERTS — proposer
+  un point fermé enverrait un client à une porte close.
+*/
+export type OpenRelayPoint = {
+  id: string;
+  name: string;
+  code: string;
+  department: string;
+  commune: string | null;
+  address: string;
+};
+
+export async function getOpenRelayPoints(): Promise<Result<OpenRelayPoint[]>> {
+  const result = await request<{ relay_points?: Raw[] }>("/store/relay-points");
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: (result.data.relay_points ?? []).map((raw) => ({
+      id: str(raw.id) ?? "",
+      name: str(raw.name) ?? "",
+      code: str(raw.code) ?? "",
+      department: str(raw.department) ?? "",
+      commune: str(raw.commune),
+      address: str(raw.address) ?? "",
+    })),
+  };
+}
