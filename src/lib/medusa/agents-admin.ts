@@ -244,7 +244,7 @@ async function suspendedGroupId(): Promise<Result<string>> {
     return {
       ok: false,
       reason:
-        "Le groupe « agents suspendus » n'existe pas encore. Lancez le script des groupes d'agents sur le backend : sans lui, une suspension ne tiendrait pas.",
+        "Le groupe « agents suspendus » n'existe pas encore. Lancez « npx medusa exec ./src/scripts/agent-groups.ts » sur le backend : sans ce groupe, une suspension ne tiendrait pas — l'écran afficherait « suspendu » et l'agent continuerait de livrer.",
     };
   }
 

@@ -1921,7 +1921,7 @@ async function blockedGroupId(token: string): Promise<Result<string>> {
     return {
       ok: false,
       reason:
-        "Le groupe « comptes bloqués » n'existe pas encore. Lancez le script des groupes sur le backend : sans lui, un blocage ne tiendrait pas.",
+        "Le groupe « comptes bloqués » n'existe pas encore. Lancez « npx medusa exec ./src/scripts/agent-groups.ts » sur le backend : sans ce groupe, un blocage ne tiendrait pas — l'écran afficherait « bloqué » et le compte continuerait de commander.",
     };
   }
 
