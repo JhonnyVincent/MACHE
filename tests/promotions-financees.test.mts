@@ -137,16 +137,16 @@ const costs = new Map<string, CostRow>([
 ]);
 
 check("une remise du vendeur ne remonte pas", () => {
-  assert.equal(
+  assert.deepEqual(
     fundedForItem([{ promotion_id: "promo_vendeur", amount: 400 }], costs),
-    0
+    { total: 0, by_promotion: {} }
   );
 });
 
 check("une remise de MACHÉ remonte en entier", () => {
-  assert.equal(
+  assert.deepEqual(
     fundedForItem([{ promotion_id: "promo_mache", amount: 400 }], costs),
-    400
+    { total: 400, by_promotion: { promo_mache: 400 } }
   );
 });
 
@@ -156,7 +156,7 @@ check("un article cumulant les deux ne fait porter que celle de MACHÉ", () => {
     commercial. Confondre les deux ferait payer MACHÉ pour la remise du
     vendeur.
   */
-  assert.equal(
+  assert.deepEqual(
     fundedForItem(
       [
         { promotion_id: "promo_vendeur", amount: 300 },
@@ -164,12 +164,16 @@ check("un article cumulant les deux ne fait porter que celle de MACHÉ", () => {
       ],
       costs
     ),
-    400
+    { total: 400, by_promotion: { promo_mache: 400 } }
   );
 });
 
 check("les remises partagées s'additionnent au prorata", () => {
-  assert.equal(
+  /*
+    25 % de 400 = 100, plus 100 entièrement portés : 200 au total, et
+    le détail dit laquelle des deux promotions a coûté quoi.
+  */
+  assert.deepEqual(
     fundedForItem(
       [
         { promotion_id: "promo_partagee", amount: 400 },
@@ -177,7 +181,7 @@ check("les remises partagées s'additionnent au prorata", () => {
       ],
       costs
     ),
-    200
+    { total: 200, by_promotion: { promo_partagee: 100, promo_mache: 100 } }
   );
 });
 
@@ -187,20 +191,20 @@ check("une promotion inconnue du registre des coûts est à la charge du vendeur
     n'est pas MACHÉ. C'est aussi le comportement d'avant ce travail,
     donc rien ne change pour les promotions existantes.
   */
-  assert.equal(
+  assert.deepEqual(
     fundedForItem([{ promotion_id: "jamais_declaree", amount: 400 }], costs),
-    0
+    { total: 0, by_promotion: {} }
   );
 });
 
 check("un montant absurde est ignoré plutôt que soustrait", () => {
   for (const amount of [null, undefined, 0, -400, Number.NaN]) {
-    assert.equal(
+    assert.deepEqual(
       fundedForItem(
         [{ promotion_id: "promo_mache", amount: amount as number | null }],
         costs
       ),
-      0,
+      { total: 0, by_promotion: {} },
       `un montant « ${String(amount)} » ne doit pas modifier la commission`
     );
   }
@@ -284,7 +288,11 @@ await checkAsync("la promo de MACHÉ sort du chiffre d'affaires de MACHÉ", asyn
   const provider = new MacheCommissionProvider(conteneur() as never);
   const [line] = await provider.getCommissionLines({
     ...article,
-    additional_context: { mache_funded_discounts: { article: 400 } },
+    additional_context: {
+      mache_funded_discounts: {
+        article: { total: 400, by_promotion: { promo_mache: 400 } },
+      },
+    },
   } as never);
 
   assert.equal(Number(line.amount), -240, "la commission devient négative");
@@ -304,7 +312,11 @@ await checkAsync("une commission négative n'est pas ramenée à zéro", async (
   const provider = new MacheCommissionProvider(conteneur() as never);
   const [line] = await provider.getCommissionLines({
     ...article,
-    additional_context: { mache_funded_discounts: { article: 2000 } },
+    additional_context: {
+      mache_funded_discounts: {
+        article: { total: 2000, by_promotion: { promo_mache: 2000 } },
+      },
+    },
   } as never);
 
   assert.equal(Number(line.amount), -1840);
@@ -318,11 +330,16 @@ await checkAsync("la ligne garde la trace de ce que MACHÉ a financé", async ()
   const provider = new MacheCommissionProvider(conteneur() as never);
   const [line] = await provider.getCommissionLines({
     ...article,
-    additional_context: { mache_funded_discounts: { article: 400 } },
+    additional_context: {
+      mache_funded_discounts: {
+        article: { total: 400, by_promotion: { promo_mache: 400 } },
+      },
+    },
   } as never);
 
   assert.equal(line.data?.mache_funded_discount, 400);
   assert.equal(line.data?.mache_commission_before_funding, 160);
+  assert.deepEqual(line.data?.mache_funded_by_promotion, { promo_mache: 400 });
 });
 
 await checkAsync("les frais de port ne se voient pas retirer la remise", async () => {
@@ -334,7 +351,11 @@ await checkAsync("les frais de port ne se voient pas retirer la remise", async (
   const lines = await provider.getCommissionLines({
     ...article,
     shipping_methods: [{ id: "livraison", subtotal: 500 }],
-    additional_context: { mache_funded_discounts: { article: 400 } },
+    additional_context: {
+      mache_funded_discounts: {
+        article: { total: 400, by_promotion: { promo_mache: 400 } },
+      },
+    },
   } as never);
 
   const port = lines.find((line) => line.shipping_method_id === "livraison");
@@ -355,7 +376,11 @@ await checkAsync("chaque ligne est signée par le fournisseur de MACHÉ", async 
   const sansPromo = await provider.getCommissionLines(article as never);
   const avecPromo = await provider.getCommissionLines({
     ...article,
-    additional_context: { mache_funded_discounts: { article: 400 } },
+    additional_context: {
+      mache_funded_discounts: {
+        article: { total: 400, by_promotion: { promo_mache: 400 } },
+      },
+    },
   } as never);
 
   for (const line of [...sansPromo, ...avecPromo]) {

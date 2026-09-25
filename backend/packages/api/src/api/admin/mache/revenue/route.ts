@@ -66,20 +66,36 @@ type CommissionLineRow = {
   shipping_method_id: string | null;
   rate: number | null;
   amount: number | string | null;
+  data: Record<string, unknown> | null;
 };
 
 type Bucket = {
   currency_code: string;
   /* Ce que les acheteurs ont payé aux vendeurs, dans cette devise. */
   volume: number;
-  /* Ce que MACHÉ a gagné dessus. */
+  /* Ce que MACHÉ a gagné dessus, APRÈS ses propres promotions. */
   commission: number;
+  /*
+    Ce que les promotions de MACHÉ lui ont coûté : la somme déjà
+    retirée de la commission ci-dessus. Le chiffre est présenté à part
+    parce qu'il répond à une question différente — non pas « combien
+    ai-je gagné » mais « combien m'ont coûté mes gestes commerciaux ».
+    Fondu dans la commission, il deviendrait invisible : on verrait un
+    chiffre d'affaires qui baisse sans savoir que c'est une décision.
+  */
+  promotions_funded: number;
   orders: number;
 };
 
 function bucketOf(map: Record<string, Bucket>, currency: string): Bucket {
   if (!map[currency]) {
-    map[currency] = { currency_code: currency, volume: 0, commission: 0, orders: 0 };
+    map[currency] = {
+      currency_code: currency,
+      volume: 0,
+      commission: 0,
+      promotions_funded: 0,
+      orders: 0,
+    };
   }
 
   return map[currency];
@@ -106,6 +122,17 @@ function effectiveRate(bucket: Bucket): number | null {
   if (bucket.volume <= 0) return null;
 
   return Math.round((bucket.commission / bucket.volume) * 10000) / 100;
+}
+
+/*
+  La commission AVANT les promotions financées par MACHÉ : ce qu'elle
+  aurait été sans geste commercial. L'écart entre les deux est
+  exactement ce que ces gestes ont coûté, et le voir écrit évite de
+  lire une baisse de commission comme un problème alors que c'est une
+  décision.
+*/
+function grossCommission(bucket: Bucket): number {
+  return bucket.commission + bucket.promotions_funded;
 }
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -222,7 +249,10 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
     const currency = (order.currency_code ?? "").toUpperCase() || "—";
 
-    bucketOf(target, currency).commission += amount;
+    const bucket = bucketOf(target, currency);
+
+    bucket.commission += amount;
+    bucket.promotions_funded += num(line.data?.mache_funded_discount as number);
   }
 
   const sortByCommission = (a: Bucket, b: Bucket) => b.commission - a.commission;
@@ -236,10 +266,18 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     basis: "due",
     currencies: Object.values(current)
       .sort(sortByCommission)
-      .map((bucket) => ({ ...bucket, effective_rate: effectiveRate(bucket) })),
+      .map((bucket) => ({
+        ...bucket,
+        effective_rate: effectiveRate(bucket),
+        commission_before_promotions: grossCommission(bucket),
+      })),
     previous: Object.values(previous)
       .sort(sortByCommission)
-      .map((bucket) => ({ ...bucket, effective_rate: effectiveRate(bucket) })),
+      .map((bucket) => ({
+        ...bucket,
+        effective_rate: effectiveRate(bucket),
+        commission_before_promotions: grossCommission(bucket),
+      })),
     unattributed_commission: unattributed,
     /*
       Zéro abonnement, annoncé explicitement. Une clé absente se lirait

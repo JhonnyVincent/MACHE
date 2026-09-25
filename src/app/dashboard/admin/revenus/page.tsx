@@ -114,7 +114,44 @@ function CurrencyCard({
             {bucket.effectiveRate === null ? "—" : `${bucket.effectiveRate} %`}
           </dd>
         </div>
+
+        {/*
+          Ce que les promotions de MACHÉ lui ont coûté.
+
+          La ligne n'apparaît que lorsqu'il y a quelque chose à dire :
+          un « 0 » permanent finirait par ne plus être lu, et le jour
+          où il cesse d'être zéro personne ne le remarquerait.
+
+          Elle est montrée À CÔTÉ de la commission, pas fondue dedans.
+          Une commission en baisse parce qu'on a offert une remise est
+          une décision, pas un problème ; confondre les deux ferait
+          chercher une panne là où il y a eu un choix.
+        */}
+        {bucket.promotionsFunded > 0 && (
+          <>
+            <div className="flex justify-between gap-3">
+              <dt className="text-[#565959]">Promotions offertes par MACHÉ</dt>
+              <dd className="font-medium text-[#b01124]">
+                −{money(bucket.promotionsFunded, bucket.currencyCode)}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-[#565959]">Commission avant ces promotions</dt>
+              <dd className="font-medium text-[#0f1111]">
+                {money(bucket.commissionBeforePromotions, bucket.currencyCode)}
+              </dd>
+            </div>
+          </>
+        )}
       </dl>
+
+      {bucket.promotionsFunded > 0 && (
+        <p className="mt-3 text-xs leading-snug text-[#767676]">
+          Les vendeurs concernés ont été payés comme s&apos;il n&apos;y avait
+          pas eu de promotion : cette somme est sortie du chiffre
+          d&apos;affaires de MACHÉ, pas du leur.
+        </p>
+      )}
     </div>
   );
 }

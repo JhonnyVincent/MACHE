@@ -41,6 +41,7 @@ import {
   fundedForItem,
   type Adjustment,
   type CostRow,
+  type ItemFunding,
 } from "../../modules/commission-mache/funding";
 
 type OrderRow = {
@@ -123,13 +124,13 @@ refreshOrderCommissionLinesWorkflow.hooks.setCommissionContext(
     }
 
     /* Ce que MACHÉ porte, article par article. */
-    const fundedByItem = new Map<string, number>();
+    const fundedByItem = new Map<string, ItemFunding>();
 
     for (const order of rows) {
       for (const item of order.items ?? []) {
-        const total = fundedForItem(item.adjustments, costs);
+        const funding = fundedForItem(item.adjustments, costs);
 
-        if (total > 0) fundedByItem.set(item.id, total);
+        if (funding.total > 0) fundedByItem.set(item.id, funding);
       }
     }
 
@@ -141,12 +142,12 @@ refreshOrderCommissionLinesWorkflow.hooks.setCommissionContext(
       une perte de données au nom d'une promotion.
     */
     const enriched = list.map((context) => {
-      const funded: Record<string, number> = {};
+      const funded: Record<string, ItemFunding> = {};
 
       for (const item of context.items ?? []) {
-        const amount = fundedByItem.get(item.id);
+        const funding = fundedByItem.get(item.id);
 
-        if (amount) funded[item.id] = amount;
+        if (funding) funded[item.id] = funding;
       }
 
       if (Object.keys(funded).length === 0) return context;

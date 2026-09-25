@@ -104,7 +104,12 @@ export default async function verifierCommission({ container }: ExecArgs) {
       },
     ],
     additional_context: {
-      [MACHE_FUNDING_KEY]: { article_test: REMISE_FINANCEE },
+      [MACHE_FUNDING_KEY]: {
+        article_test: {
+          total: REMISE_FINANCEE,
+          by_promotion: { promotion_de_controle: REMISE_FINANCEE },
+        },
+      },
     },
   });
 

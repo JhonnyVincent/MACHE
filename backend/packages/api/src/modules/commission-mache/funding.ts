@@ -53,24 +53,37 @@ export function marketplaceShare(cost: CostRow | undefined | null): number {
 }
 
 /*
-  Ce que MACHÉ porte sur UN article, toutes ses remises additionnées.
+  Ce que MACHÉ porte sur UN article, remise par remise.
 
   Un article peut cumuler plusieurs promotions : une du vendeur, une de
   MACHÉ. Seule la seconde compte ici — la première reste à la charge du
   vendeur, c'est la règle choisie.
+
+  Le détail par promotion est conservé, pas seulement le total. C'est ce
+  qui permet de répondre plus tard à « combien m'a coûté CETTE
+  promotion ? ». Un total seul ne le permettrait plus : l'information
+  serait perdue au moment où on la calcule, et irrécupérable ensuite.
 */
+export type ItemFunding = {
+  /* Ce que MACHÉ retire de sa commission sur cet article. */
+  total: number;
+  /* La même somme, ventilée par promotion. */
+  by_promotion: Record<string, number>;
+};
+
 export function fundedForItem(
   adjustments: Adjustment[] | null | undefined,
   costs: Map<string, CostRow>
-): number {
-  let funded = MathBN.convert(0);
+): ItemFunding {
+  let total = MathBN.convert(0);
+  const byPromotion: Record<string, number> = {};
 
   for (const adjustment of adjustments ?? []) {
-    const share = marketplaceShare(
-      adjustment?.promotion_id ? costs.get(adjustment.promotion_id) : undefined
-    );
+    const promotionId = adjustment?.promotion_id;
 
-    if (share <= 0) continue;
+    const share = marketplaceShare(promotionId ? costs.get(promotionId) : undefined);
+
+    if (share <= 0 || !promotionId) continue;
 
     const amount = Number(adjustment?.amount);
 
@@ -81,8 +94,19 @@ export function fundedForItem(
     */
     if (!Number.isFinite(amount) || amount <= 0) continue;
 
-    funded = MathBN.add(funded, MathBN.mult(amount, share));
+    const portion = MathBN.convert(MathBN.mult(amount, share)).toNumber();
+
+    total = MathBN.add(total, portion);
+
+    /*
+      Additionné plutôt qu'écrasé : rien n'interdit à une commande de
+      porter deux fois la même promotion sur un article.
+    */
+    byPromotion[promotionId] = (byPromotion[promotionId] ?? 0) + portion;
   }
 
-  return MathBN.convert(funded).toNumber();
+  return {
+    total: MathBN.convert(total).toNumber(),
+    by_promotion: byPromotion,
+  };
 }

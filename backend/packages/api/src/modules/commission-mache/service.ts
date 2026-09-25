@@ -52,12 +52,13 @@
 */
 
 import { MathBN } from "@medusajs/framework/utils";
+import type { ItemFunding } from "./funding";
 
 /* La clé sous laquelle le hook dépose sa contribution. */
 export const MACHE_FUNDING_KEY = "mache_funded_discounts";
 
-/* Par article : le montant, dans la devise de la commande, que MACHÉ porte. */
-export type MacheFunding = Record<string, number>;
+/* Par article : ce que MACHÉ porte, et sa ventilation par promotion. */
+export type MacheFunding = Record<string, ItemFunding>;
 
 type CommissionLine = {
   item_id?: string | null;
@@ -154,7 +155,8 @@ export class MacheCommissionProvider {
       */
       if (!line.item_id) return this.sign(line);
 
-      const contribution = Number(funded[line.item_id]);
+      const entry = funded[line.item_id];
+      const contribution = Number(entry?.total);
 
       if (!Number.isFinite(contribution) || contribution <= 0) {
         return this.sign(line);
@@ -166,13 +168,15 @@ export class MacheCommissionProvider {
         ...this.sign(line),
         amount: MathBN.convert(amount).toNumber(),
         /*
-          La contribution est inscrite sur la ligne. Sans cela, une
-          commission de −240 serait un chiffre inexplicable six mois
-          plus tard : on saurait qu'on a payé, pas pourquoi.
+          La contribution est inscrite sur la ligne, avec le détail des
+          promotions qui la composent. Sans cela, une commission de
+          −240 serait un chiffre inexplicable six mois plus tard : on
+          saurait qu'on a payé, pas pourquoi ni pour quelle opération.
         */
         data: {
           ...(line.data ?? {}),
           mache_funded_discount: contribution,
+          mache_funded_by_promotion: entry?.by_promotion ?? {},
           mache_commission_before_funding: Number(line.amount),
         },
         description:

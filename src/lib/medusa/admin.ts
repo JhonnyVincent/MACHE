@@ -555,6 +555,15 @@ export type RevenueBucket = {
   volume: number;
   /* Ce que MACHÉ a gagné dessus, et doit facturer. */
   commission: number;
+  /*
+    Ce que les promotions financées par MACHÉ lui ont coûté sur la
+    période : une somme déjà retirée de `commission`. Elle est portée à
+    part pour qu'une commission en baisse se lise comme une décision et
+    non comme un problème.
+  */
+  promotionsFunded: number;
+  /* La commission telle qu'elle aurait été sans ces promotions. */
+  commissionBeforePromotions: number;
   orders: number;
   /*
     Le taux réellement constaté, commission divisée par volume. Il tient
@@ -583,6 +592,9 @@ function bucket(raw: Raw): RevenueBucket {
     currencyCode: str(raw.currency_code) ?? "—",
     volume: Number(raw.volume) || 0,
     commission: Number(raw.commission) || 0,
+    promotionsFunded: Number(raw.promotions_funded) || 0,
+    commissionBeforePromotions:
+      Number(raw.commission_before_promotions) || Number(raw.commission) || 0,
     orders: Number(raw.orders) || 0,
     effectiveRate: typeof rate === "number" && Number.isFinite(rate) ? rate : null,
   };
@@ -1567,3 +1579,136 @@ export const PRODUCT_STATUS_LABELS: Record<string, string> = {
   published: "En vente",
   rejected: "Retiré par MACHÉ",
 };
+
+/* -------------------------------------------------------------------------- */
+/* Les promotions, et qui les paie                                            */
+/* -------------------------------------------------------------------------- */
+
+/*
+  Deux promotions identiques à l'écran peuvent coûter, l'une, rien à
+  MACHÉ, l'autre, sa commission entière. Ce type force la distinction à
+  être transportée jusqu'à l'affichage : `owner` dit qui l'a créée,
+  `costBearer` dit qui la paie, et ce ne sont pas la même question.
+*/
+export type MachePromotion = {
+  id: string;
+  code: string;
+  status: string;
+  isAutomatic: boolean;
+  createdAt: string | null;
+  campaignName: string | null;
+  /* Le vendeur propriétaire, ou null quand c'est une promotion de MACHÉ. */
+  sellerName: string | null;
+  owner: "seller" | "mache";
+  /* Ce qui a été déclaré : « store », « marketplace », « shared », ou rien. */
+  costBearer: "store" | "marketplace" | "shared" | null;
+  sharedPercentage: number | null;
+  /* La part réellement portée par MACHÉ, de 0 à 1. */
+  macheShare: number;
+  /* La phrase qui nomme qui paie, écrite par le backend. */
+  whoPays: string;
+  /* Ce que MACHÉ a DÉJÀ déboursé sur cette promotion. */
+  macheSpent: number;
+  /* La remise, telle que la promotion la définit. */
+  value: number | null;
+  valueType: string | null;
+  currencyCode: string | null;
+};
+
+function promotion(raw: Raw): MachePromotion {
+  const method = (raw.application_method ?? {}) as Raw;
+  const campaign = (raw.campaign ?? {}) as Raw;
+  const seller = (raw.seller ?? {}) as Raw;
+
+  const bearer = str(raw.cost_bearer);
+
+  return {
+    id: str(raw.id) ?? "",
+    code: str(raw.code) ?? "—",
+    status: str(raw.status) ?? "—",
+    isAutomatic: raw.is_automatic === true,
+    createdAt: str(raw.created_at),
+    campaignName: str(campaign.name),
+    sellerName: str(seller.name),
+    owner: raw.owner === "mache" ? "mache" : "seller",
+    costBearer:
+      bearer === "store" || bearer === "marketplace" || bearer === "shared"
+        ? bearer
+        : null,
+    sharedPercentage:
+      typeof raw.shared_marketplace_percentage === "number"
+        ? raw.shared_marketplace_percentage
+        : null,
+    macheShare: Number(raw.mache_share) || 0,
+    whoPays: str(raw.who_pays) ?? "",
+    macheSpent: Number(raw.mache_spent) || 0,
+    value: typeof method.value === "number" ? method.value : Number(method.value) || null,
+    valueType: str(method.type),
+    currencyCode: str(method.currency_code),
+  };
+}
+
+export async function fetchMachePromotions(): Promise<Result<MachePromotion[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ promotions?: Raw[] }>(
+    "/admin/mache/promotions",
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: (result.data.promotions ?? []).map(promotion) };
+}
+
+/*
+  Déclarer qui paie une promotion.
+
+  La route est celle de Mercur : le modèle `promotion_cost` lui
+  appartient, et passer par son point d'entrée plutôt que d'écrire la
+  table directement laisse sa validation faire son travail.
+
+  Le pourcentage n'est transmis que pour un partage. L'envoyer avec
+  « marketplace » laisserait en base une valeur qui ne veut plus rien
+  dire, et que quelqu'un finirait par lire.
+*/
+export async function setPromotionCostBearer(input: {
+  promotionId: string;
+  costBearer: "store" | "marketplace" | "shared";
+  sharedPercentage?: number | null;
+}): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  if (input.costBearer === "shared") {
+    const percentage = Number(input.sharedPercentage);
+
+    if (!Number.isFinite(percentage) || percentage <= 0 || percentage > 100) {
+      return {
+        ok: false,
+        reason:
+          "Un partage demande un pourcentage entre 1 et 100. Sans lui, MACHÉ ne porterait rien et la promotion resterait à la charge du vendeur.",
+      };
+    }
+  }
+
+  const result = await request<Raw>(
+    `/admin/promotions/${encodeURIComponent(input.promotionId)}/cost`,
+    {
+      method: "POST",
+      token,
+      body: {
+        cost_bearer: input.costBearer,
+        shared_marketplace_percentage:
+          input.costBearer === "shared" ? Number(input.sharedPercentage) : null,
+      },
+    }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}
