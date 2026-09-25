@@ -140,6 +140,37 @@ module.exports = withMercur({
     {
       resolve: './src/modules/support',
     },
+    /*
+      Le calcul de commission de MACHÉ.
+
+      Mercur calcule sa commission sur le prix PLEIN d'un article, la
+      remise ignorée. Il possède par ailleurs un modèle qui dit QUI
+      porte le coût d'une promotion — `cost_bearer` : le vendeur, la
+      marketplace, ou les deux — mais rien ne le lit. Une promotion
+      déclarée « à la charge de MACHÉ » était donc payée par le vendeur
+      quand même.
+
+      Ce fournisseur DÉLÈGUE tout le calcul à celui de Mercur, puis
+      retire de la commission la part que MACHÉ a décidé de financer.
+      Conséquence : une promo de vendeur ne change rien au chiffre
+      d'affaires de MACHÉ, et une promo de MACHÉ laisse au vendeur
+      exactement ce qu'il aurait touché sans elle.
+
+      Déclarer le module ici plutôt que de laisser le greffon le faire
+      est le seul moyen de lui passer des options.
+    */
+    {
+      resolve: '@mercurjs/core/modules/commission',
+      options: {
+        providers: [
+          {
+            resolve: './src/modules/commission-mache',
+            id: 'mache',
+            is_default: true,
+          },
+        ],
+      },
+    },
     {
       resolve: '@mercurjs/core/modules/admin-ui',
       options: {
