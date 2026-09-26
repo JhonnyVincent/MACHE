@@ -17,6 +17,7 @@ Cochez au fur et à mesure. Rien ici n'est « presque fait » : c'est fait, ou c
 ## ✅ Terminé et en ligne
 
 - **Panneau vendeur : fin du « Failed to fetch »** — il visait `localhost:9000` ; il appelle désormais l'adresse qui l'affiche. Vérifié dans un navigateur, jusqu'à la liste des boutiques.
+- **Panneau vendeur : une seule connexion** — « Ouvrir mon panneau vendeur » sur le site entre directement dans le panneau Mercur, dans la bonne boutique, sans redemander les identifiants (laissez-passer de 60 s, à usage unique). Vérifié avec le vrai backend et dans un navigateur.
 - **Connexion : une majuscule ne refuse plus le compte** — « Jean@… » et « jean@… », c'est la même adresse, partout (site, panneaux Mercur). Les anciens comptes à majuscules sont alignés au démarrage.
 - **Mot de passe oublié** — client, vendeur (site et panneau Mercur), administration. Lien valable 15 min, utilisable une fois ; 3 demandes max par adresse et par heure ; le site ne révèle jamais qui a un compte. *Attend la clé Brevo (étape 3 ci-dessus).*
 - **Les rayons de MACHÉ existent dans le catalogue** — 15 rayons, 37 sous-rayons, dont Fait à la main, Fait maison, Bio et naturel. Créés au démarrage, sans rien à faire.

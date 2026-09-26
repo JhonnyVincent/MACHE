@@ -26,7 +26,7 @@
 */
 
 import { cookies } from "next/headers";
-import { getMedusaConfig } from "./config";
+import { getMedusaConfig, medusaBackendUrl } from "./config";
 import { toHandle } from "@/lib/handle";
 import {
   backendTimeoutSignal,
@@ -547,6 +547,39 @@ export async function getVendorSeller(): Promise<VendorSeller | null> {
   if (!result.ok || !result.data.seller) return null;
 
   return mapSeller(result.data.seller);
+}
+
+/*
+  L'entrée dans le panneau vendeur Mercur, sans redemander les
+  identifiants.
+
+  Le backend délivre un laissez-passer de 60 secondes, à usage unique,
+  pour le vendeur connecté ici et sa boutique ; le navigateur l'apporte
+  ensuite au backend, qui ouvre la session du panneau. Voir
+  backend/packages/api/src/lib/vendor-pass.ts.
+
+  Rend l'adresse où envoyer le navigateur. En cas d'échec, l'adresse
+  du panneau tout court : le vendeur s'y connecte comme avant, ce n'est
+  jamais une impasse.
+*/
+export async function vendorPanelEntryUrl(): Promise<string | null> {
+  const backendUrl = medusaBackendUrl();
+  if (!backendUrl) return null;
+
+  const panel = `${backendUrl}/seller`;
+  const { token, sellerId } = await readSession();
+
+  if (!token || !sellerId) return panel;
+
+  const result = await request<{ pass?: string }>("/vendor/passage", {
+    method: "POST",
+    token,
+    sellerId,
+  });
+
+  if (!result.ok || !result.data.pass) return panel;
+
+  return `${backendUrl}/mache/passage-vendeur?jeton=${encodeURIComponent(result.data.pass)}`;
 }
 
 /*

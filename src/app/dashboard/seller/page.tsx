@@ -22,7 +22,7 @@ import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import { getVendorSeller } from "@/lib/medusa/vendor";
-import { vendorLogoutAction } from "./connexion/actions";
+import { vendorLogoutAction, openVendorPanelAction } from "./connexion/actions";
 import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
@@ -43,7 +43,6 @@ export default async function SellerEntryPage({
 }) {
   const query = searchParams ? await searchParams : {};
   const backendUrl = medusaBackendUrl();
-  const vendorUrl = backendUrl ? `${backendUrl}/seller` : "";
 
   /*
     On vérifie seulement qu'une session existe, sans exiger de rôle : le
@@ -193,12 +192,19 @@ export default async function SellerEntryPage({
       */}
       <div className="mt-6 flex flex-wrap gap-2.5">
         {vendor ? (
-          <a
-            href={vendorUrl}
-            className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
-          >
-            Ouvrir mon panneau vendeur
-          </a>
+          /*
+            Un formulaire, pas un lien : le serveur demande d'abord au
+            backend un laissez-passer, pour que le panneau s'ouvre sans
+            redemander les identifiants.
+          */
+          <form action={openVendorPanelAction}>
+            <button
+              type="submit"
+              className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+            >
+              Ouvrir mon panneau vendeur
+            </button>
+          </form>
         ) : (
           <>
             <Link
@@ -219,21 +225,20 @@ export default async function SellerEntryPage({
       </div>
 
       {/*
-        Cet encart disait d'aller créer sa boutique dans le panneau, ce
-        qui n'a plus de sens depuis qu'on l'ouvre depuis MACHÉ. Il dit
-        maintenant ce qui reste vrai : deux connexions, parce que ce
-        sont deux applications.
+        Cet encart annonçait « deux connexions, et c'est normal ». Ce
+        n'est plus vrai : le bouton ci-dessus ouvre le panneau avec un
+        laissez-passer, sans redemander les identifiants.
       */}
       {vendor && (
       <div className="mt-8 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
-          Deux connexions, et c&apos;est normal
+          Le panneau vendeur
         </h2>
         <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
-          Le panneau vendeur est une application distincte : il vous
-          demandera vos identifiants une première fois. Ce sont les mêmes
-          que ceux de cette page. Vous pouvez y passer l&apos;interface en
-          français depuis votre profil.
+          Produits, stock, commandes et versements se gèrent dans le
+          panneau vendeur. Il s&apos;ouvre directement dans votre
+          boutique, sans vous redemander vos identifiants. Vous pouvez y
+          passer l&apos;interface en français depuis votre profil.
         </p>
         {vendor && (
           <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">

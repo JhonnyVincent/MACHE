@@ -17,7 +17,7 @@
 import { redirect } from "next/navigation";
 import { isControlFlow, reasonOf } from "@/lib/safe-action";
 import { reportOutage } from "@/lib/medusa/outage";
-import { loginVendor, clearVendorSession } from "@/lib/medusa/vendor";
+import { loginVendor, clearVendorSession, vendorPanelEntryUrl } from "@/lib/medusa/vendor";
 
 const BASE = "/dashboard/seller/connexion";
 
@@ -66,4 +66,23 @@ export async function vendorLoginAction(formData: FormData) {
 export async function vendorLogoutAction() {
   await clearVendorSession();
   redirect("/dashboard/seller/connexion");
+}
+
+/*
+  ACTION : ouvrir le panneau vendeur Mercur, déjà connecté.
+
+  Le vendeur s'est connecté ici : on ne lui redemande pas ses
+  identifiants là-bas. Si le laissez-passer n'a pas pu être obtenu, on
+  l'envoie quand même au panneau, où il se connecte comme avant.
+*/
+export async function openVendorPanelAction() {
+  let target: string | null = null;
+
+  try {
+    target = await vendorPanelEntryUrl();
+  } catch (error) {
+    reportOutage("panneau vendeur", reasonOf(error));
+  }
+
+  redirect(target ?? "/dashboard/seller");
 }
