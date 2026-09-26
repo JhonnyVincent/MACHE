@@ -27,6 +27,7 @@
 
 import { cookies } from "next/headers";
 import { getMedusaConfig } from "./config";
+import { toHandle } from "@/lib/handle";
 import {
   backendTimeoutSignal,
   isTimeout,
@@ -48,7 +49,20 @@ export type VendorSeller = {
 };
 
 type Raw = Record<string, unknown>;
-type Result<T> = { ok: true; data: T } | { ok: false; reason: string };
+/*
+  `status` porte le code HTTP quand l'échec vient du backend.
+
+  Sans lui, un appelant ne peut pas distinguer « le backend a refusé les
+  identifiants » de « le backend n'a pas répondu ». La connexion vendeur
+  confondait les deux et annonçait « mot de passe incorrect » à un
+  vendeur dont le mot de passe était bon — voir `loginVendor`.
+
+  Absent quand rien n'a été reçu : délai dépassé, réseau coupé,
+  configuration manquante.
+*/
+type Result<T> =
+  | { ok: true; data: T }
+  | { ok: false; reason: string; status?: number };
 
 function str(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value.trim() : null;
@@ -143,6 +157,7 @@ async function request<T>(
         reason: str(payload.message)
           ? translate(str(payload.message) as string)
           : `Le backend a répondu ${response.status}.`,
+        status: response.status,
       };
     }
 
@@ -274,8 +289,29 @@ export async function loginVendor(
   });
 
   if (!auth.ok) {
-    /* Pas de distinction e-mail / mot de passe : sinon on énumère les comptes. */
-    return { ok: false, reason: "Adresse e-mail ou mot de passe incorrect." };
+    /*
+      UN REFUS N'EST PAS UNE PANNE, ET L'INVERSE NON PLUS.
+
+      Tout échec était annoncé « mot de passe incorrect ». Un backend
+      endormi — ce qui arrive à chaque réveil de l'hébergement, et que
+      cette page annonce elle-même sous le bouton — envoyait donc le
+      vendeur vérifier un mot de passe qui était bon, puis le changer,
+      puis douter de son compte. Signalé par un vendeur qui n'a pas pu
+      se reconnecter à une boutique qu'il venait de créer.
+
+      Seul un refus du backend (400 ou 401) parle des identifiants. Un
+      500, un délai dépassé, un réseau coupé parlent d'autre chose, et
+      le message d'origine dit déjà quoi faire — « réessayez dans une
+      minute » plutôt que « votre mot de passe est faux ».
+    */
+    const refused = auth.status === 401 || auth.status === 400;
+
+    if (refused) {
+      /* Pas de distinction e-mail / mot de passe : sinon on énumère les comptes. */
+      return { ok: false, reason: "Adresse e-mail ou mot de passe incorrect." };
+    }
+
+    return auth;
   }
 
   const token = str(auth.data.token);
@@ -292,6 +328,14 @@ export async function loginVendor(
     message d'origine enverrait quelqu'un vérifier son mot de passe
     pendant des heures.
   */
+  /*
+    Même piège qu'au-dessus, et même remède. Mercur répond 401 à un
+    membre sans boutique ; un backend endormi, lui, ne répond pas du
+    tout. Les confondre annonçait « vous n'avez aucune boutique » à un
+    vendeur qui en a une, ce qui l'envoie en ouvrir une seconde.
+  */
+  if (!mine.ok && mine.status !== 401) return mine;
+
   if (!mine.ok || mine.data.length === 0) {
     return {
       ok: false,
@@ -300,16 +344,42 @@ export async function loginVendor(
     };
   }
 
-  const wanted = storeHandle.trim().toLowerCase();
+  /*
+    LA MÊME NORMALISATION QU'À L'INSCRIPTION, ET PAS UNE AUTRE.
+
+    L'adresse d'une boutique est calculée par `toHandle` quand elle est
+    créée : « Bawon Lakwa » y devient « bawon-lakwa ». Ici, le champ
+    saisi n'était que mis en minuscules — « Bawon Lakwa » donnait
+    « bawon lakwa », qui ne peut correspondre à rien. Le vendeur lisait
+    « ce compte n'est pas membre de la boutique », devant une boutique
+    dont il était le seul membre.
+
+    On accepte aussi le NOM de la boutique, normalisé pareil : c'est ce
+    qu'un vendeur a en tête, et c'est ce qu'il tape. Lui refuser
+    l'entrée parce qu'il a écrit « Bawon Lakwa » au lieu de
+    « bawon-lakwa » serait une devinette, pas une vérification.
+  */
+  const wanted = toHandle(storeHandle);
 
   const seller = wanted
-    ? mine.data.find((entry) => entry.handle.toLowerCase() === wanted)
+    ? mine.data.find(
+        (entry) =>
+          toHandle(entry.handle) === wanted || toHandle(entry.name) === wanted
+      )
     : mine.data[0];
 
   if (!seller) {
+    /*
+      Le vendeur est authentifié : lui montrer SES boutiques ne révèle
+      rien qu'il ne puisse déjà lire dans son espace, et lui évite de
+      deviner l'orthographe exacte. Un message qui se contente de
+      refuser laisse chercher sans rien pour chercher.
+    */
+    const owned = mine.data.map((entry) => entry.handle).join(", ");
+
     return {
       ok: false,
-      reason: `Ce compte n'est pas membre de la boutique « ${storeHandle} ».`,
+      reason: `Ce compte n'est pas membre de la boutique « ${storeHandle.trim()} ». Il gère : ${owned}. Laissez le champ vide si vous n'avez qu'une boutique.`,
     };
   }
 
@@ -367,6 +437,16 @@ export async function registerVendor(input: {
     });
 
     if (!retry.ok) {
+      /*
+        Encore le même piège, au moment le plus coûteux : une panne
+        annonçait à un nouveau vendeur que son adresse était déjà prise.
+        Il en essaie une autre, puis une troisième, et finit avec
+        plusieurs comptes — ou renonce.
+      */
+      const refused = retry.status === 401 || retry.status === 400;
+
+      if (!refused) return retry;
+
       return {
         ok: false,
         reason:
