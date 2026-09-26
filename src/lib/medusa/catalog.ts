@@ -118,6 +118,8 @@ export type StoreCategory = {
   handle: string;
   name: string;
   description: string | null;
+  /* Le rayon parent ; null pour un rayon principal. */
+  parentId: string | null;
 };
 
 type RawProduct = Record<string, unknown>;
@@ -361,7 +363,11 @@ export type ProductQuery = {
   /* Recherche plein texte, déléguée au backend. */
   q?: string;
   collectionId?: string;
-  categoryId?: string;
+  /*
+    Un rayon, ou plusieurs : un rayon principal se lit avec ses
+    sous-rayons, où les vendeurs rangent réellement leurs articles.
+  */
+  categoryId?: string | string[];
   sellerId?: string;
   /* Plusieurs boutiques à la fois : filtrer le catalogue par profil. */
   sellerIds?: string[];
@@ -561,6 +567,7 @@ export async function fetchCategories(
       handle: text(raw.handle) ?? String(raw.id),
       name: text(raw.name) ?? "Catégorie",
       description: text(raw.description),
+      parentId: text(raw.parent_category_id),
     })),
   };
 }

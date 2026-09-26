@@ -57,6 +57,7 @@ import adminUser from "./admin-user";
 import commissionRates from "./commission-rates";
 import agentGroups from "./agent-groups";
 import emailCaseExisting from "./email-case-existing";
+import macheCategories from "./mache-categories";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -131,6 +132,13 @@ export default async function bootstrap(args: ExecArgs) {
       de vérification publique n'a rien à interroger.
     */
     await agentGroups(args);
+    /*
+      Les rayons de MACHÉ. Sans eux, le catalogue n'a que les rayons de
+      chaussures de la démonstration Mercur, et un vendeur ne peut
+      classer son article nulle part ailleurs. N'ajoute que ce qui
+      manque ; ne supprime ni ne renomme rien.
+    */
+    await macheCategories(args);
 
     /*
       Après la mise en place seulement : la région Haïti doit exister

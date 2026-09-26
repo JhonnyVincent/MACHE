@@ -37,6 +37,7 @@ import {
 } from "./catalog";
 import { fetchBestSellers } from "./bestsellers";
 import { PARTNERS } from "../partners";
+import { CATEGORY_TREE, FEATURED_CATEGORY_SLUGS } from "../categories";
 
 export type ProductRail = {
   key: string;
@@ -86,6 +87,12 @@ export type BoardCard = {
   tiles: BoardTile[];
   /* Ce que la carte dit quand elle n'a rien à montrer. Sinon, rien. */
   emptyNote: string | null;
+  /*
+    Les sous-rayons d'un rayon, pour qu'une carte encore vide montre au
+    moins ce qu'on y trouvera — des rayons qui existent vraiment, pas
+    des produits imaginés.
+  */
+  subLinks?: { label: string; href: string }[];
   /* Combien d'articles derrière, quand ce chiffre existe vraiment. */
   count: number;
 };
@@ -116,7 +123,13 @@ export async function fetchHomeData(): Promise<HomeData> {
     */
     fetchProducts({ limit: 50, order: "-created_at" }),
     fetchSellers(12),
-    fetchCategories(24),
+    /*
+      Tout l'arbre des rayons, pas les vingt-quatre premiers : il faut
+      les sous-rayons pour remplir chaque rayon principal, et l'ordre
+      par défaut du catalogue place d'abord les rayons de la
+      démonstration.
+    */
+    fetchCategories(300),
     fetchCollections(12),
     /*
       Les meilleures ventes viennent de vraies commandes. Le backend
@@ -248,22 +261,60 @@ export async function fetchHomeData(): Promise<HomeData> {
   }
 
   /*
-    LES RAYONS, ILLUSTRÉS PAR LEURS PROPRES PRODUITS.
+    LES RAYONS DE MACHÉ, ILLUSTRÉS PAR LEURS PROPRES PRODUITS.
 
-    Une lecture par rayon, toutes lancées ensemble. C'est ce qui coûte
-    le plus cher sur cette page, et c'est pour cela qu'on se limite aux
-    premiers rayons : douze cartes suffisent à meubler un accueil, et
-    vingt-quatre lectures pour des cases qu'on ne voit qu'en faisant
-    défiler seraient payées par tous les visiteurs.
+    Les rayons PRINCIPAUX seulement — « Fait à la main », pas « Crochet
+    et tricot » en carte séparée — et ceux de MACHÉ seulement. Le
+    catalogue contient aussi les rayons de la démonstration Mercur
+    (chaussures fictives, en anglais), que son ordre par défaut place
+    en tête : l'accueil n'a pas à s'ouvrir sur eux.
 
+    Chaque carte se remplit avec les articles du rayon ET de ses
+    sous-rayons : un vendeur range sa poupée dans « Crochet et tricot »,
+    pas dans « Fait à la main ». Lire le seul rayon principal aurait
+    laissé toutes les cartes vides alors que les sous-rayons se
+    remplissent.
+
+    L'ordre : les rayons qui ont des articles d'abord, puis ceux mis en
+    avant (fait main, fait maison, bio…), puis les autres.
+
+    Une lecture par rayon, toutes lancées ensemble et mises en cache.
     Un rayon qui échoue ou qui est vide ne fait pas tomber les autres :
-    il sort sans vignette, et sa carte le dit.
+    sa carte le dit, et montre ses sous-rayons.
   */
-  const topCategories = categories.ok ? categories.data.slice(0, 12) : [];
+  const all = categories.ok ? categories.data : [];
+
+  const macheOrder = new Map(CATEGORY_TREE.map((node, index) => [node.slug, index]));
+  const featured = new Map<string, number>(
+    FEATURED_CATEGORY_SLUGS.map((slug, index) => [slug, index])
+  );
+
+  const mainRayons = all
+    .filter((category) => category.parentId === null && macheOrder.has(category.handle))
+    .sort((a, b) => macheOrder.get(a.handle)! - macheOrder.get(b.handle)!);
+
+  /* L'ordre des sous-rayons est celui du site, pas celui, arbitraire, de la base. */
+  const childOrder = new Map(
+    CATEGORY_TREE.flatMap((node) => (node.children ?? []).map((child, index) => [child.slug, index] as const))
+  );
+
+  const childrenOf = (parentId: string) =>
+    all
+      .filter((category) => category.parentId === parentId)
+      .sort(
+        (a, b) =>
+          (childOrder.get(a.handle) ?? Number.MAX_SAFE_INTEGER) -
+          (childOrder.get(b.handle) ?? Number.MAX_SAFE_INTEGER)
+      );
 
   const categoryCards = await Promise.all(
-    topCategories.map(async (category): Promise<BoardCard> => {
-      const found = await fetchProducts({ categoryId: category.id, limit: 4 });
+    mainRayons.map(async (category): Promise<BoardCard> => {
+      const children = childrenOf(category.id);
+
+      const found = await fetchProducts({
+        categoryId: [category.id, ...children.map((child) => child.id)],
+        limit: 4,
+      });
 
       const products = found.ok ? found.data.products : [];
 
@@ -281,23 +332,42 @@ export async function fetchHomeData(): Promise<HomeData> {
           })),
         emptyNote:
           "Aucun article pour l'instant. Ce rayon se remplira dès qu'un vendeur y déposera le sien.",
+        subLinks: children.slice(0, 6).map((child) => ({
+          label: child.name,
+          href: `/shop?category=${encodeURIComponent(child.handle)}`,
+        })),
         count: found.ok ? found.data.count : 0,
       };
     })
   );
 
-  /* Les rayons alimentés d'abord : un accueil ne s'ouvre pas sur du vide. */
+  /* Promise.all garde l'ordre : la carte n°i est celle du rayon n°i. */
+  const ranked = categoryCards.map((card, index) => ({
+    card,
+    featured: featured.get(mainRayons[index].handle) ?? FEATURED_CATEGORY_SLUGS.length,
+  }));
+
   boards.push(
-    ...categoryCards.sort(
-      (a, b) => b.tiles.length - a.tiles.length || b.count - a.count
-    )
+    ...ranked
+      .sort(
+        (a, b) =>
+          Number(b.card.tiles.length > 0) - Number(a.card.tiles.length > 0) ||
+          a.featured - b.featured ||
+          b.card.count - a.card.count
+      )
+      .map(({ card }) => card)
   );
 
   return {
     rails,
     newSellers: allSellers.slice(0, 8),
     verifiedSellers: allSellers.filter((seller) => seller.isPremium).slice(0, 6),
-    categories: categories.ok ? categories.data : [],
+    /*
+      Les rayons principaux de MACHÉ : c'est ce que compte « Rayons »
+      en haut de l'accueil. Le total brut mêlait sous-rayons et rayons
+      de démonstration.
+    */
+    categories: mainRayons,
     boards,
     collections: collections.ok ? collections.data : [],
     problems,

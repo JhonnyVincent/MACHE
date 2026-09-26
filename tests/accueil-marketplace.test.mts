@@ -31,6 +31,7 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { FEATURED_CATEGORY_SLUGS } from "../src/lib/categories.ts";
 
 let passed = 0;
 
@@ -235,6 +236,36 @@ check("il ne reste qu'une seule porte de connexion", () => {
     /href="\/dashboard"/,
     "une seule entrée, qui aiguille vers le bon espace"
   );
+});
+
+/* ------------------------------------------------------------------ */
+/* Les rayons de l'accueil                                             */
+/* ------------------------------------------------------------------ */
+
+check("le damier ne montre que les rayons principaux de MACHÉ", () => {
+  /*
+    L'ordre par défaut du catalogue place d'abord les rayons de la
+    démonstration Mercur (chaussures fictives, en anglais). Et un
+    sous-rayon en carte séparée émiette l'accueil.
+  */
+  assert.match(
+    HOME,
+    /category\.parentId === null && macheOrder\.has\(category\.handle\)/,
+    "seuls les rayons principaux de MACHÉ font une carte"
+  );
+});
+
+check("un rayon principal se remplit avec ses sous-rayons", () => {
+  /* Un vendeur range sa poupée dans « Crochet et tricot », pas dans « Fait à la main ». */
+  assert.match(HOME, /categoryId: \[category\.id, \.\.\.children\.map\(\(child\) => child\.id\)\]/);
+});
+
+check("fait main, fait maison et bio passent devant, à contenu égal", () => {
+  assert.deepEqual([...FEATURED_CATEGORY_SLUGS].slice(0, 3), ["fait-a-la-main", "fait-maison", "bio"]);
+});
+
+check("« Rayons » compte les rayons de MACHÉ, pas le total brut", () => {
+  assert.match(HOME, /categories: mainRayons,/);
 });
 
 console.log(`\n${passed} vérifications passées.\n`);

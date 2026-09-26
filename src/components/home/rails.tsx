@@ -320,10 +320,30 @@ export function HomeBoardSection({ cards }: { cards: BoardCard[] }) {
               </div>
             ) : (
               card.emptyNote && (
-                <div className="mt-3 flex flex-1 items-center rounded-[6px] border border-dashed border-[var(--mache-line)] px-3 py-5">
+                <div className="mt-3 flex flex-1 flex-col justify-center rounded-[6px] border border-dashed border-[var(--mache-line)] px-3 py-5">
                   <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
                     {card.emptyNote}
                   </p>
+
+                  {/*
+                    Ce qu'on y trouvera : ses vrais sous-rayons. Ils
+                    existent au catalogue, un vendeur peut y ranger son
+                    article dès aujourd'hui — rien n'est inventé.
+                  */}
+                  {card.subLinks && card.subLinks.length > 0 && (
+                    <ul className="mt-3 flex flex-wrap gap-1.5">
+                      {card.subLinks.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="inline-block rounded-[4px] bg-[var(--mache-bg)] px-2 py-1 text-xs font-medium text-[var(--mache-text)] hover:text-[var(--mache-primary)]"
+                          >
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               )
             )}
