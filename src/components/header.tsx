@@ -144,20 +144,28 @@ export function Header({ cartCount = 0,
         </div>
       </div>
 
-      <div className="container-page grid grid-cols-[260px_1fr_280px] items-center gap-8 py-5">
-        <Link href="/" className="flex items-center gap-4">
+      {/*
+        Trois colonnes sur grand écran, deux sur téléphone.
+
+        Les colonnes étaient figées à 260 et 280 pixels, sur tous les
+        écrans : sur un téléphone de 390 pixels, « Mon compte », « Favoris »
+        et « Panier » débordaient jusqu'à 516 pixels — et comme la page
+        masque ce qui dépasse, le panier était coupé, hors d'atteinte.
+      */}
+      <div className="container-page grid grid-cols-[1fr_auto] items-center gap-4 py-3 md:grid-cols-[260px_1fr_280px] md:gap-8 md:py-5">
+        <Link href="/" className="flex min-w-0 items-center gap-2 md:gap-4">
           <img
             src="/images/logo-haiti-mache-hibiscus.png"
             alt="Logo Maché"
-            className="h-20 w-20"
+            className="h-12 w-12 shrink-0 md:h-20 md:w-20"
           />
 
-          <div>
-            <div className="text-4xl font-black tracking-tightest text-[#071f3d]">
+          <div className="min-w-0">
+            <div className="text-2xl font-black tracking-tightest text-[#071f3d] md:text-4xl">
               Maché
             </div>
 
-            <div className="text-xs font-black uppercase text-[#071f3d]">
+            <div className="hidden text-xs font-black uppercase text-[#071f3d] sm:block">
               Tout Ayiti. Tout en un seul Maché.
             </div>
           </div>
@@ -183,7 +191,7 @@ export function Header({ cartCount = 0,
           </button>
         </form>
 
-        <div className="flex justify-end gap-7 text-center">
+        <div className="flex justify-end gap-4 text-center text-sm md:gap-7 md:text-base">
           {/*
             UNE SEULE PORTE, ET ELLE AIGUILLE.
 

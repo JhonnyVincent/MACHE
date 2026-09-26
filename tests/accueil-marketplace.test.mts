@@ -12,13 +12,15 @@
   visiteur. Il lit maintenant les promotions en cours, et disparaît
   quand il n'y en a aucune.
 
-  2. LA MOSAÏQUE N'EMPRUNTE DE PHOTOS QU'AUX VRAIS PRODUITS
+  2. LE GRAND BANDEAU N'EMPRUNTE DE PHOTOS QU'AUX VRAIS PRODUITS
 
   Ce qui meuble l'accueil d'une grande place de marché, ce sont des
-  photos. MACHÉ n'en a aucune à lui : les visuels de stock ont été
-  retirés volontairement, et en remettre décorerait le site avec des
-  articles qui n'existent pas. Les tuiles empruntent donc leurs
-  vignettes aux produits que les vendeurs ont réellement mis en ligne.
+  photos. MACHÉ n'en a aucune à lui, hormis sa carte et son logo : les
+  visuels de stock ont été retirés volontairement, et en remettre
+  décorerait le site avec des articles qui n'existent pas. Les
+  diapositives empruntent donc leurs vignettes aux produits que les
+  vendeurs ont réellement mis en ligne — et un rayon encore vide
+  s'adresse aux vendeurs au lieu de faire semblant d'être rempli.
 
   3. UNE SEULE PORTE DE CONNEXION
 
@@ -31,7 +33,6 @@
 
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { FEATURED_CATEGORY_SLUGS } from "../src/lib/categories.ts";
 
 let passed = 0;
 
@@ -42,7 +43,10 @@ function check(name: string, run: () => void) {
 }
 
 const HEADER = readFileSync("src/components/header.tsx", "utf8");
-const MOSAIC = readFileSync("src/components/home/rails.tsx", "utf8");
+const HERO = readFileSync("src/components/home/hero.tsx", "utf8");
+const PAGE = readFileSync("src/app/page.tsx", "utf8");
+const SECTIONS = readFileSync("src/components/home/sections.tsx", "utf8");
+const SLIDER = readFileSync("src/components/slider.tsx", "utf8");
 const HOME = readFileSync("src/lib/medusa/home.ts", "utf8");
 const ROUTE = readFileSync(
   "backend/packages/api/src/api/store/promotions/route.ts",
@@ -128,47 +132,44 @@ check("une promotion automatique n'annonce pas de code", () => {
 /* La mosaïque                                                         */
 /* ------------------------------------------------------------------ */
 
-check("le damier n'utilise aucune image décorative", () => {
-  /*
-    Le garde-fou qui compte. Des visuels de stock avaient déjà été
-    retirés une fois du site : ils décoraient MACHÉ avec des articles
-    que personne n'y vendait. La tentation revient dès qu'un accueil
-    paraît vide — c'est précisément le moment où elle est la plus
-    mauvaise.
-  */
-  const debut = MOSAIC.indexOf("export function HomeBoardSection");
-
-  assert.ok(debut > -1, "le damier doit exister");
-
-  const section = MOSAIC.slice(debut);
-
-  assert.equal(
-    /(unsplash|placeholder|picsum|via\.placeholder|\/images\/(?!logo))/i.test(section),
-    false,
-    "les vignettes doivent venir des produits, pas d'une banque d'images"
-  );
-
-  assert.match(
-    section,
-    /src=\{tile\.image\}/,
-    "chaque vignette doit venir de la liste passée en donnée"
-  );
+check("le grand bandeau s'ouvre toujours sur la carte d'Haïti", () => {
+  const slider = HERO.slice(HERO.indexOf('<Slider variant="hero"'));
+  const map = slider.indexOf("<MapSlide");
+  const others = slider.indexOf("slides.map(");
+  assert.ok(map > -1 && others > -1 && map < others, "la carte doit être la première diapositive, avant toutes les autres");
 });
 
-check("un rayon vide le dit au lieu d'être illustré", () => {
-  const section = MOSAIC.slice(MOSAIC.indexOf("export function HomeBoardSection"));
+check("le bandeau n'utilise aucune image décorative", () => {
+  /*
+    Le garde-fou qui compte. Des visuels de stock avaient déjà été
+    retirés une fois : ils décoraient MACHÉ avec des articles que
+    personne n'y vendait. La tentation revient dès qu'un accueil paraît
+    vide — c'est précisément le moment où elle est la plus mauvaise.
+  */
+  const sources = [...HERO.matchAll(/src=(\{[^}]+\}|"[^"]*")/g)].map((m) => m[1]);
+  const allowed = ['"/images/carte-haiti-mache.png"', '"/images/logo-haiti-mache-hibiscus.png"', "{product.image}"];
+  for (const source of sources) {
+    assert.ok(allowed.includes(source), `image non autorisée dans le bandeau : ${source}`);
+  }
+  assert.ok(sources.includes("{product.image}"), "les vignettes viennent des produits");
+  assert.doesNotMatch(HERO + HOME, /unsplash|picsum|placeholder\.|via\.placeholder/i);
+});
 
-  assert.match(
-    section,
-    /card\.tiles\.length > 0 \?/,
-    "une carte sans produit doit suivre un autre chemin"
-  );
+check("un rayon vide s'adresse aux vendeurs, sans montrer d'articles", () => {
+  assert.match(HOME, /if \(thumbs\.length > 0\) \{\s*return \{\s*kind: "products"/, "des articles réels, ou rien");
+  assert.match(HOME, /kind: "invite"/, "sinon, une invitation");
+  const invite = HERO.slice(HERO.indexOf("function InviteSlide"), HERO.indexOf("export function HeroCarousel"));
+  assert.doesNotMatch(invite, /<img/, "une invitation ne montre aucun article, puisqu'il n'y en a pas");
+  assert.match(invite, /href="\/sell"/, "elle mène à l'ouverture d'une boutique");
+});
 
-  assert.match(
-    HOME,
-    /Aucun article pour l/,
-    "et dire franchement qu'elle est vide"
-  );
+check("un rayon absent du catalogue n'a pas de diapositive", () => {
+  /* On n'enverrait personne vers une page vide. */
+  assert.match(HOME, /if \(!rayon\) return null;/);
+});
+
+check("les rayons du bandeau sont fait main, fait maison et bio", () => {
+  assert.match(HOME, /const SLIDE_RAYONS = \["fait-a-la-main", "fait-maison", "bio"\] as const;/);
 });
 
 check("les plus vendus ne sont pas classés sans assez de ventes", () => {
@@ -239,33 +240,75 @@ check("il ne reste qu'une seule porte de connexion", () => {
 });
 
 /* ------------------------------------------------------------------ */
-/* Les rayons de l'accueil                                             */
+/* L'ordre de la page, et ce qu'elle ne prétend pas                    */
 /* ------------------------------------------------------------------ */
 
-check("le damier ne montre que les rayons principaux de MACHÉ", () => {
+check("la page suit l'ordre voulu", () => {
+  const order = [
+    "<HeroCarousel",
+    "<BrowseRayons",
+    "<SellCta",
+    'title="Nouvelles boutiques"',
+    "<PartnersStrip",
+    'title="Promotions"',
+    'title="Les plus vendus"',
+    "<VerifyAgentBanner",
+    "home.forYou &&",
+  ];
+  let last = -1;
+  for (const marker of order) {
+    const at = PAGE.indexOf(marker);
+    assert.ok(at > last, `« ${marker} » est absent ou mal placé`);
+    last = at;
+  }
+});
+
+check("« Parcourir les rayons » montre tous les rayons de MACHÉ, en liens", () => {
+  const browse = SECTIONS.slice(SECTIONS.indexOf("export function BrowseRayons"), SECTIONS.indexOf("export function SellCta"));
+  assert.match(browse, /CATEGORY_TREE\.map\(/);
+  assert.doesNotMatch(browse, /<img|grid-cols/, "une bande de liens, pas des blocs");
+});
+
+check("« Vous aimerez » ne se prétend personnel que d'après les favoris", () => {
   /*
-    L'ordre par défaut du catalogue place d'abord les rayons de la
-    démonstration Mercur (chaussures fictives, en anglais). Et un
-    sous-rayon en carte séparée émiette l'accueil.
+    Sans rien savoir des goûts du visiteur, prétendre deviner ce qu'il
+    aimera serait un mensonge. Sans favoris, la section s'appelle
+    « À découvrir ».
   */
+  const personal = HOME.indexOf('title: "Vous aimerez"');
+  const guard = HOME.lastIndexOf("if (favoriteCategoryIds.length > 0)", personal);
+  assert.ok(personal > -1 && guard > -1, "« Vous aimerez » doit dépendre des favoris");
+  assert.match(HOME, /title: "À découvrir"/);
+});
+
+check("l'accueil ne suit pas ce que regardent les visiteurs", () => {
+  /* La page de confidentialité promet qu'aucun traceur n'est déposé. */
+  for (const source of [HOME, HERO, PAGE, SECTIONS, SLIDER]) {
+    assert.doesNotMatch(source, /document\.cookie|localStorage|sessionStorage/);
+  }
+});
+
+check("le défilement automatique s'arrête quand il le faut", () => {
   assert.match(
-    HOME,
-    /category\.parentId === null && macheOrder\.has\(category\.handle\)/,
-    "seuls les rayons principaux de MACHÉ font une carte"
+    SLIDER,
+    /autoplayMs > 0 && count > 1 && !reduced && !stopped && !hovered && !focused && !touched/,
+    "survol, focus clavier, doigt, animations réduites, bouton pause"
   );
+  assert.match(SLIDER, /Mettre le défilement en pause/, "un contenu qui bouge seul doit pouvoir être arrêté");
+  assert.match(SLIDER, /prefers-reduced-motion: reduce/);
 });
 
-check("un rayon principal se remplit avec ses sous-rayons", () => {
-  /* Un vendeur range sa poupée dans « Crochet et tricot », pas dans « Fait à la main ». */
-  assert.match(HOME, /categoryId: \[category\.id, \.\.\.children\.map\(\(child\) => child\.id\)\]/);
+check("« Vérifier un agent » passe par la page de vérification", () => {
+  const banner = SECTIONS.slice(SECTIONS.indexOf("export function VerifyAgentBanner"));
+  assert.match(banner, /<form action="\/verify-agent" method="GET"/);
+  assert.match(banner, /name="code"/);
 });
 
-check("fait main, fait maison et bio passent devant, à contenu égal", () => {
-  assert.deepEqual([...FEATURED_CATEGORY_SLUGS].slice(0, 3), ["fait-a-la-main", "fait-maison", "bio"]);
-});
-
-check("« Rayons » compte les rayons de MACHÉ, pas le total brut", () => {
-  assert.match(HOME, /categories: mainRayons,/);
+check("« Vous vendez quelque chose ? » ne promet pas d'audience", () => {
+  /* Le texte affiché seulement : le commentaire au-dessus cite la phrase retirée. */
+  const cta = SECTIONS.slice(SECTIONS.indexOf("export function SellCta"), SECTIONS.indexOf("export function VerifyAgentBanner"));
+  assert.ok(cta.includes("Vous vendez quelque chose ?"), "la section doit exister");
+  assert.doesNotMatch(cta, /déjà visité|des milliers|audience/i);
 });
 
 console.log(`\n${passed} vérifications passées.\n`);

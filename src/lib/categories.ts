@@ -31,8 +31,8 @@ export type CategoryNode = {
 };
 
 /*
-  Les six premières entrées sont celles de la bande de l'accueil : elles
-  portent l'identité visuelle du site et gardent leur émoji.
+  Chaque rayon principal garde son émoji : c'est son icône dans la bande
+  « Parcourir les rayons » de l'accueil et dans les bandeaux de rayon.
 */
 export const CATEGORY_TREE: CategoryNode[] = [
   {
@@ -159,26 +159,6 @@ export const CATEGORY_TREE: CategoryNode[] = [
   { slug: "services", label: "Services", icon: "🛠️" },
 ];
 
-/*
-  Les rayons mis en avant sur l'accueil, dans cet ordre.
-
-  Ce qui distingue ce marché d'abord — ce qui est fait à la main, fait
-  maison, naturel —, puis les grands rayons de tous les jours. Sert à
-  la fois au damier de l'accueil (à contenu égal, ces rayons passent
-  devant) et à la bande de liens de secours quand le catalogue ne
-  répond pas.
-*/
-export const FEATURED_CATEGORY_SLUGS = [
-  "fait-a-la-main",
-  "fait-maison",
-  "bio",
-  "mode",
-  "maison",
-  "saveurs",
-  "artisanat",
-  "beaute",
-] as const;
-
 export type FlatCategory = {
   slug: string;
   label: string;
@@ -289,6 +269,3 @@ export const CATEGORY_OPTIONS = ALL_CATEGORIES.map((category) => ({
   isChild: Boolean(category.parentSlug),
 }));
 
-export const FEATURED_CATEGORIES = FEATURED_CATEGORY_SLUGS.map(
-  (slug) => BY_SLUG.get(slug)!
-).filter(Boolean);

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SiteChrome } from "@/components/site-chrome";
 import { fetchCategories } from "@/lib/medusa/catalog";
+import { CATEGORY_TREE } from "@/lib/categories";
 import { getCart } from "@/lib/medusa/cart";
 import { fetchSiteTheme, themeStyle } from "@/lib/medusa/theme";
 import { fetchSitePromotions } from "@/lib/medusa/promotions";
@@ -36,13 +37,21 @@ export default async function RootLayout({
     écrite en dur : ce sont ceux de ce que les vendeurs vendent
     réellement, et ils changent avec eux.
   */
-  const categoriesResult = await fetchCategories(6);
+  /*
+    Les rayons principaux de MACHÉ, dans l'ordre du site. Les six
+    premiers du catalogue étaient ceux de la démonstration Mercur
+    (Sandals, Sneakers…), que son ordre par défaut place en tête.
+  */
+  const categoriesResult = await fetchCategories(300);
+
+  const macheOrder = new Map(CATEGORY_TREE.map((node, index) => [node.slug, index]));
 
   const categories = categoriesResult.ok
-    ? categoriesResult.data.map((entry) => ({
-        handle: entry.handle,
-        name: entry.name,
-      }))
+    ? categoriesResult.data
+        .filter((entry) => entry.parentId === null && macheOrder.has(entry.handle))
+        .sort((a, b) => macheOrder.get(a.handle)! - macheOrder.get(b.handle)!)
+        .slice(0, 8)
+        .map((entry) => ({ handle: entry.handle, name: entry.name }))
     : [];
 
   /*

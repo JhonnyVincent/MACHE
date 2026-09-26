@@ -270,6 +270,21 @@ aside:not([data-chrome="dark"]) a:active {
   font-feature-settings: "tnum" 1;
 }
 
+/*
+  Les défilements horizontaux de l'accueil (bandeau, rayons) : la barre
+  de défilement est masquée — les flèches, les points et le doigt la
+  remplacent — mais le défilement reste entier, au clavier compris.
+*/
+.mache-slider-track {
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+.mache-slider-track::-webkit-scrollbar {
+  display: none;
+}
+
 /* Masque les scrollbars de la navigation latérale sans bloquer le scroll. */
 .scrollbar-slim {
   scrollbar-width: thin;

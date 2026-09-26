@@ -93,6 +93,12 @@ export type StoreProduct = {
   createdAt: string | null;
   variantCount: number;
   variants: StoreVariant[];
+  /*
+    Les rayons du produit — renseignés seulement quand la requête les a
+    demandés (`withCategories`), vides sinon. Servent à proposer des
+    articles voisins d'un favori.
+  */
+  categoryIds: string[];
 };
 
 export type StoreSeller = {
@@ -267,6 +273,11 @@ function mapProduct(raw: RawProduct): StoreProduct {
     collectionTitle: text((raw.collection as Record<string, unknown> | null)?.title),
     createdAt: text(raw.created_at),
     variantCount: Array.isArray(raw.variants) ? raw.variants.length : 0,
+    categoryIds: Array.isArray(raw.categories)
+      ? (raw.categories as RawProduct[])
+          .map((category) => text(category.id))
+          .filter((id): id is string => Boolean(id))
+      : [],
     variants: Array.isArray(raw.variants)
       ? (raw.variants as RawProduct[]).map(mapVariant)
       : [],
@@ -373,6 +384,12 @@ export type ProductQuery = {
   sellerIds?: string[];
   /* `created_at` décroissant pour les nouveautés, etc. */
   order?: string;
+  /* Des produits précis : meilleures ventes, par exemple. */
+  ids?: string[];
+  /* Des produits précis, par leur adresse : les favoris d'un client. */
+  handles?: string[];
+  /* Joindre les rayons de chaque produit. */
+  withCategories?: boolean;
 };
 
 /*
@@ -435,6 +452,19 @@ export async function fetchProducts(
     idFilter = ids.data;
   }
 
+  if (query.ids) {
+    /* Des produits précis, ET de ces boutiques si l'on a aussi filtré par boutique. */
+    idFilter = idFilter ? query.ids.filter((id) => idFilter!.includes(id)) : query.ids;
+
+    if (idFilter.length === 0) {
+      return { ok: true, data: { products: [], count: 0 } };
+    }
+  }
+
+  if (query.handles && query.handles.length === 0) {
+    return { ok: true, data: { products: [], count: 0 } };
+  }
+
   const result = await medusaFetch<{ products: RawProduct[]; count: number }>(
     "/store/products",
     {
@@ -444,10 +474,13 @@ export async function fetchProducts(
       collection_id: query.collectionId,
       category_id: query.categoryId,
       id: idFilter,
+      handle: query.handles,
       order: query.order,
       /* Sans région, Medusa refuse de calculer les prix, et c'est sain. */
       region_id: medusaRegionId() || undefined,
-      fields: "*variants.calculated_price,*collection",
+      fields: query.withCategories
+        ? "*variants.calculated_price,*collection,*categories"
+        : "*variants.calculated_price,*collection",
     },
     { revalidate: 60, tags: ["products"] }
   );

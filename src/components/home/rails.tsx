@@ -12,13 +12,8 @@
 import Link from "next/link";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatAmount } from "@/lib/format";
-import type { BoardCard, BoardTile } from "@/lib/medusa/home";
-import type {
-  StoreProduct,
-  StoreSeller,
-  StoreCategory,
-  StoreCollection,
-} from "@/lib/medusa/catalog";
+import { Slider } from "@/components/slider";
+import type { StoreProduct, StoreSeller } from "@/lib/medusa/catalog";
 
 /* -------------------------------------------------------------------------- */
 /* En-tête de rayon                                                           */
@@ -135,28 +130,41 @@ export function ProductCard({ product }: { product: StoreProduct }) {
   );
 }
 
+/*
+  LES RANGÉES SE FONT GLISSER, ELLES NE S'EMPILENT PLUS.
+
+  Les articles et les boutiques s'affichaient en grilles figées — des
+  blocs posés les uns sous les autres. Ils défilent désormais en
+  rangées qu'on fait glisser, au doigt comme aux flèches : l'accueil
+  montre plus de choses en moins de hauteur, et invite à parcourir.
+*/
 export function ProductRailSection({
   title,
   subtitle,
   href,
+  linkLabel,
   products,
+  autoplayMs = 0,
 }: {
   title: string;
   subtitle?: string;
   href?: string;
+  linkLabel?: string;
   products: StoreProduct[];
+  /* Défilement automatique, en millisecondes ; 0 pour aucun. */
+  autoplayMs?: number;
 }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="container-page py-5">
-      <RailHeader title={title} subtitle={subtitle} href={href} />
+    <section className="mache-reveal container-page py-5">
+      <RailHeader title={title} subtitle={subtitle} href={href} linkLabel={linkLabel} />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      <Slider label={title} autoplayMs={autoplayMs}>
         {products.slice(0, 12).map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
-      </div>
+      </Slider>
     </section>
   );
 }
@@ -177,15 +185,15 @@ export function SellerRailSection({
   if (sellers.length === 0) return null;
 
   return (
-    <section className="container-page py-5">
+    <section className="mache-reveal container-page py-5">
       <RailHeader title={title} subtitle={subtitle} href="/shop" linkLabel="Toutes les boutiques" />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <Slider label={title} itemClassName="w-[70%] sm:w-[40%] lg:w-[24%]">
         {sellers.map((seller) => (
           <Link
             key={seller.id}
             href={`/store/${seller.handle}`}
-            className="group overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow hover:shadow-[0_6px_20px_rgba(16,24,32,0.10)]"
+            className="group block h-full overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow hover:shadow-[0_6px_20px_rgba(16,24,32,0.10)]"
           >
             <div className="relative h-20 bg-[var(--mache-bg)]">
               {seller.banner && (
@@ -222,230 +230,7 @@ export function SellerRailSection({
             </div>
           </Link>
         ))}
-      </div>
+      </Slider>
     </section>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Catégories et collections                                                  */
-export function CollectionRailSection({ collections }: { collections: StoreCollection[] }) {
-  if (collections.length === 0) return null;
-
-  return (
-    <section className="container-page py-5">
-      <RailHeader title="Collections" subtitle="Sélections constituées par MACHÉ et ses vendeurs" />
-
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {collections.map((collection) => (
-          <Link
-            key={collection.id}
-            href={`/shop?collection=${encodeURIComponent(collection.handle)}`}
-            className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-3 text-base font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)]"
-          >
-            {collection.title}
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* La mosaïque des rayons                                                      */
-/* -------------------------------------------------------------------------- */
-
-/*
-  CE QUI MEUBLE VRAIMENT L'ACCUEIL D'UNE PLACE DE MARCHÉ.
-
-  Chez Amazon ou Cdiscount, ce ne sont pas des mots : ce sont des
-  PHOTOS de produits, rangées par rayon. Une bande de liens texte, si
-  bien écrite soit-elle, donne l'impression d'un site vide — même quand
-  le catalogue ne l'est pas.
-
-  MACHÉ n'a aucune photo à lui : les visuels de stock ont été retirés
-  volontairement, et en remettre serait décorer avec des articles qui
-  n'existent pas. Mais les vendeurs, eux, photographient les leurs. Une
-  tuile emprunte donc quatre vraies vignettes au rayon qu'elle annonce.
-
-  UN RAYON VIDE NE MENT PAS
-
-  Sans produit, pas de vignette : la tuile affiche son nom et le dit.
-  C'est le seul traitement honnête, et il a un avantage — le jour où un
-  vendeur y dépose son premier article, la tuile se remplit toute
-  seule.
-
-  Les rayons GARNIS passent devant. Un accueil qui ouvre sur quatre
-  cases vides annonce un site vide ; les mêmes cases reléguées plus bas
-  annoncent un catalogue qui commence.
-*/
-export function HomeBoardSection({ cards }: { cards: BoardCard[] }) {
-  if (cards.length === 0) return null;
-
-  return (
-    <section className="mache-reveal container-page py-5">
-      <div className="mb-3 flex items-baseline justify-between gap-4">
-        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
-          Sur MACHÉ en ce moment
-        </h2>
-
-        <Link
-          href="/shop"
-          className="text-sm font-semibold text-[var(--mache-primary)] hover:underline"
-        >
-          Tout le catalogue
-        </Link>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((card) => (
-          <article
-            key={card.key}
-            className="flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4"
-          >
-            {/*
-              Le titre de la carte est son propre lien, et les vignettes
-              en dessous ont chacune le leur. Une seule grande zone
-              cliquable engloberait les deux : on croirait ouvrir la
-              poupée en crochet qu'on regarde, et on tomberait sur le
-              rayon entier.
-            */}
-            <CardTitle card={card} />
-
-            {card.tiles.length > 0 ? (
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                {card.tiles.map((tile, index) => (
-                  <BoardTileLink key={`${card.key}-${index}`} tile={tile} />
-                ))}
-              </div>
-            ) : (
-              card.emptyNote && (
-                <div className="mt-3 flex flex-1 flex-col justify-center rounded-[6px] border border-dashed border-[var(--mache-line)] px-3 py-5">
-                  <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
-                    {card.emptyNote}
-                  </p>
-
-                  {/*
-                    Ce qu'on y trouvera : ses vrais sous-rayons. Ils
-                    existent au catalogue, un vendeur peut y ranger son
-                    article dès aujourd'hui — rien n'est inventé.
-                  */}
-                  {card.subLinks && card.subLinks.length > 0 && (
-                    <ul className="mt-3 flex flex-wrap gap-1.5">
-                      {card.subLinks.map((link) => (
-                        <li key={link.href}>
-                          <Link
-                            href={link.href}
-                            className="inline-block rounded-[4px] bg-[var(--mache-bg)] px-2 py-1 text-xs font-medium text-[var(--mache-text)] hover:text-[var(--mache-primary)]"
-                          >
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              )
-            )}
-
-            {card.count > 0 && (
-              <p className="tnum mt-3 text-sm text-[var(--mache-muted)]">
-                {card.count} article{card.count > 1 ? "s" : ""}
-              </p>
-            )}
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function CardTitle({ card }: { card: BoardCard }) {
-  const content = (
-    <>
-      <h3 className="text-md font-bold leading-snug text-[var(--mache-text)] group-hover:text-[var(--mache-primary)]">
-        {card.title}
-      </h3>
-      <span
-        aria-hidden="true"
-        className="text-[var(--mache-muted)] transition-transform group-hover:translate-x-0.5"
-      >
-        ›
-      </span>
-    </>
-  );
-
-  const className = "group flex items-baseline justify-between gap-2";
-
-  if (card.external) {
-    return (
-      <a href={card.href} target="_blank" rel="noopener noreferrer" className={className}>
-        {content}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={card.href} className={className}>
-      {content}
-    </Link>
-  );
-}
-
-/*
-  UNE VIGNETTE : une vraie photo quand elle existe, jamais autre chose.
-
-  Sans photo — c'est le cas des partenaires, dont MACHÉ n'a pas le
-  droit d'afficher le logo — la case porte le nom en toutes lettres
-  plutôt qu'une image de remplissage.
-
-  `alt` vide et `aria-hidden` sur l'image : le nom est écrit juste en
-  dessous, et le décrire ferait entendre deux fois la même chose à qui
-  navigue au clavier ou à la voix.
-*/
-function BoardTileLink({ tile }: { tile: BoardTile }) {
-  const content = (
-    <>
-      <div className="aspect-square overflow-hidden rounded-[6px] bg-[var(--mache-bg-2)]">
-        {tile.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={tile.image}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center px-2 text-center text-base font-bold text-[var(--mache-text)]">
-            {tile.label}
-          </div>
-        )}
-      </div>
-
-      <p className="mt-1.5 line-clamp-2 text-sm leading-snug text-[var(--mache-text)] group-hover:underline">
-        {tile.label}
-        {tile.external && (
-          <>
-            <span className="ml-1 text-xs text-[var(--mache-muted)]" aria-hidden="true">↗</span>
-            <span className="sr-only"> (site externe)</span>
-          </>
-        )}
-      </p>
-    </>
-  );
-
-  if (tile.external) {
-    return (
-      <a href={tile.href} target="_blank" rel="noopener noreferrer" className="group block">
-        {content}
-      </a>
-    );
-  }
-
-  return (
-    <Link href={tile.href} className="group block">
-      {content}
-    </Link>
   );
 }
