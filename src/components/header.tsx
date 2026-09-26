@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Link } from "next-view-transitions";
+import { SocialLinks } from "@/components/social-links";
 import type { SitePromotion } from "@/lib/medusa/promotions";
 
 /*
@@ -34,6 +35,7 @@ const translations = {
     regions: "Haïti",
     sellers: "Vendre sur MACHE",
     verifyAgent: "Vérifier un agent",
+    findSupplier: "Trouver un fournisseur",
     help: "Aide"
   },
   ht: {
@@ -52,6 +54,7 @@ const translations = {
     regions: "Ayiti",
     sellers: "Vann sou MACHE",
     verifyAgent: "Verifye yon ajan",
+    findSupplier: "Jwenn yon founisè",
     help: "Èd"
   }
 };
@@ -63,6 +66,8 @@ const SERVICES = [
   { key: "track", icon: "🚚", href: "/dashboard/buyer/orders" },
   { key: "verifyAgent", icon: "✅", href: "/verify-agent" },
   { key: "openShop", icon: "🏪", href: "/sell" },
+  /* Les boutiques qui se déclarent fournisseur ou grossiste. */
+  { key: "findSupplier", icon: "📦", href: "/gros" },
 ] as const;
 
 /* La langue choisie, lue dans son cookie. */
@@ -169,13 +174,15 @@ export function Header({ cartCount = 0,
           <div className="relative min-w-0 flex-1 overflow-hidden">
             {/*
               Assez de copies pour couvrir tout l'écran : avec une seule
-              série de trois services, la bande laissait un grand vide
-              après « Ouvrir une boutique » avant de revenir au début.
+              série de services, la bande laissait un grand vide avant de
+              revenir au début. Six séries de quatre : la même longueur
+              qu'avant l'ajout de « Trouver un fournisseur », donc la même
+              vitesse. Un nombre pair, pour que la boucle se referme.
               Seule la première série est lue : les copies sont cachées
               aux lecteurs d'écran.
             */}
             <div className="mache-ticker mache-ticker-fast flex w-max items-center whitespace-nowrap text-base font-semibold">
-              {Array.from({ length: 8 }).flatMap((_, copy) =>
+              {Array.from({ length: 6 }).flatMap((_, copy) =>
                 SERVICES.map((service) => (
                   <Link
                     key={`${copy}-${service.href}`}
@@ -190,6 +197,12 @@ export function Header({ cartCount = 0,
               )}
             </div>
           </div>
+
+          {/*
+            Les réseaux de MACHE, fixes eux aussi. Masqués sur téléphone,
+            où la bande n'a pas la place : ils sont dans le pied de page.
+          */}
+          <SocialLinks className="hidden shrink-0 border-l border-white/20 pl-4 sm:flex" size={17} />
 
           <div className="shrink-0 px-4">
             <select

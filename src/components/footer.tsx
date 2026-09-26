@@ -1,4 +1,5 @@
 import { Link } from "next-view-transitions";
+import { SocialLinks } from "@/components/social-links";
 
 /*
   La colonne « Acheter » proposait cinq rayons — Mode, Épicerie,
@@ -86,6 +87,8 @@ export function Footer({
               indépendantes, des marques et des fournisseurs d&apos;ici et
               de la diaspora, réunis au même endroit.
             </p>
+
+            <SocialLinks className="mt-5 flex text-white" size={22} />
 
             <div className="mt-5 flex flex-wrap gap-2">
               <span className="rounded-md border border-white/10 px-3 py-1 text-2xs text-white/55">
