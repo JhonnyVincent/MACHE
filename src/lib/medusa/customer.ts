@@ -154,7 +154,13 @@ async function writeToken(token: string) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    /*
+      Trois jours, comme le jeton du backend (medusa-config.ts,
+      SESSION_DAYS). Le cookie en durait sept alors que le jeton
+      expirait au bout d'un jour : le client semblait connecté avec un
+      jeton déjà refusé.
+    */
+    maxAge: 60 * 60 * 24 * 3,
   });
 }
 

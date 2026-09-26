@@ -82,6 +82,15 @@ services:
         generateValue: true
       - key: COOKIE_SECRET
         generateValue: true
+      # Où ranger les sessions du panneau vendeur (voir mache-sessions
+      # plus bas). Sans elle, elles vivent en mémoire et disparaissent
+      # chaque fois que Render endort ou redémarre le backend : les
+      # vendeurs étaient déconnectés au bout de quelques minutes.
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: mache-sessions
+          property: connectionString
       # Partagé avec le site : il autorise le backend à vider le cache du
       # site quand un prix ou un produit change. À recopier tel quel dans
       # la variable STOREFRONT_REVALIDATE_SECRET de l'hébergeur du site.
@@ -198,6 +207,18 @@ services:
       # pas un coût de transport étudié. Par défaut : 350.
       - key: DEMO_SHIPPING_HTG
         sync: false
+
+  # Les sessions du panneau vendeur, dans un Redis à part (« Key
+  # Value » chez Render). L'offre gratuite suffit : une session pèse
+  # environ un kilo-octet. Elle ne s'endort pas avec le backend, et les
+  # sessions survivent donc à ses réveils et à ses mises en ligne.
+  # Accessible seulement depuis les services Render (ipAllowList vide).
+  - type: keyvalue
+    name: mache-sessions
+    plan: free
+    region: frankfurt
+    maxmemoryPolicy: volatile-lru
+    ipAllowList: []
 
 databases:
   - name: mache-db

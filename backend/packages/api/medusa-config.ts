@@ -76,6 +76,9 @@ const authCors = process.env.AUTH_CORS || `${storefrontUrl},${selfUrl}`
 */
 const poolMax = Number(process.env.DB_POOL_MAX) || 5
 
+/* Combien de temps un compte reste connecté sans se reconnecter. */
+const SESSION_DAYS = 3;
+
 module.exports = withMercur({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
@@ -89,7 +92,35 @@ module.exports = withMercur({
       authCors,
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
-    }
+      /*
+        Trois jours, pour tous les comptes. Par défaut Medusa coupe au
+        bout d'un jour, alors que le site gardait le client connecté
+        sept jours : il était déconnecté sans comprendre pourquoi.
+      */
+      jwtExpiresIn: `${SESSION_DAYS}d`,
+    },
+    /*
+      LA SESSION DU PANNEAU VENDEUR.
+
+      Le panneau Mercur tient sa connexion dans une session du backend.
+      Sans Redis, cette session vit EN MÉMOIRE : or Render (offre
+      gratuite) endort le backend après quinze minutes sans visite et le
+      redémarre à chaque mise en ligne. À chaque réveil, toutes les
+      sessions disparaissaient : le vendeur était « déconnecté très
+      vite », sans raison apparente.
+
+      Avec REDIS_URL, les sessions sont rangées dans Redis (un service à
+      part, qui ne dort pas) et survivent aux réveils. Sans elle, rien
+      ne casse : on retombe sur la mémoire, comme avant.
+
+      Trois jours, prolongés à chaque utilisation (`rolling`) : un
+      vendeur actif n'est jamais coupé en plein travail.
+    */
+    redisUrl: process.env.REDIS_URL || undefined,
+    sessionOptions: {
+      ttl: SESSION_DAYS * 24 * 60 * 60 * 1000,
+      rolling: true,
+    },
   },
   featureFlags: {
     seller_registration: true

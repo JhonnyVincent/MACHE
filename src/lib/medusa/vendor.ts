@@ -193,7 +193,8 @@ async function writeSession(token: string, sellerId: string) {
     sameSite: "lax" as const,
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 12,
+    /* Trois jours, comme le jeton du backend (medusa-config.ts, SESSION_DAYS). */
+    maxAge: 60 * 60 * 24 * 3,
   };
 
   store.set(TOKEN_COOKIE, token, options);
