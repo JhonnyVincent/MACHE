@@ -36,7 +36,7 @@
   les commandes d'hier. La page l'écrit là où l'on décide.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import {
   getAdminUser,

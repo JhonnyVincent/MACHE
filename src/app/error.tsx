@@ -29,7 +29,7 @@
   page publique.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { useEffect } from "react";
 
 export default function ErrorScreen({

@@ -14,7 +14,7 @@
   ne doit pas être une page blanche.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { reportOutage } from "@/lib/medusa/outage";
 import { notFound } from "next/navigation";
 import {

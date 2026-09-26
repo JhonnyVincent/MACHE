@@ -15,7 +15,7 @@
   son téléphone.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { adminAwaitingCode, getAdminUser } from "@/lib/medusa/admin";
 import { SubmitButton } from "@/components/submit-button";

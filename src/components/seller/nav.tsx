@@ -7,7 +7,7 @@
   évite de le recalculer dans chaque page.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 
 export type NavItem = {

@@ -30,7 +30,7 @@
   valent zéro, et la page dit pourquoi plutôt que de taire la ligne.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getAdminUser, fetchMacheRevenue, type RevenueBucket } from "@/lib/medusa/admin";
 import { formatNumber } from "@/lib/seller";

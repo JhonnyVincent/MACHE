@@ -11,7 +11,7 @@
   inaccessible.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import {
   propString, propNumber, propList,
   type Block, type ProductSelection,
@@ -19,6 +19,7 @@ import {
 import type { StoreProduct, StoreSeller } from "@/lib/medusa/catalog";
 import { safeLinkHref, safeImageSrc } from "@/lib/safe-url";
 import { ProductCard } from "@/components/home/rails";
+import { StaggerIn } from "@/components/anim/stagger-in";
 
 type RenderContext = {
   seller: StoreSeller;
@@ -185,11 +186,11 @@ function ProductsBlock({
         {title}
       </h2>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      <StaggerIn as="div" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {selected.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
-      </div>
+      </StaggerIn>
     </section>
   );
 }

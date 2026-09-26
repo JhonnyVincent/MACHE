@@ -20,7 +20,7 @@
   « lu, sans réponse » n'appellent pas le même message.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import {
   getAdminUser,

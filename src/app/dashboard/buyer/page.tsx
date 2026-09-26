@@ -6,7 +6,7 @@
   voyait zéro.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getCustomer, getCustomerOrders } from "@/lib/medusa/customer";
 import { formatAmount } from "@/lib/medusa/catalog";
 import { formatNumber, formatDate } from "@/lib/seller";

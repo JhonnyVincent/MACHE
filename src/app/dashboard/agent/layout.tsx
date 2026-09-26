@@ -19,7 +19,7 @@
   avec un autre filtre, et la carte est le bandeau du haut.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getCustomer, clearCustomerSession } from "@/lib/medusa/customer";
 import { initialsOf } from "@/lib/seller";

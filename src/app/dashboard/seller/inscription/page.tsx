@@ -19,7 +19,7 @@
   le vendeur la chercherait dans le catalogue et la croirait perdue.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getVendorSeller } from "@/lib/medusa/vendor";

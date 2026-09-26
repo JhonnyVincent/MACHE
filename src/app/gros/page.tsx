@@ -23,7 +23,7 @@
   temps à un acheteur, et perdre sa confiance à MACHÉ.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { fetchSellers } from "@/lib/medusa/catalog";
 import { readSellerProfile, isWholesaleProfile } from "@/lib/seller-profile";
 import { readSellerMinimum } from "@/lib/seller-minimum";

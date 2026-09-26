@@ -35,7 +35,7 @@
   comme un constat, pas comme une preuve.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import {
   trackDelivery,
   TRACKING_STATUS_LABELS,

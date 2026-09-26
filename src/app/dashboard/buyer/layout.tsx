@@ -10,7 +10,7 @@
   visiteur de tout repère, et l'empêcherait même de comprendre où il est.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getCustomer, getCustomerOrders } from "@/lib/medusa/customer";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";

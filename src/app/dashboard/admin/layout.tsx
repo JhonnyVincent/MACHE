@@ -19,7 +19,7 @@
   Le contrôle appartient à chaque page, comme dans l'espace vendeur.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getAdminUser, fetchMarketplaceState } from "@/lib/medusa/admin";
 import { adminLogoutAction } from "./actions";
 import { initialsOf } from "@/lib/seller";

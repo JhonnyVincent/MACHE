@@ -11,7 +11,7 @@
   demande donc deux choix, et les frais s'additionnent.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { reportOutage } from "@/lib/medusa/outage";
 import { redirect } from "next/navigation";
 import { getCart } from "@/lib/medusa/cart";

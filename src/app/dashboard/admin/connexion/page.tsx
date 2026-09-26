@@ -15,7 +15,7 @@
   palier.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/medusa/admin";

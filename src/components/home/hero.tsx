@@ -12,7 +12,7 @@
   déposés, et les vraies photos des articles mis en ligne.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { Slider } from "@/components/slider";
 import type { HeroSlide } from "@/lib/medusa/home";
 import { CountUp } from "@/components/anim/count-up";
@@ -216,8 +216,8 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
   const [first] = slide.partners;
 
   return (
-    /* Fond bleu, voulu par MACHÉ pour la diapositive des partenaires. */
-    <div className="h-full bg-gradient-to-br from-[#1558d6] to-[#0b3a94] text-white">
+    /* Fond bleu soutenu — ni ciel ni nuit —, voulu par MACHÉ pour les partenaires. */
+    <div className="h-full bg-gradient-to-br from-[#1e40af] to-[#1e3a8a] text-white">
       <div className={`${frame} lg:grid-cols-[1.1fr_0.9fr]`}>
         <div>
           <span className={`${chip} bg-white/10 text-white`}>Nos partenaires</span>
@@ -235,7 +235,7 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
             </a>
             <Link
               href="/partenaires"
-              className="rounded-[6px] border border-white/60 px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-white hover:text-[#0b3a94]"
+              className="rounded-[6px] border border-white/60 px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-white hover:text-[#1e3a8a]"
             >
               Tous nos partenaires
             </Link>

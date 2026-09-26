@@ -27,7 +27,7 @@
   signe, et non en mentions légales.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getVendorSeller, getVendorContract, CONTRACT_STATUS } from "@/lib/medusa/vendor";
 import { formatDate } from "@/lib/seller";

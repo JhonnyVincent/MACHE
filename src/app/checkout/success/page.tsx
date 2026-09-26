@@ -11,7 +11,7 @@
   n'est présentée comme payée.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { cookies } from "next/headers";
 import { formatAmount } from "@/lib/medusa/catalog";
 

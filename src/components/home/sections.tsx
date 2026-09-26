@@ -111,10 +111,25 @@ export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[];
                   ))}
                 </div>
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-[var(--mache-bg)]">
-                  <span className="text-6xl transition-transform duration-300 group-hover:scale-125 motion-reduce:transform-none" aria-hidden="true">
-                    {tile.icon}
-                  </span>
+                /*
+                  Rayon encore vide : pas de photo inventée, mais la
+                  grille de ce qu'on y trouvera — ses vrais sous-rayons
+                  (Vêtements femme, Chaussures…), autour de son icône.
+                */
+                <div className="grid h-full w-full grid-cols-2 gap-0.5 bg-[var(--mache-line)]">
+                  {(tile.subs.length > 0 ? tile.subs : [tile.name]).slice(0, 4).map((sub, index) => (
+                    <div
+                      key={sub}
+                      className={`flex flex-col items-center justify-center gap-1 px-2 pb-6 text-center transition-colors duration-300 ${
+                        index % 3 === 0 ? "bg-[var(--mache-white)]" : "bg-[var(--mache-bg)]"
+                      } group-hover:bg-[var(--mache-primary-soft)]`}
+                    >
+                      <span className="text-2xl transition-transform duration-300 group-hover:scale-125 motion-reduce:transform-none" aria-hidden="true">
+                        {tile.icon}
+                      </span>
+                      <span className="text-xs font-semibold leading-tight text-[var(--mache-text)]">{sub}</span>
+                    </div>
+                  ))}
                 </div>
               )}
 

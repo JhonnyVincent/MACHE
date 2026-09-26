@@ -16,7 +16,7 @@
   resté.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import {
   getAdminUser,

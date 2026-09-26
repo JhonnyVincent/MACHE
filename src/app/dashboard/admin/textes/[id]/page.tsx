@@ -19,7 +19,7 @@
   faudrait un droit de plus » ; ici, aucun droit ne rouvre ce texte.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import {
   getAdminUser,

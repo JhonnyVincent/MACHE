@@ -10,7 +10,7 @@
   conseil, et ne sont pas écrits ici à sa place.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {

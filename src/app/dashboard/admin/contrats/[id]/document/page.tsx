@@ -35,7 +35,7 @@
   avant sa signature est une invitation à ne pas lire.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import {
   getAdminUser,

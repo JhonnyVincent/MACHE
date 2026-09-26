@@ -11,7 +11,7 @@
   données : aucune reprise ne sera nécessaire.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import {

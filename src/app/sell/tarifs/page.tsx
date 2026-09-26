@@ -12,7 +12,7 @@
   que rien n'est prélevé pour l'instant.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import {
   TARIFS,
   COMMISSION_RATE,

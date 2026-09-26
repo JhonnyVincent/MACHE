@@ -11,7 +11,7 @@
   honoré.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { AnimatedList } from "@/components/anim/animated-list";
 import { getCart } from "@/lib/medusa/cart";
 import { formatAmount } from "@/lib/medusa/catalog";

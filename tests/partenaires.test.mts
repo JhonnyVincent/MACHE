@@ -139,4 +139,18 @@ check("les liens sortants sont signalés comme tels", () => {
   }
 });
 
+check("Livraison et Points relais sont des places à prendre, pas de faux partenaires", () => {
+  /* Aucune entreprise de livraison n'a signé : les montrer comme partenaires inventerait un réseau. */
+  const names = PARTNERS.map((p) => p.name.toLowerCase());
+  assert.ok(!names.some((n) => /shipping|livraison|point/.test(n)), "aucun rôle ouvert ne doit être rangé parmi les partenaires signés");
+  assert.match(STRIP, /Place à prendre/);
+  assert.match(STRIP, /Devenir partenaire/);
+});
+
+check("BAWON accompagne vers un financement, il ne finance pas", () => {
+  const bawon = PARTNERS.find((p) => p.name === "BAWON")!;
+  assert.match(bawon.does, /[Aa]ccompagne/);
+  assert.doesNotMatch(bawon.does, /[Aa]vance des fonds|prête|finance les/);
+});
+
 console.log(`\n${passed} vérifications passées.\n`);

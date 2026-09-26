@@ -27,7 +27,7 @@
   « Marque Soleil ». Le même défaut avait déjà été signalé sur /sell.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { TARIFS, billingLine, htgFromEur, formatHtg, EUR_TO_HTG_DATE, COMMISSION_RATE_REDUCED } from "@/lib/tarifs";
 
 export const metadata = {

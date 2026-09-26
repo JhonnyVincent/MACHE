@@ -725,3 +725,24 @@ aside:not([data-chrome="dark"]) a:active {
     animation: none !important;
   }
 }
+
+/* Les blocs partenaires défilent lentement : on doit pouvoir les lire en passant. */
+.mache-marquee-reverse.mache-marquee-slow,
+.mache-marquee.mache-marquee-slow {
+  animation-duration: 90s;
+}
+
+/* Un bouton s'enfonce légèrement quand on appuie. */
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mache-marquee-slow {
+    animation: none;
+  }
+
+  button:not(:disabled):active {
+    transform: none;
+  }
+}

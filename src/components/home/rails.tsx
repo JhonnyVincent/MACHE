@@ -87,7 +87,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
             src={product.thumbnail}
             alt={product.title}
             loading="lazy"
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-110 motion-reduce:transform-none"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-[var(--mache-light)]">
@@ -196,17 +196,17 @@ export function SellerRailSection({
       <RailHeader title={title} subtitle={subtitle} href="/shop" linkLabel="Toutes les boutiques" />
 
       {/* Au survol, la boutique sous le curseur grandit et passe devant. */}
-      <Slider label={title} itemClassName="w-[70%] sm:w-[40%] lg:w-[24%]" trackClassName="mache-spotlight py-5">
+      <Slider label={title} itemClassName="w-[85%] sm:w-[48%] lg:w-[32%]" trackClassName="mache-spotlight py-5">
         {sellers.map((seller) => (
           <Link
             key={seller.id}
             href={`/store/${seller.handle}`}
             className="group block h-full overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow hover:shadow-[0_6px_20px_rgba(16,24,32,0.10)]"
           >
-            <div className="relative h-20 bg-[var(--mache-bg)]">
+            <div className="relative h-28 overflow-hidden bg-[var(--mache-bg)]">
               {seller.banner && (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={seller.banner} alt="" loading="lazy" className="h-full w-full object-cover" />
+                <img src={seller.banner} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 motion-reduce:transform-none" />
               )}
             </div>
 

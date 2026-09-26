@@ -13,10 +13,19 @@
 */
 
 import { animate } from "motion/mini";
-import { useEffect, useRef, type ReactNode } from "react";
+import React, { useEffect, useRef, type ReactNode } from "react";
 
-export function StaggerIn({ children, className }: { children: ReactNode; className?: string }) {
-  const ref = useRef<HTMLUListElement>(null);
+export function StaggerIn({
+  children,
+  className,
+  as = "ul",
+}: {
+  children: ReactNode;
+  className?: string;
+  /* Une liste, ou une simple grille. */
+  as?: "ul" | "div";
+}) {
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const list = ref.current;
@@ -43,8 +52,16 @@ export function StaggerIn({ children, className }: { children: ReactNode; classN
     return () => observer.disconnect();
   }, []);
 
+  if (as === "div") {
+    return (
+      <div ref={ref as React.RefObject<HTMLDivElement>} className={className}>
+        {children}
+      </div>
+    );
+  }
+
   return (
-    <ul ref={ref} className={className}>
+    <ul ref={ref as React.RefObject<HTMLUListElement>} className={className}>
       {children}
     </ul>
   );

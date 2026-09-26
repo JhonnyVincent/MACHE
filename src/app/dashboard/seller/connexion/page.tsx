@@ -14,7 +14,7 @@
   quelqu'un qui s'est trompé s'en aperçoive.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getVendorSeller } from "@/lib/medusa/vendor";

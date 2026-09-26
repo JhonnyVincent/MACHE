@@ -20,7 +20,7 @@
   le client doit retenir, et la seule qu'il puisse mal utiliser.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {

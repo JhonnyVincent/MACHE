@@ -18,7 +18,7 @@
   plus sûrement que pas de profil du tout.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { SELLER_PROFILES, readSellerProfile } from "@/lib/seller-profile";

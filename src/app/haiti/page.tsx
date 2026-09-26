@@ -21,7 +21,7 @@
   pour qui vient chercher un article précis.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { HaitiMap, type DepartmentShops } from "@/components/haiti-map";
 import { DEPARTMENTS } from "@/lib/haiti";
 import { fetchSellers } from "@/lib/medusa/catalog";

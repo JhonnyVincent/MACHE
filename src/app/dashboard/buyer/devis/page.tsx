@@ -7,7 +7,7 @@
   que de laisser croire qu'elle a disparu.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getCustomer } from "@/lib/medusa/customer";
 import { fetchMyQuotes, QUOTE_LABELS, type QuoteStatus } from "@/lib/medusa/quotes";
 import { formatAmount } from "@/lib/format";

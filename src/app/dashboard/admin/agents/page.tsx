@@ -19,7 +19,7 @@
   avec soin.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/medusa/admin";
 import { fetchAgents, AGENT_FUNCTIONS } from "@/lib/medusa/agents-admin";

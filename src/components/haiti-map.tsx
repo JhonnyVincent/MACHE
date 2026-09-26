@@ -28,7 +28,7 @@
 */
 
 import { useId, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { DEPARTMENTS, HAITI_VIEWBOX, type Department } from "@/lib/haiti";
 
 export type DepartmentShops = Record<string, number>;

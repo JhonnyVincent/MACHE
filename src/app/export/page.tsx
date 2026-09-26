@@ -19,7 +19,7 @@
   propose de se faire connaître à qui la fonction intéresse.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 export const metadata = {
   title: "Exporter depuis Haïti — MACHÉ",

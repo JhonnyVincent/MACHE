@@ -24,7 +24,7 @@
   donnerait l'apparence d'un engagement qui n'existe pas.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {

@@ -28,7 +28,7 @@
 */
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 type Reponse = {
   /* Ce que le visiteur peut cliquer. */

@@ -19,7 +19,7 @@
   jeune : elle a à ne pas faire croire qu'elle ne l'est pas.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 export const metadata = {
   title: "Ce que MACHÉ fait — MACHÉ",

@@ -18,10 +18,11 @@
   rétrécit sans explication.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getFavorites } from "@/lib/medusa/favorites";
 import { fetchProductByHandle } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
+import { StaggerIn } from "@/components/anim/stagger-in";
 import { toggleFavoriteAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -101,7 +102,7 @@ export default async function FavoritesPage({
             </p>
           )}
 
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <StaggerIn as="div" className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {found.map((product) => (
               <div key={product.id} className="flex flex-col">
                 <ProductCard product={product} />
@@ -118,7 +119,7 @@ export default async function FavoritesPage({
                 </form>
               </div>
             ))}
-          </div>
+          </StaggerIn>
         </>
       )}
     </main>

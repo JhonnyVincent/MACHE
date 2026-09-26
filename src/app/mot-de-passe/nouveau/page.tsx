@@ -10,7 +10,7 @@
   qu'une page sollicite.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { isResetActor, MIN_PASSWORD, SPACE_LABEL, type ResetActor } from "@/lib/medusa/password";
 import { setPasswordAction } from "../actions";

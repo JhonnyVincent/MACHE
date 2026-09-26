@@ -11,7 +11,7 @@
   pas la recevoir.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { requestQuoteAction } from "../actions";
 import { getCustomer } from "@/lib/medusa/customer";

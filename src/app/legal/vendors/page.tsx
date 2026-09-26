@@ -20,7 +20,7 @@
   engagent MACHÉ commercialement. Ils se décident.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {

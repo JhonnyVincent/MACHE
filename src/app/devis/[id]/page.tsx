@@ -11,7 +11,7 @@
   une note de bas de page.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { fetchQuote, QUOTE_LABELS } from "@/lib/medusa/quotes";
 import { formatAmount } from "@/lib/format";
 import { answerQuoteAction } from "../actions";

@@ -58,6 +58,8 @@ export type CategoryTile = {
   href: string;
   /* Jusqu'à quatre vraies photos d'articles du rayon ; aucune s'il est vide. */
   images: string[];
+  /* Ses sous-rayons (Vêtements femme, Chaussures…), pour une tuile encore vide. */
+  subs: string[];
 };
 
 export type ProductSection = {
@@ -263,6 +265,7 @@ export async function fetchHomeData({
         icon: CATEGORY_TREE.find((node) => node.slug === handle)?.icon ?? null,
         href: `/shop?category=${encodeURIComponent(handle)}`,
         images: thumbnails(found.ok ? found.data.products : []).map((thumb) => thumb.image),
+        subs: children.map((child) => child.name).slice(0, 4),
       };
     })
   );

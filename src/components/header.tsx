@@ -167,15 +167,22 @@ export function Header({ cartCount = 0,
       <div className="border-b bg-black text-white">
         <div className="flex h-10 items-center">
           <div className="relative min-w-0 flex-1 overflow-hidden">
-            <div className="mache-ticker mache-ticker-fast flex w-max gap-16 whitespace-nowrap text-sm">
-              {[0, 1].flatMap((copy) =>
+            {/*
+              Assez de copies pour couvrir tout l'écran : avec une seule
+              série de trois services, la bande laissait un grand vide
+              après « Ouvrir une boutique » avant de revenir au début.
+              Seule la première série est lue : les copies sont cachées
+              aux lecteurs d'écran.
+            */}
+            <div className="mache-ticker mache-ticker-fast flex w-max items-center whitespace-nowrap text-base font-semibold">
+              {Array.from({ length: 8 }).flatMap((_, copy) =>
                 SERVICES.map((service) => (
                   <Link
                     key={`${copy}-${service.href}`}
                     href={service.href}
-                    aria-hidden={copy === 1 ? true : undefined}
-                    tabIndex={copy === 1 ? -1 : undefined}
-                    className="hover:text-[var(--mache-primary-strong)] hover:underline"
+                    aria-hidden={copy > 0 ? true : undefined}
+                    tabIndex={copy > 0 ? -1 : undefined}
+                    className="px-8 hover:text-[var(--mache-primary-strong)] hover:underline"
                   >
                     {service.icon} {t[service.key]}
                   </Link>

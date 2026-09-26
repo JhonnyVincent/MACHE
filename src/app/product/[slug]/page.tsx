@@ -10,7 +10,7 @@
   boutiques peuvent proposer exactement la même.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { fetchProductRatings } from "@/lib/medusa/catalog";
 import { getCustomer } from "@/lib/medusa/customer";
 import { getFavorites } from "@/lib/medusa/favorites";
@@ -128,14 +128,15 @@ export default async function ProductPage({
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr] xl:grid-cols-[1.1fr_0.9fr]">
           {/* Images */}
           <div>
-            <div className="overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
-              <div className="aspect-square">
+            {/* Au survol, la photo s'agrandit pour voir le détail. */}
+            <div className="group overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
+              <div className="aspect-square overflow-hidden">
                 {product.thumbnail ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={product.thumbnail}
                     alt={product.title}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-125 motion-reduce:transform-none"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-base text-[var(--mache-light)]">
@@ -153,7 +154,7 @@ export default async function ProductPage({
                     className="aspect-square overflow-hidden rounded-[6px] border border-[var(--mache-line)] bg-white"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={image} alt="" className="h-full w-full object-cover" />
+                    <img src={image} alt="" className="h-full w-full object-cover transition-transform duration-300 hover:scale-110 motion-reduce:transform-none" />
                   </span>
                 ))}
               </div>

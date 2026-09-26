@@ -17,7 +17,7 @@
   phase.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 export const metadata = {
   title: "Questions fréquentes — MACHÉ",

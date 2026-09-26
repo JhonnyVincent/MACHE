@@ -27,7 +27,7 @@
   sienne mieux que nous.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/medusa/admin";
 import { getVendorSeller } from "@/lib/medusa/vendor";

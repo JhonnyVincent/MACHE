@@ -19,7 +19,7 @@
   ne correspondaient plus à rien.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getAdminUser, fetchMarketplaceState } from "@/lib/medusa/admin";
 import { medusaBackendUrl } from "@/lib/medusa/config";

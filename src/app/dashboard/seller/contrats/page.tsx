@@ -13,7 +13,7 @@
   cela qu'on ouvre cet écran pour retrouver.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getVendorSeller, getVendorContracts, CONTRACT_STATUS } from "@/lib/medusa/vendor";
 import { formatDate } from "@/lib/seller";

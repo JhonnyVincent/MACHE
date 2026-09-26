@@ -10,7 +10,7 @@
   n'importe qui qui est inscrit chez MACHÉ.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { isResetActor, LOGIN_PAGE, SPACE_LABEL, type ResetActor } from "@/lib/medusa/password";
 import { requestResetAction } from "./actions";

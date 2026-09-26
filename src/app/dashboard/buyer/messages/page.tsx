@@ -12,7 +12,7 @@
   coup d'œil.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/lib/medusa/customer";
 import { getMyThreads, THREAD_STATUS_LABELS } from "@/lib/medusa/support";

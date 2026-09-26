@@ -22,7 +22,7 @@
   le dit comme tel, sans pastille d'alerte.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import {
   getAdminUser,

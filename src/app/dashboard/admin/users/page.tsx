@@ -29,7 +29,7 @@
   tout le monde inviterait à bloquer au hasard.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { getAdminUser, searchCustomers } from "@/lib/medusa/admin";
 import { medusaBackendUrl } from "@/lib/medusa/config";

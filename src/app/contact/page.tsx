@@ -22,7 +22,7 @@
   espace.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getCustomer } from "@/lib/medusa/customer";
 import { THREAD_CATEGORIES } from "@/lib/medusa/support";
 import { SubmitButton } from "@/components/submit-button";

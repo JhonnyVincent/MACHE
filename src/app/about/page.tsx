@@ -27,7 +27,7 @@
   démarre.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { fetchSellers, fetchProducts } from "@/lib/medusa/catalog";
 import { reportOutage } from "@/lib/medusa/outage";
 

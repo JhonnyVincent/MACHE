@@ -6,13 +6,14 @@
   une page qui trie côté navigateur ralentit à mesure qu'elle réussit.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import {
   SELLER_PROFILES, isSellerProfile, readSellerProfile,
 } from "@/lib/seller-profile";
 import { reportOutage } from "@/lib/medusa/outage";
 import { fetchProducts, fetchCategories, fetchSellers } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
+import { StaggerIn } from "@/components/anim/stagger-in";
 
 export const dynamic = "force-dynamic";
 
@@ -299,11 +300,11 @@ export default async function ShopPage({
             )}
           </div>
         ) : (
-          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <StaggerIn as="div" className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
-          </div>
+          </StaggerIn>
         )}
 
         {/* Pagination */}

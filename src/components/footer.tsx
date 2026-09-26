@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 /*
   La colonne « Acheter » proposait cinq rayons — Mode, Épicerie,

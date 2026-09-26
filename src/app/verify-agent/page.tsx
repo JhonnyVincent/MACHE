@@ -15,7 +15,7 @@
   et rien de la table n'est expédié au navigateur.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { verifyAgentCode, AGENT_STATUS_LABELS } from "@/lib/agents";
 
 export const dynamic = "force-dynamic";

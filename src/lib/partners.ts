@@ -21,7 +21,7 @@
   LA LIGNE QUI PROTÈGE TOUT LE MONDE
 
   `mediated` dit si le service passe PAR MACHÉ. Aujourd'hui, aucun :
-  BAWON avance des fonds à un marchand qui le lui demande, directement,
+  BAWON accompagne vers un financement le marchand qui le lui demande, directement,
   avec ses propres critères. MACHÉ ne dépose pas le dossier, ne garantit
   pas le prêt et ne touche rien dessus. Le dire évite qu'un vendeur
   croie qu'ouvrir une boutique ici lui ouvre un financement — et évite
@@ -41,8 +41,13 @@ export type Partner = {
 export const PARTNERS: Partner[] = [
   {
     name: "BAWON",
+    /*
+      BAWON n'avance pas l'argent lui-même : il ACCOMPAGNE les marchands
+      pour obtenir un financement. La première formulation lui prêtait
+      un rôle de prêteur qu'il n'a pas.
+    */
     does:
-      "Avance des fonds aux marchands pour qu'ils achètent leur marchandise.",
+      "Accompagne les marchands pour obtenir un financement et acheter leur marchandise.",
     href: "https://bawon-plus-site.vercel.app/",
     mediated: false,
   },

@@ -26,7 +26,7 @@
   dire « c'est en place », et elle le distingue des trois autres.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { PARTNERS } from "@/lib/partners";
 
 export const metadata = {

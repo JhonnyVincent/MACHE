@@ -2,7 +2,7 @@
   PAGE : création d'un compte client
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/lib/medusa/customer";

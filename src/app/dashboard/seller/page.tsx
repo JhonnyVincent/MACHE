@@ -18,7 +18,7 @@
   et elle dit où aller.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import { getVendorSeller } from "@/lib/medusa/vendor";

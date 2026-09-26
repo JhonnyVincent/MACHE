@@ -23,7 +23,7 @@
   ne retrouve jamais.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { getCustomer } from "@/lib/medusa/customer";
 import { getThread, THREAD_STATUS_LABELS } from "@/lib/medusa/support";
 import { SubmitButton } from "@/components/submit-button";

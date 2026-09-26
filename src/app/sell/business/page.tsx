@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 const benefits = [
   "Gérer un gros catalogue",
