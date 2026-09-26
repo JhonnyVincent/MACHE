@@ -114,20 +114,27 @@ créé le service à la main, vérifiez sa commande de construction :
 `medusa build` seul ne suffit pas : il compile le serveur, mais ne
 construit ni les deux panneaux ni leur empaquetage dans l'artefact.
 
-### `MERCUR_BACKEND_URL`, à ne pas oublier
+### Les panneaux appellent leur propre adresse — plus rien à saisir
 
-Les panneaux **gravent** l'adresse du backend au moment de la
-construction : c'est celle qu'ils appelleront depuis le navigateur du
-vendeur.
+Les panneaux vendeur et administration **gravaient** autrefois
+l'adresse du backend au moment de la construction, depuis la variable
+`MERCUR_BACKEND_URL`. Absente ou mal saisie, ils se construisaient en
+visant `http://localhost:9000` — l'ordinateur du vendeur lui-même — et
+chaque connexion finissait en « Failed to fetch », mot de passe juste
+ou pas.
 
-Posez `MERCUR_BACKEND_URL` sur `mache-backend` avec sa propre adresse
-publique (`https://mache-backend.onrender.com`, sans `/` final), puis
-reconstruisez.
+Ils utilisent désormais l'adresse de la page qui les affiche
+(`window.location.origin`). Comme le backend les sert lui-même sous
+`/seller` et `/dashboard`, c'est la bonne adresse par construction —
+sur celle de Render comme sur un futur nom de domaine.
 
-Sans elle, les panneaux sont construits en pointant vers
-`http://localhost:9000` : ils s'affichent, et chaque action échoue sans
-que rien ne l'explique. Elle ne peut pas se déduire automatiquement —
-Render ne fournit pas `RENDER_EXTERNAL_URL` pendant la construction.
+`MERCUR_BACKEND_URL` n'est donc **plus nécessaire**. Si elle existe
+encore sur `mache-backend`, elle est ignorée à la construction ; on
+peut la retirer.
+
+La construction vérifie le résultat elle-même : un panneau qui
+viserait de nouveau une adresse figée est refusé
+(`scripts/bundle-dashboards.mjs`).
 
 ### Le compte d'administration MACHÉ
 

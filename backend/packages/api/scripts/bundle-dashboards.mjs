@@ -15,9 +15,14 @@
  *     the copied dist.
  *
  * In production builds (NODE_ENV=production — Medusa Cloud builds this way) the script fails
- * fast on a missing panel build, a wrong base path, or a missing MERCUR_BACKEND_URL instead
- * of shipping a panel that points at http://localhost:9000 or 404s on its own assets.
- * Outside production it warns and skips the affected panel, so local builds keep working.
+ * fast on a missing panel build, a wrong base path, or a panel that would call a FIXED backend
+ * address instead of the page's own origin, rather than shipping a panel that points at
+ * http://localhost:9000 or 404s on its own assets. Outside production it warns and skips the
+ * affected panel, so local builds keep working.
+ *
+ * MERCUR_BACKEND_URL is no longer required: the panels are always served by this backend, so
+ * apps/same-origin-backend.ts makes them call window.location.origin — correct by construction,
+ * on the Render address and on any future custom domain, with nothing to type in.
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -41,16 +46,6 @@ const fail = (message) => {
 
 if (!fs.existsSync(artifactDir)) {
   fail(`${artifactDir} not found — run \`medusa build\` first (the build script chains it).`)
-}
-
-// The panels bake their backend URL at build time (MERCUR_BACKEND_URL → __BACKEND_URL__).
-// Refuse to ship a production bundle that silently targets the localhost default.
-if (isProduction && !process.env.MERCUR_BACKEND_URL && !process.env.VITE_MERCUR_BACKEND_URL) {
-  fail(
-    'NODE_ENV=production but MERCUR_BACKEND_URL is not set — the panels would target ' +
-      'http://localhost:9000. Set MERCUR_BACKEND_URL to the deployed backend origin ' +
-      '(on Medusa Cloud: an environment variable with the Build toggle enabled).'
-  )
 }
 
 let bundled = 0
@@ -82,6 +77,32 @@ for (const panel of PANELS) {
     }
     console.warn(`[bundle-dashboards] ${message} Skipping the ${panel.name} panel.`)
     continue
+  }
+
+  /*
+    The panel must call the server that serves it. A build that skipped
+    apps/same-origin-backend.ts would bake a fixed address — historically
+    http://localhost:9000 — and every vendor sign-in would end in
+    « Failed to fetch » with a correct password. Check the built output
+    itself rather than trusting the configuration.
+  */
+  const assetsDir = path.join(dist, 'assets')
+  const callsOwnOrigin = fs.existsSync(assetsDir) && fs
+    .readdirSync(assetsDir)
+    .filter((file) => file.endsWith('.js'))
+    .some((file) =>
+      fs.readFileSync(path.join(assetsDir, file), 'utf8').includes('backendUrl:window.location.origin')
+    )
+
+  if (!callsOwnOrigin) {
+    const message =
+      `the ${panel.name} panel does not resolve its API from the page origin — it would call a ` +
+      'fixed address and every sign-in would fail with « Failed to fetch ». Check that ' +
+      `apps/${panel.name}/vite.config.ts still registers sameOriginBackend() after the Mercur plugin.`
+    if (isProduction) {
+      fail(message)
+    }
+    console.warn(`[bundle-dashboards] ${message}`)
   }
 
   const target = path.join(artifactDir, 'dashboards', panel.name, 'dist')
