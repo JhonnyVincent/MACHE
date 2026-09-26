@@ -115,6 +115,26 @@ const Delivery = model.define("mache_delivery", {
   confirmed_at: model.dateTime().nullable(),
   confirmation_note: model.text().nullable(),
 
+  /*
+    LE CONSTAT DE L'ACHETEUR, distinct de la preuve de remise.
+
+    `confirmed_at` dit qu'on a remis le colis ; celui-ci dit que
+    l'acheteur l'a bien reçu. Les deux ensemble libèrent le versement.
+    Les confondre en un seul champ reviendrait à payer le vendeur sur
+    sa propre parole.
+
+    Pour un transporteur extérieur, les deux coïncident : personne
+    d'autre que l'acheteur ne peut rien constater.
+  */
+  customer_confirmed_at: model.dateTime().nullable(),
+
+  /*
+    La date au-delà de laquelle la somme part sans le constat de
+    l'acheteur. Écrite sur la livraison et conservée : si les délais
+    changent, un colis déjà en route garde celui qu'on lui a annoncé.
+  */
+  payout_due_at: model.dateTime().nullable(),
+
   failure_reason: model.text().nullable(),
 
   payout_state: model
