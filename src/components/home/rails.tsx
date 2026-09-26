@@ -12,6 +12,7 @@
 import Link from "next/link";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatAmount } from "@/lib/format";
+import type { CategoryTile } from "@/lib/medusa/home";
 import type {
   StoreProduct,
   StoreSeller,
@@ -228,33 +229,6 @@ export function SellerRailSection({
 
 /* -------------------------------------------------------------------------- */
 /* Catégories et collections                                                  */
-/* -------------------------------------------------------------------------- */
-
-export function CategoryRailSection({ categories }: { categories: StoreCategory[] }) {
-  if (categories.length === 0) return null;
-
-  return (
-    <section className="container-page py-5">
-      <RailHeader
-        title="Parcourir les rayons"
-        subtitle="Les catégories réellement ouvertes sur la marketplace"
-      />
-
-      <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/shop?category=${encodeURIComponent(category.handle)}`}
-            className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-white)] px-3.5 py-2 text-base font-medium text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
-          >
-            {category.name}
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 export function CollectionRailSection({ collections }: { collections: StoreCollection[] }) {
   if (collections.length === 0) return null;
 
@@ -270,6 +244,119 @@ export function CollectionRailSection({ collections }: { collections: StoreColle
             className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-3 text-base font-semibold text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)]"
           >
             {collection.title}
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* La mosaïque des rayons                                                      */
+/* -------------------------------------------------------------------------- */
+
+/*
+  CE QUI MEUBLE VRAIMENT L'ACCUEIL D'UNE PLACE DE MARCHÉ.
+
+  Chez Amazon ou Cdiscount, ce ne sont pas des mots : ce sont des
+  PHOTOS de produits, rangées par rayon. Une bande de liens texte, si
+  bien écrite soit-elle, donne l'impression d'un site vide — même quand
+  le catalogue ne l'est pas.
+
+  MACHÉ n'a aucune photo à lui : les visuels de stock ont été retirés
+  volontairement, et en remettre serait décorer avec des articles qui
+  n'existent pas. Mais les vendeurs, eux, photographient les leurs. Une
+  tuile emprunte donc quatre vraies vignettes au rayon qu'elle annonce.
+
+  UN RAYON VIDE NE MENT PAS
+
+  Sans produit, pas de vignette : la tuile affiche son nom et le dit.
+  C'est le seul traitement honnête, et il a un avantage — le jour où un
+  vendeur y dépose son premier article, la tuile se remplit toute
+  seule.
+
+  Les rayons GARNIS passent devant. Un accueil qui ouvre sur quatre
+  cases vides annonce un site vide ; les mêmes cases reléguées plus bas
+  annoncent un catalogue qui commence.
+*/
+export function CategoryMosaicSection({ tiles }: { tiles: CategoryTile[] }) {
+  if (tiles.length === 0) return null;
+
+  const ordered = [...tiles].sort(
+    (a, b) => b.thumbnails.length - a.thumbnails.length || b.count - a.count
+  );
+
+  return (
+    <section className="mache-reveal container-page py-5">
+      <div className="mb-3 flex items-baseline justify-between gap-4">
+        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+          Parcourir les rayons
+        </h2>
+
+        <Link
+          href="/shop"
+          className="text-sm font-semibold text-[var(--mache-primary)] hover:underline"
+        >
+          Tout le catalogue
+        </Link>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {ordered.map((tile) => (
+          <Link
+            key={tile.id}
+            href={`/shop?category=${encodeURIComponent(tile.handle)}`}
+            className="group flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4 transition-colors hover:border-[var(--mache-primary)]"
+          >
+            <div className="flex items-baseline justify-between gap-2">
+              <h3 className="text-md font-bold leading-snug text-[var(--mache-text)]">
+                {tile.name}
+              </h3>
+              <span
+                aria-hidden="true"
+                className="text-[var(--mache-muted)] transition-transform group-hover:translate-x-0.5"
+              >
+                ›
+              </span>
+            </div>
+
+            {tile.thumbnails.length > 0 ? (
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {tile.thumbnails.map((src, index) => (
+                  <div
+                    key={`${tile.id}-${index}`}
+                    className="aspect-square overflow-hidden rounded-[6px] bg-[var(--mache-bg-2)]"
+                  >
+                    {/*
+                      `alt` vide et `aria-hidden` : ces vignettes
+                      décorent le nom du rayon, qui est juste au-dessus.
+                      Les décrire ferait entendre quatre fois la même
+                      chose à qui navigue au clavier ou à la voix.
+                    */}
+                    <img
+                      src={src}
+                      alt=""
+                      aria-hidden="true"
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-3 flex flex-1 items-center rounded-[6px] border border-dashed border-[var(--mache-line)] px-3 py-5">
+                <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
+                  Aucun article pour l&apos;instant. Ce rayon se remplira dès
+                  qu&apos;un vendeur y déposera le sien.
+                </p>
+              </div>
+            )}
+
+            {tile.count > 0 && (
+              <p className="tnum mt-3 text-sm text-[var(--mache-muted)]">
+                {tile.count} article{tile.count > 1 ? "s" : ""}
+              </p>
+            )}
           </Link>
         ))}
       </div>

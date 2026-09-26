@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { SitePromotion } from "@/lib/medusa/promotions";
 
 /*
   Le bandeau défilant renvoie vers Bawon, et annonce ses services.
@@ -12,45 +13,9 @@ import Link from "next/link";
   à la livraison. Un client qui la lisait pouvait croire que ses données
   bancaires seraient protégées par un dispositif qui n'existe pas.
 
-  Les cinq autres mentions décrivent des services de Bawon, ce que le
-  lien indique.
+  Le bandeau porte désormais les promotions en cours de MACHÉ, et rien
+  d'autre : voir plus bas.
 */
-const tickerTranslations = {
-  fr: [
-    "Trouver un exportateur / importateur",
-    "Trouver un financement",
-    "Se faire accompagner pour créer son entreprise",
-    "Investir dans des projets",
-    "Développer son entreprise"
-  ],
-  ht: [
-    "Jwenn yon ekspòtatè / enpòtatè",
-    "Jwenn finansman",
-    "Jwenn sipò pou kreye biznis ou",
-    "Envesti nan pwojè",
-    "Devlope biznis ou"
-  ]
-};
-
-/*
-  LE BANDEAU NE POINTE PLUS NULLE PART, ET C'EST VOULU.
-
-  Il renvoyait chaque ligne vers un ancien déploiement de BAWON, retiré
-  depuis : les liens seraient tombés dans le vide.
-
-  Et on ne les a pas repointés vers une page de MACHÉ. Ces lignes —
-  trouver un financement, investir dans des projets, se faire
-  accompagner pour créer son entreprise — sont des services de BAWON.
-  Les faire mener à MACHÉ reviendrait à lui faire promettre du
-  financement et de l'accompagnement qu'il n'offre pas. Un lien mort
-  est ennuyeux ; une promesse fausse coûte la confiance d'un commerçant
-  qui l'aura crue.
-
-  Le texte reste : il annonce ce que l'écosystème propose. Dès que la
-  nouvelle adresse de BAWON est connue, il suffit de la remettre ici et
-  de redonner leur lien aux lignes.
-*/
-
 const translations = {
   fr: {
     delivery: "Livraison partout en Haïti",
@@ -98,7 +63,11 @@ type Lang = keyof typeof translations;
   pendant que le vrai panier se remplissait : deux compteurs, deux
   vérités, et le client croit avoir perdu ses articles.
 */
-export function Header({ cartCount = 0 }: { cartCount?: number }) {
+export function Header({ cartCount = 0,
+  promotions = [],
+}: { cartCount?: number;
+  promotions?: SitePromotion[];
+}) {
   const count = cartCount;
 
   const [lang, setLang] = useState<Lang>("fr");
@@ -124,15 +93,38 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white">
-      <div className="overflow-hidden bg-[#d20a1e] py-2 text-sm font-black uppercase tracking-label text-white">
-        <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
-          {[...tickerTranslations[lang], ...tickerTranslations[lang]].map(
-            (item, index) => (
-              <span key={`${item}-${index}`}>✦ {item}</span>
-            )
-          )}
+      {/*
+        LE BANDEAU NE DIT QUE DES CHOSES VRAIES, OU RIEN.
+
+        Il annonçait un texte écrit en dur, identique depuis des mois.
+        Un bandeau qui ne change jamais cesse d'être lu : on apprend en
+        trois visites qu'il ne dit rien de neuf, et le jour où il
+        annonce une vraie remise, plus personne ne le regarde.
+
+        Il porte maintenant les promotions RÉELLEMENT en cours, celles
+        de MACHÉ — pas celles d'une boutique, qui lui donneraient une
+        vitrine que les autres n'ont pas.
+
+        Aucune promotion : pas de bandeau. Plutôt que d'inventer une
+        remise pour meubler, ou de laisser une bande rouge vide qui
+        n'est que du bruit. Et cela lui rend son sens : s'il est là,
+        c'est qu'il y a quelque chose.
+      */}
+      {promotions.length > 0 && (
+        <div className="overflow-hidden bg-[var(--mache-primary)] py-2 text-sm font-black uppercase tracking-label text-white">
+          <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
+            {[...promotions, ...promotions].map((promotion, index) => (
+              <Link
+                key={`${promotion.id}-${index}`}
+                href="/shop"
+                className="hover:text-black hover:underline"
+              >
+                ✦ {promotion.label}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="border-b bg-black text-white">
         <div className="container-page flex h-10 items-center justify-between">
@@ -148,23 +140,6 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
               <option value="ht">HT</option>
             </select>
 
-            <Link href="/compte/connexion">
-              {t.login}
-            </Link>
-
-            <Link href="/compte/inscription">
-              {t.register}
-            </Link>
-
-            {/*
-              La porte des vendeurs, nommée. Le bandeau ne proposait que
-              la connexion acheteur : un commerçant s'y connectait, puis
-              cherchait sa boutique dans un espace client qui n'en a
-              aucune.
-            */}
-            <Link href="/dashboard/seller/connexion" className="font-semibold">
-              {t.sellerLogin}
-            </Link>
           </div>
         </div>
       </div>
@@ -209,7 +184,21 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
         </form>
 
         <div className="flex justify-end gap-7 text-center">
-          <Link href="/dashboard/buyer">
+          {/*
+            UNE SEULE PORTE, ET ELLE AIGUILLE.
+
+            Il y en avait quatre qui se chevauchaient : « Se connecter »,
+            « S'inscrire » et « Espace vendeur » dans la barre du haut,
+            plus « Mon compte » ici. Un commerçant cliquait sur la
+            première, se retrouvait dans un espace client sans boutique,
+            et concluait que son compte était cassé.
+
+            Celle-ci mène à /dashboard, qui demande à chaque espace qui
+            vous êtes et vous y envoie — et qui montre les portes si vous
+            n'êtes connecté nulle part. Personne n'a plus à deviner
+            laquelle est la sienne.
+          */}
+          <Link href="/dashboard">
             <div>👤</div>
             {t.account}
           </Link>

@@ -5,6 +5,7 @@ import { SiteChrome } from "@/components/site-chrome";
 import { fetchCategories } from "@/lib/medusa/catalog";
 import { getCart } from "@/lib/medusa/cart";
 import { fetchSiteTheme, themeStyle } from "@/lib/medusa/theme";
+import { fetchSitePromotions } from "@/lib/medusa/promotions";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,6 +57,12 @@ export default async function RootLayout({
 
     Une lecture qui échoue rend l'habillage habituel. Le site s'affiche.
   */
+  /*
+    Les promotions en cours, pour le bandeau. Une liste vide le fait
+    disparaître : il ne montre jamais rien d'inventé.
+  */
+  const promotions = await fetchSitePromotions();
+
   const theme = await fetchSiteTheme();
 
   const style = themeStyle(theme);
@@ -85,7 +92,11 @@ export default async function RootLayout({
           </div>
         )}
 
-        <SiteChrome cartCount={cart?.itemCount ?? 0} categories={categories}>
+        <SiteChrome
+          cartCount={cart?.itemCount ?? 0}
+          categories={categories}
+          promotions={promotions}
+        >
           {children}
         </SiteChrome>
       </body>

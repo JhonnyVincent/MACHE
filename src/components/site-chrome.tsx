@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Header } from "./header";
 import { Footer, type FooterCategory } from "./footer";
+import type { SitePromotion } from "@/lib/medusa/promotions";
 import { ChatAssistant } from "./chat-assistant";
 import { RevealProvider } from "./reveal";
 
@@ -19,10 +20,12 @@ export function SiteChrome({
   children,
   cartCount = 0,
   categories = [],
+  promotions = [],
 }: {
   children: React.ReactNode;
   cartCount?: number;
   categories?: FooterCategory[];
+  promotions?: SitePromotion[];
 }) {
   const pathname = usePathname() || "/";
 
@@ -44,7 +47,7 @@ export function SiteChrome({
       */}
       <RevealProvider />
 
-      <Header cartCount={cartCount} />
+      <Header cartCount={cartCount} promotions={promotions} />
       {children}
       <Footer categories={categories} />
       <ChatAssistant />

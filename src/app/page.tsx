@@ -21,7 +21,7 @@ import Link from "next/link";
 import { fetchHomeData } from "@/lib/medusa/home";
 import { FEATURED_CATEGORIES } from "@/lib/categories";
 import {
-  ProductRailSection, SellerRailSection, CategoryRailSection,
+  ProductRailSection, SellerRailSection, CategoryMosaicSection,
   CollectionRailSection,
 } from "@/components/home/rails";
 
@@ -202,11 +202,22 @@ export default async function HomePage() {
       )}
 
       {/*
-        Catégories : celles du backend si le catalogue répond, sinon
-        l'arborescence MACHÉ, qui reste une vraie carte du site.
+        LES RAYONS, EN MOSAÏQUE.
+
+        C'était une bande de liens texte. Sur l'accueil d'une place de
+        marché, une liste de mots donne l'impression d'un site vide même
+        quand le catalogue ne l'est pas — c'est exactement ce que fait
+        voir une comparaison avec n'importe quelle grande place.
+
+        Chaque tuile emprunte quatre vraies photos aux produits de son
+        rayon. Pas d'images décoratives : un rayon sans article le dit,
+        et se remplira tout seul au premier produit déposé.
+
+        Le repli en liens texte reste, pour le cas où le catalogue ne
+        répond pas : une carte du site vaut mieux qu'un trou.
       */}
-      {home.categories.length > 0 ? (
-        <CategoryRailSection categories={home.categories} />
+      {home.categoryTiles.length > 0 ? (
+        <CategoryMosaicSection tiles={home.categoryTiles} />
       ) : (
         <section className="mache-reveal container-page py-5">
           <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">

@@ -44,12 +44,37 @@ export type ProductRail = {
   products: StoreProduct[];
 };
 
+/*
+  UNE TUILE DE RAYON, TELLE QU'UN ACCUEIL DE PLACE DE MARCHÉ EN MONTRE.
+
+  Ce qui meuble l'accueil d'Amazon ou de Cdiscount n'est pas du texte :
+  ce sont des PHOTOS de produits, rangées par rayon. MACHÉ n'a aucune
+  photo à lui — les visuels de stock ont été retirés volontairement —
+  mais les vendeurs, eux, en mettent sur leurs articles.
+
+  Une tuile emprunte donc jusqu'à quatre vraies photos au rayon qu'elle
+  annonce. Un rayon encore vide n'en a aucune : il s'affiche alors sans
+  mentir, plutôt que de recevoir une image décorative qui lui
+  promettrait un catalogue qu'il n'a pas.
+*/
+export type CategoryTile = {
+  id: string;
+  handle: string;
+  name: string;
+  /* Jusqu'à quatre vignettes réelles, prises aux produits du rayon. */
+  thumbnails: string[];
+  /* Combien d'articles le rayon contient en tout. */
+  count: number;
+};
+
 export type HomeData = {
   /* Rayons de produits réellement alimentés. */
   rails: ProductRail[];
   newSellers: StoreSeller[];
   verifiedSellers: StoreSeller[];
   categories: StoreCategory[];
+  /* Les rayons, illustrés par leurs propres produits. */
+  categoryTiles: CategoryTile[];
   collections: StoreCollection[];
   /* Raisons de panne, écrites au journal du serveur. */
   problems: string[];
@@ -115,11 +140,45 @@ export async function fetchHomeData(): Promise<HomeData> {
 
   const allSellers = sellers.ok ? sellers.data.sellers : [];
 
+  /*
+    LES TUILES DE RAYONS, ILLUSTRÉES PAR LEURS PROPRES PRODUITS.
+
+    Une lecture par rayon, toutes lancées ensemble. C'est ce qui coûte
+    le plus cher sur cette page, et c'est pour cela qu'on se limite aux
+    premiers rayons : douze tuiles suffisent à meubler un accueil, et
+    vingt-quatre lectures pour des cases qu'on ne voit qu'en faisant
+    défiler seraient payées par tous les visiteurs.
+
+    Un rayon qui échoue ou qui est vide ne fait pas tomber les autres :
+    il sort avec zéro vignette, et la tuile le dit.
+  */
+  const topCategories = categories.ok ? categories.data.slice(0, 12) : [];
+
+  const tiles = await Promise.all(
+    topCategories.map(async (category) => {
+      const found = await fetchProducts({ categoryId: category.id, limit: 4 });
+
+      const products = found.ok ? found.data.products : [];
+
+      return {
+        id: category.id,
+        handle: category.handle,
+        name: category.name,
+        thumbnails: products
+          .map((product) => product.thumbnail)
+          .filter((thumbnail): thumbnail is string => Boolean(thumbnail))
+          .slice(0, 4),
+        count: found.ok ? found.data.count : 0,
+      };
+    })
+  );
+
   return {
     rails,
     newSellers: allSellers.slice(0, 8),
     verifiedSellers: allSellers.filter((seller) => seller.isPremium).slice(0, 6),
     categories: categories.ok ? categories.data : [],
+    categoryTiles: tiles,
     collections: collections.ok ? collections.data : [],
     problems,
     configured,
