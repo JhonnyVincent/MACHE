@@ -48,6 +48,9 @@ const PAGE = readFileSync("src/app/page.tsx", "utf8");
 const SECTIONS = readFileSync("src/components/home/sections.tsx", "utf8");
 const SLIDER = readFileSync("src/components/slider.tsx", "utf8");
 const HOME = readFileSync("src/lib/medusa/home.ts", "utf8");
+const ROWS = readFileSync("src/components/home/rows.tsx", "utf8");
+const FAQ = readFileSync("src/lib/faq.tsx", "utf8");
+const PARTNERS_STRIP = readFileSync("src/components/partners-strip.tsx", "utf8");
 const ROUTE = readFileSync(
   "backend/packages/api/src/api/store/promotions/route.ts",
   "utf8"
@@ -245,11 +248,13 @@ check("la page suit l'ordre voulu", () => {
     "<Spotlight",
     "<CategoryTiles",
     "<NewsletterCta",
-    'title="Nouvelles boutiques"',
+    "<NewArrivals",
+    "<NewShopsMarquee",
+    "<SuggestionsMarquee",
     "<BrandsMarquee",
     "<PartnersStrip",
-    "home.forYou &&",
     "<SellCta",
+    "<HomeFaq",
   ];
   let last = -1;
   for (const marker of order) {
@@ -309,6 +314,64 @@ check("« Devenez vendeur » ne promet pas d'audience", () => {
   const cta = SECTIONS.slice(SECTIONS.indexOf("export function SellCta"));
   assert.ok(cta.includes("Devenez vendeur chez MACHÉ"));
   assert.doesNotMatch(cta, /déjà visité|des milliers|audience/i);
+});
+
+
+check("Nouveautés : les 18 derniers articles, trois rangées à toutes les largeurs", () => {
+  assert.match(HOME, /export const NEW_ARRIVALS_COUNT = 18;/);
+  assert.match(HOME, /fetchProducts\(\{ limit: NEW_ARRIVALS_COUNT, order: "-created_at" \}\)/);
+  assert.match(HOME, /newArrivals: newest\.slice\(0, NEW_ARRIVALS_COUNT\)/);
+  /* 2 × 3 sur téléphone, 3 × 4 sur tablette, 6 × 3 sur ordinateur. */
+  assert.match(ROWS, /grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6/);
+  assert.match(ROWS, /if \(index >= 12\) return "hidden lg:block";/);
+  assert.match(ROWS, /if \(index >= 6\) return "hidden sm:block";/);
+});
+
+check("boutiques et suggestions défilent de droite à gauche, copies cachées et inertes", () => {
+  assert.match(ROWS, /mache-marquee mache-marquee-medium/);
+  assert.doesNotMatch(ROWS, /mache-marquee-reverse/);
+  assert.match(ROWS, /aria-hidden=\{copy > 0 \? true : undefined\}/);
+  assert.match(ROWS, /copy > 0 \? "motion-reduce:hidden" : ""/);
+  assert.match(ROWS, /tabIndex=\{hidden \? -1 : undefined\}/);
+  assert.match(ROWS, /<div inert/);
+  /* Un nombre pair de copies : la boucle à −50 % se referme sans saut. */
+  assert.match(ROWS, /Math\.ceil\(10 \/ items\.length\) \* 2/);
+  const css = readFileSync("src/app/globals.css", "utf8");
+  assert.match(css, /\.mache-marquee:focus-within/);
+});
+
+check("« À découvrir » ne répète pas la sélection du moment, et montre d'abord l'inédit", () => {
+  assert.match(HOME, /const candidates = pool\.filter\(\(product\) => !inSpotlight\.has\(product\.id\)\);/);
+  const unseen = HOME.indexOf("candidates.filter((product) => !inNewArrivals.has(product.id))");
+  const repeat = HOME.indexOf("candidates.filter((product) => inNewArrivals.has(product.id))");
+  assert.ok(unseen > -1 && repeat > unseen, "l'inédit passe avant les nouveautés");
+});
+
+check("la FAQ de l'accueil reprend mot pour mot la page /faq", () => {
+  const start = FAQ.indexOf("HOME_FAQ_QUESTIONS = [");
+  const list = FAQ.slice(start, FAQ.indexOf("];", start));
+  const questions = [...list.matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  assert.ok(questions.length >= 5);
+  for (const question of questions) {
+    assert.ok(FAQ.includes(`q: "${question}"`), `question absente de la FAQ : ${question}`);
+  }
+  const page = readFileSync("src/app/faq/page.tsx", "utf8");
+  assert.match(page, /FAQ_SECTIONS\.map/);
+  assert.doesNotMatch(page, /const sections = \[/);
+});
+
+check("points relais : un bloc vert léger ; livraison reste neutre", () => {
+  const relay = PARTNERS_STRIP.slice(PARTNERS_STRIP.indexOf('key: "points-relais"'));
+  assert.match(relay.slice(0, 500), /from-\[#f0fdf4\] via-white to-\[#dcfce7\]/);
+  const delivery = PARTNERS_STRIP.slice(PARTNERS_STRIP.indexOf('key: "livraison"'), PARTNERS_STRIP.indexOf('key: "points-relais"'));
+  assert.doesNotMatch(delivery, /#f0fdf4|#dcfce7/);
+  assert.match(PARTNERS_STRIP, /className=\{`\$\{block\} \$\{role\.tone\}`\}/);
+});
+
+check("tuiles des catégories : chaque case mène à son sous-rayon", () => {
+  assert.match(HOME, /href: `\/shop\?category=\$\{encodeURIComponent\(category\.handle\)\}`/);
+  assert.match(HOME, /image: rayonImage\(category\.handle\)/);
+  assert.match(SECTIONS, /href=\{cell\.href\}/);
 });
 
 console.log(`\n${passed} vérifications passées.\n`);

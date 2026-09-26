@@ -13,11 +13,13 @@
   3. Sur MACHÉ en ce moment : des produits, chaque vendeur à son tour.
   4. Catégories : cinq rayons et un « ➕ ».
   5. S'abonner aux nouvelles de MACHÉ.
-  6. Nouvelles boutiques : la carte survolée grandit et passe devant.
-  7. Nos marques, de droite à gauche.
-  8. Nos partenaires, de gauche à droite.
-  9. Nos suggestions pour vous — ou « À découvrir ».
-  10. Devenez vendeur chez MACHÉ.
+  6. Nouveautés : trois rangées de six, les derniers articles en ligne.
+  7. Nouvelles boutiques, de droite à gauche, en grandes cartes.
+  8. Nos suggestions pour vous — ou « À découvrir » —, de droite à gauche.
+  9. Nos marques, de droite à gauche (seulement s'il y en a).
+  10. Nos partenaires, de gauche à droite.
+  11. Devenez vendeur chez MACHÉ.
+  12. Questions fréquentes — puis le pied de page.
 
   Ce qui ne change pas
 
@@ -32,7 +34,7 @@ import { PartnersStrip } from "@/components/partners-strip";
 import { HeroCarousel } from "@/components/home/hero";
 import { NewsletterCta } from "@/components/home/newsletter";
 import { BrandsMarquee, CategoryTiles, SellCta, Spotlight } from "@/components/home/sections";
-import { ProductRailSection, SellerRailSection } from "@/components/home/rails";
+import { HomeFaq, NewArrivals, NewShopsMarquee, SuggestionsMarquee } from "@/components/home/rows";
 
 export const dynamic = "force-dynamic";
 
@@ -70,27 +72,26 @@ export default async function HomePage() {
 
       <NewsletterCta />
 
-      <SellerRailSection
-        title="Nouvelles boutiques"
-        subtitle="Les vendeurs qui viennent d'ouvrir sur MACHÉ"
-        sellers={home.newSellers}
-      />
+      <NewArrivals products={home.newArrivals} />
+
+      <NewShopsMarquee sellers={home.newSellers} />
+
+      {home.forYou && (
+        <SuggestionsMarquee
+          title={home.forYou.title}
+          subtitle={home.forYou.subtitle}
+          href={home.forYou.href}
+          products={home.forYou.products}
+        />
+      )}
 
       <BrandsMarquee brands={home.brands} />
 
       <PartnersStrip />
 
-      {home.forYou && (
-        <ProductRailSection
-          title={home.forYou.title}
-          subtitle={home.forYou.subtitle}
-          href={home.forYou.href}
-          products={home.forYou.products}
-          spotlight
-        />
-      )}
-
       <SellCta />
+
+      <HomeFaq />
     </main>
   );
 }

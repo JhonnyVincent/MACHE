@@ -75,9 +75,79 @@ export function Spotlight({ products }: { products: StoreProduct[] }) {
   pour tout le monde. Le « ➕ » mène au catalogue complet, où l'on
   filtre, trie par nouveauté, change de rayon.
 
-  Chaque tuile montre de vraies photos d'articles du rayon ; un rayon
-  encore vide montre son icône, jamais une image décorative.
+  Chaque tuile est une grille de ses sous-rayons (Téléphones et
+  accessoires, Meubles, Huiles et plantes…), et chaque case mène à son
+  sous-rayon. Une case montre :
+  - la photo d'illustration du sous-rayon, si elle a été déposée
+    (public/images/rayons/, voir src/lib/rayon-images.ts) ;
+  - sinon l'icône du rayon et le nom du sous-rayon.
+  Sans aucune illustration, les vraies photos d'articles du rayon
+  prennent la place, quand il y en a.
 */
+function cellSpan(count: number, index: number) {
+  /* Trois cases : la première prend toute la largeur. */
+  return count === 3 && index === 0 ? "col-span-2" : "";
+}
+
+function TileGrid({ tile }: { tile: CategoryTile }) {
+  const illustrated = tile.cells.some((cell) => cell.image);
+
+  if (!illustrated && tile.images.length > 0) {
+    return (
+      <Link href={tile.href} className="grid h-full w-full grid-cols-2 gap-0.5" aria-label={tile.name}>
+        {tile.images.slice(0, 4).map((src) => (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            key={src}
+            src={src}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-500 hover:scale-110 motion-reduce:transform-none"
+          />
+        ))}
+      </Link>
+    );
+  }
+
+  const count = tile.cells.length;
+
+  return (
+    <div className={`grid h-full w-full gap-0.5 bg-[var(--mache-line)] ${count > 1 ? "grid-cols-2" : ""}`}>
+      {tile.cells.map((cell, index) => (
+        <Link
+          key={cell.handle}
+          href={cell.href}
+          className={`group/cell relative flex overflow-hidden ${cellSpan(count, index)} ${
+            cell.image ? "bg-[var(--mache-bg)]" : index % 3 === 0 ? "bg-[var(--mache-white)]" : "bg-[var(--mache-bg)]"
+          }`}
+        >
+          {cell.image ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={cell.image}
+                alt=""
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover/cell:scale-110 motion-reduce:transform-none"
+              />
+              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-2 pb-1.5 pt-5 text-xs font-bold leading-tight text-white sm:text-sm">
+                {cell.name}
+              </span>
+            </>
+          ) : (
+            <span className="flex w-full flex-col items-center justify-center gap-1 px-2 text-center transition-colors duration-300 group-hover/cell:bg-[var(--mache-primary-soft)]">
+              <span className="text-2xl transition-transform duration-300 group-hover/cell:scale-125 motion-reduce:transform-none" aria-hidden="true">
+                {tile.icon}
+              </span>
+              <span className="hyphens-auto break-words text-xs font-semibold leading-tight text-[var(--mache-text)]">{cell.name}</span>
+            </span>
+          )}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[]; fromFavorites: boolean }) {
   if (tiles.length === 0) return null;
 
@@ -92,58 +162,27 @@ export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[];
 
       <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {tiles.map((tile) => (
-          <li key={tile.handle}>
+          <li
+            key={tile.handle}
+            className="flex flex-col overflow-hidden rounded-[12px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(16,24,32,0.14)]"
+          >
             <Link
               href={tile.href}
-              className="group relative block aspect-[4/3] overflow-hidden rounded-[12px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(16,24,32,0.14)]"
+              className="flex items-center justify-between gap-2 px-3 py-2.5 text-base font-bold text-[var(--mache-text)] hover:text-[var(--mache-primary)] sm:text-lg"
             >
-              {tile.images.length > 0 ? (
-                <div className={`grid h-full w-full gap-0.5 ${tile.images.length > 1 ? "grid-cols-2" : ""}`}>
-                  {tile.images.slice(0, 4).map((src) => (
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      key={src}
-                      src={src}
-                      alt=""
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 motion-reduce:transform-none"
-                    />
-                  ))}
-                </div>
-              ) : (
-                /*
-                  Rayon encore vide : pas de photo inventée, mais la
-                  grille de ce qu'on y trouvera — ses vrais sous-rayons
-                  (Vêtements femme, Chaussures…), autour de son icône.
-                */
-                <div className="grid h-full w-full grid-cols-2 gap-0.5 bg-[var(--mache-line)]">
-                  {(tile.subs.length > 0 ? tile.subs : [tile.name]).slice(0, 4).map((sub, index) => (
-                    <div
-                      key={sub}
-                      className={`flex flex-col items-center justify-center gap-1 px-2 pb-6 text-center transition-colors duration-300 ${
-                        index % 3 === 0 ? "bg-[var(--mache-white)]" : "bg-[var(--mache-bg)]"
-                      } group-hover:bg-[var(--mache-primary-soft)]`}
-                    >
-                      <span className="text-2xl transition-transform duration-300 group-hover:scale-125 motion-reduce:transform-none" aria-hidden="true">
-                        {tile.icon}
-                      </span>
-                      <span className="text-xs font-semibold leading-tight text-[var(--mache-text)]">{sub}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 pb-3 pt-8 text-lg font-bold text-white">
-                {tile.name}
-              </span>
+              <span className="truncate">{tile.name}</span>
+              <span aria-hidden="true" className="text-sm text-[var(--mache-primary)]">→</span>
             </Link>
+            <div className="aspect-[4/3]">
+              <TileGrid tile={tile} />
+            </div>
           </li>
         ))}
 
         <li>
           <Link
             href="/shop"
-            className="group flex aspect-[4/3] flex-col items-center justify-center gap-2 rounded-[12px] border-2 border-dashed border-[var(--mache-line)] bg-[var(--mache-white)] text-center transition-colors hover:border-[var(--mache-primary)]"
+            className="group flex h-full min-h-[180px] flex-col items-center justify-center gap-2 rounded-[12px] border-2 border-dashed border-[var(--mache-line)] bg-[var(--mache-white)] text-center transition-colors hover:border-[var(--mache-primary)]"
           >
             <span className="text-5xl text-[var(--mache-primary)] transition-transform duration-300 group-hover:rotate-90 motion-reduce:transform-none" aria-hidden="true">
               ➕

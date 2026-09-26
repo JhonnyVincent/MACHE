@@ -38,12 +38,15 @@ const OPEN_ROLES = [
     icon: "🚚",
     title: "Livraison",
     text: "Transporteurs et coursiers qui acheminent les colis entre vendeurs et acheteurs.",
+    tone: "border-dashed border-[var(--mache-line)] bg-[var(--mache-white)]",
   },
   {
     key: "points-relais",
     icon: "📍",
     title: "Points relais",
     text: "Des commerces de quartier qui gardent les colis jusqu'à ce que l'acheteur vienne les chercher.",
+    /* Vert léger, nuancé de blanc, voulu par MACHÉ pour les points relais. */
+    tone: "border-[#bbf7d0] bg-gradient-to-br from-[#f0fdf4] via-white to-[#dcfce7]",
   },
 ];
 
@@ -94,7 +97,7 @@ export function PartnersStrip() {
                 <Link
                   href="/partenaires"
                   tabIndex={copy > 0 ? -1 : undefined}
-                  className={`${block} border-dashed border-[var(--mache-line)] bg-[var(--mache-white)]`}
+                  className={`${block} ${role.tone}`}
                 >
                   <span className="text-xs font-bold uppercase tracking-widest text-[var(--mache-gold)]">
                     Place à prendre

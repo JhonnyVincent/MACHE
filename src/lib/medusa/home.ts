@@ -31,6 +31,7 @@ import { fetchSitePromotions } from "./promotions";
 import { PARTNERS, type Partner } from "../partners";
 import { CATEGORY_TREE } from "../categories";
 import { readSellerProfile } from "../seller-profile";
+import { rayonImage } from "../rayon-images";
 import { hourSeed, rotateFairly, seededRandom } from "../rotation";
 
 /* Une vignette du grand bandeau : une vraie photo de produit, jamais une image de stock. */
@@ -58,9 +59,15 @@ export type CategoryTile = {
   href: string;
   /* Jusqu'à quatre vraies photos d'articles du rayon ; aucune s'il est vide. */
   images: string[];
-  /* Ses sous-rayons (Vêtements femme, Chaussures…), pour une tuile encore vide. */
-  subs: string[];
+  /*
+    Les cases de la tuile : ses sous-rayons (Téléphones et accessoires,
+    Meubles…), chacun avec sa photo d'illustration si elle a été déposée
+    dans public/images/rayons/ (voir src/lib/rayon-images.ts).
+  */
+  cells: TileCell[];
 };
+
+export type TileCell = { handle: string; name: string; href: string; image: string | null };
 
 export type ProductSection = {
   title: string;
@@ -77,6 +84,8 @@ export type HomeData = {
   /* Vrai si les rayons proposés viennent des favoris du client. */
   tilesFromFavorites: boolean;
   newSellers: StoreSeller[];
+  /* Les derniers articles mis en ligne, du plus récent au plus ancien. */
+  newArrivals: StoreProduct[];
   /* Boutiques qui se déclarent marque officielle. */
   brands: StoreSeller[];
   /* « Nos suggestions pour vous » (d'après les favoris) ou « À découvrir ». */
@@ -96,6 +105,8 @@ export const DEFAULT_TILES = ["maison", "mode", "electronique", "bio", "fait-a-l
 
 const TILE_COUNT = 5;
 const SPOTLIGHT_COUNT = 12;
+/* Trois rangées de six. */
+export const NEW_ARRIVALS_COUNT = 18;
 
 const productHref = (product: StoreProduct) => `/product/${product.handle ?? product.id}`;
 
@@ -116,7 +127,7 @@ export async function fetchHomeData({
 }: { favoriteHandles?: string[]; now?: Date } = {}): Promise<HomeData> {
   const [latest, discounted, sellers, categories, favorites, sellerMap, promotions] =
     await Promise.all([
-      fetchProducts({ limit: 16, order: "-created_at" }),
+      fetchProducts({ limit: NEW_ARRIVALS_COUNT, order: "-created_at" }),
       /*
         Les promotions ne se filtrent pas côté API : Medusa applique la
         remise au calcul du prix. On lit donc un lot plus large et on
@@ -249,6 +260,23 @@ export async function fetchHomeData({
     .filter((handle) => mainRayons.some((rayon) => rayon.handle === handle))
     .slice(0, TILE_COUNT);
 
+  /*
+    Jusqu'à quatre sous-rayons. Un rayon sans sous-rayon est sa propre
+    case ; un rayon qui en a moins de quatre ajoute « Tout le rayon ».
+  */
+  const tileCells = (rayon: StoreCategory, children: StoreCategory[]): TileCell[] => {
+    const cell = (category: StoreCategory, name = category.name): TileCell => ({
+      handle: category.handle,
+      name,
+      href: `/shop?category=${encodeURIComponent(category.handle)}`,
+      image: rayonImage(category.handle),
+    });
+
+    const cells = children.slice(0, 4).map((child) => cell(child));
+    if (cells.length < 4) cells.push(cell(rayon, cells.length === 0 ? rayon.name : "Tout le rayon"));
+    return cells;
+  };
+
   const categoryTiles = await Promise.all(
     tileHandles.map(async (handle): Promise<CategoryTile> => {
       const rayon = mainRayons.find((category) => category.handle === handle)!;
@@ -265,7 +293,7 @@ export async function fetchHomeData({
         icon: CATEGORY_TREE.find((node) => node.slug === handle)?.icon ?? null,
         href: `/shop?category=${encodeURIComponent(handle)}`,
         images: thumbnails(found.ok ? found.data.products : []).map((thumb) => thumb.image),
-        subs: children.map((child) => child.name).slice(0, 4),
+        cells: tileCells(rayon, children),
       };
     })
   );
@@ -305,8 +333,18 @@ export async function fetchHomeData({
     tournante ne montre pas déjà.
   */
   if (!forYou) {
-    const shown = new Set(spotlight.map((product) => product.id));
-    const more = pool.filter((product) => !shown.has(product.id)).slice(0, 12);
+    /*
+      D'abord ce que la page ne montre nulle part ailleurs. Un catalogue
+      encore petit est déjà entier plus haut : on complète alors avec
+      les nouveautés, jamais avec la sélection du moment juste au-dessus.
+    */
+    const inSpotlight = new Set(spotlight.map((product) => product.id));
+    const inNewArrivals = new Set(newest.map((product) => product.id));
+    const candidates = pool.filter((product) => !inSpotlight.has(product.id));
+    const more = [
+      ...candidates.filter((product) => !inNewArrivals.has(product.id)),
+      ...candidates.filter((product) => inNewArrivals.has(product.id)),
+    ].slice(0, 12);
 
     if (more.length > 0) {
       forYou = {
@@ -324,6 +362,7 @@ export async function fetchHomeData({
     categoryTiles,
     tilesFromFavorites,
     newSellers: allSellers.slice(0, 12),
+    newArrivals: newest.slice(0, NEW_ARRIVALS_COUNT),
     brands: allSellers.filter((seller) => readSellerProfile(seller.metadata) === "marque"),
     forYou,
     newestCount: Math.min(newest.length, 12),

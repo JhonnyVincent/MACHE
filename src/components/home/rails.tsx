@@ -10,10 +10,9 @@
 */
 
 import { Link } from "next-view-transitions";
-import { VerifiedBadge } from "@/components/verified-badge";
 import { formatAmount } from "@/lib/format";
 import { Slider } from "@/components/slider";
-import type { StoreProduct, StoreSeller } from "@/lib/medusa/catalog";
+import type { StoreProduct } from "@/lib/medusa/catalog";
 
 /* -------------------------------------------------------------------------- */
 /* En-tête de rayon                                                           */
@@ -170,73 +169,6 @@ export function ProductRailSection({
       >
         {products.slice(0, 12).map((product) => (
           <ProductCard key={product.id} product={product} />
-        ))}
-      </Slider>
-    </section>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Boutiques                                                                  */
-/* -------------------------------------------------------------------------- */
-
-export function SellerRailSection({
-  title,
-  subtitle,
-  sellers,
-}: {
-  title: string;
-  subtitle?: string;
-  sellers: StoreSeller[];
-}) {
-  if (sellers.length === 0) return null;
-
-  return (
-    <section className="mache-reveal container-page py-5">
-      <RailHeader title={title} subtitle={subtitle} href="/shop" linkLabel="Toutes les boutiques" />
-
-      {/* Au survol, la boutique sous le curseur grandit et passe devant. */}
-      <Slider label={title} itemClassName="w-[85%] sm:w-[48%] lg:w-[32%]" trackClassName="mache-spotlight py-5">
-        {sellers.map((seller) => (
-          <Link
-            key={seller.id}
-            href={`/store/${seller.handle}`}
-            className="group block h-full overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow hover:shadow-[0_6px_20px_rgba(16,24,32,0.10)]"
-          >
-            <div className="relative h-28 overflow-hidden bg-[var(--mache-bg)]">
-              {seller.banner && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={seller.banner} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 motion-reduce:transform-none" />
-              )}
-            </div>
-
-            <div className="flex items-center gap-2.5 p-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-sm font-bold text-[var(--mache-muted)]">
-                {seller.logo ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={seller.logo} alt="" loading="lazy" className="h-full w-full object-cover" />
-                ) : (
-                  seller.name.slice(0, 2).toUpperCase()
-                )}
-              </span>
-
-              <span className="min-w-0">
-                <span className="block truncate text-base font-semibold text-[var(--mache-text)] group-hover:underline">
-                  {seller.name}
-                </span>
-                {/*
-                  « Premium » laissait croire à un niveau de service
-                  acheté. Le champ dit autre chose : MACHÉ a contrôlé
-                  les documents de cette entreprise.
-                */}
-                {seller.isPremium && (
-                  <span className="mt-0.5 inline-block">
-                    <VerifiedBadge compact />
-                  </span>
-                )}
-              </span>
-            </div>
-          </Link>
         ))}
       </Slider>
     </section>

@@ -669,8 +669,15 @@ aside:not([data-chrome="dark"]) a:active {
 }
 
 .mache-marquee-reverse:hover,
-.mache-marquee:hover {
+.mache-marquee:hover,
+.mache-marquee-reverse:focus-within,
+.mache-marquee:focus-within {
   animation-play-state: paused;
+}
+
+/* Boutiques et suggestions : assez lent pour lire une carte en passant. */
+.mache-marquee.mache-marquee-medium {
+  animation-duration: 70s;
 }
 
 .mache-marquee {
