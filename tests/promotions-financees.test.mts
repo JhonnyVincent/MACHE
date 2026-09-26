@@ -5,20 +5,20 @@
 
   Une seule règle, mais c'est celle qui sort de l'argent :
 
-      commission = (taux × prix PLEIN)  −  (part de MACHÉ × remise)
+      commission = (taux × prix PLEIN)  −  (part de MACHE × remise)
 
   Deux cas, deux conséquences opposées :
 
-  - La promo est celle du VENDEUR. MACHÉ n'en porte rien. La commission
+  - La promo est celle du VENDEUR. MACHE n'en porte rien. La commission
     est inchangée : le vendeur encaisse moins et supporte seul sa
     remise. « Si le vendeur décide de faire sa promo, c'est son
     problème. »
 
-  - La promo est celle de MACHÉ. MACHÉ retire la remise entière de sa
+  - La promo est celle de MACHE. MACHE retire la remise entière de sa
     commission, quitte à ce qu'elle devienne négative — auquel cas
-    MACHÉ verse la différence. Le vendeur touche alors exactement ce
+    MACHE verse la différence. Le vendeur touche alors exactement ce
     qu'il aurait touché sans promotion : son chiffre d'affaires n'est
-    pas touché, celui de MACHÉ l'est.
+    pas touché, celui de MACHE l'est.
 
   Pourquoi un test et pas une relecture
 
@@ -54,14 +54,14 @@ async function checkAsync(name: string, run: () => Promise<void>) {
 }
 
 /* ------------------------------------------------------------------ */
-/* La part portée par MACHÉ                                            */
+/* La part portée par MACHE                                            */
 /* ------------------------------------------------------------------ */
 
-check("une promotion du vendeur n'est portée par MACHÉ à aucun degré", () => {
+check("une promotion du vendeur n'est portée par MACHE à aucun degré", () => {
   assert.equal(marketplaceShare({ promotion_id: "p", cost_bearer: "store" }), 0);
 });
 
-check("une promotion de MACHÉ est portée en entier", () => {
+check("une promotion de MACHE est portée en entier", () => {
   assert.equal(
     marketplaceShare({ promotion_id: "p", cost_bearer: "marketplace" }),
     1
@@ -79,9 +79,9 @@ check("une promotion partagée est portée à hauteur du pourcentage saisi", () 
   );
 });
 
-check("un partage sans pourcentage ne coûte rien à MACHÉ", () => {
+check("un partage sans pourcentage ne coûte rien à MACHE", () => {
   /*
-    Le piège : traiter « partagé » comme « moitié-moitié ». MACHÉ
+    Le piège : traiter « partagé » comme « moitié-moitié ». MACHE
     paierait alors la moitié de remises que personne n'a chiffrées.
   */
   for (const percentage of [null, undefined, 0, -10, Number.NaN]) {
@@ -92,7 +92,7 @@ check("un partage sans pourcentage ne coûte rien à MACHÉ", () => {
         shared_marketplace_percentage: percentage as number | null,
       }),
       0,
-      `un pourcentage « ${String(percentage)} » ne doit rien faire payer à MACHÉ`
+      `un pourcentage « ${String(percentage)} » ne doit rien faire payer à MACHE`
     );
   }
 });
@@ -105,11 +105,11 @@ check("un partage au-delà de 100 % est ramené à la remise entière", () => {
       shared_marketplace_percentage: 250,
     }),
     1,
-    "MACHÉ ne peut pas porter plus que la remise elle-même"
+    "MACHE ne peut pas porter plus que la remise elle-même"
   );
 });
 
-check("un porteur inconnu, ou absent, ne coûte rien à MACHÉ", () => {
+check("un porteur inconnu, ou absent, ne coûte rien à MACHE", () => {
   assert.equal(marketplaceShare(undefined), 0);
   assert.equal(marketplaceShare(null), 0);
   assert.equal(
@@ -120,7 +120,7 @@ check("un porteur inconnu, ou absent, ne coûte rien à MACHÉ", () => {
 });
 
 /* ------------------------------------------------------------------ */
-/* Ce que MACHÉ porte sur un article                                   */
+/* Ce que MACHE porte sur un article                                   */
 /* ------------------------------------------------------------------ */
 
 const costs = new Map<string, CostRow>([
@@ -143,17 +143,17 @@ check("une remise du vendeur ne remonte pas", () => {
   );
 });
 
-check("une remise de MACHÉ remonte en entier", () => {
+check("une remise de MACHE remonte en entier", () => {
   assert.deepEqual(
     fundedForItem([{ promotion_id: "promo_mache", amount: 400 }], costs),
     { total: 400, by_promotion: { promo_mache: 400 } }
   );
 });
 
-check("un article cumulant les deux ne fait porter que celle de MACHÉ", () => {
+check("un article cumulant les deux ne fait porter que celle de MACHE", () => {
   /*
-    Le cas réel : le vendeur solde son article ET MACHÉ ajoute un geste
-    commercial. Confondre les deux ferait payer MACHÉ pour la remise du
+    Le cas réel : le vendeur solde son article ET MACHE ajoute un geste
+    commercial. Confondre les deux ferait payer MACHE pour la remise du
     vendeur.
   */
   assert.deepEqual(
@@ -188,7 +188,7 @@ check("les remises partagées s'additionnent au prorata", () => {
 check("une promotion inconnue du registre des coûts est à la charge du vendeur", () => {
   /*
     Le défaut prudent : tant que personne n'a déclaré qui paie, ce
-    n'est pas MACHÉ. C'est aussi le comportement d'avant ce travail,
+    n'est pas MACHE. C'est aussi le comportement d'avant ce travail,
     donc rien ne change pour les promotions existantes.
   */
   assert.deepEqual(
@@ -217,7 +217,7 @@ check("un montant absurde est ignoré plutôt que soustrait", () => {
 /*
   Un faux fournisseur `system` qui applique 8 % au sous-total PLEIN,
   comme le vrai. Le vrai est vérifié séparément, sur un vrai conteneur,
-  par `verifier-commission.ts` ; ici on vérifie la correction que MACHÉ
+  par `verifier-commission.ts` ; ici on vérifie la correction que MACHE
   lui applique, isolément.
 */
 function conteneur(taux = 8) {
@@ -265,7 +265,7 @@ await checkAsync("sans rien de financé, la commission est celle de Mercur", asy
 
 await checkAsync("la promo du vendeur ne change pas la commission", async () => {
   /*
-    Le vendeur solde 400. MACHÉ n'en porte rien, donc rien ne remonte,
+    Le vendeur solde 400. MACHE n'en porte rien, donc rien ne remonte,
     donc la commission reste 160 : le vendeur encaisse 1 600 et touche
     1 440. C'est le comportement d'aujourd'hui, inchangé.
   */
@@ -278,9 +278,9 @@ await checkAsync("la promo du vendeur ne change pas la commission", async () => 
   assert.equal(Number(line.amount), 160);
 });
 
-await checkAsync("la promo de MACHÉ sort du chiffre d'affaires de MACHÉ", async () => {
+await checkAsync("la promo de MACHE sort du chiffre d'affaires de MACHE", async () => {
   /*
-    Le chiffre qui compte. MACHÉ finance 400 sur un article à 2 000 :
+    Le chiffre qui compte. MACHE finance 400 sur un article à 2 000 :
     commission 160 − 400 = −240. Le vendeur encaisse 1 600 et reçoit
     240 de plus, soit 1 840 — exactement ce qu'il aurait touché sans
     promotion (2 000 − 160). Son chiffre d'affaires est intact.
@@ -307,7 +307,7 @@ await checkAsync("une commission négative n'est pas ramenée à zéro", async (
   /*
     Le plafonnement « défensif » est le bug le plus tentant de tout ce
     fichier : il fait disparaître un chiffre qui a l'air faux. Il
-    ferait payer au vendeur la promotion de MACHÉ.
+    ferait payer au vendeur la promotion de MACHE.
   */
   const provider = new MacheCommissionProvider(conteneur() as never);
   const [line] = await provider.getCommissionLines({
@@ -322,7 +322,7 @@ await checkAsync("une commission négative n'est pas ramenée à zéro", async (
   assert.equal(Number(line.amount), -1840);
 });
 
-await checkAsync("la ligne garde la trace de ce que MACHÉ a financé", async () => {
+await checkAsync("la ligne garde la trace de ce que MACHE a financé", async () => {
   /*
     Sans cela, −240 est un chiffre inexplicable six mois plus tard : on
     saurait qu'on a payé, pas pourquoi.
@@ -345,7 +345,7 @@ await checkAsync("la ligne garde la trace de ce que MACHÉ a financé", async ()
 await checkAsync("les frais de port ne se voient pas retirer la remise", async () => {
   /*
     Une ligne de frais de port ne porte pas de remise d'article. Lui en
-    soustraire une ferait payer deux fois la même promotion à MACHÉ.
+    soustraire une ferait payer deux fois la même promotion à MACHE.
   */
   const provider = new MacheCommissionProvider(conteneur() as never);
   const lines = await provider.getCommissionLines({
@@ -363,7 +363,7 @@ await checkAsync("les frais de port ne se voient pas retirer la remise", async (
   assert.equal(Number(port?.amount), 40, "8 % de 500, intacts");
 });
 
-await checkAsync("chaque ligne est signée par le fournisseur de MACHÉ", async () => {
+await checkAsync("chaque ligne est signée par le fournisseur de MACHE", async () => {
   /*
     Mercur inscrit lui-même « system » sur les lignes qu'il fabrique.
     Relayées telles quelles, elles attribueraient la commission à un

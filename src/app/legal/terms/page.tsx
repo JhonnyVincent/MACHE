@@ -4,20 +4,20 @@
   Ce qu'elle était
 
   Trois phrases sur la suspension de comptes et les litiges, sans dire
-  ce que MACHÉ est, qui vend, qui livre, ni qui répond en cas de
+  ce que MACHE est, qui vend, qui livre, ni qui répond en cas de
   problème. Un client n'y trouvait aucune des réponses qu'il cherche.
 
   Ce qu'elle dit maintenant
 
   Le fonctionnement réel de la place de marché, relevé dans le code :
-  MACHÉ n'est pas le vendeur, une commande se partage entre boutiques,
+  MACHE n'est pas le vendeur, une commande se partage entre boutiques,
   le paiement se fait à la livraison, et une boutique n'apparaît
   qu'après relecture.
 
   Ce qu'elle n'invente pas
 
   Le droit applicable, la juridiction compétente, les délais de
-  rétractation et le taux de commission engagent MACHÉ juridiquement et
+  rétractation et le taux de commission engagent MACHE juridiquement et
   commercialement. Ils se décident, au besoin avec un conseil. Les
   écrire ici au hasard donnerait à un client l'apparence d'un
   engagement qui n'a jamais été pris.
@@ -27,9 +27,9 @@ import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Conditions générales — MACHÉ",
+  title: "Conditions générales — MACHE",
   description:
-    "Comment fonctionne la place de marché MACHÉ : qui vend, qui livre, qui répond.",
+    "Comment fonctionne la place de marché MACHE : qui vend, qui livre, qui répond.",
 };
 
 function TermsPageEcrit() {
@@ -40,24 +40,24 @@ function TermsPageEcrit() {
       </h1>
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-        Comment MACHÉ fonctionne, et qui répond de quoi.
+        Comment MACHE fonctionne, et qui répond de quoi.
       </p>
 
       <div className="mt-8 space-y-7 text-md leading-relaxed text-[var(--mache-muted)]">
         <section>
           <h2 className="text-lg font-bold text-[var(--mache-text)]">
-            MACHÉ n&apos;est pas le vendeur
+            MACHE n&apos;est pas le vendeur
           </h2>
 
           <p className="mt-2">
-            MACHÉ est une place de marché : les produits sont vendus par
+            MACHE est une place de marché : les produits sont vendus par
             des boutiques indépendantes. C&apos;est le vendeur qui fixe
             ses prix, décrit ses articles, tient son stock, prépare et
             expédie votre commande.
           </p>
 
           <p className="mt-3">
-            MACHÉ tient la place : le catalogue, le panier, le passage de
+            MACHE tient la place : le catalogue, le panier, le passage de
             commande, la mise en relation. Sur chaque fiche produit et
             sur chaque commande, le nom de la boutique est indiqué — vous
             savez toujours chez qui vous achetez.
@@ -90,7 +90,7 @@ function TermsPageEcrit() {
 
           <p className="mt-2">
             Vous réglez en main propre au moment de recevoir le colis,
-            après l&apos;avoir vérifié. MACHÉ ne demande aucune donnée
+            après l&apos;avoir vérifié. MACHE ne demande aucune donnée
             bancaire et ne prélève rien à la commande.
           </p>
 
@@ -107,7 +107,7 @@ function TermsPageEcrit() {
           </h2>
 
           <p className="mt-2">
-            Un agent MACHÉ qui se présente chez vous porte un code.
+            Un agent MACHE qui se présente chez vous porte un code.
             Vérifiez-le avant de lui remettre un colis ou de
             l&apos;argent.
           </p>
@@ -127,7 +127,7 @@ function TermsPageEcrit() {
 
           <p className="mt-2">
             Toute personne ou entreprise peut demander à vendre sur
-            MACHÉ. Une boutique nouvellement ouverte est relue par MACHÉ
+            MACHE. Une boutique nouvellement ouverte est relue par MACHE
             avant d&apos;apparaître dans le catalogue : elle peut
             préparer ses produits pendant ce temps.
           </p>
@@ -154,7 +154,7 @@ function TermsPageEcrit() {
           <p className="mt-2">
             Seul un client qui a réellement commandé un article peut le
             noter : le système exige la commande correspondante. Les avis
-            sont relus par MACHÉ avant publication, et un vendeur peut
+            sont relus par MACHE avant publication, et un vendeur peut
             répondre publiquement — sa réponse est signalée comme telle.
           </p>
         </section>
@@ -167,11 +167,11 @@ function TermsPageEcrit() {
           <p className="mt-2">
             Adressez-vous d&apos;abord au vendeur : c&apos;est lui qui a
             préparé et expédié. Si vous n&apos;obtenez pas de réponse,
-            écrivez à MACHÉ.
+            écrivez à MACHE.
           </p>
 
           <p className="mt-3">
-            MACHÉ peut suspendre une boutique qui trompe ses clients,
+            MACHE peut suspendre une boutique qui trompe ses clients,
             vend des produits interdits ou ne livre pas ce qu&apos;elle
             annonce.
           </p>
@@ -187,15 +187,15 @@ function TermsPageEcrit() {
               href="/contact"
               className="rounded-[6px] bg-[var(--mache-primary)] px-4 py-2 text-base font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
             >
-              Écrire à MACHÉ
+              Écrire à MACHE
             </Link>
           </div>
         </section>
 
         {/*
           Ce qui manque, dit plutôt que comblé. Un délai de rétractation
-          inventé serait un engagement pris au nom de MACHÉ sans que
-          MACHÉ l'ait décidé.
+          inventé serait un engagement pris au nom de MACHE sans que
+          MACHE l'ait décidé.
         */}
         <section className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
           <h2 className="text-lg font-bold text-[var(--mache-text)]">
@@ -205,7 +205,7 @@ function TermsPageEcrit() {
           <p className="mt-2 text-base">
             Cette page décrit fidèlement le fonctionnement du site
             aujourd&apos;hui. Quatre points relèvent d&apos;une décision
-            de MACHÉ et seront précisés avant l&apos;ouverture
+            de MACHE et seront précisés avant l&apos;ouverture
             commerciale : l&apos;identité juridique de
             l&apos;exploitant, le droit applicable et la juridiction
             compétente, le délai de rétractation, et la commission

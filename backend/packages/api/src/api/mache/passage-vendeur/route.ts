@@ -1,7 +1,7 @@
 /*
   ROUTE : entrer dans le panneau vendeur avec un laissez-passer.
 
-  Le navigateur du vendeur arrive ici depuis le site MACHÉ. Le
+  Le navigateur du vendeur arrive ici depuis le site MACHE. Le
   laissez-passer est vérifié (signature, expiration, usage unique), puis
   la session du panneau est ouverte exactement comme le fait son propre
   écran de connexion — l'identité dans `auth_context`, la boutique dans

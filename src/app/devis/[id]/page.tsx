@@ -6,7 +6,7 @@
   l'autre, la page ne dit pas que la demande existe : le distinguer
   reviendrait à confirmer des identifiants à un inconnu.
 
-  Accepter n'est pas payer. MACHÉ n'encaisse rien — le paiement se fait
+  Accepter n'est pas payer. MACHE n'encaisse rien — le paiement se fait
   en main propre — et la page l'écrit là où l'acheteur clique, pas dans
   une note de bas de page.
 */
@@ -160,7 +160,7 @@ export default async function QuotePage({
       {answered && (
         <div className="mt-6">
           <p className="text-base leading-relaxed text-[var(--mache-muted)]">
-            Accepter ne déclenche aucun paiement : MACHÉ n&apos;encaisse
+            Accepter ne déclenche aucun paiement : MACHE n&apos;encaisse
             rien, le règlement se fait avec le vendeur. Accepter lui dit
             que vous voulez cette commande à ce prix.
           </p>

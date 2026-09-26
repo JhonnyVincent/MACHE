@@ -88,7 +88,7 @@ export default function SellBusinessPage() {
               <div className="flex items-center gap-3">
                 <img
                   src="/images/logo-haiti-mache-hibiscus.png"
-                  alt="Haiti Maché"
+                  alt="Haiti Mache"
                   className="h-14 w-14 rounded-2xl object-contain"
                 />
                 <div>
@@ -167,7 +167,7 @@ export default function SellBusinessPage() {
             </h2>
 
             <p className="mt-4 text-neutral-500">
-              Le profil Business peut vendre sur Maché et utiliser les outils internes pour gérer
+              Le profil Business peut vendre sur Mache et utiliser les outils internes pour gérer
               son activité commerciale.
             </p>
           </div>
@@ -244,7 +244,7 @@ export default function SellBusinessPage() {
           <div className="card p-6">
             <img
               src="/images/carte-haiti-mache.png"
-              alt="Carte Haiti Maché"
+              alt="Carte Haiti Mache"
               className="mx-auto max-h-[360px] object-contain"
             />
           </div>
@@ -255,11 +255,11 @@ export default function SellBusinessPage() {
             </p>
 
             <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-              Faites grandir votre boutique avec Maché.
+              Faites grandir votre boutique avec Mache.
             </h2>
 
             <p className="mt-4 leading-8 text-neutral-500">
-              L’équipe Maché peut vous aider à choisir la bonne formule, préparer votre catalogue
+              L’équipe Mache peut vous aider à choisir la bonne formule, préparer votre catalogue
               et activer les outils adaptés à votre business.
             </p>
 

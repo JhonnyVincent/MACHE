@@ -1,4 +1,4 @@
-# MACHÉ — architecture cible
+# MACHE — architecture cible
 
 Document de référence de la refonte. Il dit ce qui est **en place et
 vérifié**, ce qui est **décidé**, et ce qui **attend une décision**.
@@ -108,7 +108,7 @@ au redémarrage.
 
 Les visuels de l'accueil, des pages `/sell` et des vitrines ne sont pas
 des fichiers du projet : ce sont des **liens directs vers Unsplash**
-(12 URLs distinctes). Photos de stock génériques, pas des produits MACHÉ.
+(12 URLs distinctes). Photos de stock génériques, pas des produits MACHE.
 Elles ne sont ni hébergées, ni sous licence négociée, ni fiables dans la
 durée. Elles tiennent comme décor provisoire ; elles ne tiendront pas en
 production.
@@ -118,7 +118,7 @@ production.
 ## 5. Décisions prises
 
 1. **Comptes** — tout sur Medusa. Clients, vendeurs, agents et personnel
-   de MACHÉ y vivent tous ; l'ancien fournisseur d'authentification a été
+   de MACHE y vivent tous ; l'ancien fournisseur d'authentification a été
    retiré du code.
 2. **Hébergement** — Render, plan gratuit. `render.yaml` est prêt, avec
    ses limites écrites sans euphémisme : base supprimée au bout de
@@ -127,7 +127,7 @@ production.
 3. **Visuels** — seuls le logo hibiscus et la carte d'Haïti sont
    conservés. Les douze liens Unsplash ont été retirés.
 4. **Espace vendeur** — le panneau Mercur, plus les écrans propres à
-   MACHÉ (livraisons, contrats, devis, vitrine). Les 35 pages Next
+   MACHE (livraisons, contrats, devis, vitrine). Les 35 pages Next
    d'origine lisaient des tables qui n'étaient plus la source de vérité :
    elles montraient à chaque vendeur des chiffres morts.
 5. **Administration** — panneau Medusa pour le commerce, et en Next

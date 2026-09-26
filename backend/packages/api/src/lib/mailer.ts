@@ -1,9 +1,9 @@
 /*
-  L'ENVOI D'E-MAILS DE MACHÉ.
+  L'ENVOI D'E-MAILS DE MACHE.
 
   Pourquoi Brevo, et pas Gmail directement
 
-  L'idée de départ était d'envoyer par le compte Gmail de MACHÉ, en
+  L'idée de départ était d'envoyer par le compte Gmail de MACHE, en
   SMTP. Le plan gratuit de Render BLOQUE les ports SMTP sortants (25,
   465, 587) : les envois seraient partis dans le vide, chaque message
   attendant un délai d'expiration sans jamais rien dire. Un « mot de
@@ -12,7 +12,7 @@
 
   Brevo passe par HTTPS — le port que Render laisse ouvert — et son
   offre gratuite couvre 300 envois par jour. L'adresse d'expédition
-  reste celle de MACHÉ (MAIL_FROM) : Brevo exige seulement qu'on
+  reste celle de MACHE (MAIL_FROM) : Brevo exige seulement qu'on
   confirme une fois qu'on en est propriétaire.
 
   Ce qu'il faut savoir sur une adresse @gmail.com comme expéditrice
@@ -21,7 +21,7 @@
   que Gmail, arrive plus souvent dans les indésirables : les
   messageries vérifient que l'expéditeur est bien celui qu'il prétend.
   C'est acceptable pour commencer. La solution durable est un nom de
-  domaine à MACHÉ, authentifié chez Brevo.
+  domaine à MACHE, authentifié chez Brevo.
 
   Ce que ce fichier garantit
 
@@ -60,7 +60,7 @@ export function mailConfig() {
   return {
     apiKey: String(process.env.BREVO_API_KEY || "").trim(),
     from: String(process.env.MAIL_FROM || "").trim().toLowerCase(),
-    fromName: String(process.env.MAIL_FROM_NAME || "MACHÉ").trim() || "MACHÉ",
+    fromName: String(process.env.MAIL_FROM_NAME || "MACHE").trim() || "MACHE",
   };
 }
 

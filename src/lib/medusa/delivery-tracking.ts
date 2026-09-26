@@ -44,7 +44,7 @@ export type TrackedDelivery = {
   /*
     Le code à donner à la personne qui livre. `null` quand il n'y a
     rien à donner : livraison terminée, annulée, ou confiée à un
-    transporteur extérieur — dont le livreur ne connaît pas MACHÉ et ne
+    transporteur extérieur — dont le livreur ne connaît pas MACHE et ne
     pourrait rien en faire.
   */
   code: string | null;
@@ -147,8 +147,8 @@ export async function trackDelivery(
   L'acheteur constate la réception.
 
   Réservé aux colis confiés à un TRANSPORTEUR EXTÉRIEUR : pour ceux-là,
-  et seulement ceux-là, aucun code MACHÉ ne peut être saisi à la
-  remise, puisque le livreur du transporteur ne connaît pas MACHÉ. Le
+  et seulement ceux-là, aucun code MACHE ne peut être saisi à la
+  remise, puisque le livreur du transporteur ne connaît pas MACHE. Le
   constat de l'acheteur est alors la seule information disponible, et
   il est enregistré comme déclaratif — non prouvé.
 
@@ -182,7 +182,7 @@ export const TRACKING_STATUS_LABELS: Record<string, string> = {
 
 export const TRACKING_METHOD_LABELS: Record<string, string> = {
   seller: "Le vendeur livre lui-même",
-  agent: "Un agent MACHÉ livre",
+  agent: "Un agent MACHE livre",
   relay: "À retirer en point de retrait",
   carrier: "Confié à un transporteur",
 };

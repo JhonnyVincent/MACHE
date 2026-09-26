@@ -297,7 +297,7 @@ export type StoreOffer = {
   */
   sellerMetadata: Record<string, unknown> | null;
   /*
-    La vérification accordée par MACHÉ. Elle vient de `is_premium`, un
+    La vérification accordée par MACHE. Elle vient de `is_premium`, un
     champ du modèle vendeur — pas de `metadata`, que le vendeur écrit
     lui-même. C'est la seule information de cette ligne qui ne vienne
     pas du vendeur, et c'est ce qui lui donne sa valeur.
@@ -673,7 +673,7 @@ export type StoreRatings = {
 
   Mercur enregistre et modère les avis, et n'autorise à noter que ce
   qu'on a commandé — mais n'expose rien publiquement. La route
-  `/store/ratings` du backend MACHÉ comble ce trou et ne rend que les
+  `/store/ratings` du backend MACHE comble ce trou et ne rend que les
   avis publiés.
 */
 async function fetchRatings(

@@ -1,12 +1,12 @@
 /*
-  PAGE : mes échanges avec MACHÉ.
+  PAGE : mes échanges avec MACHE.
 
   C'est l'avantage concret d'avoir un compte : la conversation est
   rattachée au client, et il la retrouve ici sans conserver de lien.
   Quelqu'un sans compte n'a que l'adresse privée qu'on lui a donnée à
   l'envoi.
 
-  L'écran distingue ce qui attend le client de ce qui attend MACHÉ. Sans
+  L'écran distingue ce qui attend le client de ce qui attend MACHE. Sans
   e-mail, personne n'est prévenu d'une réponse : c'est cette liste qui
   en tient lieu, et une réponse non lue doit donc s'y voir au premier
   coup d'œil.
@@ -38,8 +38,8 @@ export default async function BuyerMessagesPage() {
     <div className="space-y-5">
       <PageHeader
         title="Mes messages"
-        subtitle="Vos échanges avec l'équipe MACHÉ."
-        actions={<Button href="/contact">Écrire à MACHÉ</Button>}
+        subtitle="Vos échanges avec l'équipe MACHE."
+        actions={<Button href="/contact">Écrire à MACHE</Button>}
       />
 
       {!result.ok ? (
@@ -49,8 +49,8 @@ export default async function BuyerMessagesPage() {
       ) : result.data.length === 0 ? (
         <EmptyState
           title="Aucun message"
-          description="Vous n'avez encore rien écrit à MACHÉ."
-          action={<Button href="/contact">Écrire à MACHÉ</Button>}
+          description="Vous n'avez encore rien écrit à MACHE."
+          action={<Button href="/contact">Écrire à MACHE</Button>}
         />
       ) : (
         <Panel title={`${result.data.length} conversation${result.data.length > 1 ? "s" : ""}`}>
@@ -96,7 +96,7 @@ export default async function BuyerMessagesPage() {
       )}
 
       <p className="text-sm leading-relaxed text-[#565959]">
-        MACHÉ n&apos;envoie pas d&apos;e-mail : vous ne serez pas prévenu
+        MACHE n&apos;envoie pas d&apos;e-mail : vous ne serez pas prévenu
         d&apos;une réponse. Cette page est l&apos;endroit où la trouver.
       </p>
     </div>

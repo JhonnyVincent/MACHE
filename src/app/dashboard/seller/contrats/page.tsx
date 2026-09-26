@@ -1,9 +1,9 @@
 /*
-  PAGE : les contrats que MACHÉ a adressés à cette boutique.
+  PAGE : les contrats que MACHE a adressés à cette boutique.
 
   Pourquoi cet écran vit ici et pas dans le panneau Mercur
 
-  Mercur n'a pas de contrats. C'est une fonction propre à MACHÉ, comme
+  Mercur n'a pas de contrats. C'est une fonction propre à MACHE, comme
   les devis et les livraisons.
 
   Ce que la liste montre en premier
@@ -50,7 +50,7 @@ export default async function SellerContractsPage() {
     <div className="mx-auto max-w-[900px] space-y-5 p-3 sm:p-5">
       <PageHeader
         title="Contrats"
-        subtitle={`Ce que MACHÉ propose à ${seller.name}.`}
+        subtitle={`Ce que MACHE propose à ${seller.name}.`}
         actions={<Button href="/dashboard/seller" variant="secondary">Retour</Button>}
       />
 
@@ -61,7 +61,7 @@ export default async function SellerContractsPage() {
       ) : result.data.length === 0 ? (
         <EmptyState
           title="Aucun contrat"
-          description="MACHÉ ne vous a rien adressé pour le moment. Ce n'est pas une panne : il n'y a rien à lire."
+          description="MACHE ne vous a rien adressé pour le moment. Ce n'est pas une panne : il n'y a rien à lire."
         />
       ) : (
         <>

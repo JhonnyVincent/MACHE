@@ -1,11 +1,11 @@
 /*
-  ROUTE : vérifier qu'une personne est bien un agent MACHÉ.
+  ROUTE : vérifier qu'une personne est bien un agent MACHE.
 
   À quoi elle sert, concrètement
 
-  Quelqu'un sonne. Il dit livrer une commande MACHÉ, ou tenir le point
+  Quelqu'un sonne. Il dit livrer une commande MACHE, ou tenir le point
   de relais du quartier. Le client va lui remettre de l'argent liquide —
-  MACHÉ n'encaisse pas, le paiement se fait en main propre. Il a le
+  MACHE n'encaisse pas, le paiement se fait en main propre. Il a le
   droit de savoir à qui.
 
   C'est la route la plus sensible du site, et pas pour des raisons
@@ -27,7 +27,7 @@
 
   Ni adresse e-mail, ni nom complet, ni téléphone qui n'aurait pas été
   publié exprès. Quelqu'un qui essaierait des codes au hasard ne doit
-  pas pouvoir constituer un annuaire des agents de MACHÉ. Le prénom et
+  pas pouvoir constituer un annuaire des agents de MACHE. Le prénom et
   l'initiale suffisent à recouper avec la carte présentée.
 */
 
@@ -52,7 +52,7 @@ function publicName(customer: Raw): string {
 
   const initial = last ? `${last[0].toUpperCase()}.` : "";
 
-  return [first, initial].filter(Boolean).join(" ") || "Agent MACHÉ";
+  return [first, initial].filter(Boolean).join(" ") || "Agent MACHE";
 }
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -85,7 +85,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const rows = (groups ?? []) as Raw[];
 
   /*
-    Qui MACHÉ a suspendu. C'est une APPARTENANCE À UN GROUPE, que seule
+    Qui MACHE a suspendu. C'est une APPARTENANCE À UN GROUPE, que seule
     l'administration modifie.
 
     Auparavant ce statut se lisait dans le champ libre du client — et
@@ -121,7 +121,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
       /*
         Trouvé. On ne rend que ce qu'un client a besoin de recouper, et
-        le statut que MACHÉ a posé — jamais celui que l'agent
+        le statut que MACHE a posé — jamais celui que l'agent
         déclarerait.
 
         Le champ libre est encore lu, mais il ne peut plus que
@@ -137,7 +137,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
         display_name: publicName(customer),
         function: AGENT_GROUPS[slug],
         zone: str(metadata.agent_zone),
-        /* Publié seulement si MACHÉ l'a renseigné exprès. */
+        /* Publié seulement si MACHE l'a renseigné exprès. */
         phone_public: str(metadata.agent_phone_public),
         /*
           Un agent suspendu existe toujours dans le groupe : le dire
@@ -152,7 +152,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   /*
     Inconnu. La page distingue ce cas d'une panne : sur le pas d'une
-    porte, « cette personne n'est pas un agent » et « MACHÉ n'en sait
+    porte, « cette personne n'est pas un agent » et « MACHE n'en sait
     rien » appellent le même geste — ne rien remettre — mais pas la
     même accusation.
   */

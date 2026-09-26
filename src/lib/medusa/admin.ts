@@ -1,5 +1,5 @@
 /*
-  L'administration de MACHÉ, sur les comptes Medusa.
+  L'administration de MACHE, sur les comptes Medusa.
 
   Ce qui a changé, et pourquoi
 
@@ -44,7 +44,7 @@ const TOKEN_COOKIE = "mache_admin_token";
 
   Ce qu'il faut savoir et ne pas se cacher : ce jeton est un vrai jeton
   d'administration, délivré par Medusa sur le seul mot de passe. Le
-  second facteur l'empêche d'ouvrir les écrans MACHÉ ; il ne le rend
+  second facteur l'empêche d'ouvrir les écrans MACHE ; il ne le rend
   pas inopérant face à l'API du backend. D'où sa durée très courte.
 */
 const PENDING_COOKIE = "mache_admin_pending";
@@ -187,7 +187,7 @@ export async function loginAdmin(
     return {
       ok: false,
       reason:
-        "Ce compte n'est pas un compte du personnel MACHÉ. Pour acheter ou vendre, utilisez l'espace client ou l'espace vendeur.",
+        "Ce compte n'est pas un compte du personnel MACHE. Pour acheter ou vendre, utilisez l'espace client ou l'espace vendeur.",
     };
   }
 
@@ -385,7 +385,7 @@ export type AdminSeller = {
   email: string | null;
   status: string;
   /*
-    La vérification par MACHÉ. Elle vit dans `is_premium`, un champ du
+    La vérification par MACHE. Elle vit dans `is_premium`, un champ du
     modèle vendeur — PAS dans `metadata`, que le vendeur écrit
     lui-même. C'est toute la différence : un badge qu'on peut
     s'attribuer soi-même ne vérifie rien.
@@ -504,8 +504,8 @@ export async function approveSeller(sellerId: string): Promise<Result<true>> {
 
   - Approuver ouvre la boutique : elle peut vendre, elle apparaît dans
     le catalogue. C'est une décision d'accès.
-  - Vérifier dit que MACHÉ a contrôlé les documents de l'entreprise.
-    C'est une affirmation faite aux acheteurs, et elle engage MACHÉ.
+  - Vérifier dit que MACHE a contrôlé les documents de l'entreprise.
+    C'est une affirmation faite aux acheteurs, et elle engage MACHE.
 
   Une boutique peut vendre sans être vérifiée. L'inverse n'aurait pas
   de sens.
@@ -537,13 +537,13 @@ export async function setSellerVerified(
 }
 
 /* -------------------------------------------------------------------------- */
-/* Ce que MACHÉ gagne                                                         */
+/* Ce que MACHE gagne                                                         */
 /* -------------------------------------------------------------------------- */
 
 /*
   Le mot juste : DÛ, pas encaissé.
 
-  MACHÉ ne perçoit pas les paiements — l'acheteur règle le vendeur en
+  MACHE ne perçoit pas les paiements — l'acheteur règle le vendeur en
   main propre. Ces montants sont donc des créances, pas de la trésorerie.
   Le type porte ce nom pour que personne ne puisse l'oublier en lisant
   l'écran qui s'en sert.
@@ -552,10 +552,10 @@ export type RevenueBucket = {
   currencyCode: string;
   /* Ce que les acheteurs ont payé aux vendeurs, dans cette devise. */
   volume: number;
-  /* Ce que MACHÉ a gagné dessus, et doit facturer. */
+  /* Ce que MACHE a gagné dessus, et doit facturer. */
   commission: number;
   /*
-    Ce que les promotions financées par MACHÉ lui ont coûté sur la
+    Ce que les promotions financées par MACHE lui ont coûté sur la
     période : une somme déjà retirée de `commission`. Elle est portée à
     part pour qu'une commission en baisse se lise comme une décision et
     non comme un problème.
@@ -1364,7 +1364,7 @@ export const ADMIN_THREAD_STATUS: Record<string, string> = {
   RIEN N'EST SUPPRIMÉ, ET C'EST DÉLIBÉRÉ
 
   Supprimer un vendeur emporterait ses commandes passées et les
-  commissions qu'il doit à MACHÉ. Les deux états de Mercur préservent
+  commissions qu'il doit à MACHE. Les deux états de Mercur préservent
   l'historique comptable :
 
   - SUSPENDRE est réversible. La boutique ne vend plus ; elle peut
@@ -1541,7 +1541,7 @@ export async function searchProducts(term: string): Promise<Result<AdminProduct[
 
   « rejected » est l'état prévu par Medusa pour un produit refusé, et
   il se distingue de « draft » : un brouillon est un article que le
-  vendeur n'a pas fini, un article rejeté est un article que MACHÉ a
+  vendeur n'a pas fini, un article rejeté est un article que MACHE a
   retiré. Les confondre ferait croire au vendeur qu'il a oublié de
   publier, et il republierait.
 
@@ -1569,14 +1569,14 @@ export async function setProductStatus(
 export const REVIEW_STATUS_LABELS: Record<string, string> = {
   pending: "En attente",
   published: "Visible sur le site",
-  rejected: "Masqué par MACHÉ",
+  rejected: "Masqué par MACHE",
 };
 
 export const PRODUCT_STATUS_LABELS: Record<string, string> = {
   draft: "Brouillon du vendeur",
   proposed: "Proposé",
   published: "En vente",
-  rejected: "Retiré par MACHÉ",
+  rejected: "Retiré par MACHE",
 };
 
 /* -------------------------------------------------------------------------- */
@@ -1585,7 +1585,7 @@ export const PRODUCT_STATUS_LABELS: Record<string, string> = {
 
 /*
   Deux promotions identiques à l'écran peuvent coûter, l'une, rien à
-  MACHÉ, l'autre, sa commission entière. Ce type force la distinction à
+  MACHE, l'autre, sa commission entière. Ce type force la distinction à
   être transportée jusqu'à l'affichage : `owner` dit qui l'a créée,
   `costBearer` dit qui la paie, et ce ne sont pas la même question.
 */
@@ -1596,17 +1596,17 @@ export type MachePromotion = {
   isAutomatic: boolean;
   createdAt: string | null;
   campaignName: string | null;
-  /* Le vendeur propriétaire, ou null quand c'est une promotion de MACHÉ. */
+  /* Le vendeur propriétaire, ou null quand c'est une promotion de MACHE. */
   sellerName: string | null;
   owner: "seller" | "mache";
   /* Ce qui a été déclaré : « store », « marketplace », « shared », ou rien. */
   costBearer: "store" | "marketplace" | "shared" | null;
   sharedPercentage: number | null;
-  /* La part réellement portée par MACHÉ, de 0 à 1. */
+  /* La part réellement portée par MACHE, de 0 à 1. */
   macheShare: number;
   /* La phrase qui nomme qui paie, écrite par le backend. */
   whoPays: string;
-  /* Ce que MACHÉ a DÉJÀ déboursé sur cette promotion. */
+  /* Ce que MACHE a DÉJÀ déboursé sur cette promotion. */
   macheSpent: number;
   /* La remise, telle que la promotion la définit. */
   value: number | null;
@@ -1689,7 +1689,7 @@ export async function setPromotionCostBearer(input: {
       return {
         ok: false,
         reason:
-          "Un partage demande un pourcentage entre 1 et 100. Sans lui, MACHÉ ne porterait rien et la promotion resterait à la charge du vendeur.",
+          "Un partage demande un pourcentage entre 1 et 100. Sans lui, MACHE ne porterait rien et la promotion resterait à la charge du vendeur.",
       };
     }
   }
@@ -1869,12 +1869,12 @@ export async function setRelayPointKeeper(
   CE QU'UN BLOCAGE FAIT
 
   Il empêche CE COMPTE d'agir : commander en étant connecté, déposer un
-  avis, écrire à MACHÉ, se servir de l'espace agent. Le backend refuse
+  avis, écrire à MACHE, se servir de l'espace agent. Le backend refuse
   toute écriture faite avec sa session.
 
   CE QU'IL NE FAIT PAS
 
-  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHÉ
+  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHE
   sans compte, et rien n'interdit d'en créer un autre avec une autre
   adresse. L'écran le dit, parce que promettre une barrière qui n'existe
   pas est pire que ne rien promettre : on cesse de surveiller.
@@ -1882,7 +1882,7 @@ export async function setRelayPointKeeper(
   RIEN N'EST SUPPRIMÉ
 
   Un compte effacé emporterait ses commandes, et avec elles les
-  commissions dues à MACHÉ. Bloqué, l'historique reste lisible et la
+  commissions dues à MACHE. Bloqué, l'historique reste lisible et la
   décision se revient.
 */
 export type AdminCustomer = {
@@ -2013,7 +2013,7 @@ export async function setCustomerBlocked(
 
   CE QUE LE GEL NE FAIT PAS
 
-  MACHÉ n'encaisse pas : l'acheteur règle le vendeur en main propre.
+  MACHE n'encaisse pas : l'acheteur règle le vendeur en main propre.
   Geler ne reprend donc rien à un vendeur qui a déjà l'argent. Ce qu'il
   fait — et c'est réel — : une livraison confirmée cesse de porter sa
   somme comme due, et les versements déjà autorisés sont repris.

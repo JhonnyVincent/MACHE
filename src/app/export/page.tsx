@@ -9,7 +9,7 @@
 
   Pourquoi elle existe encore
 
-  Parce que la question est légitime : MACHÉ parle d'Haïti, de la
+  Parce que la question est légitime : MACHE parle d'Haïti, de la
   Caraïbe et de la diaspora, et quelqu'un qui veut exporter a le droit
   de trouver une réponse claire plutôt que rien. La réponse est « pas
   encore », et elle est dite en toutes lettres.
@@ -22,9 +22,9 @@
 import { Link } from "next-view-transitions";
 
 export const metadata = {
-  title: "Exporter depuis Haïti — MACHÉ",
+  title: "Exporter depuis Haïti — MACHE",
   description:
-    "Ce que MACHÉ permet aujourd'hui pour vendre hors d'Haïti, et ce qui n'est pas encore ouvert.",
+    "Ce que MACHE permet aujourd'hui pour vendre hors d'Haïti, et ce qui n'est pas encore ouvert.",
 };
 
 export default function ExportPage() {
@@ -36,7 +36,7 @@ export default function ExportPage() {
 
       <div className="mt-6 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
         <p className="text-md font-bold text-[var(--mache-text)]">
-          L&apos;export n&apos;est pas encore ouvert sur MACHÉ
+          L&apos;export n&apos;est pas encore ouvert sur MACHE
         </p>
         <p className="mt-1.5 text-md leading-relaxed text-[var(--mache-muted)]">
           Aujourd&apos;hui, les vendeurs livrent là où ils livrent — et
@@ -55,7 +55,7 @@ export default function ExportPage() {
           <p className="mt-2">
             Un vendeur définit ses zones de livraison. Rien ne
             l&apos;empêche d&apos;y ajouter un pays étranger s&apos;il
-            sait expédier et déclarer lui-même : MACHÉ ne bloque pas, mais
+            sait expédier et déclarer lui-même : MACHE ne bloque pas, mais
             n&apos;accompagne pas non plus.
           </p>
 
@@ -109,7 +109,7 @@ export default function ExportPage() {
               href="/services"
               className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
             >
-              Ce que MACHÉ fait
+              Ce que MACHE fait
             </Link>
           </div>
         </section>

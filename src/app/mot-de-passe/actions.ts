@@ -26,7 +26,7 @@ export async function requestResetAction(formData: FormData) {
 
   /*
     La même page de confirmation qu'un compte existe ou non : c'est ce
-    qui empêche d'apprendre ici qui est inscrit chez MACHÉ.
+    qui empêche d'apprendre ici qui est inscrit chez MACHE.
   */
   redirect(`/mot-de-passe?acteur=${actor}&envoye=1`);
 }

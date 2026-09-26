@@ -50,7 +50,7 @@ const footerSellLinks = [
 
 const footerHelpLinks = [
   { label: "Centre d’aide", href: "/faq" },
-  { label: "Ce que MACHÉ fait", href: "/services" },
+  { label: "Ce que MACHE fait", href: "/services" },
   { label: "Exporter depuis Haïti", href: "/export" },
   { label: "Livraison", href: "/legal/shipping" },
   { label: "Retours", href: "/legal/returns" },

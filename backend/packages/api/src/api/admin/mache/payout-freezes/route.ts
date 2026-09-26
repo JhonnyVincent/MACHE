@@ -11,13 +11,13 @@
 
   CE QUE LE GEL FAIT VRAIMENT
 
-  MACHÉ n'encaisse pas : l'acheteur règle le vendeur en main propre.
+  MACHE n'encaisse pas : l'acheteur règle le vendeur en main propre.
   Geler ne reprend donc rien à un vendeur qui a déjà l'argent, et la
   réponse le dit pour que l'écran puisse le répéter.
 
   Ce qui est réel : une livraison confirmée cesse de porter sa somme
   comme due au vendeur — `payout_state` reste « held ». Le jour où
-  MACHÉ versera, c'est la même vanne, déjà fermée.
+  MACHE versera, c'est la même vanne, déjà fermée.
 
   LE MOTIF EST OBLIGATOIRE
 
@@ -81,7 +81,7 @@ function shape(freeze: FreezeRow, held: number) {
     created_at: when(freeze.created_at),
     /*
       Combien de livraisons de cette boutique sont retenues. C'est la
-      seule mesure honnête de ce que le gel bloque : MACHÉ ne connaît
+      seule mesure honnête de ce que le gel bloque : MACHE ne connaît
       pas les montants, il ne les encaisse pas.
     */
     deliveries_held: held,
@@ -132,11 +132,11 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       shape(freeze, heldBySeller.get(freeze.seller_id) ?? 0)
     ),
     /*
-      Dit une fois, pour que l'écran n'ait pas à l'inventer : MACHÉ
+      Dit une fois, pour que l'écran n'ait pas à l'inventer : MACHE
       n'encaisse pas, donc le gel retient ce qui reste à verser et ne
       reprend pas ce qui est déjà encaissé.
     */
-    note: "MACHÉ n'encaisse pas les paiements : l'acheteur règle le vendeur en main propre. Un gel retient ce qui reste à porter comme dû ; il ne reprend pas l'argent déjà remis au vendeur.",
+    note: "MACHE n'encaisse pas les paiements : l'acheteur règle le vendeur en main propre. Un gel retient ce qui reste à porter comme dû ; il ne reprend pas l'argent déjà remis au vendeur.",
   });
 }
 

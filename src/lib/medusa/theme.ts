@@ -38,7 +38,7 @@ export type SiteTheme = {
 
 export const DEFAULT_THEME: SiteTheme = {
   key: "default",
-  label: "MACHÉ",
+  label: "MACHE",
   banner: null,
   variables: {},
 };
@@ -104,7 +104,7 @@ export async function fetchSiteTheme(): Promise<SiteTheme> {
 
   return {
     key: typeof theme.key === "string" ? theme.key : "default",
-    label: typeof theme.label === "string" ? theme.label : "MACHÉ",
+    label: typeof theme.label === "string" ? theme.label : "MACHE",
     banner: safeBanner(theme.banner),
     variables: safeVariables(theme.variables),
   };

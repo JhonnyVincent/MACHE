@@ -58,7 +58,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       items: [
         { label: "Vue d'ensemble", href: "/dashboard/admin" },
         { label: "Messages", href: "/dashboard/admin/messages" },
-        { label: "Ce que MACHÉ gagne", href: "/dashboard/admin/revenus" },
+        { label: "Ce que MACHE gagne", href: "/dashboard/admin/revenus" },
         { label: "Promotions", href: "/dashboard/admin/promotions" },
         { label: "Boutiques", href: "/dashboard/admin/stores", badge: pending },
         { label: "Modération", href: "/dashboard/admin/moderation" },

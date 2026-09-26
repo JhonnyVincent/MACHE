@@ -128,7 +128,7 @@ export default async function BuyerQuotesPage() {
 
         <Notice tone="info" title="Un devis n'est pas une commande">
           Demander un prix n&apos;engage à rien, et accepter une
-          proposition ne déclenche aucun paiement : MACHÉ n&apos;encaisse
+          proposition ne déclenche aucun paiement : MACHE n&apos;encaisse
           pas, le règlement se convient avec le vendeur.{" "}
           <Link href="/legal/terms" className="font-medium text-[#d2162c] hover:underline">
             Conditions d&apos;utilisation

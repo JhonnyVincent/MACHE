@@ -1,16 +1,16 @@
 /*
-  PAGE : ce que MACHÉ gagne.
+  PAGE : ce que MACHE gagne.
 
   Pourquoi cette page n'existait pas
 
   Le panneau de Mercur montre les commandes, les vendeurs, les
   versements — tout sauf ce que la place de marché encaisse pour
-  elle-même. Le dirigeant de MACHÉ n'avait aucun écran pour savoir
+  elle-même. Le dirigeant de MACHE n'avait aucun écran pour savoir
   combien l'entreprise avait gagné ce mois-ci.
 
   Le mot qui gouverne toute la page : DÛ
 
-  MACHÉ ne perçoit pas les paiements. L'acheteur règle le vendeur en
+  MACHE ne perçoit pas les paiements. L'acheteur règle le vendeur en
   main propre, et la commission est ensuite facturée. Ces montants sont
   donc des CRÉANCES, pas de la trésorerie. La page le répète là où le
   chiffre s'affiche, pas en note de bas de page : sur un écran de
@@ -87,7 +87,7 @@ function CurrencyCard({
       </p>
 
       <p className="mt-1.5 text-sm text-[#565959]">
-        dû à MACHÉ sur cette période
+        dû à MACHE sur cette période
       </p>
 
       {delta !== null && (
@@ -116,7 +116,7 @@ function CurrencyCard({
         </div>
 
         {/*
-          Ce que les promotions de MACHÉ lui ont coûté.
+          Ce que les promotions de MACHE lui ont coûté.
 
           La ligne n'apparaît que lorsqu'il y a quelque chose à dire :
           un « 0 » permanent finirait par ne plus être lu, et le jour
@@ -130,7 +130,7 @@ function CurrencyCard({
         {bucket.promotionsFunded > 0 && (
           <>
             <div className="flex justify-between gap-3">
-              <dt className="text-[#565959]">Promotions offertes par MACHÉ</dt>
+              <dt className="text-[#565959]">Promotions offertes par MACHE</dt>
               <dd className="font-medium text-[#b01124]">
                 −{money(bucket.promotionsFunded, bucket.currencyCode)}
               </dd>
@@ -149,7 +149,7 @@ function CurrencyCard({
         <p className="mt-3 text-xs leading-snug text-[#767676]">
           Les vendeurs concernés ont été payés comme s&apos;il n&apos;y avait
           pas eu de promotion : cette somme est sortie du chiffre
-          d&apos;affaires de MACHÉ, pas du leur.
+          d&apos;affaires de MACHE, pas du leur.
         </p>
       )}
     </div>
@@ -181,7 +181,7 @@ export default async function AdminRevenuePage({
   return (
     <div className="space-y-5">
       <PageHeader
-        title="Ce que MACHÉ gagne"
+        title="Ce que MACHE gagne"
         subtitle="Les commissions enregistrées sur les commandes, par devise."
         actions={
           <div className="flex flex-wrap gap-1.5">
@@ -203,7 +203,7 @@ export default async function AdminRevenuePage({
         il serait lu après que la décision est prise.
       */}
       <Notice tone="warning" title="Ces montants sont dus, pas encaissés">
-        MACHÉ ne perçoit pas les paiements : l&apos;acheteur règle le vendeur en
+        MACHE ne perçoit pas les paiements : l&apos;acheteur règle le vendeur en
         main propre. Ces commissions restent à facturer aux boutiques — ce
         n&apos;est pas de la trésorerie.
       </Notice>
@@ -238,7 +238,7 @@ export default async function AdminRevenuePage({
             <p className="text-sm leading-relaxed text-[#565959]">
               Les devises ne sont pas additionnées. Un total unique
               supposerait un taux de change, et ce taux ferait varier le
-              chiffre d&apos;affaires de MACHÉ sans qu&apos;aucune vente
+              chiffre d&apos;affaires de MACHE sans qu&apos;aucune vente
               n&apos;ait changé.
             </p>
           )}

@@ -26,7 +26,7 @@ import { model } from "@medusajs/framework/utils";
   Pourquoi le refus est un état à part entière
 
   Un marchand qui refuse doit pouvoir le dire, avec sa raison. Sans
-  cela, le refus se confondrait avec l'oubli, et MACHÉ relancerait
+  cela, le refus se confondrait avec l'oubli, et MACHE relancerait
   indéfiniment quelqu'un qui a déjà répondu non.
 */
 const ContractSignature = model.define("mache_contract_signature", {
@@ -76,7 +76,7 @@ const ContractSignature = model.define("mache_contract_signature", {
   */
   proof_hash: model.text().nullable(),
 
-  /* Une échéance, quand MACHÉ en fixe une. */
+  /* Une échéance, quand MACHE en fixe une. */
   due_at: model.dateTime().nullable(),
 });
 

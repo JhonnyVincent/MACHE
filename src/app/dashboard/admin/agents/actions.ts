@@ -1,7 +1,7 @@
 "use server";
 
 /*
-  ACTIONS : les agents MACHÉ.
+  ACTIONS : les agents MACHE.
 
   Un agent est un client à qui l'administration ajoute une fonction.
   Toutes ces actions revérifient la session : une action serveur est une

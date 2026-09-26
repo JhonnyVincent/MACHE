@@ -1,10 +1,10 @@
 /*
-  PAGE : à propos de MACHÉ.
+  PAGE : à propos de MACHE.
 
   Ce qu'elle affichait avant
 
   Quatre chiffres inventés — « 2 800+ vendeurs actifs », « 45 000+
-  produits », « 12 pays », « 98 % de satisfaction » — quand MACHÉ
+  produits », « 12 pays », « 98 % de satisfaction » — quand MACHE
   comptait six boutiques, douze articles, un pays et deux avis. C'est la
   page qu'un commerçant lit avant de décider s'il ouvre une boutique :
   lui faire croire qu'il rejoint une place de marché qui tourne déjà,
@@ -19,7 +19,7 @@
 
   Ce qu'elle ne dit pas
 
-  Qui a fondé MACHÉ, depuis quand, avec quelle équipe. Ces éléments ne
+  Qui a fondé MACHE, depuis quand, avec quelle équipe. Ces éléments ne
   m'ont pas été donnés, et les inventer serait pire qu'un chiffre gonflé :
   « fondé en 2019 par une équipe de passionnés » ne se démentirait
   jamais tout seul. La page se tient très bien sans — une page
@@ -34,9 +34,9 @@ import { reportOutage } from "@/lib/medusa/outage";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "À propos de MACHÉ",
+  title: "À propos de MACHE",
   description:
-    "Connecter Haïti au monde, encourager les échanges entre producteurs. Ce qu'est MACHÉ, et où le projet en est.",
+    "Connecter Haïti au monde, encourager les échanges entre producteurs. Ce qu'est MACHE, et où le projet en est.",
 };
 
 /*
@@ -61,11 +61,11 @@ const AMBITIONS = [
     title: "Vendre sans avancer d'argent",
     now: "Ouvrir une boutique ne coûte rien. La commission n'est due que sur une vente réalisée, et seules les marques officielles ont un abonnement.",
     missing:
-      "MACHÉ n'encaisse pas encore : le client règle le vendeur à la livraison, en main propre. Aucun prestataire de paiement n'est raccordé.",
+      "MACHE n'encaisse pas encore : le client règle le vendeur à la livraison, en main propre. Aucun prestataire de paiement n'est raccordé.",
   },
   {
     title: "Savoir à qui on achète",
-    now: "Chaque boutique déclare son profil — artisan, commerce, grossiste, marque — et MACHÉ vérifie les documents de celles qui portent le badge. Un agent qui se présente chez vous a un code qui se vérifie sur le site.",
+    now: "Chaque boutique déclare son profil — artisan, commerce, grossiste, marque — et MACHE vérifie les documents de celles qui portent le badge. Un agent qui se présente chez vous a un code qui se vérifie sur le site.",
     missing:
       "La vérification se fait au cas par cas, à la main. Elle prend le temps qu'il faut.",
   },
@@ -106,7 +106,7 @@ export default async function AboutPage() {
 
             <p className="mt-5 max-w-xl text-md leading-8 text-white/65">
               Et encourager les échanges entre ceux qui produisent ici. C&apos;est
-              l&apos;objectif de MACHÉ, et tout le reste en découle.
+              l&apos;objectif de MACHE, et tout le reste en découle.
             </p>
 
             <p className="mt-4 max-w-xl text-md leading-8 text-white/45">
@@ -114,7 +114,7 @@ export default async function AboutPage() {
               d&apos;endroit commun où les trouver. Une diaspora qui veut acheter
               au pays sans passer par quelqu&apos;un qui connaît quelqu&apos;un.
               Des producteurs qui s&apos;approvisionnent les uns chez les autres
-              sans savoir que l&apos;autre existe. MACHÉ est fait pour ça.
+              sans savoir que l&apos;autre existe. MACHE est fait pour ça.
             </p>
           </div>
 
@@ -122,7 +122,7 @@ export default async function AboutPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/carte-haiti-mache.png"
-              alt="Carte d'Haïti aux couleurs de MACHÉ"
+              alt="Carte d'Haïti aux couleurs de MACHE"
               className="h-[340px] w-full object-contain"
             />
           </div>
@@ -176,7 +176,7 @@ export default async function AboutPage() {
 
           <p className="mt-2 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
             Ces nombres sont lus dans le catalogue, à l&apos;instant où vous
-            ouvrez cette page. MACHÉ démarre : ils sont petits, et c&apos;est
+            ouvrez cette page. MACHE démarre : ils sont petits, et c&apos;est
             le moment d&apos;y entrer plutôt que d&apos;y arriver en retard.
           </p>
 
@@ -229,7 +229,7 @@ export default async function AboutPage() {
           </h2>
 
           <p className="mt-2 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
-            C&apos;est de vous que MACHÉ a besoin en premier. Une place de
+            C&apos;est de vous que MACHE a besoin en premier. Une place de
             marché sans vendeurs n&apos;a rien à vendre — et plus tôt vous y
             êtes, plus votre boutique a le temps de se faire connaître.
           </p>

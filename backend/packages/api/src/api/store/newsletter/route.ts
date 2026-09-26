@@ -1,10 +1,10 @@
 /*
-  ROUTE : s'abonner aux nouvelles de MACHÉ.
+  ROUTE : s'abonner aux nouvelles de MACHE.
 
   Où vont les adresses
 
   Dans une liste de contacts Brevo — le même service qui envoie déjà les
-  liens « mot de passe oublié ». MACHÉ n'a pas à tenir sa propre base
+  liens « mot de passe oublié ». MACHE n'a pas à tenir sa propre base
   d'abonnés, ni à écrire un outil d'envoi : les lettres se composent et
   s'envoient depuis Brevo, qui gère aussi le désabonnement, obligatoire
   dans chaque envoi.
@@ -57,7 +57,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   if (!apiKey || !Number.isInteger(listId) || listId <= 0) {
     return res.status(503).json({
-      message: "L'abonnement aux nouvelles de MACHÉ n'est pas encore ouvert.",
+      message: "L'abonnement aux nouvelles de MACHE n'est pas encore ouvert.",
       configured: false,
     });
   }

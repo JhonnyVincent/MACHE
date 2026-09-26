@@ -1,5 +1,5 @@
 /*
-  PAGE : connexion à l'administration de MACHÉ.
+  PAGE : connexion à l'administration de MACHE.
 
   Les comptes du personnel vivent dans Medusa — la table `user`,
   distincte des clients et des vendeurs. Cet espace authentifiait
@@ -65,7 +65,7 @@ export default async function AdminLoginPage({
   return (
     <main className="mx-auto w-full max-w-md px-4 py-12 sm:py-16">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)]">
-        Administration MACHÉ
+        Administration MACHE
       </h1>
 
       <p className="mt-2 text-md text-[var(--mache-muted)]">
@@ -134,7 +134,7 @@ export default async function AdminLoginPage({
         de passe jusqu'à croire son compte perdu.
       */}
       <p className="mt-6 text-sm leading-relaxed text-[var(--mache-muted)]">
-        Vous vendez sur MACHÉ ?{" "}
+        Vous vendez sur MACHE ?{" "}
         <Link href="/dashboard/seller/connexion" className="font-semibold text-[var(--mache-primary)] hover:underline">
           Espace vendeur
         </Link>

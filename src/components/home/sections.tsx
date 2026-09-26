@@ -9,7 +9,7 @@ import type { StoreProduct, StoreSeller } from "@/lib/medusa/catalog";
 import type { CategoryTile } from "@/lib/medusa/home";
 
 /*
-  SUR MACHÉ EN CE MOMENT — des produits, pas des cases.
+  SUR MACHE EN CE MOMENT — des produits, pas des cases.
 
   Une sélection qui tourne entre les vendeurs, chacun à son tour, et qui
   change toutes les heures (voir src/lib/rotation.ts). La section le dit
@@ -24,7 +24,7 @@ export function Spotlight({ products }: { products: StoreProduct[] }) {
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
-            Sur MACHÉ en ce moment
+            Sur MACHE en ce moment
           </h2>
           <p className="mt-1 text-sm text-[var(--mache-muted)]">
             Chaque boutique à son tour : la sélection change toutes les heures.
@@ -200,7 +200,7 @@ export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[];
   NOS MARQUES, en défilement continu de droite à gauche.
 
   Ce sont les boutiques qui se DÉCLARENT marque officielle : leur
-  déclaration, pas un contrôle de MACHÉ — le sous-titre le dit. Aucune :
+  déclaration, pas un contrôle de MACHE — le sous-titre le dit. Aucune :
   pas de section.
 
   La liste est doublée pour que la boucle se referme sans à-coup ; la
@@ -248,10 +248,10 @@ export function BrandsMarquee({ brands }: { brands: StoreSeller[] }) {
 }
 
 /*
-  DEVENEZ VENDEUR CHEZ MACHÉ — en bas de page.
+  DEVENEZ VENDEUR CHEZ MACHE — en bas de page.
 
   La phrase « profitez d'un catalogue déjà visité » a été retirée :
-  MACHÉ démarre, et promettre de l'audience à un vendeur avant d'en
+  MACHE démarre, et promettre de l'audience à un vendeur avant d'en
   avoir, c'est lui vendre ce qu'on n'a pas.
 */
 export function SellCta() {
@@ -259,7 +259,7 @@ export function SellCta() {
     <section className="mache-reveal container-page py-5">
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[var(--mache-primary)] p-6 text-white">
         <div>
-          <h2 className="text-xl font-black tracking-tight">Devenez vendeur chez MACHÉ</h2>
+          <h2 className="text-xl font-black tracking-tight">Devenez vendeur chez MACHE</h2>
           <p className="mt-1.5 max-w-xl text-base leading-relaxed text-white/85">
             Vous vendez quelque chose ? Ouvrez votre boutique et gardez votre marque.
             Particuliers, entreprises, fournisseurs et marques officielles.

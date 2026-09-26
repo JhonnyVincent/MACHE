@@ -1,11 +1,11 @@
 /*
-  ROUTE : ce que MACHÉ gagne.
+  ROUTE : ce que MACHE gagne.
 
   Pourquoi elle existe
 
   Le panneau d'administration de Mercur montre les commandes, les
   vendeurs, les versements. Il ne dit nulle part ce que la PLACE DE
-  MARCHÉ elle-même encaisse. Un dirigeant qui veut savoir combien MACHÉ
+  MARCHÉ elle-même encaisse. Un dirigeant qui veut savoir combien MACHE
   a gagné ce mois-ci n'a aujourd'hui aucun écran à ouvrir.
 
   D'où viennent les chiffres
@@ -24,7 +24,7 @@
 
   Ce que la réponse ne contient pas, et pourquoi
 
-  Les abonnements des marques officielles. MACHÉ ne les facture pas
+  Les abonnements des marques officielles. MACHE ne les facture pas
   encore : il n'existe aucun prélèvement, aucune échéance, rien à
   compter. Ajouter ici une ligne « abonnements » remplie à partir de la
   grille tarifaire afficherait comme encaissé un argent que personne
@@ -33,8 +33,8 @@
 
   Attention à ce que « encaissé » veut dire
 
-  MACHÉ ne perçoit pas les paiements : l'acheteur règle le vendeur en
-  main propre. Ces commissions sont donc DUES à MACHÉ, pas reçues. La
+  MACHE ne perçoit pas les paiements : l'acheteur règle le vendeur en
+  main propre. Ces commissions sont donc DUES à MACHE, pas reçues. La
   réponse porte ce mot, et l'écran le répète — confondre les deux, c'est
   se croire riche d'un argent qu'il reste à réclamer.
 */
@@ -73,10 +73,10 @@ type Bucket = {
   currency_code: string;
   /* Ce que les acheteurs ont payé aux vendeurs, dans cette devise. */
   volume: number;
-  /* Ce que MACHÉ a gagné dessus, APRÈS ses propres promotions. */
+  /* Ce que MACHE a gagné dessus, APRÈS ses propres promotions. */
   commission: number;
   /*
-    Ce que les promotions de MACHÉ lui ont coûté : la somme déjà
+    Ce que les promotions de MACHE lui ont coûté : la somme déjà
     retirée de la commission ci-dessus. Le chiffre est présenté à part
     parce qu'il répond à une question différente — non pas « combien
     ai-je gagné » mais « combien m'ont coûté mes gestes commerciaux ».
@@ -125,7 +125,7 @@ function effectiveRate(bucket: Bucket): number | null {
 }
 
 /*
-  La commission AVANT les promotions financées par MACHÉ : ce qu'elle
+  La commission AVANT les promotions financées par MACHE : ce qu'elle
   aurait été sans geste commercial. L'écart entre les deux est
   exactement ce que ces gestes ont coûté, et le voir écrit évite de
   lire une baisse de commission comme un problème alors que c'est une
@@ -260,7 +260,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   return res.json({
     period: { days, from: from.toISOString(), to: now.toISOString() },
     /*
-      « dû » et non « encaissé ». MACHÉ ne perçoit pas les paiements ;
+      « dû » et non « encaissé ». MACHE ne perçoit pas les paiements ;
       ces montants restent à facturer aux vendeurs.
     */
     basis: "due",

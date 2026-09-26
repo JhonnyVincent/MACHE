@@ -1,4 +1,4 @@
-# Mettre MACHÉ en ligne
+# Mettre MACHE en ligne
 
 Tout est hébergé sur **Render**, en trois ressources.
 
@@ -143,7 +143,7 @@ La construction vérifie le résultat elle-même : un panneau qui
 viserait de nouveau une adresse figée est refusé
 (`scripts/bundle-dashboards.mjs`).
 
-### Le compte d'administration MACHÉ
+### Le compte d'administration MACHE
 
 L'administration du site s'authentifie sur les comptes **du personnel
 Medusa**.
@@ -201,21 +201,21 @@ jour.
 Trois étapes, une seule fois :
 
 1. Créer un compte gratuit sur brevo.com.
-2. **Expéditeurs** → ajouter l'adresse d'expédition de MACHÉ (la même que `MAIL_FROM` sur Render), puis
+2. **Expéditeurs** → ajouter l'adresse d'expédition de MACHE (la même que `MAIL_FROM` sur Render), puis
    cliquer sur le lien de confirmation que Brevo envoie à cette
    adresse. Sans cette confirmation, Brevo refuse tous les envois.
 3. **SMTP & API → Clés API** → créer une clé, et la coller sur
    `mache-backend` → `Environment` → `BREVO_API_KEY`.
 
 `MAIL_FROM` (l'adresse d'expédition) se saisit sur Render : elle doit
-être EXACTEMENT celle confirmée chez Brevo. `MAIL_FROM_NAME` (« MACHÉ »)
+être EXACTEMENT celle confirmée chez Brevo. `MAIL_FROM_NAME` (« MACHE »)
 est déjà posée par le `render.yaml`.
 
 **À savoir.** Un message « de » une adresse `@gmail.com` mais envoyé
 par un autre service que Gmail arrive plus souvent dans les courriers
 indésirables — les messageries vérifient que l'expéditeur est bien
 celui qu'il prétend. La page de confirmation le rappelle au client.
-La solution durable : une adresse sur un nom de domaine à MACHÉ,
+La solution durable : une adresse sur un nom de domaine à MACHE,
 authentifiée chez Brevo.
 
 **Ce que les journaux montrent.** « lien envoyé (espace member) »
@@ -361,7 +361,7 @@ Trois garanties, vérifiées :
   vraies commandes ;
 - il ne touche pas à la région Haïti. La démonstration crée une région
   « Europe » en euros et voudrait en faire la région par défaut ; la
-  mise en place MACHÉ passe après elle et rétablit Haïti ;
+  mise en place MACHE passe après elle et rétablit Haïti ;
 - il donne aux articles un prix **en gourdes**. Sans cela, le catalogue
   s'affichait avec « Prix indisponible » partout et rien ne pouvait
   entrer dans un panier : Medusa refuse de calculer un prix dans une
@@ -391,7 +391,7 @@ des offres ce qui n'en est pas.
 
 - **Les taxes.** Aucun taux n'est fixé. C'est une obligation légale, pas
   un réglage technique.
-- **La commission MACHÉ.** Mercur la gère nativement, mais son taux est
+- **La commission MACHE.** Mercur la gère nativement, mais son taux est
   une décision commerciale.
 - **Le moyen de paiement.** Aujourd'hui, seule la livraison contre
   paiement en main propre est proposée. Aucun paiement en ligne n'est

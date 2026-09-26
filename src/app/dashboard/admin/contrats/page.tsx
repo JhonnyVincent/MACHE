@@ -1,5 +1,5 @@
 /*
-  PAGE : les contrats de MACHÉ.
+  PAGE : les contrats de MACHE.
 
   La liste, et la création d'un brouillon.
 
@@ -56,7 +56,7 @@ export default async function AdminContractsPage({
     <div className="space-y-5">
       <PageHeader
         title="Contrats"
-        subtitle="Ce que MACHÉ fait accepter à ses marchands."
+        subtitle="Ce que MACHE fait accepter à ses marchands."
         actions={
           writing ? (
             <Button href="/dashboard/admin/contrats" variant="secondary">

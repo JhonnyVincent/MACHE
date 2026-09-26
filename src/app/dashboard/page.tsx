@@ -15,7 +15,7 @@
 
   POURQUOI CET ORDRE
 
-  Une même personne peut être les deux : le dirigeant de MACHÉ achète
+  Une même personne peut être les deux : le dirigeant de MACHE achète
   aussi. L'envoyer vers son espace d'achat alors qu'il vient piloter le
   site serait le geste le plus agaçant possible — et l'inverse n'est
   jamais grave, puisqu'un lien mène toujours à l'autre espace.
@@ -43,7 +43,7 @@ const PORTES = [
   },
   {
     titre: "Espace vendeur",
-    texte: "Votre boutique, vos livraisons, vos contrats avec MACHÉ.",
+    texte: "Votre boutique, vos livraisons, vos contrats avec MACHE.",
     href: "/dashboard/seller/connexion",
   },
   {
@@ -53,7 +53,7 @@ const PORTES = [
   },
   {
     titre: "Administration",
-    texte: "Réservé à l'équipe de MACHÉ.",
+    texte: "Réservé à l'équipe de MACHE.",
     href: "/dashboard/admin/connexion",
   },
 ];

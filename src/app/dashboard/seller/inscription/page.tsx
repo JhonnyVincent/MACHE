@@ -1,12 +1,12 @@
 /*
-  PAGE : ouvrir une boutique sur MACHÉ.
+  PAGE : ouvrir une boutique sur MACHE.
 
   Ce qui existait
 
   « Devenir vendeur » renvoyait au panneau Mercur, servi par le backend
   commerce : une autre application, sur une autre adresse, en anglais.
-  Un commerçant qui cliquait depuis MACHÉ se retrouvait ailleurs sans
-  savoir s'il était encore chez MACHÉ.
+  Un commerçant qui cliquait depuis MACHE se retrouvait ailleurs sans
+  savoir s'il était encore chez MACHE.
 
   Ce formulaire crée le compte et la boutique depuis le site, en
   français, puis ouvre la session. Le panneau vendeur reste ensuite le
@@ -15,7 +15,7 @@
 
   Ce que la page dit avant qu'on demande
 
-  Que la boutique est relue par MACHÉ avant d'être visible. Sans cela,
+  Que la boutique est relue par MACHE avant d'être visible. Sans cela,
   le vendeur la chercherait dans le catalogue et la croirait perdue.
 */
 
@@ -60,7 +60,7 @@ export default async function VendorRegistrationPage({
           href="/contact"
           className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
         >
-          Contacter MACHÉ
+          Contacter MACHE
         </Link>
       </main>
     );
@@ -221,7 +221,7 @@ export default async function VendorRegistrationPage({
         <p className="mt-1 text-base leading-relaxed text-[var(--mache-muted)]">
           Vous pourrez préparer vos produits et votre vitrine tout de
           suite. Elle n&apos;apparaîtra dans le catalogue qu&apos;une fois
-          approuvée par MACHÉ.
+          approuvée par MACHE.
         </p>
       </div>
 

@@ -3,8 +3,8 @@
 
   À quoi elle sert
 
-  À sortir de MACHÉ un document qu'on envoie signer ailleurs — Adobe,
-  DocuSign, ou tout simplement sur papier. MACHÉ garde la trace de ce
+  À sortir de MACHE un document qu'on envoie signer ailleurs — Adobe,
+  DocuSign, ou tout simplement sur papier. MACHE garde la trace de ce
   qu'il a proposé ; la signature elle-même peut se faire où l'on veut.
 
   Pourquoi pas un vrai fichier PDF généré par le serveur
@@ -22,10 +22,10 @@
   L'empreinte du texte, imprimée SUR le contrat.
 
   C'est elle qui rattache une signature faite ailleurs au texte que
-  MACHÉ détient. Sans elle, un contrat signé chez Adobe serait un PDF
+  MACHE détient. Sans elle, un contrat signé chez Adobe serait un PDF
   isolé : rien ne permettrait de démontrer qu'il correspond mot pour mot
   à la version enregistrée ici. Avec elle, il suffit de recalculer
-  l'empreinte du texte de MACHÉ et de la comparer à celle imprimée sur
+  l'empreinte du texte de MACHE et de la comparer à celle imprimée sur
   le document signé.
 
   Ce que la page laisse VIDE
@@ -160,7 +160,7 @@ export default async function ContractDocumentPage({
         {/* En-tête */}
         <header className="mache-print-keep border-b-2 border-black pb-4">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <p className="text-xl font-black tracking-widest">MACHÉ</p>
+            <p className="text-xl font-black tracking-widest">MACHE</p>
             <p className="text-xs">Place de marché haïtienne</p>
           </div>
         </header>
@@ -186,8 +186,8 @@ export default async function ContractDocumentPage({
 
           <div className="mt-3 space-y-3 text-sm leading-relaxed">
             <p>
-              <strong>MACHÉ</strong>, place de marché en ligne, ci-après
-              désignée « MACHÉ »,
+              <strong>MACHE</strong>, place de marché en ligne, ci-après
+              désignée « MACHE »,
             </p>
 
             <p className="text-center text-xs">d&apos;une part,</p>
@@ -195,21 +195,21 @@ export default async function ContractDocumentPage({
             {/*
               Le nom de la boutique est recopié tel qu'il est enregistré.
               Les autres mentions — forme juridique, siège, immatriculation
-              — sont laissées à remplir : MACHÉ ne les détient pas, et les
+              — sont laissées à remplir : MACHE ne les détient pas, et les
               inventer sur un contrat serait plus grave que partout ailleurs.
             */}
             {seller ? (
               <p>
                 <strong>{seller.name}</strong>
                 {seller.email ? ` (${seller.email})` : ""}, boutique enregistrée
-                sur MACHÉ sous la référence{" "}
+                sur MACHE sous la référence{" "}
                 <span className="font-mono">{seller.handle}</span>, ci-après
                 désignée « le Marchand »,
               </p>
             ) : (
               <p>
                 <span className="inline-block min-w-[280px] border-b border-black/60" />
-                , boutique enregistrée sur MACHÉ, ci-après désignée « le
+                , boutique enregistrée sur MACHE, ci-après désignée « le
                 Marchand »,
               </p>
             )}
@@ -219,7 +219,7 @@ export default async function ContractDocumentPage({
 
           {/*
             À compléter à la main ou par le service de signature. Ces
-            informations n'existent pas dans MACHÉ : les laisser en blanc
+            informations n'existent pas dans MACHE : les laisser en blanc
             est la seule option honnête.
           */}
           <dl className="mt-4 space-y-3 text-sm">
@@ -276,7 +276,7 @@ export default async function ContractDocumentPage({
 
           <p className="mt-2 text-xs leading-relaxed">
             Cette empreinte identifie le texte de façon unique. Recalculée
-            sur le texte conservé par MACHÉ, elle doit être identique à
+            sur le texte conservé par MACHE, elle doit être identique à
             celle-ci. Toute modification, fût-elle d&apos;un seul caractère,
             produirait une empreinte différente.
           </p>
@@ -293,7 +293,7 @@ export default async function ContractDocumentPage({
           </p>
 
           <div className="mt-6 flex flex-col gap-10 sm:flex-row sm:gap-12">
-            <SignatureBlock role="Pour MACHÉ" subtitle="Représentant habilité" />
+            <SignatureBlock role="Pour MACHE" subtitle="Représentant habilité" />
             <SignatureBlock
               role="Pour le Marchand"
               subtitle={seller ? seller.name : "Nom de la boutique"}
@@ -302,7 +302,7 @@ export default async function ContractDocumentPage({
         </section>
 
         <footer className="mache-print-keep mt-10 border-t border-black/30 pt-3 text-2xs leading-relaxed text-[#565959]">
-          Document établi par MACHÉ. Contrat n° {contract.displayId}, version{" "}
+          Document établi par MACHE. Contrat n° {contract.displayId}, version{" "}
           {contract.version}.
         </footer>
       </article>

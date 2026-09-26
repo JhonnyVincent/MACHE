@@ -1,5 +1,5 @@
 /*
-  TESTS : la suspension d'un agent MACHÉ.
+  TESTS : la suspension d'un agent MACHE.
 
   LA FAILLE QUE CE TEST FERME
 

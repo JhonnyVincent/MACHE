@@ -140,7 +140,7 @@ export type AddressInput = {
 /*
   Coordonnées et adresse.
 
-  L'adresse de facturation reprend l'adresse de livraison : MACHÉ ne
+  L'adresse de facturation reprend l'adresse de livraison : MACHE ne
   demande pas deux adresses à quelqu'un qui paie son colis à la porte.
 */
 export async function setCustomerDetails(

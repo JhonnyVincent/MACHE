@@ -53,7 +53,7 @@ export default async function BuyerOrdersPage() {
     <>
       <PageHeader
         title="Mes commandes"
-        subtitle="Suivi de vos achats sur MACHÉ."
+        subtitle="Suivi de vos achats sur MACHE."
         actions={<Button href="/shop">Continuer mes achats</Button>}
       />
 

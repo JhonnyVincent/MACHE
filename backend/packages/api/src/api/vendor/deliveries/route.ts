@@ -101,7 +101,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   if (!method || !METHODS.includes(method)) {
     return res.status(400).json({
       message:
-        "Choisissez comment la commande est acheminée : par vous, par un agent MACHÉ, vers un point de retrait, ou par un transporteur.",
+        "Choisissez comment la commande est acheminée : par vous, par un agent MACHE, vers un point de retrait, ou par un transporteur.",
     });
   }
 

@@ -284,9 +284,9 @@ export default async function ShopPage({
               {!result.ok
                 ? "Les produits ne peuvent pas être affichés pour le moment. Réessayez dans quelques minutes."
                 : profileHasNoShop
-                  ? "Aucun vendeur ne s'est déclaré sous ce profil. Ce n'est pas que leurs produits sont épuisés : il n'y a pas encore de boutique de ce type sur MACHÉ."
+                  ? "Aucun vendeur ne s'est déclaré sous ce profil. Ce n'est pas que leurs produits sont épuisés : il n'y a pas encore de boutique de ce type sur MACHE."
                   : total === 0 && !search && !categoryHandle
-                    ? "Aucun vendeur n'a encore mis de produit en ligne sur MACHÉ."
+                    ? "Aucun vendeur n'a encore mis de produit en ligne sur MACHE."
                     : "Essayez d'autres mots, ou retirez le filtre de catégorie."}
             </p>
 

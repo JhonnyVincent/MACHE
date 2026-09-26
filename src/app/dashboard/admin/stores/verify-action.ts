@@ -5,8 +5,8 @@
 
   Approuver et vérifier sont deux décisions distinctes, et le site les
   confondait. Approuver ouvre la boutique à la vente. Vérifier affirme
-  aux acheteurs que MACHÉ a contrôlé les documents de l'entreprise —
-  c'est MACHÉ qui s'engage, pas le vendeur qui se présente.
+  aux acheteurs que MACHE a contrôlé les documents de l'entreprise —
+  c'est MACHE qui s'engage, pas le vendeur qui se présente.
 
   Le retrait existe autant que l'octroi. Une vérification qu'on ne peut
   pas retirer est une vérification qu'on n'ose plus accorder : il faut

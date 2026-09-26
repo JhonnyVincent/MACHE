@@ -1,5 +1,5 @@
 /*
-  ROUTE PUBLIQUE : écrire à MACHÉ.
+  ROUTE PUBLIQUE : écrire à MACHE.
 
   Ouverte à tous, et c'est sa raison d'être : quelqu'un qui signale un
   produit inadmissible n'a pas forcément de compte, et lui demander
@@ -137,7 +137,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     thread: publicThread(thread, messages),
     /*
       Le jeton n'est donné qu'ICI, une seule fois. Pour quelqu'un sans
-      compte, c'est la seule clé de sa conversation : MACHÉ n'a pas
+      compte, c'est la seule clé de sa conversation : MACHE n'a pas
       d'e-mail pour la lui renvoyer. L'écran le dit au moment de
       l'envoi, pas après.
     */

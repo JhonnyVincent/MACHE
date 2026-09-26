@@ -12,7 +12,7 @@
 
   LA LIMITE, ÉCRITE LÀ OÙ L'ON DÉCIDE
 
-  MACHÉ n'encaisse pas : l'acheteur règle le vendeur en main propre.
+  MACHE n'encaisse pas : l'acheteur règle le vendeur en main propre.
   Geler ne reprend donc RIEN à un vendeur qui a déjà l'argent dans la
   poche. Le dire ici, et pas en note de bas de page, est le point :
   croire qu'on a récupéré l'argent alors qu'on a seulement arrêté un
@@ -22,7 +22,7 @@
 
   Une livraison confirmée reste confirmée — la remise a eu lieu, c'est
   un fait — mais sa somme n'est plus portée comme due au vendeur. Les
-  versements déjà autorisés sont repris. Le jour où MACHÉ versera
+  versements déjà autorisés sont repris. Le jour où MACHE versera
   vraiment, c'est la même vanne, déjà fermée.
 
   LE MOTIF EST OBLIGATOIRE DANS LES DEUX SENS
@@ -154,7 +154,7 @@ export default async function AdminPayoutFreezePage({
       )}
 
       <Notice tone="warning" title="Ce qu'un gel ne fait pas">
-        MACHÉ n&apos;encaisse pas : l&apos;acheteur règle le vendeur en main
+        MACHE n&apos;encaisse pas : l&apos;acheteur règle le vendeur en main
         propre. Geler ne reprend donc <strong>rien</strong> à un vendeur qui a
         déjà l&apos;argent. Ce que le gel fait : une livraison confirmée cesse
         de porter sa somme comme due, et les versements déjà autorisés sont

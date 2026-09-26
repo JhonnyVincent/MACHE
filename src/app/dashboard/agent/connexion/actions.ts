@@ -3,7 +3,7 @@
 /*
   ACTION : connexion à l'espace agent.
 
-  C'est la connexion CLIENT, et c'est volontaire : un agent MACHÉ est un
+  C'est la connexion CLIENT, et c'est volontaire : un agent MACHE est un
   client à qui s'ajoute une fonction. Il n'a pas de second compte, pas
   de second mot de passe, et surtout pas un accès à l'administration.
 

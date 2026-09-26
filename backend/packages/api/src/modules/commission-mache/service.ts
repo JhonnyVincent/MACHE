@@ -1,23 +1,23 @@
 /*
-  FOURNISSEUR DE COMMISSION : celui de MACHÉ.
+  FOURNISSEUR DE COMMISSION : celui de MACHE.
 
   CE QU'IL NE FAIT PAS : recalculer les taux.
 
   Il DÉLÈGUE au fournisseur `system` de Mercur — correspondance des
   taux, règles, spécificité, devises, taxes, frais de port — puis
-  corrige une seule chose : ce que MACHÉ a décidé de financer.
+  corrige une seule chose : ce que MACHE a décidé de financer.
 
   Réécrire cette logique reviendrait à entretenir une copie du travail
   de Mercur qui prendrait du retard à chaque mise à jour, sur le calcul
   qui détermine ce que chaque vendeur est payé. Ici, si Mercur corrige
-  sa correspondance de taux, MACHÉ en bénéficie sans rien faire.
+  sa correspondance de taux, MACHE en bénéficie sans rien faire.
 
   LA RÈGLE, EN UNE LIGNE
 
       commission = (ce que Mercur calcule)  −  m × D
 
-  où D est la remise appliquée à l'article et m la part que MACHÉ a
-  décidé de porter (0 = le vendeur, 1 = MACHÉ, entre les deux = partagé).
+  où D est la remise appliquée à l'article et m la part que MACHE a
+  décidé de porter (0 = le vendeur, 1 = MACHE, entre les deux = partagé).
 
   Pourquoi c'est exactement ce qu'il faut
 
@@ -25,20 +25,20 @@
   Donc :
 
   - Promo du VENDEUR (m = 0) : rien ne change. Le vendeur encaisse moins
-    et supporte seul sa remise ; le chiffre d'affaires de MACHÉ n'est
-    pas touché. C'est la décision prise pour MACHÉ, et elle a le mérite
+    et supporte seul sa remise ; le chiffre d'affaires de MACHE n'est
+    pas touché. C'est la décision prise pour MACHE, et elle a le mérite
     de ne rien modifier au cas courant.
 
-  - Promo de MACHÉ (m = 1) : on retire la remise entière de la
+  - Promo de MACHE (m = 1) : on retire la remise entière de la
     commission. Le vendeur touche alors exactement ce qu'il aurait
-    touché sans promo — son chiffre d'affaires est intact, c'est MACHÉ
+    touché sans promo — son chiffre d'affaires est intact, c'est MACHE
     qui paie. La commission peut devenir NÉGATIVE : c'est le geste
     commercial, et il est enregistré tel quel.
 
   Vérifié : Mercur ne ramène pas une commission négative à zéro. Ni le
   fournisseur, ni le service, ni l'étape, ni l'enregistrement ne
   plafonnent, et la colonne est un `numeric` qui accepte les négatifs.
-  Si ce n'était pas le cas, une promo MACHÉ serait silencieusement
+  Si ce n'était pas le cas, une promo MACHE serait silencieusement
   payée par le vendeur — exactement ce que ce fichier existe pour
   empêcher.
 
@@ -47,7 +47,7 @@
   Pas des champs standards : le contexte de calcul ne transporte pas
   les promotions appliquées. Mercur prévoit `additional_context`,
   rempli par le hook `setCommissionContext`, pour précisément ce genre
-  de données. Le hook y dépose, par article, le montant que MACHÉ
+  de données. Le hook y dépose, par article, le montant que MACHE
   finance ; ce fichier ne fait que le lire.
 */
 
@@ -57,7 +57,7 @@ import type { ItemFunding } from "./funding";
 /* La clé sous laquelle le hook dépose sa contribution. */
 export const MACHE_FUNDING_KEY = "mache_funded_discounts";
 
-/* Par article : ce que MACHÉ porte, et sa ventilation par promotion. */
+/* Par article : ce que MACHE porte, et sa ventilation par promotion. */
 export type MacheFunding = Record<string, ItemFunding>;
 
 type CommissionLine = {
@@ -114,7 +114,7 @@ export class MacheCommissionProvider {
         comparer des relevés.
       */
       throw new Error(
-        "Le fournisseur de commission de Mercur est introuvable. MACHÉ délègue son calcul : il ne peut pas s'en passer."
+        "Le fournisseur de commission de Mercur est introuvable. MACHE délègue son calcul : il ne peut pas s'en passer."
       );
     }
 
@@ -142,7 +142,7 @@ export class MacheCommissionProvider {
     const funded = (context.additional_context?.[MACHE_FUNDING_KEY] ??
       {}) as MacheFunding;
 
-    /* Aucune promo financée par MACHÉ : on rend le calcul de Mercur tel quel. */
+    /* Aucune promo financée par MACHE : on rend le calcul de Mercur tel quel. */
     if (!funded || Object.keys(funded).length === 0) {
       return lines.map((line) => this.sign(line));
     }
@@ -151,7 +151,7 @@ export class MacheCommissionProvider {
       /*
         Seules les lignes d'article portent une remise. Une ligne de
         frais de port n'en porte pas, et lui en retirer une reviendrait
-        à faire payer deux fois la même remise à MACHÉ.
+        à faire payer deux fois la même remise à MACHE.
       */
       if (!line.item_id) return this.sign(line);
 
@@ -181,7 +181,7 @@ export class MacheCommissionProvider {
         },
         description:
           line.description ??
-          `Commission réduite de ${contribution} : promotion financée par MACHÉ`,
+          `Commission réduite de ${contribution} : promotion financée par MACHE`,
       };
     });
   }

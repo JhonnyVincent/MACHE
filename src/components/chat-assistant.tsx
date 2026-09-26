@@ -47,9 +47,9 @@ const REPONSES: Reponse[] = [
     lien: { href: "/faq", label: "Questions fréquentes" },
   },
   {
-    question: "Comment vendre sur MACHÉ ?",
+    question: "Comment vendre sur MACHE ?",
     reponse:
-      "Vous ouvrez votre boutique depuis le site, en quelques minutes. MACHÉ la relit avant qu'elle apparaisse dans le catalogue ; vous pouvez préparer vos produits pendant ce temps.",
+      "Vous ouvrez votre boutique depuis le site, en quelques minutes. MACHE la relit avant qu'elle apparaisse dans le catalogue ; vous pouvez préparer vos produits pendant ce temps.",
     lien: { href: "/dashboard/seller/inscription", label: "Ouvrir ma boutique" },
   },
   {
@@ -62,12 +62,12 @@ const REPONSES: Reponse[] = [
     question: "J'achète chez plusieurs boutiques ?",
     reponse:
       "Votre panier devient plusieurs commandes, une par boutique, chacune avec sa livraison. Certaines boutiques demandent un montant minimum : le panier vous le dit avant de commander.",
-    lien: { href: "/legal/terms", label: "Comment MACHÉ fonctionne" },
+    lien: { href: "/legal/terms", label: "Comment MACHE fonctionne" },
   },
   {
     question: "Puis-je retourner un article ?",
     reponse:
-      "Adressez-vous d'abord au vendeur, c'est lui qui a préparé et expédié. Si vous n'obtenez pas de réponse, écrivez à MACHÉ.",
+      "Adressez-vous d'abord au vendeur, c'est lui qui a préparé et expédié. Si vous n'obtenez pas de réponse, écrivez à MACHE.",
     lien: { href: "/legal/returns", label: "Retours et remboursements" },
   },
   {

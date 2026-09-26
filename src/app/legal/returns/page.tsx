@@ -6,7 +6,7 @@
 
   Elle décrit le fonctionnement réel. Le délai légal de rétractation, les
   cas de remboursement et les frais de retour sont des engagements
-  juridiques : ils doivent être arrêtés par MACHÉ, au besoin avec un
+  juridiques : ils doivent être arrêtés par MACHE, au besoin avec un
   conseil, et ne sont pas écrits ici à sa place.
 */
 
@@ -14,8 +14,8 @@ import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Retours et remboursements — MACHÉ",
-  description: "Comment demander un retour ou un remboursement sur MACHÉ.",
+  title: "Retours et remboursements — MACHE",
+  description: "Comment demander un retour ou un remboursement sur MACHE.",
 };
 
 function ReturnsPageEcrit() {
@@ -36,7 +36,7 @@ function ReturnsPageEcrit() {
             <Link href="/dashboard/buyer/orders" className="font-semibold text-[var(--mache-primary)] hover:underline">
               Mes commandes
             </Link>
-            . MACHÉ intervient si le vendeur ne répond pas ou si le désaccord
+            . MACHE intervient si le vendeur ne répond pas ou si le désaccord
             persiste.
           </p>
         </section>
@@ -58,7 +58,7 @@ function ReturnsPageEcrit() {
           </h2>
           <p className="mt-2">
             Le paiement à la livraison est aujourd&apos;hui le seul moyen de
-            paiement de MACHÉ. Vérifiez le contenu du colis avant de payer :
+            paiement de MACHE. Vérifiez le contenu du colis avant de payer :
             c&apos;est le moment où un refus est le plus simple, pour vous
             comme pour le vendeur.
           </p>
@@ -71,7 +71,7 @@ function ReturnsPageEcrit() {
           <p className="mt-2 text-base">
             Le délai de rétractation, les cas ouvrant droit à remboursement et
             la prise en charge des frais de retour sont des engagements
-            juridiques. Ils seront publiés ici une fois fixés par MACHÉ. En
+            juridiques. Ils seront publiés ici une fois fixés par MACHE. En
             attendant, aucun délai n&apos;est annoncé sur cette page :
             afficher un chiffre qui n&apos;engage personne serait pire que de
             n&apos;en afficher aucun.
@@ -81,7 +81,7 @@ function ReturnsPageEcrit() {
         <p className="text-base">
           Un litige à signaler ?{" "}
           <Link href="/contact" className="font-semibold text-[var(--mache-primary)] hover:underline">
-            Contactez l&apos;équipe MACHÉ
+            Contactez l&apos;équipe MACHE
           </Link>
           .
         </p>

@@ -9,12 +9,12 @@ import type { SitePromotion } from "@/lib/medusa/promotions";
   Le bandeau défilant renvoie vers Bawon, et annonce ses services.
 
   « Paiement sécurisé » en a été retiré. Affichée dans l'en-tête de
-  MACHÉ, sur chaque page, cette mention se lit comme une promesse de
-  MACHÉ — or MACHÉ n'encaisse rien : le paiement se fait en main propre
+  MACHE, sur chaque page, cette mention se lit comme une promesse de
+  MACHE — or MACHE n'encaisse rien : le paiement se fait en main propre
   à la livraison. Un client qui la lisait pouvait croire que ses données
   bancaires seraient protégées par un dispositif qui n'existe pas.
 
-  Le bandeau porte désormais les promotions en cours de MACHÉ, et rien
+  Le bandeau porte désormais les promotions en cours de MACHE, et rien
   d'autre : voir plus bas.
 */
 const translations = {
@@ -32,7 +32,7 @@ const translations = {
     catalog: "Tout le catalogue",
     wholesale: "Acheter en gros",
     regions: "Haïti",
-    sellers: "Vendre sur MACHÉ",
+    sellers: "Vendre sur MACHE",
     verifyAgent: "Vérifier un agent",
     help: "Aide"
   },
@@ -50,7 +50,7 @@ const translations = {
     catalog: "Tout katalòg la",
     wholesale: "Achte an gwo",
     regions: "Ayiti",
-    sellers: "Vann sou MACHÉ",
+    sellers: "Vann sou MACHE",
     verifyAgent: "Verifye yon ajan",
     help: "Èd"
   }
@@ -129,7 +129,7 @@ export function Header({ cartCount = 0,
         annonce une vraie remise, plus personne ne le regarde.
 
         Il porte maintenant les promotions RÉELLEMENT en cours, celles
-        de MACHÉ — pas celles d'une boutique, qui lui donneraient une
+        de MACHE — pas celles d'une boutique, qui lui donneraient une
         vitrine que les autres n'ont pas.
 
         Aucune promotion : pas de bandeau. Plutôt que d'inventer une
@@ -217,17 +217,17 @@ export function Header({ cartCount = 0,
         <Link href="/" className="flex min-w-0 items-center gap-2 md:gap-4">
           <img
             src="/images/logo-haiti-mache-hibiscus.png"
-            alt="Logo Maché"
+            alt="Logo Mache"
             className="h-12 w-12 shrink-0 md:h-20 md:w-20"
           />
 
           <div className="min-w-0">
             <div className="text-2xl font-black tracking-tightest text-[#071f3d] md:text-4xl">
-              Maché
+              Mache
             </div>
 
             <div className="hidden text-xs font-black uppercase text-[#071f3d] sm:block">
-              Tout Ayiti. Tout en un seul Maché.
+              Tout Ayiti. Tout en un seul Mache.
             </div>
           </div>
         </Link>

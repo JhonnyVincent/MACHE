@@ -44,7 +44,7 @@ export default function ErrorScreen({
       Le détail part à la console du navigateur, où un développeur le
       trouvera. Il ne s'affiche pas dans la page.
     */
-    console.error("[MACHÉ] rendu interrompu :", error);
+    console.error("[MACHE] rendu interrompu :", error);
   }, [error]);
 
   return (

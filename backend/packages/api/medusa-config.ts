@@ -112,7 +112,7 @@ module.exports = withMercur({
       Haïti, où l'acheteur règle en main propre à la remise, c'est
       précisément ce qui manque : sans preuve de remise, un désaccord
       sur « livré ou pas » n'a aucun arbitre. Ce module enregistre par
-      quel chemin le colis passe — le vendeur, un agent MACHÉ, un point
+      quel chemin le colis passe — le vendeur, un agent MACHE, un point
       de retrait, un transporteur extérieur — et garde le code que
       l'acheteur remet à la livraison.
     */
@@ -120,7 +120,7 @@ module.exports = withMercur({
       resolve: './src/modules/delivery',
     },
     /*
-      Les contrats. MACHÉ doit pouvoir faire accepter des conditions à
+      Les contrats. MACHE doit pouvoir faire accepter des conditions à
       ses marchands — commission, engagements, conformité — et prouver
       plus tard QUE l'on a accepté, et SURTOUT QUOI. Un contrat publié
       ne se modifie donc plus : le corriger crée une version suivante,
@@ -133,7 +133,7 @@ module.exports = withMercur({
     /*
       La messagerie. La page contact affichait quatre adresses en
       @mache.local — un domaine qui n'existe pas : personne ne recevait
-      rien. MACHÉ n'a pas de fournisseur d'e-mail et n'en aura pas
+      rien. MACHE n'a pas de fournisseur d'e-mail et n'en aura pas
       demain ; la conversation vit donc dans le site plutôt que
       d'attendre un domaine.
     */
@@ -141,19 +141,19 @@ module.exports = withMercur({
       resolve: './src/modules/support',
     },
     /*
-      Le calcul de commission de MACHÉ.
+      Le calcul de commission de MACHE.
 
       Mercur calcule sa commission sur le prix PLEIN d'un article, la
       remise ignorée. Il possède par ailleurs un modèle qui dit QUI
       porte le coût d'une promotion — `cost_bearer` : le vendeur, la
       marketplace, ou les deux — mais rien ne le lit. Une promotion
-      déclarée « à la charge de MACHÉ » était donc payée par le vendeur
+      déclarée « à la charge de MACHE » était donc payée par le vendeur
       quand même.
 
       Ce fournisseur DÉLÈGUE tout le calcul à celui de Mercur, puis
-      retire de la commission la part que MACHÉ a décidé de financer.
+      retire de la commission la part que MACHE a décidé de financer.
       Conséquence : une promo de vendeur ne change rien au chiffre
-      d'affaires de MACHÉ, et une promo de MACHÉ laisse au vendeur
+      d'affaires de MACHE, et une promo de MACHE laisse au vendeur
       exactement ce qu'il aurait touché sans elle.
 
       Déclarer le module ici plutôt que de laisser le greffon le faire

@@ -1,7 +1,7 @@
 /*
   PAGE : personnaliser sa vitrine
 
-  Le seul écran vendeur resté dans MACHÉ, parce que c'est le seul qui
+  Le seul écran vendeur resté dans MACHE, parce que c'est le seul qui
   n'existe pas dans le panneau Mercur : composer la page publique de sa
   boutique. Tout le reste du métier vendeur — produits, stock, commandes,
   versements — se fait là-bas, et rien ici ne le double.
@@ -146,7 +146,7 @@ export default async function VitrinePage({
         <div className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base leading-relaxed text-[var(--mache-muted)]">
           Votre boutique est au statut «&nbsp;{seller.status}&nbsp;». Vous pouvez
           préparer votre vitrine dès maintenant ; elle sera visible du public une
-          fois la boutique approuvée par MACHÉ.
+          fois la boutique approuvée par MACHE.
         </div>
       )}
 

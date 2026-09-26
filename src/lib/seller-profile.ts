@@ -1,7 +1,7 @@
 /*
   Les profils de vendeur.
 
-  MACHÉ présente quatre façons de vendre, chacune avec sa page :
+  MACHE présente quatre façons de vendre, chacune avec sa page :
   particulier, business, fournisseur, marque officielle. Jusqu'ici
   c'était du discours : les quatre pages menaient au même endroit, et
   rien dans le système ne savait à quel profil appartenait une boutique.
@@ -14,7 +14,7 @@
 
   Ce que le profil est, et ce qu'il n'est pas
 
-  C'est une DÉCLARATION du vendeur, pas un contrôle de MACHÉ. Le champ
+  C'est une DÉCLARATION du vendeur, pas un contrôle de MACHE. Le champ
   `metadata` d'un vendeur est écrit par le vendeur : tout ce qui s'y
   trouve vient de lui. Un profil affiché dit donc « ce vendeur se
   présente comme un grossiste », et l'interface ne doit pas laisser
@@ -23,7 +23,7 @@
   C'est pourquoi il n'y a pas ici de « vérifié ». Un badge de
   vérification qui se poserait soi-même ne vérifie rien — il ne ferait
   que donner l'apparence d'un contrôle à quelqu'un qui l'a réclamée.
-  La vérification est une décision de MACHÉ, elle vit ailleurs, dans un
+  La vérification est une décision de MACHE, elle vit ailleurs, dans un
   champ que le vendeur ne peut pas écrire.
 */
 

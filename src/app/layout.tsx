@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MACHÉ",
+  title: "MACHE",
   description:
     "Marketplace haïtienne : boutiques indépendantes, marques et fournisseurs d'Haïti et de la diaspora."
 };
@@ -39,7 +39,7 @@ export default async function RootLayout({
     réellement, et ils changent avec eux.
   */
   /*
-    Les rayons principaux de MACHÉ, dans l'ordre du site. Les six
+    Les rayons principaux de MACHE, dans l'ordre du site. Les six
     premiers du catalogue étaient ceux de la démonstration Mercur
     (Sandals, Sneakers…), que son ordre par défaut place en tête.
   */

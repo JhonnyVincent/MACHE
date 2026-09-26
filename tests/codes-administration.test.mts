@@ -56,7 +56,7 @@ check("le secret des vecteurs officiels s'encode comme attendu", () => {
 
 check("les six vecteurs officiels de la RFC 6238 sont reproduits", () => {
   /*
-    La RFC publie des codes à huit chiffres ; MACHÉ en produit six, et
+    La RFC publie des codes à huit chiffres ; MACHE en produit six, et
     six chiffres sont les six derniers des huit. Ces valeurs ne
     dépendent pas de l'heure : elles fixent un instant.
   */
@@ -156,7 +156,7 @@ check("ce qui n'est pas six chiffres est refusé avant tout calcul", () => {
 check("l'adresse otpauth nomme l'émetteur deux fois", () => {
   /*
     Les applications ne lisent pas toutes le même endroit. N'en mettre
-    qu'un donne une entrée nommée « MACHÉ » chez les unes et par
+    qu'un donne une entrée nommée « MACHE » chez les unes et par
     l'adresse e-mail seule chez les autres.
   */
   const uri = otpauthUri("JBSWY3DPEHPK3PXP", "chef@exemple.ht");

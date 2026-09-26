@@ -1,13 +1,13 @@
 "use client";
 
 /*
-  « RECEVOIR LES NOUVELLES DE MACHÉ »
+  « RECEVOIR LES NOUVELLES DE MACHE »
 
   Au survol, le bandeau s'éclaire et se soulève légèrement ; le bouton
   aussi. Des transitions CSS seulement, coupées pour qui a demandé moins
   d'animations.
 
-  Ce que la section promet : des nouvelles de MACHÉ par e-mail. Pas un
+  Ce que la section promet : des nouvelles de MACHE par e-mail. Pas un
   rythme, pas une remise de bienvenue — rien de cela n'existe.
 */
 
@@ -29,9 +29,9 @@ export function NewsletterCta() {
 
         <div className="relative grid items-center gap-5 lg:grid-cols-[1fr_auto]">
           <div>
-            <h2 className="text-2xl font-black tracking-tight">Restez au courant de ce qui arrive sur MACHÉ</h2>
+            <h2 className="text-2xl font-black tracking-tight">Restez au courant de ce qui arrive sur MACHE</h2>
             <p className="mt-1.5 max-w-xl text-base leading-relaxed text-white/70">
-              Nouvelles boutiques, promotions, nouveaux rayons : les nouvelles de MACHÉ par e-mail.
+              Nouvelles boutiques, promotions, nouveaux rayons : les nouvelles de MACHE par e-mail.
               Un lien de désabonnement dans chaque message.
             </p>
           </div>

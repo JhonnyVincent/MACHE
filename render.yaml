@@ -1,4 +1,4 @@
-# Déploiement du backend commerce MACHÉ sur Render.
+# Déploiement du backend commerce MACHE sur Render.
 #
 # Ce fichier ne concerne que backend/ (Medusa + Mercur), un serveur Node
 # persistant. Le site Next.js est déployé à côté, comme un second
@@ -58,7 +58,7 @@ services:
     #   1. migrations — la base rattrape le code ;
     #   2. amorçage   — catalogue de démonstration si SEED_DEMO le
     #      demande et si le catalogue est vide, puis mise en place
-    #      MACHÉ : région Haïti, canal de vente, clé publique du site.
+    #      MACHE : région Haïti, canal de vente, clé publique du site.
     #      Idempotent : au deuxième démarrage il constate ce qui existe
     #      et ne recrée rien. Environ quatre secondes, et il affiche
     #      dans les journaux les trois valeurs à reporter côté site ;
@@ -143,16 +143,16 @@ services:
       # Une adresse @gmail.com envoyée par un autre service que Gmail
       # tombe plus souvent dans les indésirables. Acceptable pour
       # démarrer ; la solution durable est une adresse sur un nom de
-      # domaine à MACHÉ, authentifié chez Brevo.
+      # domaine à MACHE, authentifié chez Brevo.
       #
       # Saisie dans Render, pas écrite ici : elle doit être EXACTEMENT
-      # l'adresse confirmée chez Brevo, et c'est MACHÉ qui la choisit.
+      # l'adresse confirmée chez Brevo, et c'est MACHE qui la choisit.
       - key: MAIL_FROM
         sync: false
       # Le nom affiché à côté de l'adresse d'expédition.
       - key: MAIL_FROM_NAME
-        value: MACHÉ
-      # L'abonnement aux nouvelles de MACHÉ (bandeau « Restez au
+        value: MACHE
+      # L'abonnement aux nouvelles de MACHE (bandeau « Restez au
       # courant » de l'accueil). Les adresses vont dans une liste de
       # contacts Brevo ; les lettres se composent et s'envoient depuis
       # Brevo, qui gère le désabonnement.
@@ -167,7 +167,7 @@ services:
       # les abonnés de la diaspora.
       - key: BREVO_DOI_TEMPLATE_ID
         sync: false
-      # Le compte d'administration MACHÉ, créé au premier démarrage.
+      # Le compte d'administration MACHE, créé au premier démarrage.
       #
       # Le plan gratuit de Render n'offre pas d'onglet Shell : sans
       # ces deux variables, il n'y aurait aucun moyen d'ouvrir

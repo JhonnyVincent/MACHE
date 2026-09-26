@@ -4,12 +4,12 @@
   Le problème qu'elle résout
 
   Mercur affiche déjà les promotions, mais rien n'y distingue celle
-  qu'une boutique a créée de celle que MACHÉ offre. Ce sont pourtant
+  qu'une boutique a créée de celle que MACHE offre. Ce sont pourtant
   deux choses opposées :
 
-  - la promotion d'une BOUTIQUE sort de la poche du vendeur ; MACHÉ
+  - la promotion d'une BOUTIQUE sort de la poche du vendeur ; MACHE
     garde sa commission entière et n'y perd rien ;
-  - la promotion de MACHÉ sort de la commission de MACHÉ ; le vendeur
+  - la promotion de MACHE sort de la commission de MACHE ; le vendeur
     touche ce qu'il aurait touché sans elle.
 
   Sur le même écran, sans étiquette, les deux se ressemblent — et c'est
@@ -19,17 +19,17 @@
   COMMENT ON RECONNAÎT L'UNE DE L'AUTRE
 
   Une promotion liée à un vendeur lui appartient. Une promotion sans
-  vendeur est celle de MACHÉ. C'est le lien que Mercur pose déjà quand
+  vendeur est celle de MACHE. C'est le lien que Mercur pose déjà quand
   un vendeur crée une promotion depuis son tableau de bord.
 
   Le PORTEUR du coût est une donnée distincte (`promotion_cost`), et
-  c'est elle qui décide réellement. Une promotion de MACHÉ dont
+  c'est elle qui décide réellement. Une promotion de MACHE dont
   personne n'a déclaré le porteur reste à la charge du vendeur — c'est
   le défaut prudent, et l'écran le dit au lieu de le laisser deviner.
 
   CE QUE « COÛT » VEUT DIRE ICI
 
-  Ce que MACHÉ a déjà déboursé, lu sur les lignes de commission
+  Ce que MACHE a déjà déboursé, lu sur les lignes de commission
   réellement enregistrées. Pas une projection : de l'argent
   effectivement retiré de la commission, commande par commande.
 */
@@ -92,18 +92,18 @@ function whoPays(cost: CostRow | null | undefined, share: number): string {
   }
 
   if (cost.cost_bearer === "marketplace") {
-    return "MACHÉ — la remise entière est retirée de la commission.";
+    return "MACHE — la remise entière est retirée de la commission.";
   }
 
   if (cost.cost_bearer === "shared") {
     if (share <= 0) {
-      return "Le vendeur — la promotion est déclarée partagée, mais sans pourcentage, donc MACHÉ n'en porte rien.";
+      return "Le vendeur — la promotion est déclarée partagée, mais sans pourcentage, donc MACHE n'en porte rien.";
     }
 
-    return `Partagé — MACHÉ porte ${Math.round(share * 100)} % de la remise, le vendeur le reste.`;
+    return `Partagé — MACHE porte ${Math.round(share * 100)} % de la remise, le vendeur le reste.`;
   }
 
-  return "Le vendeur — la remise sort de son chiffre d'affaires, celui de MACHÉ n'est pas touché.";
+  return "Le vendeur — la remise sort de son chiffre d'affaires, celui de MACHE n'est pas touché.";
 }
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
@@ -145,7 +145,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const kept = rows.slice(0, MAX_PROMOTIONS);
 
   /*
-    Ce que chaque promotion a déjà coûté à MACHÉ. Les lignes de
+    Ce que chaque promotion a déjà coûté à MACHE. Les lignes de
     commission portent la ventilation écrite par le fournisseur au
     moment du calcul ; on la relit plutôt que de la recalculer, pour la
     même raison qu'ailleurs : les taux et les porteurs ont pu changer
@@ -185,15 +185,15 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       created_at: promotion.created_at ?? null,
       campaign: promotion.campaign ?? null,
       application_method: promotion.application_method ?? null,
-      /* Null = c'est une promotion de MACHÉ, pas celle d'une boutique. */
+      /* Null = c'est une promotion de MACHE, pas celle d'une boutique. */
       seller: promotion.seller ?? null,
       owner: promotion.seller ? "seller" : "mache",
       cost_bearer: cost?.cost_bearer ?? null,
       shared_marketplace_percentage: cost?.shared_marketplace_percentage ?? null,
-      /* La part réellement portée par MACHÉ, entre 0 et 1. */
+      /* La part réellement portée par MACHE, entre 0 et 1. */
       mache_share: share,
       who_pays: whoPays(cost, share),
-      /* Déjà déboursé par MACHÉ sur cette promotion, toutes commandes confondues. */
+      /* Déjà déboursé par MACHE sur cette promotion, toutes commandes confondues. */
       mache_spent: spent[promotion.id] ?? 0,
     };
   });

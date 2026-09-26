@@ -30,7 +30,7 @@ export default async function CartPage({
   const cart = await getCart();
 
   /*
-    Les boutiques du panier et leurs conditions. Un panier MACHÉ mélange
+    Les boutiques du panier et leurs conditions. Un panier MACHE mélange
     les vendeurs, et chacun pose les siennes.
   */
   const groups = cart ? await sellerGroupsOf(cart) : [];

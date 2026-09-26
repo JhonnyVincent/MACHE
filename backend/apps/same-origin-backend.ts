@@ -18,7 +18,7 @@
 
   On pouvait exiger la variable. Mais une variable qu'on saisit à la
   main peut être oubliée, mal copiée, rester sur l'ancienne adresse le
-  jour où MACHÉ prend un vrai nom de domaine — et dans chacun de ces
+  jour où MACHE prend un vrai nom de domaine — et dans chacun de ces
   cas, le panneau casse de la même façon muette.
 
   Or ces panneaux sont TOUJOURS servis par le backend lui-même, sous
@@ -36,7 +36,7 @@
 
   1. `virtual:mercur/config`, que le client du panneau lit pour
      `backendUrl` — c'est lui qui sert la connexion.
-  2. `__BACKEND_URL__`, que les écrans propres à MACHÉ (devis,
+  2. `__BACKEND_URL__`, que les écrans propres à MACHE (devis,
      statistiques) lisent directement.
 
   En développement (`vite dev`), rien ne change : le panneau tourne sur

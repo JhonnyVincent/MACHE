@@ -1,7 +1,7 @@
 "use server";
 
 /*
-  ACTION : envoyer un message à MACHÉ.
+  ACTION : envoyer un message à MACHE.
 
   Le jeton de lecture transite par l'URL après l'envoi, et c'est un
   choix à assumer : il apparaît dans la barre d'adresse et dans

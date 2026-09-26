@@ -46,7 +46,7 @@ check("la réécriture reste du JavaScript valide", () => {
   assert.equal(config.base, "/seller/", "le reste de la configuration est intact");
 });
 
-check("les écrans propres à MACHÉ visent aussi l'adresse de la page", () => {
+check("les écrans propres à MACHE visent aussi l'adresse de la page", () => {
   /* Devis et statistiques lisent __BACKEND_URL__ directement. */
   const config = plugin.config() as { define: Record<string, string> };
 

@@ -1,5 +1,5 @@
 /*
-  Écran des anciennes portes d'authentification de MACHÉ.
+  Écran des anciennes portes d'authentification de MACHE.
 
   Ce qu'il remplace
 
@@ -26,19 +26,19 @@ import { Link } from "next-view-transitions";
 
 const DOORS = [
   {
-    title: "Vous achetez sur MACHÉ",
+    title: "Vous achetez sur MACHE",
     text: "Suivre vos commandes, vos adresses, vos demandes de devis.",
     href: "/compte/connexion",
     action: "Se connecter",
   },
   {
-    title: "Vous vendez sur MACHÉ",
+    title: "Vous vendez sur MACHE",
     text: "Votre boutique, vos produits, vos commandes et vos versements.",
     href: "/dashboard/seller/connexion",
     action: "Espace vendeur",
   },
   {
-    title: "Vous êtes de l'équipe MACHÉ",
+    title: "Vous êtes de l'équipe MACHE",
     text: "Administration de la marketplace.",
     href: "/dashboard/admin/connexion",
     action: "Administration",
@@ -53,7 +53,7 @@ export function AuthDoors({ what }: { what: string }) {
       </h1>
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-        {what} Les comptes de MACHÉ ont changé d&apos;endroit : chaque
+        {what} Les comptes de MACHE ont changé d&apos;endroit : chaque
         public a maintenant sa propre porte.
       </p>
 

@@ -68,7 +68,7 @@ jobs:
         run: npm run build
 
       # Les tests lisent aussi du code de `backend/` — la règle qui
-      # décide combien MACHÉ verse sur une promotion, l'algorithme des
+      # décide combien MACHE verse sur une promotion, l'algorithme des
       # codes à usage unique. Certains de ces fichiers importent des
       # paquets du backend, absents de l'installation du site.
       #

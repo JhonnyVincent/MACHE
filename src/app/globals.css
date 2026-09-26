@@ -339,7 +339,7 @@ aside:not([data-chrome="dark"]) a:active {
 
 /*
   Puck compose son interface en Inter, qu'il téléchargeait chez un tiers.
-  On lui désigne celle que MACHÉ sert déjà : l'éditeur et la page qu'il
+  On lui désigne celle que MACHE sert déjà : l'éditeur et la page qu'il
   compose emploient alors le même dessin de lettre.
 */
 .mache-puck {
@@ -568,7 +568,7 @@ aside:not([data-chrome="dark"]) a:active {
 /*
   Pourquoi une feuille d'impression plutôt qu'un générateur de PDF
 
-  MACHÉ n'a pas besoin de fabriquer lui-même un fichier PDF : tout
+  MACHE n'a pas besoin de fabriquer lui-même un fichier PDF : tout
   navigateur sait imprimer vers un PDF, et le fichier obtenu s'envoie à
   Adobe, DocuSign ou n'importe quel service de signature.
 
@@ -665,7 +665,7 @@ aside:not([data-chrome="dark"]) a:active {
 
 /* Défilement continu, de gauche à droite : l'inverse du ticker. */
 .mache-marquee-reverse {
-  animation: macheTicker 40s linear infinite reverse;
+  animation: macheTicker 55s linear infinite reverse;
 }
 
 .mache-marquee-reverse:hover,
@@ -677,11 +677,11 @@ aside:not([data-chrome="dark"]) a:active {
 
 /* Boutiques et suggestions : assez lent pour lire une carte en passant. */
 .mache-marquee.mache-marquee-medium {
-  animation-duration: 70s;
+  animation-duration: 100s;
 }
 
 .mache-marquee {
-  animation: macheTicker 40s linear infinite;
+  animation: macheTicker 55s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -736,7 +736,7 @@ aside:not([data-chrome="dark"]) a:active {
 /* Les blocs partenaires défilent lentement : on doit pouvoir les lire en passant. */
 .mache-marquee-reverse.mache-marquee-slow,
 .mache-marquee.mache-marquee-slow {
-  animation-duration: 90s;
+  animation-duration: 125s;
 }
 
 /* Un bouton s'enfonce légèrement quand on appuie. */

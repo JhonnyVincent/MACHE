@@ -18,7 +18,7 @@
 
   Ce que ce fichier ne couvre pas
 
-  L'administration, les agents et les partenaires restent sur les anciens rôles : Medusa ne connaît pas ces métiers, qui sont propres à MACHÉ.
+  L'administration, les agents et les partenaires restent sur les anciens rôles : Medusa ne connaît pas ces métiers, qui sont propres à MACHE.
   Les vendeurs, eux, s'authentifient sur le panneau Mercur. Trois publics,
   trois portes — mais une seule par public, jamais deux pour le même.
 */
@@ -378,7 +378,7 @@ export async function getCustomerAddresses(): Promise<Result<CustomerAddress[]>>
   Vérifié — un identifiant de commande inventé est refusé.
 
   L'avis n'apparaît pas tout de suite : il est enregistré « en attente »
-  et n'est publié qu'après modération par MACHÉ. L'écran le dit, sans
+  et n'est publié qu'après modération par MACHE. L'écran le dit, sans
   quoi le client croirait son avis perdu.
 */
 export async function submitProductReview(input: {

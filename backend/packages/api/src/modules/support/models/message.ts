@@ -18,7 +18,7 @@ const ThreadMessage = model.define("mache_thread_message", {
 
   thread_id: model.text().index(),
 
-  /* « sender » = la personne qui a écrit à MACHÉ. « mache » = nous. */
+  /* « sender » = la personne qui a écrit à MACHE. « mache » = nous. */
   author: model.enum(["sender", "mache"]),
 
   /* Recopié au moment de l'envoi, pour que l'échange reste lisible. */

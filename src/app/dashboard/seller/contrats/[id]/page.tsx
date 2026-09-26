@@ -19,7 +19,7 @@
   Elle ne sert à rien au quotidien, et c'est pour cela qu'elle est en
   bas, en petit. Mais elle permet à un marchand méfiant — ou à son
   avocat — de vérifier plus tard que le texte présenté est bien celui
-  qui a été signé, sans avoir à croire MACHÉ sur parole.
+  qui a été signé, sans avoir à croire MACHE sur parole.
 
   Ce que cette page ne prétend pas être
 
@@ -154,7 +154,7 @@ export default async function SellerContractPage({
 
               <p className="mt-3 text-sm leading-relaxed text-[#565959]">
                 Conservez cette page. Le contrat ne peut plus être modifié :
-                toute correction de MACHÉ prendrait la forme d&apos;une nouvelle
+                toute correction de MACHE prendrait la forme d&apos;une nouvelle
                 version, qu&apos;il faudrait vous soumettre à nouveau.
               </p>
             </Panel>
@@ -164,11 +164,11 @@ export default async function SellerContractPage({
               description={`Le ${formatDate(result.data.contract.declinedAt)}.`}
             >
               <p className="text-sm leading-relaxed text-[#565959]">
-                Motif transmis à MACHÉ : « {result.data.contract.declineReason} »
+                Motif transmis à MACHE : « {result.data.contract.declineReason} »
               </p>
             </Panel>
           ) : result.data.contract.status === "revoked" ? (
-            <Notice tone="warning" title="MACHÉ a retiré cet envoi">
+            <Notice tone="warning" title="MACHE a retiré cet envoi">
               Ce contrat ne peut plus être signé. Il reste consultable.
             </Notice>
           ) : (
@@ -220,8 +220,8 @@ export default async function SellerContractPage({
                   au bas de la page : c'est ici que la personne décide.
                 */}
                 <p className="mt-4 border-t border-[#d5d9d9] pt-3 text-xs leading-relaxed text-[#767676]">
-                  MACHÉ enregistre votre acceptation, l&apos;heure, et
-                  l&apos;empreinte du texte exact que vous signez. MACHÉ ne
+                  MACHE enregistre votre acceptation, l&apos;heure, et
+                  l&apos;empreinte du texte exact que vous signez. MACHE ne
                   vérifie pas votre identité : ce n&apos;est pas une signature
                   électronique qualifiée au sens de la loi, mais la preuve
                   d&apos;un consentement donné sur un texte qui ne pourra plus
@@ -240,7 +240,7 @@ export default async function SellerContractPage({
                   <Field
                     label="Pourquoi refusez-vous ?"
                     required
-                    hint="Une phrase suffit. Elle évite à MACHÉ de vous rappeler pour comprendre."
+                    hint="Une phrase suffit. Elle évite à MACHE de vous rappeler pour comprendre."
                   >
                     <Textarea name="reason" required minLength={5} rows={3} />
                   </Field>
@@ -278,7 +278,7 @@ export default async function SellerContractPage({
           <p className="text-sm text-[#565959]">
             Une question sur ce contrat ?{" "}
             <Link href="/contact" className="font-medium underline">
-              Écrivez à MACHÉ
+              Écrivez à MACHE
             </Link>{" "}
             avant de signer.
           </p>

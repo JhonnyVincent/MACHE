@@ -6,7 +6,7 @@
   CE QUE LE BLOCAGE FAIT
 
   Il empêche CE COMPTE d'agir : commander en étant connecté, déposer un
-  avis, écrire à MACHÉ, se servir de l'espace agent. Le backend refuse
+  avis, écrire à MACHE, se servir de l'espace agent. Le backend refuse
   toute écriture faite avec sa session ; la lecture de son propre
   historique reste possible, ce qui compte pour régler un litige en
   cours.
@@ -21,7 +21,7 @@
   RIEN N'EST SUPPRIMÉ
 
   Un compte effacé emporterait ses commandes, et avec elles les
-  commissions dues à MACHÉ.
+  commissions dues à MACHE.
 
   La session est revérifiée ici : entre l'affichage de la page et le
   clic, elle a pu expirer.
@@ -68,7 +68,7 @@ export async function setCustomerBlockedAction(formData: FormData) {
   done({
     ...(term ? { q: term } : {}),
     fait: blocked
-      ? "Compte bloqué. Il ne peut plus commander, déposer d'avis ni écrire à MACHÉ. Son historique reste lisible."
+      ? "Compte bloqué. Il ne peut plus commander, déposer d'avis ni écrire à MACHE. Son historique reste lisible."
       : "Compte débloqué. Il peut de nouveau commander et écrire.",
   });
 }

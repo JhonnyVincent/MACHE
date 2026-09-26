@@ -1,7 +1,7 @@
 "use server";
 
 /*
-  ACTIONS : la boîte de réception de MACHÉ.
+  ACTIONS : la boîte de réception de MACHE.
 
   Répondre et noter passent par la même route mais ne sont pas le même
   geste, et l'interface ne doit jamais les confondre : une réponse part
@@ -66,14 +66,14 @@ export async function replyAction(formData: FormData) {
 export async function noteAction(formData: FormData) {
   const id = String(formData.get("thread_id") || "");
   const message = String(formData.get("message") || "").trim();
-  const authorName = String(formData.get("author_name") || "MACHÉ").trim();
+  const authorName = String(formData.get("author_name") || "MACHE").trim();
 
   if (!id) redirect(LIST);
 
   if (message.length < 2) back(id, { error: "Écrivez votre note." });
 
   try {
-    const result = await addInternalNote(id, message, authorName || "MACHÉ");
+    const result = await addInternalNote(id, message, authorName || "MACHE");
 
     if (!result.ok) back(id, { error: result.reason });
 

@@ -6,7 +6,7 @@
   POURQUOI AUCUNE NE SUPPRIME
 
   Supprimer un vendeur emporterait ses commandes passées et les
-  commissions qu'il doit à MACHÉ. Mercur propose deux états qui
+  commissions qu'il doit à MACHE. Mercur propose deux états qui
   préservent l'historique comptable, et ce sont eux qu'on utilise :
 
   - SUSPENDRE : réversible. La boutique ne vend plus, elle peut revenir.

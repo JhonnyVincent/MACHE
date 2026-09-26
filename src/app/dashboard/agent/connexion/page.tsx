@@ -5,7 +5,7 @@
 
   Parce qu'un agent ne sait pas forcément qu'il est « un client avec une
   fonction » — c'est notre vocabulaire, pas le sien. On lui a dit « tu
-  es agent MACHÉ » et il cherche l'endroit où les agents entrent. Lui
+  es agent MACHE » et il cherche l'endroit où les agents entrent. Lui
   répondre par un formulaire qui parle de commandes et d'adresses le
   laisserait croire qu'il s'est trompé de site.
 
@@ -22,8 +22,8 @@ import { agentLoginAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Espace agent · MACHÉ",
-  description: "Connexion des agents MACHÉ : livreurs, points de retrait, commerciaux.",
+  title: "Espace agent · MACHE",
+  description: "Connexion des agents MACHE : livreurs, points de retrait, commerciaux.",
 };
 
 const inputClass =
@@ -51,7 +51,7 @@ export default async function AgentLoginPage({
       </h1>
 
       <p className="mt-2 text-md leading-relaxed text-[var(--mache-muted)]">
-        Livreurs, points de retrait et commerciaux de MACHÉ.
+        Livreurs, points de retrait et commerciaux de MACHE.
       </p>
 
       {query.error && (
@@ -104,11 +104,11 @@ export default async function AgentLoginPage({
       */}
       <div className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
-          C&apos;est votre compte MACHÉ habituel
+          C&apos;est votre compte MACHE habituel
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
           Il n&apos;y a pas de compte agent à créer. Vous entrez avec le compte
-          client que vous utilisez pour acheter ; c&apos;est MACHÉ qui y attache
+          client que vous utilisez pour acheter ; c&apos;est MACHE qui y attache
           votre fonction. Si vous n&apos;avez pas encore de compte,{" "}
           <Link
             href="/compte/inscription"
@@ -116,7 +116,7 @@ export default async function AgentLoginPage({
           >
             créez-en un
           </Link>
-          , puis dites-le à MACHÉ pour qu&apos;on vous rattache.
+          , puis dites-le à MACHE pour qu&apos;on vous rattache.
         </p>
       </div>
 

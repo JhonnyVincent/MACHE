@@ -3,7 +3,7 @@
 
   Le problème
 
-  Le vendeur se connecte sur le site MACHÉ. Il clique « Ouvrir mon
+  Le vendeur se connecte sur le site MACHE. Il clique « Ouvrir mon
   panneau vendeur » : le panneau Mercur, servi par le backend, lui
   redemandait ses identifiants. Deux connexions pour une seule personne,
   parce que ce sont deux adresses : la connexion du site vit sur le

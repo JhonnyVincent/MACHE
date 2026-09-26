@@ -1,7 +1,7 @@
 /*
-  PAGE : accueil MACHÉ
+  PAGE : accueil MACHE
 
-  L'ordre de la page, voulu par MACHÉ
+  L'ordre de la page, voulu par MACHE
 
   (En-tête : la bande noire défilante — suivre sa livraison, vérifier
   un agent, ouvrir une boutique.)
@@ -10,16 +10,16 @@
      toujours, puis les nouvelles boutiques en grille, les promotions,
      les partenaires.
   2. Le menu noir, descendu sous le bandeau.
-  3. Sur MACHÉ en ce moment : des produits, chaque vendeur à son tour.
+  3. Sur MACHE en ce moment : des produits, chaque vendeur à son tour.
   4. Catégories : cinq rayons et un « ➕ ».
-  5. S'abonner aux nouvelles de MACHÉ.
+  5. S'abonner aux nouvelles de MACHE.
   6. Nouveautés : trois rangées de six, les derniers articles en ligne.
   7. Nouvelles boutiques, de droite à gauche, en grandes cartes.
   8. Nos suggestions pour vous — ou « À découvrir » —, de droite à gauche.
   9. Nos marques, de droite à gauche (seulement s'il y en a).
-  10. Gagnez de l'argent avec MACHÉ : point relais ou agent vérifié.
+  10. Gagnez de l'argent avec MACHE : point relais ou agent vérifié.
   11. Nos partenaires, de gauche à droite.
-  12. Devenez vendeur chez MACHÉ.
+  12. Devenez vendeur chez MACHE.
   13. Questions fréquentes — puis le pied de page.
 
   Ce qui ne change pas

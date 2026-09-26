@@ -9,7 +9,7 @@
 
   CE QU'IL NE FAIT PAS, ET C'EST DIT PARTOUT
 
-  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHÉ
+  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHE
   sans compte, et rien n'interdit d'en créer un autre avec une autre
   adresse. Prétendre le contraire serait promettre une barrière qui
   n'existe pas, à l'endroit précis où l'on croit s'être protégé.
@@ -42,7 +42,7 @@ import { BLOCKED_MARKER } from "./agent-identity";
 type Raw = Record<string, unknown>;
 
 export const BLOCKED_MESSAGE =
-  "Ce compte a été bloqué par MACHÉ. Écrivez-nous si vous pensez qu'il s'agit d'une erreur.";
+  "Ce compte a été bloqué par MACHE. Écrivez-nous si vous pensez qu'il s'agit d'une erreur.";
 
 /*
   L'identifiant du client connecté, ou `null`.

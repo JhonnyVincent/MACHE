@@ -1,11 +1,11 @@
 /*
-  SCRIPT : les rayons de MACHÉ, créés au démarrage.
+  SCRIPT : les rayons de MACHE, créés au démarrage.
 
   Pourquoi il existe
 
   Le catalogue du backend ne contenait que les rayons de la
   DÉMONSTRATION Mercur — Sandals, Sneakers, Boots, Sport, Accessories
-  et leurs sous-rayons, vingt en tout, en anglais. Aucun rayon de MACHÉ
+  et leurs sous-rayons, vingt en tout, en anglais. Aucun rayon de MACHE
   n'y existait : ni Mode, ni Saveurs, ni les trois ajoutés depuis —
   Fait à la main, Fait maison, Bio et naturel. Le site en avait la
   liste ; le backend, qui range réellement les produits, ne l'avait pas.
@@ -233,7 +233,7 @@ export default async function macheCategories({ container }: ExecArgs) {
 
   if (created > 0) {
     logger.info(
-      `Rayons MACHÉ : ${created} rayon(s) créé(s), ${handles.length - created} déjà présent(s).`
+      `Rayons MACHE : ${created} rayon(s) créé(s), ${handles.length - created} déjà présent(s).`
     );
   }
 }

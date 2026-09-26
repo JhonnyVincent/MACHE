@@ -16,7 +16,7 @@
 
   Pourquoi PAS de limite par adresse IP
 
-  Elle a été écrite, puis retirée. Le site de MACHÉ appelle ce backend
+  Elle a été écrite, puis retirée. Le site de MACHE appelle ce backend
   depuis son propre serveur : toutes les demandes faites sur le site
   arrivent donc de la MÊME adresse IP, celle du site. Une limite par IP
   serait devenue une limite pour le site entier — et dix demandes d'un

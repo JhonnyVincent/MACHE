@@ -153,7 +153,7 @@ export function buyerDelivery(delivery: DeliveryRow) {
     ...common(delivery),
     /*
       La méthode `carrier` n'a pas de code à remettre : le livreur d'un
-      transporteur extérieur ne connaît pas MACHÉ. En afficher un
+      transporteur extérieur ne connaît pas MACHE. En afficher un
       pousserait l'acheteur à le réclamer à quelqu'un qui ne peut pas
       le saisir.
     */

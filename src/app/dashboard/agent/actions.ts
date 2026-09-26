@@ -54,7 +54,7 @@ export async function advanceDeliveryAction(formData: FormData) {
   nombre d'essais restants. Le remplacer par un « code incorrect »
   générique priverait l'agent de la seule information qui compte
   lorsqu'il approche du plafond : après cinq erreurs, le colis se
-  bloque et il faut appeler MACHÉ. Mieux vaut qu'il l'apprenne au
+  bloque et il faut appeler MACHE. Mieux vaut qu'il l'apprenne au
   quatrième essai qu'au sixième.
 */
 export async function confirmDeliveryAction(formData: FormData) {

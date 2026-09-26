@@ -36,7 +36,7 @@ export default async function BuyerProfilePage() {
 
   return (
     <>
-      <PageHeader title="Mon profil" subtitle="Les informations de votre compte MACHÉ." />
+      <PageHeader title="Mon profil" subtitle="Les informations de votre compte MACHE." />
 
       <div className="space-y-4">
         <Panel padded={false}>
@@ -72,7 +72,7 @@ export default async function BuyerProfilePage() {
 
         <Notice tone="info" title="Modifier ces informations">
           La modification du profil et du mot de passe n&apos;est pas encore
-          branchée. Écrivez à l&apos;équipe MACHÉ si une information est
+          branchée. Écrivez à l&apos;équipe MACHE si une information est
           erronée — plutôt qu&apos;un formulaire qui n&apos;enregistrerait
           rien.
         </Notice>

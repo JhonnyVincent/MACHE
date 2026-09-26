@@ -1,5 +1,5 @@
 /*
-  LES QUESTIONS FRÉQUENTES DE MACHÉ — une seule source.
+  LES QUESTIONS FRÉQUENTES DE MACHE — une seule source.
 
   La page /faq les affiche toutes ; l'accueil en reprend quelques-unes.
   Écrites une fois ici, elles ne peuvent pas se contredire d'une page à
@@ -23,7 +23,7 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         a: (
           <>
             À la livraison, en main propre, après avoir vérifié le colis.
-            MACHÉ ne demande aucune donnée bancaire. Le paiement par
+            MACHE ne demande aucune donnée bancaire. Le paiement par
             carte n&apos;est pas proposé aujourd&apos;hui.
           </>
         ),
@@ -50,7 +50,7 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         ),
       },
       {
-        q: "Un livreur se présente chez moi, comment savoir s'il est bien de MACHÉ ?",
+        q: "Un livreur se présente chez moi, comment savoir s'il est bien de MACHE ?",
         a: (
           <>
             Il porte un code. Saisissez-le sur la{" "}
@@ -59,7 +59,7 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
             </Link>{" "}
             avant de lui remettre quoi que ce soit. Si la vérification
             ne répond pas, ne remettez rien : dans le doute, appelez
-            MACHÉ pendant qu&apos;il attend.
+            MACHE pendant qu&apos;il attend.
           </>
         ),
       },
@@ -99,14 +99,14 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         q: "Combien de temps avant que ma boutique soit visible ?",
         a: (
           <>
-            MACHÉ la relit avant de l&apos;afficher dans le catalogue.
+            MACHE la relit avant de l&apos;afficher dans le catalogue.
             Vous pouvez préparer vos produits et votre vitrine pendant ce
             temps.
           </>
         ),
       },
       {
-        q: "Combien MACHÉ prend sur mes ventes ?",
+        q: "Combien MACHE prend sur mes ventes ?",
         a: (
           <>
             Le taux de commission n&apos;est pas encore arrêté. Nous
@@ -121,9 +121,9 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         a: (
           <>
             Vos produits, stocks et commandes se gèrent depuis le panneau
-            vendeur, qui s&apos;ouvre depuis votre espace MACHÉ sans vous
+            vendeur, qui s&apos;ouvre depuis votre espace MACHE sans vous
             redemander vos identifiants. Votre vitrine et le profil de
-            votre boutique se règlent depuis MACHÉ. Le panneau peut être
+            votre boutique se règlent depuis MACHE. Le panneau peut être
             passé en français depuis votre profil.
           </>
         ),
@@ -134,11 +134,11 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
     title: "La plateforme",
     items: [
       {
-        q: "MACHÉ vend-il lui-même ?",
+        q: "MACHE vend-il lui-même ?",
         a: (
           <>
             Non. Les produits sont vendus par des boutiques
-            indépendantes. MACHÉ tient la place : le catalogue, le
+            indépendantes. MACHE tient la place : le catalogue, le
             panier, la commande, la mise en relation.
           </>
         ),
@@ -155,13 +155,13 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         ),
       },
       {
-        q: "Peut-on exporter depuis Haïti avec MACHÉ ?",
+        q: "Peut-on exporter depuis Haïti avec MACHE ?",
         a: (
           <>
             Pas encore. Les vendeurs livrent là où ils livrent, et
             aujourd&apos;hui c&apos;est Haïti. L&apos;export demande des
             formalités douanières et une logistique internationale que
-            MACHÉ ne prend pas en charge pour l&apos;instant.
+            MACHE ne prend pas en charge pour l&apos;instant.
           </>
         ),
       },
@@ -173,10 +173,10 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
 export const HOME_FAQ_QUESTIONS = [
   "Comment je paie ?",
   "J'achète chez plusieurs boutiques, que se passe-t-il ?",
-  "Un livreur se présente chez moi, comment savoir s'il est bien de MACHÉ ?",
+  "Un livreur se présente chez moi, comment savoir s'il est bien de MACHE ?",
   "Qui peut ouvrir une boutique ?",
-  "Combien MACHÉ prend sur mes ventes ?",
-  "MACHÉ vend-il lui-même ?",
+  "Combien MACHE prend sur mes ventes ?",
+  "MACHE vend-il lui-même ?",
 ];
 
 export const HOME_FAQ: FaqItem[] = HOME_FAQ_QUESTIONS.map((question) => {

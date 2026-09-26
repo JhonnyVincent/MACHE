@@ -17,7 +17,7 @@ export const POLICY_PAGES = {
   confidentialite: {
     label: "Confidentialité",
     path: "/legal/privacy",
-    hint: "Quelles données MACHÉ collecte, pourquoi, et ce qu'il en fait.",
+    hint: "Quelles données MACHE collecte, pourquoi, et ce qu'il en fait.",
   },
   conditions: {
     label: "Conditions générales",

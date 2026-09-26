@@ -4,9 +4,9 @@
   Ce qu'elle promettait
 
   « Campagnes sponsorisées », « Publicité : sponsorisez vos produits
-  dans les zones importantes de Maché », « Analytics premium », «
+  dans les zones importantes de Mache », « Analytics premium », «
   Support prioritaire », « ⭐ 4.9 / 5 ». Rien de tout cela n'existe :
-  MACHÉ n'a pas de régie publicitaire, pas de tableau de statistiques
+  MACHE n'a pas de régie publicitaire, pas de tableau de statistiques
   côté vendeur, pas de file de support prioritaire, et la note était
   affichée sur une boutique qui n'existe pas.
 
@@ -23,7 +23,7 @@
 
   La maquette de boutique a disparu
 
-  Elle utilisait le logo de MACHÉ comme avatar d'une marque inventée,
+  Elle utilisait le logo de MACHE comme avatar d'une marque inventée,
   « Marque Soleil ». Le même défaut avait déjà été signalé sur /sell.
 */
 
@@ -31,7 +31,7 @@ import { Link } from "next-view-transitions";
 import { TARIFS, billingLine, htgFromEur, formatHtg, EUR_TO_HTG_DATE, COMMISSION_RATE_REDUCED } from "@/lib/tarifs";
 
 export const metadata = {
-  title: "Marque officielle · Vendre sur MACHÉ",
+  title: "Marque officielle · Vendre sur MACHE",
   description:
     "Le profil vendeur destiné aux marques : boutique identifiée, commission réduite, abonnement mensuel.",
 };
@@ -49,7 +49,7 @@ const REEL: [string, string][] = [
   ],
   [
     "Badge vérifié",
-    "Accordé par MACHÉ après contrôle de vos documents. Il ne s'achète pas : l'abonnement ne le déclenche pas.",
+    "Accordé par MACHE après contrôle de vos documents. Il ne s'achète pas : l'abonnement ne le déclenche pas.",
   ],
   [
     "Vitrine personnalisable",
@@ -74,16 +74,16 @@ const REEL: [string, string][] = [
   qui empêche l'abonnement d'être vendu sur un malentendu.
 */
 const PAS_ENCORE: string[] = [
-  "Aucune régie publicitaire : on ne peut pas sponsoriser un produit sur MACHÉ.",
+  "Aucune régie publicitaire : on ne peut pas sponsoriser un produit sur MACHE.",
   "Aucun tableau de statistiques côté vendeur : la mesure d'audience n'est pas encore ouverte.",
   "Aucune file de support prioritaire : les demandes passent par le même canal que les autres vendeurs.",
-  "MACHÉ n'encaisse pas encore les paiements : l'acheteur règle le vendeur, et la commission est facturée ensuite.",
+  "MACHE n'encaisse pas encore les paiements : l'acheteur règle le vendeur, et la commission est facturée ensuite.",
 ];
 
 const ETAPES: [string, string][] = [
   ["Créer le compte", "Vous ouvrez une boutique comme n'importe quel vendeur — c'est gratuit."],
   ["Envoyer les documents", "Pièces de l'entreprise et preuve que vous représentez la marque."],
-  ["Vérification par MACHÉ", "Contrôle à la main. C'est ce contrôle qui donne le badge vérifié."],
+  ["Vérification par MACHE", "Contrôle à la main. C'est ce contrôle qui donne le badge vérifié."],
   ["Convenir du montant", "Entre 120 et 300 € selon la taille du catalogue et l'accompagnement."],
 ];
 
@@ -122,7 +122,7 @@ export default function SellMarqueOfficiellePage() {
               soit environ {formatHtg(min)} à {formatHtg(max)} par mois
             </p>
             <p className="mt-3 text-xs leading-relaxed text-white/45">
-              Conversion indicative au taux retenu par MACHÉ le {EUR_TO_HTG_DATE}.
+              Conversion indicative au taux retenu par MACHE le {EUR_TO_HTG_DATE}.
               Le montant dû est celui en euros. La fourchette se resserre selon
               la taille de votre catalogue — c&apos;est le seul profil vendeur
               avec un abonnement.
@@ -152,7 +152,7 @@ export default function SellMarqueOfficiellePage() {
           Ce que l&apos;abonnement vous donne
         </h2>
         <p className="mt-2 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
-          Chaque ligne correspond à un écran qui existe aujourd&apos;hui sur MACHÉ.
+          Chaque ligne correspond à un écran qui existe aujourd&apos;hui sur MACHE.
         </p>
 
         <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -175,7 +175,7 @@ export default function SellMarqueOfficiellePage() {
             Ce qui n&apos;est pas encore là
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--mache-muted)]">
-            MACHÉ démarre. Vous lisez cette liste avant de vous engager, pas après.
+            MACHE démarre. Vous lisez cette liste avant de vous engager, pas après.
           </p>
 
           <ul className="mt-4 space-y-2.5">

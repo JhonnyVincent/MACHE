@@ -54,7 +54,7 @@ export async function createDeliveryAction(formData: FormData) {
   if (!["seller", "agent", "relay", "carrier"].includes(method)) {
     done({
       erreur:
-        "Choisissez comment la commande est acheminée : par vous, par un agent MACHÉ, vers un point de retrait, ou par un transporteur.",
+        "Choisissez comment la commande est acheminée : par vous, par un agent MACHE, vers un point de retrait, ou par un transporteur.",
     });
   }
 

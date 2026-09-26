@@ -1,5 +1,5 @@
 /*
-  SCRIPT : mise en place MACHÉ
+  SCRIPT : mise en place MACHE
 
   Le catalogue de démonstration de Mercur crée une région « Europe » en
   euros. Une marketplace haïtienne qui affiche ses prix en euros n'est pas
@@ -31,7 +31,7 @@ import {
 } from "@medusajs/medusa/core-flows";
 
 /*
-  Haïti et la diaspora. MACHÉ vend depuis Haïti mais expédie vers les
+  Haïti et la diaspora. MACHE vend depuis Haïti mais expédie vers les
   communautés qui commandent pour leurs proches : ces pays partagent la
   même région, donc la même devise de référence.
 */
@@ -46,7 +46,7 @@ export default async function setupMache({ container }: ExecArgs) {
   const apiKeyService = container.resolve(Modules.API_KEY);
   const storeService = container.resolve(Modules.STORE);
 
-  logger.info("Mise en place MACHÉ — région Haïti");
+  logger.info("Mise en place MACHE — région Haïti");
 
   /* ------------------------------------------------------------------ */
   /* Région                                                             */
@@ -137,7 +137,7 @@ export default async function setupMache({ container }: ExecArgs) {
 
   if (!channel) {
     const { result } = await createSalesChannelsWorkflow(container).run({
-      input: { salesChannelsData: [{ name: "Site MACHÉ" }] },
+      input: { salesChannelsData: [{ name: "Site MACHE" }] },
     });
 
     channel = result[0];
@@ -203,7 +203,7 @@ export default async function setupMache({ container }: ExecArgs) {
         api_keys: [
           {
             type: "publishable",
-            title: "Site MACHÉ",
+            title: "Site MACHE",
             created_by: "setup-mache",
           },
         ],
@@ -259,7 +259,7 @@ export default async function setupMache({ container }: ExecArgs) {
   /* ------------------------------------------------------------------ */
   logger.info("Ce que ce script ne décide pas à votre place :");
   logger.info("  1. Les zones et tarifs de livraison, par département.");
-  logger.info("  2. Le taux de TCA, si MACHÉ y est assujettie.");
+  logger.info("  2. Le taux de TCA, si MACHE y est assujettie.");
   logger.info("  3. Le taux de commission prélevé sur les ventes.");
   logger.info("");
   logger.info(

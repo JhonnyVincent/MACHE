@@ -1,7 +1,7 @@
 /*
   PAGE : le profil de ma boutique.
 
-  MACHÉ annonce quatre façons de vendre, chacune avec sa page de
+  MACHE annonce quatre façons de vendre, chacune avec sa page de
   présentation. Jusqu'ici, le choix s'arrêtait à cette page : rien dans
   le système ne retenait le profil d'une boutique, et un acheteur ne
   pouvait pas distinguer une personne qui vend trois objets d'un
@@ -11,7 +11,7 @@
 
   Il s'affiche sur la boutique et permet de filtrer le catalogue. Il ne
   donne aucun droit supplémentaire, ne change ni les commissions ni les
-  frais, et n'est pas vérifié par MACHÉ — c'est une déclaration du
+  frais, et n'est pas vérifié par MACHE — c'est une déclaration du
   vendeur, et la boutique l'affiche comme telle.
 
   Un profil qui promettrait un contrôle inexistant tromperait l'acheteur
@@ -135,8 +135,8 @@ export default async function SellerProfilePage({
 
         <p className="mt-1.5 text-md leading-relaxed text-[var(--mache-muted)]">
           Les couleurs de vos boutons et de vos bandeaux. Le fond et le
-          texte restent ceux de MACHÉ : c&apos;est ce qui garde votre
-          boutique lisible, et reconnaissable comme une boutique MACHÉ.
+          texte restent ceux de MACHE : c&apos;est ce qui garde votre
+          boutique lisible, et reconnaissable comme une boutique MACHE.
         </p>
 
         <form action={saveThemeAction} className="mt-4">
@@ -264,7 +264,7 @@ export default async function SellerProfilePage({
       */}
       <p className="mt-6 border-t border-[var(--mache-line)] pt-4 text-sm leading-relaxed text-[var(--mache-muted)]">
         Votre boutique affichera ce profil comme une déclaration de votre
-        part. Ce n&apos;est pas un badge de vérification : MACHÉ ne contrôle
+        part. Ce n&apos;est pas un badge de vérification : MACHE ne contrôle
         pas ce choix, et l&apos;acheteur en est informé.
       </p>
 

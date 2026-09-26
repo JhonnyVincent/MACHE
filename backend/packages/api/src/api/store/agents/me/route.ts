@@ -2,7 +2,7 @@
   ROUTE : « suis-je un agent, et lequel ? »
 
   Elle est sous /store et non sous /admin, et c'est le point important :
-  un agent MACHÉ n'est pas un administrateur. C'est un client — il
+  un agent MACHE n'est pas un administrateur. C'est un client — il
   achète comme tout le monde — à qui s'ajoute une fonction. Il se
   connecte donc avec son compte client, et l'espace agent est un écran
   de plus dans ce compte, pas une porte dérobée vers l'administration.

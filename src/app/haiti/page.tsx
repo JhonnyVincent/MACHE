@@ -4,7 +4,7 @@
   Ce qu'elle est
 
   Une carte des dix départements, et pour chacun : son chef-lieu,
-  quelques lignes, et les boutiques MACHÉ qui s'y trouvent.
+  quelques lignes, et les boutiques MACHE qui s'y trouvent.
 
   Ce qu'elle n'est pas
 
@@ -30,9 +30,9 @@ import { reportOutage } from "@/lib/medusa/outage";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Haïti, région par région — MACHÉ",
+  title: "Haïti, région par région — MACHE",
   description:
-    "Les dix départements d'Haïti, leurs chefs-lieux, et les boutiques MACHÉ qu'on y trouve.",
+    "Les dix départements d'Haïti, leurs chefs-lieux, et les boutiques MACHE qu'on y trouve.",
 };
 
 /*

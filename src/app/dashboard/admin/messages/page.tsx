@@ -1,11 +1,11 @@
 /*
-  PAGE : la boîte de réception de MACHÉ.
+  PAGE : la boîte de réception de MACHE.
 
   Elle remplace quatre adresses e-mail qui n'existaient pas.
 
   L'ORDRE DE LA PILE
 
-  Ce qui attend MACHÉ d'abord, et dans ce groupe, LE PLUS ANCIEN EN
+  Ce qui attend MACHE d'abord, et dans ce groupe, LE PLUS ANCIEN EN
   PREMIER. C'est l'inverse d'une boîte mail, et c'est voulu : un écran
   de support rangé par date fait remonter ce qui vient d'arriver et
   laisse dormir au fond la question posée mardi. On traite une file
@@ -64,7 +64,7 @@ export default async function AdminMessagesPage({
           result.ok
             ? `${result.data.waiting} conversation${result.data.waiting > 1 ? "s" : ""} attend${
                 result.data.waiting > 1 ? "ent" : ""
-              } une réponse de MACHÉ.`
+              } une réponse de MACHE.`
             : undefined
         }
         actions={
@@ -92,7 +92,7 @@ export default async function AdminMessagesPage({
         parce qu'on a écrit.
       */}
       <Notice tone="warning" title="Vos réponses ne préviennent personne">
-        MACHÉ n&apos;a pas de service d&apos;envoi d&apos;e-mails. Une réponse
+        MACHE n&apos;a pas de service d&apos;envoi d&apos;e-mails. Une réponse
         s&apos;affiche dans la conversation, et la personne la découvre en
         revenant. Pour les urgences, le téléphone laissé par le demandeur est
         le seul canal immédiat.
@@ -108,7 +108,7 @@ export default async function AdminMessagesPage({
           description={
             status
               ? "Aucune conversation dans cet état."
-              : "Personne n'a encore écrit à MACHÉ."
+              : "Personne n'a encore écrit à MACHE."
           }
         />
       ) : (
@@ -144,7 +144,7 @@ export default async function AdminMessagesPage({
                   </div>
 
                   <div className="flex shrink-0 items-center gap-2">
-                    {thread.awaitingMache && <Badge tone="warning">Attend MACHÉ</Badge>}
+                    {thread.awaitingMache && <Badge tone="warning">Attend MACHE</Badge>}
                     <Badge tone={TONES[thread.status]}>
                       {ADMIN_THREAD_STATUS[thread.status]}
                     </Badge>

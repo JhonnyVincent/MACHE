@@ -15,12 +15,12 @@
      l'omission du premier rend une erreur qui ne le nomme qu'en second
      appel.
   4. Une boutique naît au statut `pending_approval`. Elle existe, son
-     propriétaire peut la configurer, mais MACHÉ doit l'approuver.
+     propriétaire peut la configurer, mais MACHE doit l'approuver.
 
   Périmètre
 
   Cette session ne sert QUE la vitrine personnalisable, qui est une
-  fonctionnalité MACHÉ absente de Mercur. Tout le reste du métier vendeur
+  fonctionnalité MACHE absente de Mercur. Tout le reste du métier vendeur
   — produits, stock, commandes, versements — se fait dans le panneau
   Mercur, et rien ici ne le double.
 */
@@ -389,19 +389,19 @@ export async function loginVendor(
 }
 
 /*
-  Ouvrir une boutique depuis MACHÉ.
+  Ouvrir une boutique depuis MACHE.
 
   Le parcours passait par le panneau Mercur, servi par le backend : une
   autre application, en anglais, sur une autre adresse. Un commerçant
-  qui cliquait « ouvrir ma boutique » sur MACHÉ se retrouvait ailleurs,
-  sans comprendre s'il était encore chez MACHÉ.
+  qui cliquait « ouvrir ma boutique » sur MACHE se retrouvait ailleurs,
+  sans comprendre s'il était encore chez MACHE.
 
   Deux appels : le compte de la personne, puis la boutique. La session
   est ouverte dans la foulée — on vient de créer le compte, redemander
   le mot de passe n'apprendrait rien à personne.
 
   La boutique naît EN ATTENTE D'APPROBATION et n'est pas visible du
-  public tant que MACHÉ ne l'a pas approuvée. L'écran le dit : sans
+  public tant que MACHE ne l'a pas approuvée. L'écran le dit : sans
   cela, le vendeur chercherait sa boutique dans le catalogue et la
   croirait perdue.
 */
@@ -426,7 +426,7 @@ export async function registerVendor(input: {
   /*
     Le compte existe déjà : on se connecte avec, plutôt que d'annoncer
     que cette adresse est prise — ce qui révélerait qui a un compte chez
-    MACHÉ. Un mot de passe faux échoue ensuite comme il se doit.
+    MACHE. Un mot de passe faux échoue ensuite comme il se doit.
   */
   let token = auth.ok ? str(auth.data.token) : null;
 
@@ -471,7 +471,7 @@ export async function registerVendor(input: {
       last_name: input.lastName || null,
       description: input.description || null,
       /*
-        MACHÉ vend en gourdes. La devise d'une boutique n'est pas un
+        MACHE vend en gourdes. La devise d'une boutique n'est pas un
         choix d'interface : elle décide dans quelle monnaie ses prix
         sont saisis, et une boutique haïtienne qui afficherait des
         euros n'aurait aucun sens ici.
@@ -626,7 +626,7 @@ async function saveSellerMetadata(
 /*
   Profil déclaré de la boutique : particulier, business, fournisseur,
   marque. C'est le vendeur qui le choisit — et l'affichage public le dit
-  comme tel, sans laisser croire à une vérification de MACHÉ.
+  comme tel, sans laisser croire à une vérification de MACHE.
 */
 export async function saveSellerProfile(
   profile: string
@@ -672,7 +672,7 @@ export async function saveStorefrontLayout(
 }
 
 /* -------------------------------------------------------------------------- */
-/* Contrats reçus de MACHÉ                                                    */
+/* Contrats reçus de MACHE                                                    */
 /* -------------------------------------------------------------------------- */
 
 export type VendorContract = {
@@ -823,7 +823,7 @@ export const CONTRACT_STATUS: Record<string, string> = {
   viewed: "Lu, non signé",
   signed: "Signé",
   declined: "Refusé",
-  revoked: "Retiré par MACHÉ",
+  revoked: "Retiré par MACHE",
 };
 
 /* -------------------------------------------------------------------------- */
@@ -1015,7 +1015,7 @@ export async function confirmVendorDelivery(
 
 export const DELIVERY_METHOD_LABELS: Record<string, string> = {
   seller: "Livrée par la boutique",
-  agent: "Confiée à un agent MACHÉ",
+  agent: "Confiée à un agent MACHE",
   relay: "Déposée en point de retrait",
   carrier: "Confiée à un transporteur",
 };

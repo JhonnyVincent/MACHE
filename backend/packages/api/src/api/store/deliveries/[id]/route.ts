@@ -20,8 +20,8 @@
   POST : l'acheteur constate la réception
 
   Réservé aux commandes confiées à un transporteur extérieur. Pour
-  celles-là, et seulement celles-là, aucun code MACHÉ ne peut être
-  saisi à la remise : le livreur du transporteur ne connaît pas MACHÉ.
+  celles-là, et seulement celles-là, aucun code MACHE ne peut être
+  saisi à la remise : le livreur du transporteur ne connaît pas MACHE.
   Le constat de l'acheteur est alors la seule information disponible.
   Elle est enregistrée comme telle — `confirmed_by: "customer"` — pour
   qu'un litige sache qu'elle est déclarative et non prouvée.

@@ -6,7 +6,7 @@
   C'est la distinction qui gouverne tout cet écran, et celle que le
   reste du site répète : un point de retrait est une adresse où un
   colis attend — une boutique, une pharmacie, un dépôt. La personne qui
-  le tient, un agent MACHÉ, peut être absente, remplacée, ou en tenir
+  le tient, un agent MACHE, peut être absente, remplacée, ou en tenir
   deux. Si le point n'était qu'un attribut de l'agent, un colis
   deviendrait introuvable le jour où l'agent change.
 

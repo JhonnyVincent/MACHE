@@ -1,4 +1,4 @@
-# MACHÉ
+# MACHE
 
 Marketplace haïtienne : des boutiques indépendantes, des marques et des
 fournisseurs d'Haïti et de la diaspora, réunis sur une seule place de
@@ -22,7 +22,7 @@ Deux vendeurs peuvent proposer le même article à deux prix. Une commande
 portant sur deux vendeurs devient un *order group* : une commande pour le
 client, deux commandes vendeur.
 
-Les rôles internes de MACHÉ — administration, agents — vivent eux aussi
+Les rôles internes de MACHE — administration, agents — vivent eux aussi
 dans Medusa : un agent est un client rangé dans un groupe, et ces groupes
 ne se modifient que depuis l'administration.
 
@@ -118,7 +118,7 @@ Voir **[DEPLOIEMENT.md](./DEPLOIEMENT.md)** : les trois ressources, leur
 ordre de création, et les variables à renseigner de part et d'autre.
 
 Les décisions qui ne sont pas techniques — le taux de taxe, la commission
-MACHÉ, le prestataire de paiement — y sont listées telles quelles, parce
+MACHE, le prestataire de paiement — y sont listées telles quelles, parce
 qu'elles ne peuvent pas être prises à votre place.
 
 ## Pour comprendre les choix

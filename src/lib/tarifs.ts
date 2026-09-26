@@ -1,5 +1,5 @@
 /*
-  Ce que MACHÉ facture à ses vendeurs.
+  Ce que MACHE facture à ses vendeurs.
 
   Deux mécanismes, et non un seul
 
@@ -28,7 +28,7 @@
 import type { SellerProfile } from "./seller-profile";
 
 /*
-  Taux de conversion retenu par MACHÉ pour l'affichage.
+  Taux de conversion retenu par MACHE pour l'affichage.
 
   Ce n'est PAS le taux du marché du jour, et la page le dit. Le montant
   dû est celui en euros ; la valeur en gourdes est là pour qu'un vendeur
@@ -72,7 +72,7 @@ export function formatHtg(amount: number): string {
   Sur ce que pratiquent les marketplaces comparables : Etsy prélève
   6,5 %, Amazon de 8 à 15 % selon la catégorie, eBay environ 13 %, et
   les marketplaces généralistes africaines se tiennent le plus souvent
-  entre 5 et 20 %. Huit pour cent place MACHÉ dans le bas de cette
+  entre 5 et 20 %. Huit pour cent place MACHE dans le bas de cette
   fourchette, ce qui est la position d'une plateforme qui doit encore
   convaincre des vendeurs de venir.
 
@@ -87,10 +87,10 @@ export function formatHtg(amount: number): string {
 
   Ce qu'il faut savoir avant de les lire
 
-  MACHÉ n'encaisse pas : l'acheteur paie le vendeur à la livraison. La
+  MACHE n'encaisse pas : l'acheteur paie le vendeur à la livraison. La
   commission est donc CALCULÉE et ENREGISTRÉE sur chaque commande, puis
   facturée — elle n'est pas prélevée sur un paiement qui ne passe pas
-  par MACHÉ. La page le dit, sans quoi « 8 % de commission » se lirait
+  par MACHE. La page le dit, sans quoi « 8 % de commission » se lirait
   comme une retenue automatique.
 */
 export const COMMISSION_RATE: number | null = 8;
@@ -177,7 +177,7 @@ export const TARIFS: Tarif[] = [
     profile: "marque",
     title: "Marque officielle",
     audience:
-      "Vous représentez une marque et voulez une présence tenue sur MACHÉ.",
+      "Vous représentez une marque et voulez une présence tenue sur MACHE.",
     billing: { kind: "subscription", minEur: 120, maxEur: 300 },
     included: [
       "Tout ce qui précède",

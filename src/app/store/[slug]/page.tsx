@@ -90,14 +90,14 @@ export default async function StorePage({
   /*
     Le thème choisi par le vendeur. Il ne redéfinit que la famille de
     couleurs d'accent : le fond, le texte et les bordures restent ceux
-    de MACHÉ, ce qui garde la boutique lisible et reconnaissable.
+    de MACHE, ce qui garde la boutique lisible et reconnaissable.
   */
   const theme = readSellerTheme(seller.metadata);
 
   /*
     Les avis de la boutique. Ils ne viennent pas de l'API publique de
     Mercur, qui n'en expose aucun, mais de la route `/store/ratings` du
-    backend MACHÉ — et seuls les avis modérés et publiés en sortent.
+    backend MACHE — et seuls les avis modérés et publiés en sortent.
   */
   const ratingsResult = await fetchSellerRatings(seller.id);
   const ratings = ratingsResult.ok
@@ -128,7 +128,7 @@ export default async function StorePage({
                 « Premium » promettait un niveau de service et laissait
                 penser qu'il s'achète — d'autant plus depuis que les
                 marques officielles ont un abonnement. Le champ dit
-                autre chose : MACHÉ a contrôlé les documents de cette
+                autre chose : MACHE a contrôlé les documents de cette
                 entreprise.
               */}
               {seller.isPremium && <VerifiedBadge />}

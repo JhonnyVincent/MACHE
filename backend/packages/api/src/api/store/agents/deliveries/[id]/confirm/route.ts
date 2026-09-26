@@ -34,7 +34,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   if (agent.suspended) {
     return res.status(403).json({
-      message: "Votre habilitation d'agent est suspendue. Contactez MACHÉ.",
+      message: "Votre habilitation d'agent est suspendue. Contactez MACHE.",
     });
   }
 

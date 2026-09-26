@@ -25,7 +25,7 @@
 
   Ce que cela n'est pas
 
-  Une signature électronique qualifiée. MACHÉ ne vérifie l'identité de
+  Une signature électronique qualifiée. MACHE ne vérifie l'identité de
   personne : il enregistre un consentement horodaté et scelle
   l'intégrité du texte. Suffisant pour un accord commercial ordinaire,
   insuffisant pour ce que la loi réserve à la signature qualifiée.
@@ -95,7 +95,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   if (recomputed !== row.content_hash) {
     return res.status(409).json({
       message:
-        "Le texte de ce contrat ne correspond plus à celui qui vous a été envoyé. Il ne peut pas être signé en l'état. Signalez-le à MACHÉ.",
+        "Le texte de ce contrat ne correspond plus à celui qui vous a été envoyé. Il ne peut pas être signé en l'état. Signalez-le à MACHE.",
       expected: row.content_hash,
       found: recomputed,
     });
@@ -138,7 +138,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   }
 
   if (row.status === "revoked") {
-    return res.status(409).json({ message: "Cet envoi a été retiré par MACHÉ." });
+    return res.status(409).json({ message: "Cet envoi a été retiré par MACHE." });
   }
 
   const body = (req.body ?? {}) as Record<string, unknown>;

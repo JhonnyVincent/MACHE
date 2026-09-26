@@ -2,7 +2,7 @@
   LE GRAND BANDEAU DE L'ACCUEIL, EN DÉFILEMENT.
 
   La première diapositive est TOUJOURS la carte d'Haïti : c'est
-  l'identité de MACHÉ, et c'est elle que voit en premier quelqu'un qui
+  l'identité de MACHE, et c'est elle que voit en premier quelqu'un qui
   arrive. Les suivantes défilent vers la gauche — nouvelles boutiques
   (en grille), promotions, partenaires — et n'existent que si la donnée qui les justifie existe (voir
   `src/lib/medusa/home.ts`).
@@ -91,7 +91,7 @@ function MapSlide({ counts }: { counts: HeroCount[] }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/carte-haiti-mache.png"
-            alt="Carte d'Haïti aux couleurs de MACHÉ"
+            alt="Carte d'Haïti aux couleurs de MACHE"
             className="w-full max-w-[420px] object-contain"
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -118,7 +118,7 @@ function ShopsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "shops" }> })
         <div>
           <span className={`${chip} bg-[var(--mache-text)] text-white`}>Nouvelles boutiques</span>
           <h2 className="mt-4 text-3xl font-black tracking-tightest text-[var(--mache-text)] sm:text-4xl">
-            Ils viennent d&apos;ouvrir sur MACHÉ
+            Ils viennent d&apos;ouvrir sur MACHE
           </h2>
           <p className="mt-3 max-w-lg text-md leading-relaxed text-[var(--mache-muted)]">
             Des vendeurs d&apos;Haïti et de la diaspora, chacun avec sa boutique.
@@ -156,7 +156,7 @@ function ShopsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "shops" }> })
 }
 
 /*
-  NOS PROMOTIONS : les codes de MACHÉ réellement actifs, et de vraies
+  NOS PROMOTIONS : les codes de MACHE réellement actifs, et de vraies
   photos d'articles réellement moins chers que d'habitude. Rien
   d'autre : pas de « −50 % » décoratif.
 */
@@ -166,7 +166,7 @@ function PromotionsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "promoti
       <div className={`${frame} lg:grid-cols-[1fr_1fr]`}>
         <div>
           <span className={`${chip} bg-white text-[var(--mache-primary)]`}>Nos promotions</span>
-          <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">En ce moment sur MACHÉ</h2>
+          <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">En ce moment sur MACHE</h2>
           {slide.labels.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-2">
               {slide.labels.map((label) => (
@@ -216,13 +216,13 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
   const [first] = slide.partners;
 
   return (
-    /* Fond bleu soutenu — ni ciel ni nuit —, voulu par MACHÉ pour les partenaires. */
+    /* Fond bleu soutenu — ni ciel ni nuit —, voulu par MACHE pour les partenaires. */
     <div className="h-full bg-gradient-to-br from-[#1e40af] to-[#1e3a8a] text-white">
       <div className={`${frame} lg:grid-cols-[1.1fr_0.9fr]`}>
         <div>
           <span className={`${chip} bg-white/10 text-white`}>Nos partenaires</span>
           <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">
-            Ils travaillent avec MACHÉ
+            Ils travaillent avec MACHE
           </h2>
           <p className="mt-3 max-w-lg text-md leading-relaxed text-white/75">
             {first.name} — {first.does.charAt(0).toLowerCase() + first.does.slice(1)}
@@ -265,7 +265,7 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
 export function HeroCarousel({ slides, counts }: { slides: HeroSlide[]; counts: HeroCount[] }) {
   return (
     <section className="border-b border-[var(--mache-line)]">
-      <Slider variant="hero" label="À la une sur MACHÉ" autoplayMs={7000}>
+      <Slider variant="hero" label="À la une sur MACHE" autoplayMs={7000}>
         <MapSlide counts={counts} />
         {slides.map((slide) => {
           if (slide.kind === "shops") return <ShopsSlide key={slide.key} slide={slide} />;

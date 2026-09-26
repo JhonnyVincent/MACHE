@@ -78,7 +78,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   const service = req.scope.resolve(SUPPORT_MODULE) as Service;
 
-  const authorName = text(body.author_name, 200) ?? "MACHÉ";
+  const authorName = text(body.author_name, 200) ?? "MACHE";
 
   /* ---------------------------------------------------------------- */
   if (action === "reply" || action === "note") {
@@ -91,7 +91,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     await service.createThreadMessages({
       thread_id: thread.id,
       author: "mache",
-      author_name: internal ? authorName : "MACHÉ",
+      author_name: internal ? authorName : "MACHE",
       body: message,
       internal,
     });

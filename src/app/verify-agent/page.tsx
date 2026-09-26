@@ -1,5 +1,5 @@
 /*
-  PAGE PUBLIQUE : vérification d'un agent MACHÉ
+  PAGE PUBLIQUE : vérification d'un agent MACHE
 
   Sert à ce qu'un client, devant sa porte, puisse s'assurer que la personne
   qui se présente est bien un agent habilité.
@@ -9,7 +9,7 @@
   fausses. Une vérification d'identité qui se trompe ne vaut pas mieux que
   pas de vérification — elle sert de caution. Elle interroge désormais la
   table agent_profiles, et répond « inconnu » tant qu'un agent n'y est pas
-  enregistré par l'équipe MACHÉ.
+  enregistré par l'équipe MACHE.
 
   La recherche se fait côté serveur, par l'URL : le résultat est partageable
   et rien de la table n'est expédié au navigateur.
@@ -46,7 +46,7 @@ export default async function VerifyAgentPage({
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10 sm:py-14">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
-        Vérifier un agent MACHÉ
+        Vérifier un agent MACHE
       </h1>
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
@@ -80,7 +80,7 @@ export default async function VerifyAgentPage({
         <div className="mt-8">
           {"unavailable" in result ? (
             /*
-              MACHÉ n'a pas pu vérifier. La consigne reste la même que
+              MACHE n'a pas pu vérifier. La consigne reste la même que
               pour un code inconnu — ne rien remettre — mais la raison
               donnée est la vraie : accuser quelqu'un d'imposture parce
               qu'un service est en panne serait aussi faux que de le
@@ -91,20 +91,20 @@ export default async function VerifyAgentPage({
                 Vérification impossible pour le moment
               </p>
               <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
-                MACHÉ ne peut pas confirmer ce code en ce moment. Cela ne
+                MACHE ne peut pas confirmer ce code en ce moment. Cela ne
                 veut pas dire que cette personne est un imposteur, ni
                 qu&apos;elle est habilitée : nous n&apos;en savons rien.
               </p>
               <p className="mt-2 text-base font-semibold leading-relaxed text-[var(--mache-text)]">
                 Dans le doute, ne remettez ni colis ni argent. Réessayez
-                dans quelques minutes, ou appelez MACHÉ pendant que la
+                dans quelques minutes, ou appelez MACHE pendant que la
                 personne attend.
               </p>
               <Link
                 href="/contact"
                 className="mt-4 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline"
               >
-                Contacter MACHÉ
+                Contacter MACHE
               </Link>
             </section>
           ) : !result.found ? (
@@ -115,13 +115,13 @@ export default async function VerifyAgentPage({
               <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
                 Ne remettez ni colis ni argent à cette personne. Vérifiez la
                 saisie du code ; s&apos;il est correct et que la personne
-                insiste, signalez-le à MACHÉ.
+                insiste, signalez-le à MACHE.
               </p>
               <Link
                 href="/contact"
                 className="mt-4 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline"
               >
-                Signaler à MACHÉ
+                Signaler à MACHE
               </Link>
             </section>
           ) : (
@@ -146,7 +146,7 @@ export default async function VerifyAgentPage({
 
               {!result.trustworthy && (
                 <p className="mt-2 text-base leading-relaxed text-[#b01124]">
-                  Cette personne n&apos;est pas autorisée à intervenir pour MACHÉ
+                  Cette personne n&apos;est pas autorisée à intervenir pour MACHE
                   aujourd&apos;hui. Ne lui remettez ni colis ni argent.
                 </p>
               )}
@@ -204,14 +204,14 @@ export default async function VerifyAgentPage({
         </h2>
         <ul className="mt-3 space-y-2 text-base leading-relaxed text-[var(--mache-muted)]">
           <li>
-            Un agent MACHÉ vous montre sa carte sans qu&apos;on la lui demande.
+            Un agent MACHE vous montre sa carte sans qu&apos;on la lui demande.
           </li>
           <li>
             Le code se vérifie sur cette page, depuis votre propre téléphone —
             jamais sur celui de la personne qui se présente.
           </li>
           <li>
-            En cas de doute, ne remettez rien et contactez MACHÉ.
+            En cas de doute, ne remettez rien et contactez MACHE.
           </li>
         </ul>
       </section>

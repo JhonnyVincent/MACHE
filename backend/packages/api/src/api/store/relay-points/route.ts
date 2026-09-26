@@ -12,7 +12,7 @@
   Ce qu'elle ne publie pas
 
   Le nom et le numéro de la personne qui tient le point. Un point de
-  retrait est un LIEU ; son tenant est un agent MACHÉ, dont l'identité
+  retrait est un LIEU ; son tenant est un agent MACHE, dont l'identité
   se vérifie par son code, sur la page prévue pour cela. Publier ici
   « tenu par Jean B., 3xxx xxxx » donnerait à un inconnu de quoi se
   faire passer pour lui devant un client.

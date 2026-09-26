@@ -1,5 +1,5 @@
 /*
-  SCRIPT : le compte d'administration MACHÉ, créé au démarrage.
+  SCRIPT : le compte d'administration MACHE, créé au démarrage.
 
   Pourquoi ce fichier existe
 

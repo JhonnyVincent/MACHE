@@ -8,7 +8,7 @@
   Elles calculent le contraste au sens des règles d'accessibilité du web
   (WCAG) et refusent tout thème sous le niveau AA. Ce n'est pas une
   précaution théorique : deux candidats ont été écartés grâce à elles —
-  un ambre à 2,56 sur blanc, et le rouge MACHÉ d'origine à 4,46.
+  un ambre à 2,56 sur blanc, et le rouge MACHE d'origine à 4,46.
 
   Lancer : npm run test:themes
 */
@@ -144,7 +144,7 @@ check("refuse un thème inventé", () => {
 check("le thème ne touche pas au fond ni au texte de la page", () => {
   /*
     C'est ce qui garantit qu'une boutique reste lisible ET reconnaissable
-    comme une boutique MACHÉ. Laisser choisir le fond et le texte, c'est
+    comme une boutique MACHE. Laisser choisir le fond et le texte, c'est
     laisser produire du jaune sur blanc.
   */
   const style = themeStyle(STOREFRONT_THEMES[1]);

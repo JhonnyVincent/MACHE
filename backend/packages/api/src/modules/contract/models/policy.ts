@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils";
 
 /*
-  MODÈLE : un texte public de MACHÉ — confidentialité, conditions
+  MODÈLE : un texte public de MACHE — confidentialité, conditions
   générales, retours, livraison.
 
   Pourquoi ce modèle existe

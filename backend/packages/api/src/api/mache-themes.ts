@@ -1,5 +1,5 @@
 /*
-  Les habillages saisonniers de MACHÉ, et la raison pour laquelle ils
+  Les habillages saisonniers de MACHE, et la raison pour laquelle ils
   sont une LISTE FERMÉE.
 
   Pourquoi pas un choix de couleur libre
@@ -50,8 +50,8 @@ export type Theme = {
 export const THEMES: Record<ThemeKey, Theme> = {
   default: {
     key: "default",
-    label: "MACHÉ",
-    description: "L'habillage habituel : le rouge de MACHÉ.",
+    label: "MACHE",
+    description: "L'habillage habituel : le rouge de MACHE.",
     banner: null,
     variables: {},
   },
@@ -60,7 +60,7 @@ export const THEMES: Record<ThemeKey, Theme> = {
     key: "noel",
     label: "Noël",
     description:
-      "Vert sapin et rouge. Le rouge de MACHÉ devient l'accent secondaire.",
+      "Vert sapin et rouge. Le rouge de MACHE devient l'accent secondaire.",
     banner: "Joyeux Noël — bonne fête à tous",
     variables: {
       "--mache-primary": "#0f7b4b",

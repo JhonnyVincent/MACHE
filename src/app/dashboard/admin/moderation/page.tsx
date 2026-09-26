@@ -15,7 +15,7 @@
 
   Medusa distingue les deux, et le site aussi. Un brouillon est un
   article que le vendeur n'a pas fini ; un article retiré est un
-  article que MACHÉ a écarté. Les confondre ferait croire au vendeur
+  article que MACHE a écarté. Les confondre ferait croire au vendeur
   qu'il a oublié de publier — et il republierait.
 
   Les avis en attente sont montrés en premier
@@ -118,7 +118,7 @@ export default async function AdminModerationPage({
         ) : sortedReviews.length === 0 ? (
           <EmptyState
             title="Aucun avis"
-            description="Personne n'a encore laissé d'avis sur MACHÉ."
+            description="Personne n'a encore laissé d'avis sur MACHE."
           />
         ) : (
           <ul className="space-y-2">
@@ -296,7 +296,7 @@ export default async function AdminModerationPage({
           </li>
           <li>
             <strong className="text-[#0f1111]">Le vendeur n&apos;est pas
-            prévenu.</strong> MACHÉ n&apos;envoie pas d&apos;e-mail. Si le
+            prévenu.</strong> MACHE n&apos;envoie pas d&apos;e-mail. Si le
             retrait doit être expliqué,{" "}
             <Link href="/dashboard/admin/messages" className="font-medium underline">
               écrivez-lui

@@ -2,7 +2,7 @@
   PAGE : l'habillage du site.
 
   Ce qu'elle permet : activer Noël, Octobre rose, la Saint-Valentin, la
-  Fête du Drapeau, ou revenir aux couleurs de MACHÉ.
+  Fête du Drapeau, ou revenir aux couleurs de MACHE.
 
   Ce qu'elle ne permet pas, et pourquoi
 
@@ -133,7 +133,7 @@ export default async function AdminAppearancePage({
                     </div>
                   ) : (
                     <p className="mt-4 text-sm text-[#767676]">
-                      Les couleurs habituelles de MACHÉ, inchangées.
+                      Les couleurs habituelles de MACHE, inchangées.
                     </p>
                   )}
 

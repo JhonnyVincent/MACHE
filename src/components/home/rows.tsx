@@ -1,5 +1,5 @@
 /*
-  LES RANGÉES DU BAS DE L'ACCUEIL, DANS L'ORDRE VOULU PAR MACHÉ :
+  LES RANGÉES DU BAS DE L'ACCUEIL, DANS L'ORDRE VOULU PAR MACHE :
 
   - Nouveautés : trois rangées de six, les derniers articles en ligne ;
   - Nouvelles boutiques, puis Nos suggestions : elles défilent seules,
@@ -67,7 +67,7 @@ export function NewArrivals({ products }: { products: StoreProduct[] }) {
     <section className="mache-reveal py-6">
       <Heading
         title="Nouveautés"
-        subtitle="Les derniers articles mis en ligne sur MACHÉ"
+        subtitle="Les derniers articles mis en ligne sur MACHE"
         href="/shop?sort=recent"
         linkLabel="Toutes les nouveautés"
       />
@@ -138,7 +138,7 @@ export function NewShopsMarquee({ sellers }: { sellers: StoreSeller[] }) {
     <section className="mache-reveal py-6">
       <Heading
         title="Nouvelles boutiques"
-        subtitle="Les vendeurs qui viennent d'ouvrir sur MACHÉ"
+        subtitle="Les vendeurs qui viennent d'ouvrir sur MACHE"
         href="/shop"
         linkLabel="Tout le catalogue"
       />
@@ -241,11 +241,11 @@ export function SuggestionsMarquee({
 }
 
 /* -------------------------------------------------------------------------- */
-/* Gagner de l'argent avec MACHÉ, sans ouvrir de boutique                     */
+/* Gagner de l'argent avec MACHE, sans ouvrir de boutique                     */
 /* -------------------------------------------------------------------------- */
 
 /*
-  Deux rôles qui existent vraiment dans MACHÉ :
+  Deux rôles qui existent vraiment dans MACHE :
 
   - le POINT RELAIS : le module de livraison sait déposer un colis dans
     un commerce et l'y faire remettre contre le code de l'acheteur, et
@@ -254,11 +254,11 @@ export function SuggestionsMarquee({
     publique /verify-agent, et suit ses colis depuis son espace.
 
   Ce que la section ne dit pas : un montant. Aucun n'est fixé ; la
-  rémunération se convient avec MACHÉ avant de commencer, et c'est
+  rémunération se convient avec MACHE avant de commencer, et c'est
   exactement ce qui est écrit. Un chiffre inventé ici serait une
   promesse que personne n'a faite.
 
-  Les candidatures arrivent dans la messagerie de MACHÉ, objet déjà
+  Les candidatures arrivent dans la messagerie de MACHE, objet déjà
   rempli : l'équipe sait tout de suite de quoi il s'agit.
 */
 const EARN_ROLES = [
@@ -269,7 +269,7 @@ const EARN_ROLES = [
     who: "Boutique, pharmacie, cybercafé, dépôt…",
     points: [
       "Chaque retrait fait entrer un client dans votre commerce.",
-      "Votre point est affiché sur MACHÉ, avec son adresse et ses horaires.",
+      "Votre point est affiché sur MACHE, avec son adresse et ses horaires.",
       "Vous gardez le colis et le remettez contre le code de l'acheteur.",
     ],
     cta: "Devenir point relais",
@@ -283,12 +283,12 @@ const EARN_ROLES = [
     title: "Devenir agent vérifié",
     who: "Livreur, coursier, moto-taxi…",
     points: [
-      "Vous livrez les colis MACHÉ dans votre zone.",
-      "Votre carte porte un code que chaque client vérifie sur MACHÉ : on vous ouvre en confiance.",
+      "Vous livrez les colis MACHE dans votre zone.",
+      "Votre carte porte un code que chaque client vérifie sur MACHE : on vous ouvre en confiance.",
       "Vos colis et leurs étapes se suivent depuis votre téléphone.",
     ],
     cta: "Devenir agent",
-    href: `/contact?sujet=autre&objet=${encodeURIComponent("Devenir agent MACHÉ")}`,
+    href: `/contact?sujet=autre&objet=${encodeURIComponent("Devenir agent MACHE")}`,
     tone: "border-[#bfdbfe] bg-gradient-to-br from-[#eff6ff] via-white to-[#dbeafe]",
     accent: "text-[#1d4ed8]",
   },
@@ -303,11 +303,11 @@ export function EarnWithMache() {
             Sans ouvrir de boutique
           </span>
           <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">
-            Gagnez de l&apos;argent avec MACHÉ
+            Gagnez de l&apos;argent avec MACHE
           </h2>
           <p className="mt-3 text-md leading-relaxed text-white/80">
             Faites de votre commerce un point relais, ou devenez agent vérifié
-            dans votre quartier. MACHÉ grandit avec ceux qui livrent et qui
+            dans votre quartier. MACHE grandit avec ceux qui livrent et qui
             accueillent.
           </p>
         </div>
@@ -342,7 +342,7 @@ export function EarnWithMache() {
               </ul>
 
               <p className="mt-5 text-sm text-[var(--mache-muted)]">
-                Rémunération et conditions fixées avec MACHÉ avant de commencer :
+                Rémunération et conditions fixées avec MACHE avant de commencer :
                 rien ne vous engage sans que vous les connaissiez.
               </p>
 

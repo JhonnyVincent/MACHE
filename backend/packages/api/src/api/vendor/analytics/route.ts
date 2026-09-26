@@ -76,7 +76,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   /*
-    Les commandes de cette boutique. Sur MACHÉ, un panier à plusieurs
+    Les commandes de cette boutique. Sur MACHE, un panier à plusieurs
     vendeurs produit une commande par vendeur : le total d'une commande
     est donc bien le chiffre de cette boutique, et non celui du panier
     entier.

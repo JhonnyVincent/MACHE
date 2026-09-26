@@ -1,9 +1,9 @@
 /*
-  PAGE : les agents MACHÉ.
+  PAGE : les agents MACHE.
 
   Un agent est un CLIENT à qui s'ajoute une fonction — point de relais,
   livreur, commercial. Ce ne sont pas des administrateurs : ils
-  achètent sur MACHÉ comme tout le monde, et rendent un service en
+  achètent sur MACHE comme tout le monde, et rendent un service en
   plus.
 
   Cette page lisait l'ancien socle, dont le socle a été supprimé. Elle lit
@@ -67,7 +67,7 @@ export default async function AdminAgentsPage({
         </h1>
         <p className="mt-1 text-base text-[#565959]">
           Points de relais, livreurs et commerciaux. Ce sont des clients de
-          MACHÉ à qui vous ajoutez une fonction.
+          MACHE à qui vous ajoutez une fonction.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ export default async function AdminAgentsPage({
         <div className="rounded-[8px] border border-[#b7e0bf] bg-[#eaf6ec] px-4 py-4">
           <p className="text-base font-bold text-[#116b25]">
             {query.nom ? decodeURIComponent(query.nom) : "Agent"} est
-            maintenant agent MACHÉ.
+            maintenant agent MACHE.
           </p>
 
           <p className="mt-2 text-sm text-[#116b25]">
@@ -114,7 +114,7 @@ export default async function AdminAgentsPage({
 
       {query.retire && (
         <div className="rounded-[8px] border border-[#d5d9d9] bg-white px-4 py-3 text-base text-[#565959]">
-          Fonction retirée. La personne reste cliente de MACHÉ ; son code ne
+          Fonction retirée. La personne reste cliente de MACHE ; son code ne
           vérifie plus rien.
         </div>
       )}
@@ -137,7 +137,7 @@ export default async function AdminAgentsPage({
         <h2 className="text-lg font-bold text-[#0f1111]">Nommer un agent</h2>
 
         <p className="mt-1 text-base leading-relaxed text-[#565959]">
-          La personne doit déjà avoir un compte client sur MACHÉ. On
+          La personne doit déjà avoir un compte client sur MACHE. On
           n&apos;en crée pas à sa place : ce serait un compte dont elle ne
           connaîtrait pas le mot de passe.
         </p>

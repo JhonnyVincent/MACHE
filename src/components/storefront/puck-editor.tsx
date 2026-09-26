@@ -4,7 +4,7 @@
   ÉDITEUR VISUEL DE VITRINE
 
   Le glisser-déposer annoncé par l'éditeur en formulaire. Il repose sur
-  Puck, dont MACHÉ enregistrait déjà le format de données : aucune vitrine
+  Puck, dont MACHE enregistrait déjà le format de données : aucune vitrine
   n'a eu à être reprise pour qu'il fonctionne.
 
   L'aperçu n'est pas une imitation
@@ -37,7 +37,7 @@ import { Puck, usePuck, type Config, type Data } from "@measured/puck";
   La feuille « no-external » est la même que `puck.css`, moins un
   `@import` vers rsms.me qui téléchargeait une seconde copie d'Inter à
   chaque ouverture de l'éditeur : une requête vers un tiers depuis le
-  navigateur du vendeur, pour une police que MACHÉ sert déjà.
+  navigateur du vendeur, pour une police que MACHE sert déjà.
 */
 import "@measured/puck/no-external.css";
 
@@ -57,7 +57,7 @@ import type { StoreProduct, StoreSeller } from "@/lib/medusa/catalog";
 /* -------------------------------------------------------------------------- */
 
 /*
-  Traduction d'un champ MACHÉ en champ Puck.
+  Traduction d'un champ MACHE en champ Puck.
 
   Puck n'a pas de champ « date » ; une date se saisit donc en texte, avec
   son format rappelé dans l'intitulé plutôt que laissé à deviner.
@@ -158,7 +158,7 @@ function Preview({
 
 /*
   Puck identifie chaque bloc posé par un `id` qu'il range dans les
-  propriétés. MACHÉ ne l'enregistre pas — c'est un détail d'éditeur, pas
+  propriétés. MACHE ne l'enregistre pas — c'est un détail d'éditeur, pas
   une donnée de boutique — et le régénère à l'ouverture.
 */
 function toPuckData(layout: StorefrontLayout): Data {
@@ -321,7 +321,7 @@ export function VitrineEditor({
 
   /*
     `root: { fields: {} }` retire le champ « title » que Puck propose par
-    défaut sur la page. MACHÉ ne lit pas les propriétés de la racine : ce
+    défaut sur la page. MACHE ne lit pas les propriétés de la racine : ce
     champ se serait rempli sans rien produire, ce qui est pire qu'un champ
     absent — le vendeur croit avoir donné un titre à sa vitrine.
   */

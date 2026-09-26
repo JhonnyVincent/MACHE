@@ -7,7 +7,7 @@
   une zone de livraison couvrant sept pays d'Europe, et deux modes
   d'expédition tarifés en euros et en dollars.
 
-  MACHÉ livre en Haïti. Une adresse haïtienne ne tombe donc dans aucune
+  MACHE livre en Haïti. Une adresse haïtienne ne tombe donc dans aucune
   zone : `/store/shipping-options` renvoie un objet vide, et le passage
   en caisse s'arrête sur « No shipping method selected but the cart
   contains seller items that require shipping ». Constaté en passant une

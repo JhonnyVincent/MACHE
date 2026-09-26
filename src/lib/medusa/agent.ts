@@ -3,7 +3,7 @@
 
   Un agent n'est pas un administrateur
 
-  C'est un client de MACHÉ — il achète comme tout le monde — à qui
+  C'est un client de MACHE — il achète comme tout le monde — à qui
   s'ajoute une fonction : tenir un point de retrait, livrer, démarcher
   des commerçants. Il se connecte donc avec SON COMPTE CLIENT, et son
   espace est un écran de plus dans ce compte.
@@ -152,7 +152,7 @@ export async function getAgentCard(): Promise<Result<AgentCard | null>> {
   return {
     ok: true,
     data: {
-      function: str(agent.function) ?? "Agent MACHÉ",
+      function: str(agent.function) ?? "Agent MACHE",
       slug: str(agent.slug) ?? "",
       code: str(agent.code),
       zone: str(agent.zone),
@@ -178,7 +178,7 @@ export async function getAgentDeliveries(
     ok: true,
     data: {
       card: {
-        function: str(agent.function) ?? "Agent MACHÉ",
+        function: str(agent.function) ?? "Agent MACHE",
         slug: "",
         code: str(agent.code),
         zone: str(agent.zone),
@@ -238,7 +238,7 @@ export const DELIVERY_STATUS: Record<string, string> = {
 
 export const DELIVERY_METHOD: Record<string, string> = {
   seller: "Le vendeur livre",
-  agent: "Agent MACHÉ",
+  agent: "Agent MACHE",
   relay: "Point de retrait",
   carrier: "Transporteur extérieur",
 };

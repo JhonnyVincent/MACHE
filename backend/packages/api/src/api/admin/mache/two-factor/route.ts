@@ -29,7 +29,7 @@
 
   On crée un secret EN ATTENTE, puis on exige un code valide avant de
   l'activer. Activer d'emblée enfermerait dehors quiconque aurait mal
-  recopié le secret — et sans fournisseur d'e-mail, MACHÉ n'aurait aucun
+  recopié le secret — et sans fournisseur d'e-mail, MACHE n'aurait aucun
   moyen de le faire rentrer.
 
   Les codes de secours ont la même raison d'être : un téléphone perdu
@@ -38,7 +38,7 @@
 
   LA LIMITE, ÉCRITE ICI POUR QU'ELLE NE SE PERDE PAS
 
-  Ce second facteur protège les écrans MACHÉ. Il ne protège PAS le
+  Ce second facteur protège les écrans MACHE. Il ne protège PAS le
   panneau Medusa servi par le backend, ni un appel direct à son API :
   ceux-là acceptent toujours le jeton délivré par le mot de passe seul.
   Le faire tiendrait à modifier l'émission du jeton dans le module
@@ -148,7 +148,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       par distraction.
     */
     scope_note:
-      "Ce code protège les écrans MACHÉ. Le panneau d'administration servi par le backend reste accessible avec le mot de passe seul.",
+      "Ce code protège les écrans MACHE. Le panneau d'administration servi par le backend reste accessible avec le mot de passe seul.",
   });
 }
 
@@ -186,7 +186,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     */
     return res.json({
       secret: fresh,
-      uri: otpauthUri(fresh, user.email ?? "MACHÉ"),
+      uri: otpauthUri(fresh, user.email ?? "MACHE"),
     });
   }
 

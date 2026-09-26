@@ -5,7 +5,7 @@
   aucune requête. Toute la logique de récupération vit dans
   `src/lib/medusa/home.ts`.
 
-  Le registre visuel reprend la direction artistique de MACHÉ — rouge de
+  Le registre visuel reprend la direction artistique de MACHE — rouge de
   marque réservé aux actions et aux remises, tout le reste en noir et gris.
 */
 
@@ -58,7 +58,7 @@ function RailHeader({
 /*
   La carte mène à la fiche produit et n'ajoute pas au panier.
 
-  Le panier de MACHÉ vit encore côté navigateur, avec un instantané du
+  Le panier de MACHE vit encore côté navigateur, avec un instantané du
   prix. Medusa gère les paniers côté serveur : brancher un bouton
   « ajouter » sur l'ancien panier ferait cohabiter deux calculs de total,
   donc deux vérités sur ce que paie le client. La bascule du panier est

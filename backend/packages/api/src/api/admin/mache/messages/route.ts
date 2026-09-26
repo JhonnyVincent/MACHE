@@ -1,7 +1,7 @@
 /*
   ROUTE : la pile de messages, côté administration.
 
-  Elle est triée par ce qui attend MACHÉ, pas par date. Un écran de
+  Elle est triée par ce qui attend MACHE, pas par date. Un écran de
   support qui range par date fait remonter ce qui vient d'arriver, et
   laisse dormir au fond la question posée il y a trois jours à laquelle
   personne n'a répondu.
@@ -38,7 +38,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
       skip: offset,
       take: limit,
       /*
-        Ce qui attend MACHÉ d'abord, puis le plus ancien en premier
+        Ce qui attend MACHE d'abord, puis le plus ancien en premier
         DANS ce groupe : on traite la file d'attente par son début, pas
         par sa fin.
       */

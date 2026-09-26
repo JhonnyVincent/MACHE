@@ -19,7 +19,7 @@ import { model } from "@medusajs/framework/utils";
 
   CE QUE LE GEL FAIT VRAIMENT — ET LA LIMITE À NE PAS MAQUILLER
 
-  MACHÉ n'encaisse pas : l'acheteur règle le vendeur en main propre.
+  MACHE n'encaisse pas : l'acheteur règle le vendeur en main propre.
   Geler n'arrache donc pas à un vendeur de l'argent qu'il a déjà dans
   la poche, et aucun écran ne doit laisser croire le contraire.
 
@@ -27,7 +27,7 @@ import { model } from "@medusajs/framework/utils";
   `payout_state` de passer à « releasable ». Une livraison confirmée
   reste confirmée — la remise a eu lieu, c'est un fait, et le nier
   ferait perdre de l'information — mais son montant reste RETENU au
-  lieu d'être porté comme dû au vendeur. Le jour où MACHÉ versera
+  lieu d'être porté comme dû au vendeur. Le jour où MACHE versera
   vraiment, ce même marqueur est la vanne, déjà fermée.
 
   POURQUOI UN MOTIF EST OBLIGATOIRE

@@ -18,7 +18,7 @@
 
   L'identité juridique de l'exploitant, le droit applicable, les durées
   de conservation et l'adresse d'exercice des droits sont des décisions
-  qui engagent MACHÉ. Elles se prennent, au besoin avec un conseil, et
+  qui engagent MACHE. Elles se prennent, au besoin avec un conseil, et
   ne sont pas écrites ici à sa place. Une politique qui affirmerait des
   durées inventées serait pire qu'une politique incomplète : elle
   donnerait l'apparence d'un engagement qui n'existe pas.
@@ -28,9 +28,9 @@ import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Confidentialité — MACHÉ",
+  title: "Confidentialité — MACHE",
   description:
-    "Quelles données MACHÉ collecte, pourquoi, et ce qui est déposé dans votre navigateur.",
+    "Quelles données MACHE collecte, pourquoi, et ce qui est déposé dans votre navigateur.",
 };
 
 function PrivacyPageEcrit() {
@@ -41,7 +41,7 @@ function PrivacyPageEcrit() {
       </h1>
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-        Ce que MACHÉ demande, pourquoi, et où cela va.
+        Ce que MACHE demande, pourquoi, et où cela va.
       </p>
 
       <div className="mt-8 space-y-7 text-md leading-relaxed text-[var(--mache-muted)]">
@@ -88,7 +88,7 @@ function PrivacyPageEcrit() {
               aucune donnée bancaire
             </strong>
             . Le paiement se fait à la livraison, en main propre : aucun
-            numéro de carte n&apos;est saisi sur MACHÉ, donc aucun
+            numéro de carte n&apos;est saisi sur MACHE, donc aucun
             n&apos;est conservé.
           </p>
         </section>
@@ -119,7 +119,7 @@ function PrivacyPageEcrit() {
 
           <p className="mt-2">
             Cinq cookies, tous nécessaires au fonctionnement du site.
-            MACHÉ ne dépose{" "}
+            MACHE ne dépose{" "}
             <strong className="text-[var(--mache-text)]">
               aucun cookie publicitaire, ni aucun traceur d&apos;audience
             </strong>
@@ -161,7 +161,7 @@ function PrivacyPageEcrit() {
             Les photos que vous voyez sont hébergées par les vendeurs ou
             par leurs prestataires. Les afficher fait connaître votre
             adresse IP à ces hébergeurs, comme pour n&apos;importe quelle
-            image sur le web. MACHÉ ne leur transmet rien d&apos;autre.
+            image sur le web. MACHE ne leur transmet rien d&apos;autre.
           </p>
         </section>
 
@@ -196,7 +196,7 @@ function PrivacyPageEcrit() {
 
           <p className="mt-2 text-base">
             Cette page décrit fidèlement ce que fait le site aujourd&apos;hui.
-            Trois points relèvent d&apos;une décision de MACHÉ et seront
+            Trois points relèvent d&apos;une décision de MACHE et seront
             précisés avant l&apos;ouverture commerciale : l&apos;identité
             juridique de l&apos;exploitant, les durées de conservation des
             données, et le droit applicable en cas de litige.

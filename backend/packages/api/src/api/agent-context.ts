@@ -1,5 +1,5 @@
 /*
-  Répondre à une question : ce client connecté est-il un agent MACHÉ,
+  Répondre à une question : ce client connecté est-il un agent MACHE,
   et lequel ?
 
   D'où vient la réponse
@@ -54,7 +54,7 @@ export type AgentContext = {
   il est renvoyé avec `suspended: true`, pour que les routes lui
   répondent « votre habilitation est suspendue » plutôt que « vous
   n'êtes pas agent ». Les deux phrases n'appellent pas le même geste —
-  la première se règle en appelant MACHÉ, la seconde laisse croire à
+  la première se règle en appelant MACHE, la seconde laisse croire à
   une erreur de compte.
 */
 export async function resolveAgent(

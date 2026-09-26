@@ -70,7 +70,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
 
   const patch: Record<string, unknown> = { id: delivery.id };
 
-  /* Le suivi d'un transporteur extérieur, que MACHÉ affiche sans le piloter. */
+  /* Le suivi d'un transporteur extérieur, que MACHE affiche sans le piloter. */
   if (delivery.method === "carrier") {
     if (body.tracking_number !== undefined) {
       patch.tracking_number = text(body.tracking_number);

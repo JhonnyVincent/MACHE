@@ -1,5 +1,5 @@
 /*
-  PAGE : ce que MACHÉ facture à ses vendeurs.
+  PAGE : ce que MACHE facture à ses vendeurs.
 
   Une page de tarifs est le premier endroit où une plateforme peut
   mentir sans en avoir l'air : une fonctionnalité annoncée au futur se
@@ -26,9 +26,9 @@ import {
 } from "@/lib/tarifs";
 
 export const metadata = {
-  title: "Tarifs vendeurs — MACHÉ",
+  title: "Tarifs vendeurs — MACHE",
   description:
-    "Ce que MACHÉ facture aux vendeurs : commission sur les ventes, abonnement pour les marques officielles, tarif sur devis pour les grossistes.",
+    "Ce que MACHE facture aux vendeurs : commission sur les ventes, abonnement pour les marques officielles, tarif sur devis pour les grossistes.",
 };
 
 export default function TarifsPage() {
@@ -39,7 +39,7 @@ export default function TarifsPage() {
       </h1>
 
       <p className="mt-3 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
-        Ouvrir une boutique sur MACHÉ ne coûte rien d&apos;avance. Vous
+        Ouvrir une boutique sur MACHE ne coûte rien d&apos;avance. Vous
         payez une commission quand vous vendez. Seules les marques
         officielles ont un abonnement, et les grossistes ont un tarif
         arrêté avec eux.
@@ -54,7 +54,7 @@ export default function TarifsPage() {
       <div className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
         <p className="font-semibold">Aucun paiement n&apos;est prélevé aujourd&apos;hui.</p>
         <p className="mt-1">
-          MACHÉ n&apos;a pas encore de prestataire de paiement raccordé :
+          MACHE n&apos;a pas encore de prestataire de paiement raccordé :
           ni les commissions, ni les abonnements ne sont encaissés
           automatiquement. Ces tarifs décrivent ce qui s&apos;appliquera,
           et vous serez prévenu avant tout premier prélèvement.
@@ -137,7 +137,7 @@ export default function TarifsPage() {
 
         {COMMISSION_RATE === null ? (
           /*
-            Un taux inventé sur une page publique engage MACHÉ auprès de
+            Un taux inventé sur une page publique engage MACHE auprès de
             chaque vendeur qui l'a lu. Dire qu'il n'est pas arrêté est
             moins vendeur, et c'est la seule chose vraie.
           */
@@ -161,7 +161,7 @@ export default function TarifsPage() {
 
             {/*
               LE POINT QUI CHANGE TOUT, et qu'une grille de commission
-              laisse habituellement deviner. MACHÉ n'encaisse pas :
+              laisse habituellement deviner. MACHE n'encaisse pas :
               l'argent va directement du client au vendeur. La
               commission n'est donc pas retenue sur un versement — elle
               est calculée, enregistrée, et facturée. Écrit ici parce
@@ -169,7 +169,7 @@ export default function TarifsPage() {
               première facture aurait raison de se sentir trompé.
             */}
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
-              Elle n&apos;est pas retenue sur votre argent : MACHÉ
+              Elle n&apos;est pas retenue sur votre argent : MACHE
               n&apos;encaisse rien, le client vous paie directement à la
               livraison. La commission est calculée et enregistrée sur
               chaque commande, puis facturée. Vous la voyez commande par
@@ -199,14 +199,14 @@ export default function TarifsPage() {
 
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
           Le montant dû est celui en euros. La valeur en gourdes est
-          indicative, calculée à un taux retenu par MACHÉ et mis à jour
+          indicative, calculée à un taux retenu par MACHE et mis à jour
           le {EUR_TO_HTG_DATE} — ce n&apos;est pas le taux du marché du
           jour.
         </p>
       </section>
 
       {/*
-        Ce qui n'est pas arrêté, nommé. Les pages légales de MACHÉ
+        Ce qui n'est pas arrêté, nommé. Les pages légales de MACHE
         portent le même bloc : une décision en suspens qu'on ne nomme
         pas devient une décision qu'on croit prise.
       */}

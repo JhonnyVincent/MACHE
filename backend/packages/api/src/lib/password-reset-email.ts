@@ -5,7 +5,7 @@
   décide ce qu'on envoie, et c'est ici que se logent les deux fautes
   graves possibles.
 
-  1. UN LIEN QUI POINTE AILLEURS QUE CHEZ MACHÉ
+  1. UN LIEN QUI POINTE AILLEURS QUE CHEZ MACHE
 
   L'adresse du site vient de la configuration (STOREFRONT_URL), jamais
   de la requête. Un en-tête de requête se falsifie : construit à partir
@@ -35,7 +35,7 @@ export function isResetActor(value: unknown): value is ResetActor {
 const SPACE: Record<ResetActor, string> = {
   customer: "votre compte client",
   member: "votre espace vendeur",
-  user: "l'administration de MACHÉ",
+  user: "l'administration de MACHE",
 };
 
 export function storefrontBase(): string | null {
@@ -70,7 +70,7 @@ export function resetEmail(actor: ResetActor, link: string) {
   const safe = escapeHtml(link);
 
   return {
-    subject: "Choisir un nouveau mot de passe — MACHÉ",
+    subject: "Choisir un nouveau mot de passe — MACHE",
     text: [
       "Bonjour,",
       "",
@@ -83,7 +83,7 @@ export function resetEmail(actor: ResetActor, link: string) {
       "",
       "Si vous n'avez rien demandé, ignorez ce message : votre mot de passe actuel reste valable, et personne n'a accès à votre compte.",
       "",
-      "— MACHÉ",
+      "— MACHE",
     ].join("\n"),
     html: `<!doctype html>
 <html lang="fr"><body style="font-family:Arial,sans-serif;color:#0f1111;line-height:1.5;max-width:520px">
@@ -93,7 +93,7 @@ export function resetEmail(actor: ResetActor, link: string) {
 <p style="font-size:13px;color:#565959">Le bouton ne s'affiche pas ? Copiez ce lien dans votre navigateur :<br><span style="word-break:break-all">${safe}</span></p>
 <p style="font-size:13px;color:#565959">Ce lien est valable 15 minutes et ne sert qu'une fois.</p>
 <p style="font-size:13px;color:#565959">Si vous n'avez rien demandé, ignorez ce message : votre mot de passe actuel reste valable, et personne n'a accès à votre compte.</p>
-<p>— MACHÉ</p>
+<p>— MACHE</p>
 </body></html>`,
   };
 }

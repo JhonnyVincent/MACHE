@@ -1,7 +1,7 @@
 /*
   PAGE : connexion client
 
-  Distincte de /login, qui sert au personnel MACHÉ — administration,
+  Distincte de /login, qui sert au personnel MACHE — administration,
   agents, partenaires — sur les anciens rôles. Un client achète ; il n'a
   aucune raison de passer par la même porte qu'un administrateur, ni de
   voir un formulaire qui parle de rôles.
@@ -97,14 +97,14 @@ export default async function CustomerLoginPage({
       </p>
 
       <p className="mt-6 border-t border-[var(--mache-line)] pt-4 text-sm leading-relaxed text-[var(--mache-muted)]">
-        Vous vendez sur MACHÉ ?{" "}
+        Vous vendez sur MACHE ?{" "}
         <Link
           href="/dashboard/seller/connexion"
           className="font-semibold hover:underline"
         >
           Connexion vendeur
         </Link>
-        . Vous faites partie de l&apos;équipe MACHÉ ?{" "}
+        . Vous faites partie de l&apos;équipe MACHE ?{" "}
         <Link href="/dashboard/admin/connexion" className="font-semibold hover:underline">
           Connexion personnel
         </Link>

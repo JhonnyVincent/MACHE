@@ -1,5 +1,5 @@
 /*
-  HOOK : dire au calcul de commission ce que MACHÉ finance.
+  HOOK : dire au calcul de commission ce que MACHE finance.
 
   Pourquoi un hook
 
@@ -15,7 +15,7 @@
 
   CE QUE CE HOOK CALCULE
 
-  Pour chaque article : la part de sa remise que MACHÉ a décidé de
+  Pour chaque article : la part de sa remise que MACHE a décidé de
   porter. Elle vient de `promotion_cost`, un modèle que Mercur possède
   déjà — `cost_bearer` valant `store`, `marketplace` ou `shared`, avec
   un pourcentage pour ce dernier.
@@ -24,11 +24,11 @@
   être déclarée « à la charge de la marketplace », le vendeur la payait
   quand même. Ce hook est le chaînon qui manquait.
 
-  PAR DÉFAUT, MACHÉ NE FINANCE RIEN
+  PAR DÉFAUT, MACHE NE FINANCE RIEN
 
   Une promotion sans coût déclaré est traitée comme étant à la charge
   du vendeur. C'est le comportement actuel, et c'est le seul défaut
-  prudent : supposer l'inverse ferait payer MACHÉ pour des promotions
+  prudent : supposer l'inverse ferait payer MACHE pour des promotions
   que les vendeurs créent eux-mêmes, sans que personne ne l'ait décidé.
 */
 
@@ -101,9 +101,9 @@ refreshOrderCommissionLinesWorkflow.hooks.setCommissionContext(
     if (promotionIds.length > 0) {
       /*
         Une lecture qui échoue ne doit pas bloquer une commande. On
-        retombe alors sur « rien n'est financé par MACHÉ » — le
+        retombe alors sur « rien n'est financé par MACHE » — le
         comportement actuel, prudent : le vendeur n'est pas lésé, et
-        MACHÉ ne débourse pas sur la foi d'une donnée qu'on n'a pas pu
+        MACHE ne débourse pas sur la foi d'une donnée qu'on n'a pas pu
         lire.
       */
       try {
@@ -123,7 +123,7 @@ refreshOrderCommissionLinesWorkflow.hooks.setCommissionContext(
       }
     }
 
-    /* Ce que MACHÉ porte, article par article. */
+    /* Ce que MACHE porte, article par article. */
     const fundedByItem = new Map<string, ItemFunding>();
 
     for (const order of rows) {

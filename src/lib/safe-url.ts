@@ -1,7 +1,7 @@
 /*
   Assainissement des adresses venant de l'extérieur.
 
-  Trois endroits de MACHÉ acceptent une adresse fournie par quelqu'un
+  Trois endroits de MACHE acceptent une adresse fournie par quelqu'un
   d'autre que le code : le paramètre `next` d'une connexion, le
   `return_to` d'un ajout au panier, et les liens qu'un vendeur pose dans
   sa vitrine. Les trois étaient traités à la légère.
@@ -13,7 +13,7 @@
   le navigateur résout en « https://evil.example ». Un lien de connexion
   contenant ?next=//evil.example renvoyait donc l'utilisateur sur un site
   tiers juste après qu'il a saisi son mot de passe — le décor idéal d'un
-  hameçonnage, puisque la personne vient de faire confiance à MACHÉ.
+  hameçonnage, puisque la personne vient de faire confiance à MACHE.
 
   Le piège de `javascript:`
 

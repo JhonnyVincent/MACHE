@@ -1,5 +1,5 @@
 /*
-  PAGE : une conversation, côté MACHÉ.
+  PAGE : une conversation, côté MACHE.
 
   Le fil entier, notes internes comprises : c'est le poste de travail de
   celui qui répond, et lui cacher ses propres notes n'aurait aucun sens.
@@ -135,7 +135,7 @@ export default async function AdminThreadPage({
               <dd>
                 {/*
                   Cliquable : sans e-mail, c'est le seul canal par lequel
-                  MACHÉ peut joindre quelqu'un tout de suite.
+                  MACHE peut joindre quelqu'un tout de suite.
                 */}
                 <a
                   href={`tel:${thread.fromPhone}`}
@@ -158,7 +158,7 @@ export default async function AdminThreadPage({
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <Badge tone={TONES[thread.status]}>{ADMIN_THREAD_STATUS[thread.status]}</Badge>
-          {thread.awaitingMache && <Badge tone="warning">Attend MACHÉ</Badge>}
+          {thread.awaitingMache && <Badge tone="warning">Attend MACHE</Badge>}
           {thread.awaitingSender && <Badge tone="info">N&apos;a pas encore lu notre réponse</Badge>}
         </div>
       </Panel>
@@ -184,7 +184,7 @@ export default async function AdminThreadPage({
                   {message.internal
                     ? `Note interne — ${message.authorName}`
                     : fromMache
-                      ? "MACHÉ"
+                      ? "MACHE"
                       : message.authorName}
                   {message.createdAt ? ` · ${when(message.createdAt)}` : ""}
                 </p>

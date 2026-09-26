@@ -49,7 +49,7 @@ export default function SellParticulierPage() {
             </div>
 
             <h1 className="mt-6 max-w-4xl text-hero font-black tracking-tightest">
-              Commencez à vendre simplement sur Maché.
+              Commencez à vendre simplement sur Mache.
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
@@ -73,7 +73,7 @@ export default function SellParticulierPage() {
               <div className="flex items-center gap-3">
                 <img
                   src="/images/logo-haiti-mache-hibiscus.png"
-                  alt="Haiti Maché"
+                  alt="Haiti Mache"
                   className="h-14 w-14 rounded-2xl object-contain"
                 />
                 <div>
@@ -181,7 +181,7 @@ export default function SellParticulierPage() {
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <p className="text-sm font-black uppercase text-white/70">
-                Petit vendeur Maché
+                Petit vendeur Mache
               </p>
 
               <h2 className="mt-3 text-4xl font-black">

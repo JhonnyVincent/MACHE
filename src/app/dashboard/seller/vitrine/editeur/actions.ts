@@ -52,7 +52,7 @@ export async function saveLayoutAction(
   if (ignored > 0) {
     return {
       ok: true,
-      message: `Vitrine enregistrée. ${ignored} bloc${ignored > 1 ? "s ont" : " a"} été écarté${ignored > 1 ? "s" : ""} : type inconnu de MACHÉ.`,
+      message: `Vitrine enregistrée. ${ignored} bloc${ignored > 1 ? "s ont" : " a"} été écarté${ignored > 1 ? "s" : ""} : type inconnu de MACHE.`,
     };
   }
 

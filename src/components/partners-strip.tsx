@@ -5,7 +5,7 @@
   Deux sortes de blocs, et on ne les confond pas :
 
   1. LES PARTENAIRES SIGNÉS (src/lib/partners.ts) : leur nom, ce qu'ils
-     font, leur adresse. Pas de logos — MACHÉ n'a l'accord écrit de
+     font, leur adresse. Pas de logos — MACHE n'a l'accord écrit de
      personne pour en afficher.
 
   2. LES RÔLES OUVERTS : la livraison et les points relais. Ce ne sont
@@ -14,7 +14,7 @@
      ferait croire à un réseau de livraison qui n'existe pas encore.
      Ils sont donc présentés pour ce qu'ils sont : des places à prendre,
      avec « Devenir partenaire ». Les points relais sont d'ailleurs déjà
-     gérés par MACHÉ (dépôt du colis, remise contre le code de
+     gérés par MACHE (dépôt du colis, remise contre le code de
      l'acheteur) : il ne manque que les commerces pour les tenir.
 
   Aucun partenaire signé : pas de section. Une section « Nos
@@ -45,7 +45,7 @@ const OPEN_ROLES = [
     icon: "📍",
     title: "Points relais",
     text: "Des commerces de quartier qui gardent les colis jusqu'à ce que l'acheteur vienne les chercher.",
-    /* Vert léger, nuancé de blanc, voulu par MACHÉ pour les points relais. */
+    /* Vert léger, nuancé de blanc, voulu par MACHE pour les points relais. */
     tone: "border-[#bbf7d0] bg-gradient-to-br from-[#f0fdf4] via-white to-[#dcfce7]",
   },
 ];

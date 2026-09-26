@@ -9,19 +9,19 @@ import { model } from "@medusajs/framework/utils";
     en Haïti pour une vente de quartier, et c'est celui qui a le plus
     besoin d'une preuve : personne d'autre que les deux intéressés
     n'était là.
-  - `agent` : un agent MACHÉ prend le colis et le porte. MACHÉ répond
-    de cette personne, puisque MACHÉ l'a habilitée.
+  - `agent` : un agent MACHE prend le colis et le porte. MACHE répond
+    de cette personne, puisque MACHE l'a habilitée.
   - `relay` : le colis attend dans un point de retrait, et le client
     vient le chercher. Un point de retrait est un LIEU, pas une
     personne — une même personne peut tenir un point, et un point peut
     changer de tenant sans que les colis déposés changent d'adresse.
     Les confondre rendrait impossible de dire où est un colis quand
     l'agent est absent.
-  - `carrier` : un transporteur extérieur. MACHÉ ne le pilote pas, ne
+  - `carrier` : un transporteur extérieur. MACHE ne le pilote pas, ne
     répond pas de lui, et ne prétend pas savoir où en est le colis :
     on garde le numéro de suivi et le lien du transporteur, pour que le
-    client suive chez lui. Afficher un statut MACHÉ sur un colis que
-    MACHÉ ne transporte pas serait inventer une information.
+    client suive chez lui. Afficher un statut MACHE sur un colis que
+    MACHE ne transporte pas serait inventer une information.
 
   Le code de livraison
 
@@ -43,7 +43,7 @@ import { model } from "@medusajs/framework/utils";
   `payout_state` — pourquoi il est ici
 
   Parce que la preuve de livraison et l'autorisation de payer sont la
-  même décision. MACHÉ n'encaisse pas encore ; le jour où il encaissera,
+  même décision. MACHE n'encaisse pas encore ; le jour où il encaissera,
   ce champ dira ce qui peut être reversé. En attendant il enregistre ce
   qui est dû, ce qui est déjà une information utile au vendeur.
 */
@@ -62,7 +62,7 @@ const Delivery = model.define("mache_delivery", {
 
   /*
     L'agent chargé du colis, quand il y en a un. C'est un identifiant
-    de CLIENT : un agent MACHÉ est un client à qui s'ajoute une
+    de CLIENT : un agent MACHE est un client à qui s'ajoute une
     fonction, il n'a pas de compte séparé.
   */
   agent_customer_id: model.text().index().nullable(),
@@ -70,7 +70,7 @@ const Delivery = model.define("mache_delivery", {
   /* Le point de retrait où le colis attend, pour la méthode `relay`. */
   relay_point_id: model.text().index().nullable(),
 
-  /* Le transporteur extérieur. MACHÉ n'en suit pas l'acheminement. */
+  /* Le transporteur extérieur. MACHE n'en suit pas l'acheminement. */
   carrier_name: model.text().nullable(),
   tracking_number: model.text().nullable(),
   tracking_url: model.text().nullable(),
@@ -105,7 +105,7 @@ const Delivery = model.define("mache_delivery", {
     Qui a constaté la remise.
 
     `customer` n'est là que pour la méthode `carrier` : un transporteur
-    extérieur ne connaît pas MACHÉ et ne saisira jamais notre code. Le
+    extérieur ne connaît pas MACHE et ne saisira jamais notre code. Le
     seul constat possible est alors celui de l'acheteur, et il vaut ce
     qu'il vaut — c'est pour cela qu'on garde qui a confirmé, et pas
     seulement qu'une confirmation a eu lieu. Une preuve déclarative et

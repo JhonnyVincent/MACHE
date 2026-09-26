@@ -3,7 +3,7 @@
 
   Le panier vit dans Medusa, pas dans le navigateur. Ce n'est pas un
   détail d'implémentation : c'est ce qui garantit que le total affiché est
-  celui qui sera facturé. L'ancien panier de MACHÉ gardait un instantané
+  celui qui sera facturé. L'ancien panier de MACHE gardait un instantané
   du prix pris au moment de l'ajout ; une promotion terminée entre-temps
   n'était pas répercutée, et le client voyait un montant que la commande
   n'aurait pas honoré.
@@ -49,7 +49,7 @@ export type CartLine = {
   /*
     À quelle boutique appartient cette ligne.
 
-    Un panier MACHÉ mélange les vendeurs : c'est le principe d'une
+    Un panier MACHE mélange les vendeurs : c'est le principe d'une
     marketplace. Sans cette information, on ne peut ni regrouper les
     articles par boutique, ni vérifier qu'une commande atteint le
     minimum que cette boutique exige.

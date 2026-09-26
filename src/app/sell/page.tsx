@@ -34,7 +34,7 @@ const sellerProfiles = [
 const modes = [
   {
     title: "Marketplace",
-    text: "Vendez vos produits directement sur Maché.",
+    text: "Vendez vos produits directement sur Mache.",
   },
   {
     title: "SaaS vendeur",
@@ -93,7 +93,7 @@ export default function SellPage() {
             </div>
 
             <h1 className="mt-6 max-w-4xl text-hero font-black tracking-tightest">
-              Vendez sur Maché. Gérez votre boutique. Développez votre business.
+              Vendez sur Mache. Gérez votre boutique. Développez votre business.
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
@@ -163,11 +163,11 @@ export default function SellPage() {
 
               <div className="-mt-10 flex items-end gap-4 px-4">
                 {/*
-                  Cette vignette portait le logo de MACHÉ.
+                  Cette vignette portait le logo de MACHE.
 
                   Deux problèmes, et le second se voit à l'usage. Prêter
-                  l'identité de MACHÉ à une boutique fictive laisse
-                  croire que MACHÉ tient boutique. Et surtout : un
+                  l'identité de MACHE à une boutique fictive laisse
+                  croire que MACHE tient boutique. Et surtout : un
                   visiteur qui voyait le logo au milieu de la page le
                   prenait pour l'en-tête du site, cliquait dessus pour
                   revenir à l'accueil — et rien ne se passait, puisque
@@ -286,7 +286,7 @@ export default function SellPage() {
             </h2>
 
             <p className="mt-4 leading-8 text-neutral-500">
-              Certains vendeurs veulent vendre sur Maché. D’autres veulent seulement gérer leur
+              Certains vendeurs veulent vendre sur Mache. D’autres veulent seulement gérer leur
               stock et leur activité. Les plus avancés feront les deux.
             </p>
           </div>
@@ -344,7 +344,7 @@ export default function SellPage() {
           <div className="overflow-hidden rounded-[2rem] border bg-neutral-100">
             <img
               src="/images/carte-haiti-mache.png"
-              alt="Dashboard vendeur Maché"
+              alt="Dashboard vendeur Mache"
               className="h-[520px] w-full object-cover"
             />
           </div>
@@ -420,7 +420,7 @@ export default function SellPage() {
           <div className="card p-6">
             <img
               src="/images/carte-haiti-mache.png"
-              alt="Carte Haiti Maché"
+              alt="Carte Haiti Mache"
               className="mx-auto max-h-[380px] object-contain"
             />
           </div>
@@ -435,7 +435,7 @@ export default function SellPage() {
             </h2>
 
             <p className="mt-4 leading-8 text-neutral-500">
-              L’équipe Maché peut accompagner les vendeurs, boutiques, fournisseurs et marques
+              L’équipe Mache peut accompagner les vendeurs, boutiques, fournisseurs et marques
               officielles pour choisir le bon profil et les bons modules.
             </p>
 
@@ -457,11 +457,11 @@ export default function SellPage() {
           <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
               <p className="text-sm font-black uppercase text-white/70">
-                Devenir vendeur Maché
+                Devenir vendeur Mache
               </p>
 
               <h2 className="mt-3 text-4xl font-black">
-                Commencez petit. Grandissez avec Maché.
+                Commencez petit. Grandissez avec Mache.
               </h2>
 
               <p className="mt-5 max-w-2xl leading-8 text-white/75">

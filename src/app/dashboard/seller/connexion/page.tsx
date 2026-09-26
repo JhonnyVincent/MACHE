@@ -55,7 +55,7 @@ export default async function VendorLoginPage({
           href="/contact"
           className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
         >
-          Contacter MACHÉ
+          Contacter MACHE
         </Link>
       </main>
     );

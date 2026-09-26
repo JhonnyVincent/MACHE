@@ -4,7 +4,7 @@
   Le problème qu'il règle
 
   Le catalogue de démonstration de Mercur est chiffré en euros et en
-  dollars. MACHÉ vend en gourdes, et Medusa refuse — à juste titre — de
+  dollars. MACHE vend en gourdes, et Medusa refuse — à juste titre — de
   calculer un prix dans une devise pour laquelle aucun prix n'existe.
 
   Résultat, avec SEED_DEMO et la région Haïti : douze produits affichés,

@@ -21,8 +21,8 @@ import { Link } from "next-view-transitions";
 import { FAQ_SECTIONS } from "@/lib/faq";
 
 export const metadata = {
-  title: "Questions fréquentes — MACHÉ",
-  description: "Comment acheter, payer, vendre et se faire livrer sur MACHÉ.",
+  title: "Questions fréquentes — MACHE",
+  description: "Comment acheter, payer, vendre et se faire livrer sur MACHE.",
 };
 
 export default function FaqPage() {
@@ -33,7 +33,7 @@ export default function FaqPage() {
       </h1>
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-        Ce que MACHÉ fait aujourd&apos;hui. Quand la réponse est « pas
+        Ce que MACHE fait aujourd&apos;hui. Quand la réponse est « pas
         encore », c&apos;est écrit ainsi.
       </p>
 

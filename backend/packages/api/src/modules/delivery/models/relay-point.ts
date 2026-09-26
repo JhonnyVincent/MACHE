@@ -7,7 +7,7 @@ import { model } from "@medusajs/framework/utils";
 
   C'est la distinction qui justifie ce modèle séparé. Un point de
   retrait est une adresse où un colis attend : une boutique, une
-  pharmacie, un dépôt. La personne qui le tient — un agent MACHÉ —
+  pharmacie, un dépôt. La personne qui le tient — un agent MACHE —
   peut être absente, remplacée, ou tenir deux points. Si le point
   n'était qu'un attribut de l'agent, un colis deviendrait introuvable
   le jour où l'agent change, et personne ne saurait dire où il est.
@@ -19,7 +19,7 @@ import { model } from "@medusajs/framework/utils";
   Ce que la fiche publie, et ce qu'elle ne publie pas
 
   L'adresse et les horaires sont publics : c'est là qu'un client doit
-  se rendre. Le téléphone ne l'est que si MACHÉ l'a renseigné exprès
+  se rendre. Le téléphone ne l'est que si MACHE l'a renseigné exprès
   dans `phone_public` — le numéro personnel du tenant n'a rien à faire
   sur une page publique.
 

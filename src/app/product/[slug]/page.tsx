@@ -69,7 +69,7 @@ export default async function ProductPage({
 
   /*
     Les avis du produit. L'API publique de Mercur n'en expose aucun ;
-    ils viennent de la route `/store/ratings` du backend MACHÉ, et seuls
+    ils viennent de la route `/store/ratings` du backend MACHE, et seuls
     les avis modérés et publiés en sortent.
   */
   /*
@@ -389,7 +389,7 @@ export default async function ProductPage({
                         </Link>
 
                         {/*
-                          La vérification de MACHÉ, quand elle a été
+                          La vérification de MACHE, quand elle a été
                           accordée. C'est ici qu'elle sert le plus :
                           l'acheteur choisit entre plusieurs boutiques
                           pour le même article, et c'est le seul

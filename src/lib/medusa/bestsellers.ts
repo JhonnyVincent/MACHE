@@ -10,7 +10,7 @@
   Le backend compte de vraies commandes, sur 90 jours, hors annulations,
   et REFUSE de classer tant qu'il n'y en a pas assez (`ranked: false`).
   Ici, ce refus se traduit par une liste vide, donc par une carte qui ne
-  s'affiche pas. MACHÉ démarre : ce rayon apparaîtra tout seul le jour
+  s'affiche pas. MACHE démarre : ce rayon apparaîtra tout seul le jour
   où il aura quelque chose à dire.
 
   Un échec de lecture donne le même résultat qu'un refus : rien. Une

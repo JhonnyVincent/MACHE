@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils";
 
 /*
-  MODÈLE : une conversation entre quelqu'un et MACHÉ.
+  MODÈLE : une conversation entre quelqu'un et MACHE.
 
   Pourquoi ce module existe
 
@@ -10,13 +10,13 @@ import { model } from "@medusajs/framework/utils";
   inquiet, un vendeur bloqué, quelqu'un signalant un produit
   inadmissible : tous écrivaient dans le vide.
 
-  MACHÉ n'a pas de fournisseur d'e-mail, et n'en aura pas demain. La
+  MACHE n'a pas de fournisseur d'e-mail, et n'en aura pas demain. La
   réponse n'est donc pas d'attendre un domaine : c'est que la
   conversation vive DANS le site.
 
   LA LIMITE QU'IL FAUT REGARDER EN FACE
 
-  Sans e-mail, MACHÉ ne peut prévenir personne qu'une réponse est
+  Sans e-mail, MACHE ne peut prévenir personne qu'une réponse est
   arrivée. Trois cas, trois sorts différents :
 
   - un CLIENT ou un VENDEUR connecté retrouve sa conversation dans son
@@ -62,7 +62,7 @@ const Thread = model.define("mache_thread", {
 
   /*
     Deux compteurs plutôt qu'un « lu / non lu » unique : une
-    conversation peut attendre MACHÉ et le demandeur en même temps —
+    conversation peut attendre MACHE et le demandeur en même temps —
     l'un a répondu, l'autre n'a pas encore relu. Un drapeau unique
     devrait choisir, et se tromperait pour l'un des deux.
   */

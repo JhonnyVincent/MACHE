@@ -13,10 +13,10 @@
 
   Parce que le panneau de Mercur ne le propose pas. Il propose de
   SUPPRIMER un client — ce qui emporterait ses commandes, et avec elles
-  les commissions que MACHÉ doit encore facturer.
+  les commissions que MACHE doit encore facturer.
 
   Le blocage empêche ce compte d'agir : commander en étant connecté,
-  déposer un avis, écrire à MACHÉ, se servir de l'espace agent. Le
+  déposer un avis, écrire à MACHE, se servir de l'espace agent. Le
   backend refuse toute écriture faite avec sa session.
 
   Il n'empêche PAS la personne de revenir : on peut acheter sans
@@ -50,7 +50,7 @@ const WHERE = [
     text: "Chaque boutique a ses membres et ses droits. Dans le panneau, section Boutiques.",
   },
   {
-    title: "Personnel MACHÉ",
+    title: "Personnel MACHE",
     text: "Les comptes qui ouvrent cette page. Ils se créent côté serveur, avec la commande `medusa user`.",
   },
 ];
@@ -133,7 +133,7 @@ export default async function AdminUsersPage({
       >
         <Notice tone="warning" title="Ce qu'un blocage ne fait pas">
           Il empêche ce COMPTE d&apos;agir : commander en étant connecté,
-          déposer un avis, écrire à MACHÉ, se servir de l&apos;espace agent.
+          déposer un avis, écrire à MACHE, se servir de l&apos;espace agent.
           Il n&apos;empêche pas la PERSONNE de revenir — on peut acheter sans
           compte, et rien n&apos;interdit d&apos;en créer un autre. Un compte
           bloqué peut encore lire son historique, ce qui compte pour régler un
@@ -210,7 +210,7 @@ export default async function AdminUsersPage({
       </Panel>
 
       <div className="rounded-[8px] border border-[#d5d9d9] bg-white p-4">
-        <p className="text-base font-semibold text-[#0f1111]">Agents MACHÉ</p>
+        <p className="text-base font-semibold text-[#0f1111]">Agents MACHE</p>
         <p className="mt-1 text-base leading-relaxed text-[#565959]">
           Un agent est un CLIENT à qui s&apos;ajoute une fonction : tenir un
           point de retrait, livrer, démarcher. Son habilitation — et sa

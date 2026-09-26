@@ -9,7 +9,7 @@
 
   Accepter, ici, n'est pas payer
 
-  MACHÉ n'encaisse rien : le paiement se fait en main propre. Accepter un
+  MACHE n'encaisse rien : le paiement se fait en main propre. Accepter un
   devis dit au vendeur que l'acheteur veut la commande au prix proposé.
   Rien de plus, et la page le dit dans ces termes plutôt que de laisser
   croire à un achat conclu.

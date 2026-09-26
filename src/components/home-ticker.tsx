@@ -34,7 +34,7 @@ const items = [
   },
   { badge: "HAÏTI", text: "Les dix départements et ce qu'on y produit" },
   { badge: "GROS", text: "Achat en quantité : demande de devis au vendeur" },
-  { badge: "AGENTS", text: "Le code d'un agent MACHÉ se vérifie en ligne" },
+  { badge: "AGENTS", text: "Le code d'un agent MACHE se vérifie en ligne" },
 ];
 
 export function HomeTicker() {

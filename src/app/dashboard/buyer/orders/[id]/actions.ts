@@ -7,7 +7,7 @@
   formulaire : Mercur les vérifie à partir du jeton de session. Un client
   ne peut donc pas noter la commande d'un autre en modifiant sa requête.
 
-  L'avis part « en attente ». Il n'est visible de personne tant que MACHÉ
+  L'avis part « en attente ». Il n'est visible de personne tant que MACHE
   ne l'a pas publié, et l'écran le dit — un avis qui disparaît sans
   explication passe pour un avis perdu.
 */
@@ -38,7 +38,7 @@ export async function submitReviewAction(formData: FormData) {
 
   redirect(
     `${back}?success=${encodeURIComponent(
-      "Merci. Votre avis sera publié après vérification par MACHÉ."
+      "Merci. Votre avis sera publié après vérification par MACHE."
     )}`
   );
 }

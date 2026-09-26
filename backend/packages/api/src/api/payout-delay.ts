@@ -27,7 +27,7 @@
 
   Ce que cela coûte, et il faut le dire franchement : un acheteur
   floué qui se réveille au seizième jour se plaint après que l'argent
-  est parti. MACHÉ devra alors le récupérer auprès du vendeur, ou le
+  est parti. MACHE devra alors le récupérer auprès du vendeur, ou le
   perdre. C'est le prix de ne pas prendre en otage l'argent de tous les
   vendeurs honnêtes pour le silence de la plupart des acheteurs.
 
@@ -37,8 +37,8 @@
   constatée par le code, le délai ne couvre qu'une contestation.
 
   Vingt-cinq jours quand un transporteur extérieur s'en charge —
-  typiquement Haïti vers l'étranger. Là, aucun code MACHÉ n'est saisi :
-  le transporteur ne connaît pas MACHÉ. Le seul constat possible est
+  typiquement Haïti vers l'étranger. Là, aucun code MACHE n'est saisi :
+  le transporteur ne connaît pas MACHE. Le seul constat possible est
   celui de l'acheteur, le colis met des semaines, et le compte à
   rebours part de l'expédition et non d'une remise que personne
   n'observe. Un délai court paierait le vendeur avant que le colis
@@ -120,7 +120,7 @@ export function payoutStateFor(
   const due = at(context.payoutDueAt);
 
   /*
-    Un transporteur extérieur ne saisit pas de code MACHÉ. Le constat
+    Un transporteur extérieur ne saisit pas de code MACHE. Le constat
     de l'acheteur est alors la SEULE preuve qui existe : l'exiger en
     double reviendrait à ne jamais payer ces vendeurs-là.
   */

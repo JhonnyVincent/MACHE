@@ -9,14 +9,14 @@
 
   CE QUE LE GEL FAIT, ET CE QU'IL NE FAIT PAS
 
-  MACHÉ n'encaisse pas : l'acheteur règle le vendeur en main propre.
+  MACHE n'encaisse pas : l'acheteur règle le vendeur en main propre.
   Geler ne reprend donc rien à un vendeur qui a déjà l'argent, et aucun
   écran ne doit le laisser croire.
 
   Ce qui est réel aujourd'hui : une livraison confirmée reste
   confirmée — la remise a eu lieu, c'est un fait — mais son
   `payout_state` reste « held » au lieu de passer à « releasable ». La
-  somme n'est pas portée comme due au vendeur. Le jour où MACHÉ versera
+  somme n'est pas portée comme due au vendeur. Le jour où MACHE versera
   vraiment, c'est la même vanne, déjà fermée.
 
   POURQUOI LE GEL N'EMPÊCHE PAS DE CONFIRMER LA LIVRAISON

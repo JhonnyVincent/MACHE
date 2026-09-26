@@ -350,7 +350,7 @@ export default async function AdminContractPage({
                             DocuSign, ou sur papier : le nom du
                             destinataire y est déjà, et l'empreinte
                             imprimée rattache le document signé au texte
-                            que MACHÉ détient.
+                            que MACHE détient.
                           */}
                           <Button
                             href={`/dashboard/admin/contrats/${contract.id}/document?seller=${encodeURIComponent(item.sellerId)}`}

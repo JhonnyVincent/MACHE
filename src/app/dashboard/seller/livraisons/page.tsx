@@ -27,7 +27,7 @@
   proposées diffèrent donc par méthode — une liste unique laisserait
   marquer « prêt au retrait » une livraison faite à domicile.
 
-  Le transporteur externe est à part : MACHÉ ne le contrôle pas, et la
+  Le transporteur externe est à part : MACHE ne le contrôle pas, et la
   remise n'y est pas prouvée par code. L'écran le dit plutôt que de
   laisser croire à une garantie qui n'existe pas.
 
@@ -142,7 +142,7 @@ function Delivery({ delivery }: { delivery: VendorDelivery }) {
       {delivery.method === "carrier" && delivery.status !== "delivered" && (
         <div className="mt-3">
           <Notice tone="warning" title="Remise non prouvée par code">
-            Ce colis est confié à un transporteur que MACHÉ ne contrôle pas. Le
+            Ce colis est confié à un transporteur que MACHE ne contrôle pas. Le
             suivi vient de lui, et la remise n&apos;est pas prouvée par un code
             — le versement suit donc vos accords habituels, pas ce dispositif.
           </Notice>
@@ -252,7 +252,7 @@ export default async function SellerDeliveriesPage({
         <Notice tone="warning" title="Transmettez ce lien à l'acheteur — il ne sera plus affiché">
           <p>
             C&apos;est par là qu&apos;un acheteur sans compte suit son colis et
-            lit son code de remise. MACHÉ n&apos;envoie pas d&apos;e-mail :
+            lit son code de remise. MACHE n&apos;envoie pas d&apos;e-mail :
             sans ce lien, il n&apos;a aucun moyen d&apos;y accéder, et vous
             n&apos;aurez aucun code à saisir.
           </p>
@@ -280,7 +280,7 @@ export default async function SellerDeliveriesPage({
             >
               <Select id="method" name="method" required defaultValue="seller">
                 <option value="seller">Je le livre moi-même</option>
-                <option value="agent">Je le confie à un agent MACHÉ</option>
+                <option value="agent">Je le confie à un agent MACHE</option>
                 <option value="relay">Je le dépose en point de retrait</option>
                 <option value="carrier">Je le confie à un transporteur</option>
               </Select>

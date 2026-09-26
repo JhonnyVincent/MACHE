@@ -7,7 +7,7 @@
 
   La confirmation est identique qu'un compte existe ou non. C'est
   voulu : dire « aucun compte pour cette adresse » apprendrait à
-  n'importe qui qui est inscrit chez MACHÉ.
+  n'importe qui qui est inscrit chez MACHE.
 */
 
 import { Link } from "next-view-transitions";
@@ -18,7 +18,7 @@ import { requestResetAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Mot de passe oublié · MACHÉ",
+  title: "Mot de passe oublié · MACHE",
   robots: { index: false },
 };
 

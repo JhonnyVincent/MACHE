@@ -11,7 +11,7 @@
   Pourquoi une application d'authentification et pas un code par SMS ou
   par e-mail
 
-  D'abord parce que MACHÉ n'a ni fournisseur d'e-mail ni passerelle SMS :
+  D'abord parce que MACHE n'a ni fournisseur d'e-mail ni passerelle SMS :
   ce serait impossible aujourd'hui. Mais c'est aussi le meilleur des
   trois — un SMS s'intercepte par détournement de carte SIM, et une
   boîte e-mail compromise donnerait les codes en même temps que le reste.
@@ -30,7 +30,7 @@
      son pas — et c'est exactement la fenêtre dont dispose quelqu'un qui
      regarde l'écran.
 
-  3. DES CODES DE SECOURS. Sans fournisseur d'e-mail, MACHÉ n'a aucun
+  3. DES CODES DE SECOURS. Sans fournisseur d'e-mail, MACHE n'a aucun
      moyen de réinitialiser quoi que ce soit : un téléphone perdu
      fermerait l'administration pour toujours. Ils sont stockés HACHÉS —
      une base lue ne doit pas donner de quoi entrer.
@@ -203,7 +203,7 @@ export function verifyTotp(
 
   L'émetteur apparaît DEUX fois — dans le chemin et en paramètre — et
   ce n'est pas une redondance : les applications ne lisent pas toutes le
-  même. Omettre l'un des deux donne une entrée nommée « MACHÉ » chez les
+  même. Omettre l'un des deux donne une entrée nommée « MACHE » chez les
   uns et par l'adresse e-mail seule chez les autres.
 */
 export function otpauthUri(secret: string, account: string, issuer = "MACHE"): string {

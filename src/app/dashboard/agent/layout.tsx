@@ -31,7 +31,7 @@ export default async function AgentLayout({ children }: { children: React.ReactN
   const displayName =
     [customer?.firstName, customer?.lastName].filter(Boolean).join(" ") ||
     customer?.email ||
-    "Agent MACHÉ";
+    "Agent MACHE";
 
   const sections: NavSection[] = [
     {

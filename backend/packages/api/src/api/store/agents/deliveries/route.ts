@@ -46,7 +46,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
 
   if (!agent) {
     return res.status(403).json({
-      message: "Ce compte n'a pas de fonction agent sur MACHÉ.",
+      message: "Ce compte n'a pas de fonction agent sur MACHE.",
     });
   }
 

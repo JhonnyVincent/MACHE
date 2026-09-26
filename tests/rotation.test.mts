@@ -1,5 +1,5 @@
 /*
-  TESTS : « Sur MACHÉ en ce moment » fait passer chaque vendeur à son tour.
+  TESTS : « Sur MACHE en ce moment » fait passer chaque vendeur à son tour.
 
   Lancer : npm run test:rotation
 */

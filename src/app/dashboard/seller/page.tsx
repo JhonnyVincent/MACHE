@@ -1,7 +1,7 @@
 /*
   PAGE : entrée de l'espace vendeur
 
-  L'espace vendeur de MACHÉ n'est plus une trentaine de pages Next : c'est
+  L'espace vendeur de MACHE n'est plus une trentaine de pages Next : c'est
   le panneau vendeur de Mercur, servi par le backend commerce.
 
   Pourquoi ce choix
@@ -31,7 +31,7 @@ const CAPABILITIES = [
   "Produits, variantes, photos et prix",
   "Stock et inventaire",
   "Commandes de votre boutique et expéditions",
-  "Commissions retenues par MACHÉ",
+  "Commissions retenues par MACHE",
   "Versements et compte de paiement",
   "Avis reçus et réponses",
 ];
@@ -77,13 +77,13 @@ export default async function SellerEntryPage({
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           Le panneau vendeur ne peut pas être joint pour le moment.
           Réessayez dans quelques minutes. Si cela persiste, écrivez à
-          l&apos;équipe MACHÉ.
+          l&apos;équipe MACHE.
         </p>
         <Link
           href="/contact"
           className="mt-6 inline-block rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white"
         >
-          Contacter MACHÉ
+          Contacter MACHE
         </Link>
       </main>
     );
@@ -120,10 +120,10 @@ export default async function SellerEntryPage({
       */}
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
         {vendor ? (
-          <>Votre boutique se gère depuis le panneau vendeur MACHÉ. Tout y est :</>
+          <>Votre boutique se gère depuis le panneau vendeur MACHE. Tout y est :</>
         ) : (
           <>
-            Vous n&apos;êtes pas connecté. Une boutique sur MACHÉ se gère
+            Vous n&apos;êtes pas connecté. Une boutique sur MACHE se gère
             depuis le panneau vendeur, qui réunit :
           </>
         )}
@@ -146,7 +146,7 @@ export default async function SellerEntryPage({
           <p className="mt-1 text-base leading-relaxed text-[var(--mache-muted)]">
             Ajoutez vos produits dès maintenant depuis le panneau
             vendeur, et composez votre vitrine. Elle apparaîtra dans le
-            catalogue MACHÉ une fois approuvée.
+            catalogue MACHE une fois approuvée.
           </p>
         </div>
       )}
@@ -167,13 +167,13 @@ export default async function SellerEntryPage({
             {vendor.status === "rejected" ? (
               <>
                 Elle n&apos;apparaîtra pas dans le catalogue. Écrivez à
-                l&apos;équipe MACHÉ pour en connaître la raison.
+                l&apos;équipe MACHE pour en connaître la raison.
               </>
             ) : (
               <>
                 Vous pouvez préparer vos produits et votre vitrine dès
                 maintenant. Elle n&apos;est pas encore visible dans le
-                catalogue, et le sera dès que MACHÉ l&apos;aura relue.
+                catalogue, et le sera dès que MACHE l&apos;aura relue.
               </>
             )}
           </p>
@@ -242,7 +242,7 @@ export default async function SellerEntryPage({
         </p>
         {vendor && (
           <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
-            Si vous vendiez sur l&apos;ancienne version de MACHÉ, vos
+            Si vous vendiez sur l&apos;ancienne version de MACHE, vos
             anciennes fiches produit ne sont pas reprises
             automatiquement — le catalogue a changé de moteur. Écrivez à
             l&apos;équipe pour un transfert.
@@ -272,13 +272,13 @@ export default async function SellerEntryPage({
         </Link>
         {/*
           Les contrats n'existent pas dans le panneau Mercur : c'est une
-          fonction propre à MACHÉ, comme les devis et les livraisons.
+          fonction propre à MACHE, comme les devis et les livraisons.
         */}
         <Link
           href="/dashboard/seller/contrats"
           className="font-semibold text-[var(--mache-primary)] hover:underline"
         >
-          Contrats de MACHÉ
+          Contrats de MACHE
         </Link>
         <Link
           href="/dashboard/seller/livraisons"

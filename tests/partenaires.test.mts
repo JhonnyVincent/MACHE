@@ -1,9 +1,9 @@
 /*
-  TESTS : ce que MACHÉ a le droit d'écrire sur ses partenaires.
+  TESTS : ce que MACHE a le droit d'écrire sur ses partenaires.
 
   C'est la page qu'on remplit le plus facilement de logos qu'on n'a pas
   le droit d'afficher. Un nom posé sur une page d'accueil vaut caution :
-  le visiteur en conclut que cette entreprise travaille avec MACHÉ. Si
+  le visiteur en conclut que cette entreprise travaille avec MACHE. Si
   c'est faux, c'est un mensonge, et en droit une atteinte à la marque.
 
   Trois règles :
@@ -15,8 +15,8 @@
      partenaires » creuse, ni cases grises qui annoncent un réseau
      inexistant.
 
-  3. UN SERVICE QUI NE PASSE PAS PAR MACHÉ LE DIT — sans quoi un vendeur
-     croit qu'ouvrir une boutique ici lui ouvre un financement, et MACHÉ
+  3. UN SERVICE QUI NE PASSE PAS PAR MACHE LE DIT — sans quoi un vendeur
+     croit qu'ouvrir une boutique ici lui ouvre un financement, et MACHE
      se retrouve à répondre d'un refus qu'elle n'a pas décidé.
 
   Lancer : npm run test:partenaires
@@ -56,15 +56,15 @@ check("chaque partenaire nommé porte une adresse qu'on peut aller voir", () => 
 
 check("aucun partenaire ne se voit prêter une promesse chiffrée", () => {
   /*
-    MACHÉ ne fixe ni taux, ni plafond, ni délai chez un partenaire, et
-    ne les vérifie pas. Les écrire à sa place engagerait MACHÉ sur des
+    MACHE ne fixe ni taux, ni plafond, ni délai chez un partenaire, et
+    ne les vérifie pas. Les écrire à sa place engagerait MACHE sur des
     conditions qu'elle ne maîtrise pas.
   */
   for (const partner of PARTNERS) {
     assert.equal(
       /\d+\s?%|\d+\s?(jours?|heures?|gourdes?|USD|\$)/i.test(partner.does),
       false,
-      `« ${partner.name} » se voit prêter un chiffre que MACHÉ ne tient pas`
+      `« ${partner.name} » se voit prêter un chiffre que MACHE ne tient pas`
     );
   }
 });
@@ -97,7 +97,7 @@ check("la page ne dit plus « personne » quand quelqu'un est là", () => {
 
 check("aucun logo de partenaire n'est affiché", () => {
   /*
-    Afficher une marque demande un accord écrit. MACHÉ n'en a aucun.
+    Afficher une marque demande un accord écrit. MACHE n'en a aucun.
   */
   for (const source of [STRIP, PAGE]) {
     assert.equal(
@@ -108,7 +108,7 @@ check("aucun logo de partenaire n'est affiché", () => {
   }
 });
 
-check("un service qui ne passe pas par MACHÉ le dit", () => {
+check("un service qui ne passe pas par MACHE le dit", () => {
   const direct = PARTNERS.filter((partner) => !partner.mediated);
 
   assert.ok(
@@ -124,8 +124,8 @@ check("un service qui ne passe pas par MACHÉ le dit", () => {
 
   assert.match(
     PAGE,
-    /MACHÉ ne dépose pas le dossier, ne\s+garantit rien/,
-    "et écrire franchement que MACHÉ ne garantit rien"
+    /MACHE ne dépose pas le dossier, ne\s+garantit rien/,
+    "et écrire franchement que MACHE ne garantit rien"
   );
 });
 

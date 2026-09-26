@@ -26,7 +26,7 @@
   bloquerait tout un cybercafé — ou tout un opérateur mobile haïtien
   derrière une même sortie — parce qu'une personne s'est trompée.
   L'identifiant seul permettrait à un attaquant de bloquer le compte du
-  patron de MACHÉ à volonté, ce qui est une attaque en soi.
+  patron de MACHE à volonté, ce qui est une attaque en soi.
 
   SA LIMITE, ÉCRITE PLUTÔT QUE TUE
 

@@ -59,7 +59,7 @@ export const SUSPENDED_MARKER = "mache_agent_suspended";
   Il empêche CE COMPTE d'agir : commander en étant connecté, déposer un
   avis, ouvrir une conversation, se servir de l'espace agent.
 
-  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHÉ
+  Il n'empêche pas la PERSONNE de revenir. On peut acheter sur MACHE
   sans compte, et rien n'interdit d'en créer un autre. Prétendre le
   contraire serait promettre une barrière qui n'existe pas — et c'est
   écrit sur l'écran qui bloque, pas seulement ici.

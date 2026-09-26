@@ -23,7 +23,7 @@ import { blockingGroups } from "@/lib/seller-minimum";
 
 export const dynamic = "force-dynamic";
 
-/* Pays proposés : là où MACHÉ livre ou expédie aujourd'hui. */
+/* Pays proposés : là où MACHE livre ou expédie aujourd'hui. */
 const COUNTRIES = [
   { code: "ht", label: "Haïti" },
   { code: "fr", label: "France" },
@@ -231,7 +231,7 @@ export default async function CheckoutPage({
               ) : state.shippingBySeller.length === 0 ? (
                 <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-3 py-2.5 text-base text-[var(--mache-muted)]">
                   Aucun mode de livraison ne dessert cette adresse. Vérifiez le
-                  pays et la ville, ou contactez MACHÉ.
+                  pays et la ville, ou contactez MACHE.
                 </p>
               ) : (
                 <div className="space-y-4">
@@ -307,7 +307,7 @@ export default async function CheckoutPage({
                 serait qu'une promesse.
               */}
               <p className="mt-3 text-xs leading-relaxed text-[var(--mache-muted)]">
-                MACHÉ n&apos;a aujourd&apos;hui aucun prestataire de paiement en
+                MACHE n&apos;a aujourd&apos;hui aucun prestataire de paiement en
                 ligne raccordé. Aucune donnée bancaire ne vous est demandée, ni
                 ne transite par ce site.
               </p>

@@ -73,7 +73,7 @@ export async function declineContractAction(formData: FormData) {
   if (!id) redirect("/dashboard/seller/contrats");
 
   /*
-    Une raison est demandée. Un refus sans motif oblige MACHÉ à
+    Une raison est demandée. Un refus sans motif oblige MACHE à
     rappeler pour comprendre, et le marchand à réexpliquer — alors
     qu'il vient de le décider.
   */
@@ -94,5 +94,5 @@ export async function declineContractAction(formData: FormData) {
     back(id, { error: reasonOf(error) });
   }
 
-  back(id, { success: "Refus enregistré. MACHÉ en est informé." });
+  back(id, { success: "Refus enregistré. MACHE en est informé." });
 }

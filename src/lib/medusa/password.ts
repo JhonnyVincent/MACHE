@@ -11,11 +11,11 @@
   CE QUE LE SITE NE DIT JAMAIS
 
   Si une adresse a un compte. « Aucun compte pour cette adresse »
-  apprendrait à n'importe qui qui est client ou vendeur chez MACHÉ — un
+  apprendrait à n'importe qui qui est client ou vendeur chez MACHE — un
   annuaire offert aux arnaqueurs. Le message est donc le même dans les
   deux cas : « si un compte existe, un e-mail est parti ».
 
-  Le vendeur a un seul compte pour MACHÉ et pour le panneau Mercur :
+  Le vendeur a un seul compte pour MACHE et pour le panneau Mercur :
   un nouveau mot de passe choisi ici vaut pour les deux.
 */
 
@@ -39,7 +39,7 @@ export const LOGIN_PAGE: Record<ResetActor, string> = {
 export const SPACE_LABEL: Record<ResetActor, string> = {
   customer: "votre compte client",
   member: "votre espace vendeur (le même compte sert au panneau vendeur)",
-  user: "l'administration de MACHÉ",
+  user: "l'administration de MACHE",
 };
 
 /* Le même seuil qu'à l'inscription : en dessous, un mot de passe ne protège plus rien. */

@@ -1,5 +1,5 @@
 /*
-  La vérification publique d'un agent MACHÉ.
+  La vérification publique d'un agent MACHE.
 
   Ce fichier portait aussi l'espace agent : contrôle d'accès par rôle
   d'un ancien socle, statuts d'expédition, transitions autorisées. Tout cela est
@@ -36,7 +36,7 @@ export type AgentVerification =
 
     « Introuvable » et « impossible à vérifier » ne veulent pas dire la
     même chose sur le pas d'une porte. La première dit que cette personne
-    n'est pas un agent MACHÉ. La seconde dit que MACHÉ n'en sait rien.
+    n'est pas un agent MACHE. La seconde dit que MACHE n'en sait rien.
 
     Les confondre ferait accuser un agent honnête, ou — bien pire —
     laisserait croire qu'un refus est un verdict alors que le service
@@ -76,7 +76,7 @@ export type AgentVerification =
   Ce qui fait foi, côté backend
 
   L'appartenance à un groupe de clients, que seule l'administration
-  peut modifier. Un agent est un CLIENT de MACHÉ à qui s'ajoute une
+  peut modifier. Un agent est un CLIENT de MACHE à qui s'ajoute une
   fonction — point de relais, livreur, commercial — et non un
   administrateur.
 
@@ -86,7 +86,7 @@ export type AgentVerification =
   aucun groupe.
 
   Les trois issues sont conservées telles quelles : « pas un agent » et
-  « MACHÉ n'en sait rien » appellent le même geste, ne rien remettre,
+  « MACHE n'en sait rien » appellent le même geste, ne rien remettre,
   mais pas la même accusation.
 */
 export async function verifyAgentCode(rawCode: string): Promise<AgentVerification> {
@@ -121,7 +121,7 @@ export async function verifyAgentCode(rawCode: string): Promise<AgentVerificatio
   return {
     found: true,
     code,
-    displayName: result.data.display_name ?? "Agent MACHÉ",
+    displayName: result.data.display_name ?? "Agent MACHE",
     /*
       Pas de photo : la route publique n'en rend pas. Une photo
       d'agent est une donnée personnelle, et la publier à qui essaie

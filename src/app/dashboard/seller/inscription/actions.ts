@@ -1,7 +1,7 @@
 "use server";
 
 /*
-  ACTION : ouvrir une boutique sur MACHÉ.
+  ACTION : ouvrir une boutique sur MACHE.
 
   Ce que le serveur vérifie, et pourquoi il le refait
 

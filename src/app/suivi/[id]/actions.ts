@@ -8,7 +8,7 @@
 
   Pour tous les autres acheminements, la remise se prouve par le code
   que l'acheteur donne à la personne qui livre. Le livreur d'un
-  transporteur extérieur, lui, ne connaît pas MACHÉ et ne peut rien
+  transporteur extérieur, lui, ne connaît pas MACHE et ne peut rien
   saisir. Pour ces colis, et pour eux seuls, le constat de l'acheteur
   est la seule information disponible.
 

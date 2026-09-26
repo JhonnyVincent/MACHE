@@ -12,7 +12,7 @@
   variables d'environnement qu'il ne peut ni comprendre ni corriger.
 
   La raison n'est pas perdue : elle part au journal du serveur, où la
-  cherchera celui qui exploite MACHÉ.
+  cherchera celui qui exploite MACHE.
 
   Chaque page écrit sa propre phrase : « cette fiche », « cette
   boutique », « vos commandes ». Une formule unique et vague obligerait

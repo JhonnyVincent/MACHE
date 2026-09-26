@@ -42,7 +42,7 @@ export async function subscribeAction(
         status: "ok",
         message: payload.confirmation
           ? "Presque fini : cliquez sur le lien de confirmation que nous venons de vous envoyer."
-          : "C'est noté. Vous recevrez les nouvelles de MACHÉ.",
+          : "C'est noté. Vous recevrez les nouvelles de MACHE.",
       };
     }
 

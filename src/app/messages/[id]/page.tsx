@@ -1,5 +1,5 @@
 /*
-  PAGE : une conversation avec MACHÉ.
+  PAGE : une conversation avec MACHE.
 
   On y arrive de deux façons : par son lien privé (le jeton dans
   l'adresse), ou depuis son espace client quand on a un compte.
@@ -13,7 +13,7 @@
 
   Le dire une seule fois ne suffirait pas : celui qui revient trois
   jours plus tard ne se souvient pas de l'avoir lu, et conclurait que
-  MACHÉ ne répond pas.
+  MACHE ne répond pas.
 
   Le lien privé est affiché EN ENTIER
 
@@ -117,7 +117,7 @@ export default async function ThreadPage({
               <Link href="/dashboard/buyer/messages" className="font-medium underline">
                 vos messages
               </Link>
-              . MACHÉ n&apos;envoie pas d&apos;e-mail : revenez voir, vous ne
+              . MACHE n&apos;envoie pas d&apos;e-mail : revenez voir, vous ne
               serez pas prévenu.
             </p>
           ) : (
@@ -126,7 +126,7 @@ export default async function ThreadPage({
                 <strong className="text-[var(--mache-text)]">
                   Gardez ce lien.
                 </strong>{" "}
-                C&apos;est le seul moyen de relire notre réponse : MACHÉ
+                C&apos;est le seul moyen de relire notre réponse : MACHE
                 n&apos;a pas de service d&apos;e-mail et ne pourra pas vous le
                 renvoyer.
               </p>
@@ -165,7 +165,7 @@ export default async function ThreadPage({
               }`}
             >
               <p className="text-xs font-semibold uppercase tracking-wide text-[var(--mache-muted)]">
-                {fromMache ? "MACHÉ" : message.authorName}
+                {fromMache ? "MACHE" : message.authorName}
                 {message.createdAt ? ` · ${when(message.createdAt)}` : ""}
               </p>
 
@@ -224,10 +224,10 @@ export default async function ThreadPage({
       {/*
         Rappelé à chaque visite, pas seulement après l'envoi : celui qui
         revient trois jours plus tard ne se souvient pas de l'avoir lu,
-        et conclurait que MACHÉ ne répond pas.
+        et conclurait que MACHE ne répond pas.
       */}
       <p className="mt-8 border-t border-[var(--mache-line)] pt-4 text-xs leading-relaxed text-[var(--mache-muted)]">
-        MACHÉ n&apos;envoie pas d&apos;e-mail : personne ne vous préviendra
+        MACHE n&apos;envoie pas d&apos;e-mail : personne ne vous préviendra
         d&apos;une réponse.{" "}
         {customer
           ? "Cette conversation reste dans votre espace client."

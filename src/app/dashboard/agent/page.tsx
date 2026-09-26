@@ -222,7 +222,7 @@ export default async function AgentHomePage({
             <Notice tone="danger" title="Habilitation suspendue">
               Votre habilitation d&apos;agent est suspendue. Vous voyez encore vos
               colis — il faut bien pouvoir dire où ils sont — mais vous ne pouvez
-              plus les faire avancer. Contactez MACHÉ.
+              plus les faire avancer. Contactez MACHE.
             </Notice>
           )}
 

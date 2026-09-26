@@ -14,7 +14,7 @@
 
   POURQUOI CETTE PAGE EST ACCESSIBLE SANS COMPTE
 
-  On peut acheter sur MACHÉ sans créer de compte. Sans ce lien, un tel
+  On peut acheter sur MACHE sans créer de compte. Sans ce lien, un tel
   acheteur n'aurait aucun moyen de lire son code — et sa livraison ne
   pourrait jamais être confirmée, donc le vendeur jamais payé. Le lien
   est remis par le vendeur à l'ouverture de l'acheminement.
@@ -28,7 +28,7 @@
 
   LE TRANSPORTEUR EXTÉRIEUR EST UN CAS À PART
 
-  Son livreur ne connaît pas MACHÉ et ne peut saisir aucun code. Aucun
+  Son livreur ne connaît pas MACHE et ne peut saisir aucun code. Aucun
   code n'est donc affiché — en montrer un pousserait l'acheteur à le
   réclamer à quelqu'un qui ne peut rien en faire. À la place,
   l'acheteur peut constater lui-même la réception, et c'est enregistré
@@ -174,9 +174,9 @@ export default async function SuiviPage({
               </p>
               <p className="mt-1 text-sm leading-relaxed text-[#565959]">
                 {result.data.carrierName ? `${result.data.carrierName}. ` : ""}
-                MACHÉ ne contrôle pas ce transport et ne peut pas en garantir
+                MACHE ne contrôle pas ce transport et ne peut pas en garantir
                 les délais. Il n&apos;y a pas de code à remettre : son livreur
-                ne connaît pas MACHÉ.
+                ne connaît pas MACHE.
               </p>
 
               {result.data.trackingNumber && (
@@ -213,7 +213,7 @@ export default async function SuiviPage({
                     <p className="mt-1 text-sm leading-relaxed text-[#565959]">
                       Votre constat sera enregistré comme une déclaration, pas
                       comme une preuve — c&apos;est la seule information
-                      disponible pour un transport que MACHÉ ne contrôle pas.
+                      disponible pour un transport que MACHE ne contrôle pas.
                     </p>
 
                     <textarea

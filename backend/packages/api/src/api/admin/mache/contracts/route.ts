@@ -1,5 +1,5 @@
 /*
-  ROUTES : les contrats de MACHÉ, côté administration.
+  ROUTES : les contrats de MACHE, côté administration.
 
   GET liste, POST crée un brouillon.
 

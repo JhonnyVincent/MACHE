@@ -5,10 +5,10 @@
 
   Uniquement la famille de couleurs d'accent : les boutons, le bandeau
   d'annonce, le fond du bandeau principal. Le fond de page, la couleur
-  du texte et les bordures restent ceux de MACHÉ.
+  du texte et les bordures restent ceux de MACHE.
 
   Ce n'est pas une limitation technique mais un choix. Une boutique doit
-  rester reconnaissable comme une boutique MACHÉ — un client qui passe
+  rester reconnaissable comme une boutique MACHE — un client qui passe
   d'une vitrine à l'autre ne doit pas avoir l'impression de changer de
   site. Et surtout : laisser choisir le fond ET le texte, c'est laisser
   produire du jaune sur blanc.
@@ -18,7 +18,7 @@
   Un sélecteur libre produit des vitrines illisibles. Ce n'est pas une
   hypothèse : les contrastes de chaque thème sont calculés et vérifiés
   (`npm run test:themes`), et deux candidats ont été écartés pour cette
-  raison — un ambre à 2,56 sur blanc, inutilisable, et le rouge MACHÉ
+  raison — un ambre à 2,56 sur blanc, inutilisable, et le rouge MACHE
   lui-même, à 4,46, qui passait juste sous le seuil et a dû être
   assombri de deux pour cent.
 
@@ -49,7 +49,7 @@ export const STOREFRONT_THEMES: StorefrontTheme[] = [
   {
     id: "hibiscus",
     label: "Hibiscus",
-    hint: "Le rouge de MACHÉ.",
+    hint: "Le rouge de MACHE.",
     /*
       #e91e3a, la teinte d'origine, donne 4,46 sur blanc — sous le seuil
       de lisibilité. Deux pour cent plus sombre suffit à passer, et la
@@ -139,7 +139,7 @@ export function isThemeId(value: unknown): value is string {
 /*
   Le thème choisi par une boutique.
 
-  Renvoie celui de MACHÉ quand rien n'est choisi : contrairement au
+  Renvoie celui de MACHE quand rien n'est choisi : contrairement au
   profil, une vitrine doit avoir des couleurs. Il n'y a pas d'état
   « sans thème ».
 */
@@ -156,7 +156,7 @@ export function readSellerTheme(
 
   On ne redéfinit que ce que le thème couvre. Le reste — fond, texte,
   bordures — est hérité du site, et c'est ce qui fait qu'une boutique
-  reste une boutique MACHÉ.
+  reste une boutique MACHE.
 */
 export function themeStyle(theme: StorefrontTheme): Record<string, string> {
   return {

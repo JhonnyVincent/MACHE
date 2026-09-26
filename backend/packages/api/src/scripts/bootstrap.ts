@@ -7,7 +7,7 @@
 
   1. Le catalogue de démonstration, si SEED_DEMO le demande ET si le
      catalogue est vide.
-  2. La mise en place MACHÉ : région Haïti, canal de vente, clé publique
+  2. La mise en place MACHE : région Haïti, canal de vente, clé publique
      du site.
   3. Les prix en gourdes du catalogue de démonstration, une fois la
      région Haïti créée, et sa livraison vers Haïti.
@@ -133,7 +133,7 @@ export default async function bootstrap(args: ExecArgs) {
     */
     await agentGroups(args);
     /*
-      Les rayons de MACHÉ. Sans eux, le catalogue n'a que les rayons de
+      Les rayons de MACHE. Sans eux, le catalogue n'a que les rayons de
       chaussures de la démonstration Mercur, et un vendeur ne peut
       classer son article nulle part ailleurs. N'ajoute que ce qui
       manque ; ne supprime ni ne renomme rien.
@@ -156,7 +156,7 @@ export default async function bootstrap(args: ExecArgs) {
     }
   } catch (error) {
     logger.error(
-      `Mise en place MACHÉ interrompue : ${error instanceof Error ? error.message : String(error)}`
+      `Mise en place MACHE interrompue : ${error instanceof Error ? error.message : String(error)}`
     );
     logger.error(
       "Le serveur démarre quand même. La région Haïti et la clé publique du site sont peut-être absentes ; le panneau d'administration permet de les créer à la main."
@@ -192,7 +192,7 @@ async function seedDemoIfEmpty(
     logger.warn("  CATALOGUE DE DÉMONSTRATION CHARGÉ");
     logger.warn("--------------------------------------------------------");
     logger.warn("  Ce sont des chaussures fictives, en euros, avec des");
-    logger.warn("  vendeurs fictifs. Rien de tout cela n'est à MACHÉ.");
+    logger.warn("  vendeurs fictifs. Rien de tout cela n'est à MACHE.");
     logger.warn(" ");
     logger.warn("  À retirer avant d'ouvrir la boutique à de vrais");
     logger.warn("  clients : un catalogue inventé qui reste en ligne");

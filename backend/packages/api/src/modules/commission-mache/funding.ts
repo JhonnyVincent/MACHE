@@ -1,9 +1,9 @@
 /*
-  LA PART QUE MACHÉ PORTE SUR UNE REMISE.
+  LA PART QUE MACHE PORTE SUR UNE REMISE.
 
   Ce fichier ne contient que de l'arithmétique : pas de conteneur, pas
   de requête, pas de hook. C'est délibéré. La règle qu'il applique
-  décide combien MACHÉ débourse sur chaque promotion ; elle doit
+  décide combien MACHE débourse sur chaque promotion ; elle doit
   pouvoir être vérifiée sans démarrer un serveur, et elle l'est
   (`npm run test:promotions`).
 
@@ -26,10 +26,10 @@ export type Adjustment = {
 };
 
 /*
-  La part portée par MACHÉ, entre 0 et 1.
+  La part portée par MACHE, entre 0 et 1.
 
   Un pourcentage manquant sur une promotion « partagée » vaut zéro, pas
-  la moitié : inventer un partage ferait débourser MACHÉ sur la foi
+  la moitié : inventer un partage ferait débourser MACHE sur la foi
   d'une donnée que personne n'a saisie.
 
   Tout ce qui n'est pas reconnu vaut zéro, pour la même raison. Une
@@ -45,7 +45,7 @@ export function marketplaceShare(cost: CostRow | undefined | null): number {
 
     if (!Number.isFinite(percentage) || percentage <= 0) return 0;
 
-    /* Borné à 100 % : au-delà, MACHÉ paierait plus que la remise. */
+    /* Borné à 100 % : au-delà, MACHE paierait plus que la remise. */
     return Math.min(percentage, 100) / 100;
   }
 
@@ -53,10 +53,10 @@ export function marketplaceShare(cost: CostRow | undefined | null): number {
 }
 
 /*
-  Ce que MACHÉ porte sur UN article, remise par remise.
+  Ce que MACHE porte sur UN article, remise par remise.
 
   Un article peut cumuler plusieurs promotions : une du vendeur, une de
-  MACHÉ. Seule la seconde compte ici — la première reste à la charge du
+  MACHE. Seule la seconde compte ici — la première reste à la charge du
   vendeur, c'est la règle choisie.
 
   Le détail par promotion est conservé, pas seulement le total. C'est ce
@@ -65,7 +65,7 @@ export function marketplaceShare(cost: CostRow | undefined | null): number {
   serait perdue au moment où on la calcule, et irrécupérable ensuite.
 */
 export type ItemFunding = {
-  /* Ce que MACHÉ retire de sa commission sur cet article. */
+  /* Ce que MACHE retire de sa commission sur cet article. */
   total: number;
   /* La même somme, ventilée par promotion. */
   by_promotion: Record<string, number>;

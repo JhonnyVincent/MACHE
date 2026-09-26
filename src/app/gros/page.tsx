@@ -1,9 +1,9 @@
 /*
-  PAGE : acheter en gros sur MACHÉ.
+  PAGE : acheter en gros sur MACHE.
 
   Pourquoi elle existe
 
-  MACHÉ avait tout le nécessaire pour le commerce entre entreprises —
+  MACHE avait tout le nécessaire pour le commerce entre entreprises —
   demandes de devis, prix dégressifs, commande minimum par boutique —
   et aucun moyen d'y accéder. Un acheteur professionnel devait
   parcourir le catalogue article par article en espérant tomber sur un
@@ -12,15 +12,15 @@
 
   Ce que cette page dit, et ne dit pas
 
-  Le profil est une DÉCLARATION du vendeur, pas un contrôle de MACHÉ :
+  Le profil est une DÉCLARATION du vendeur, pas un contrôle de MACHE :
   `seller.metadata` est écrit par le vendeur. Cette page liste donc les
   boutiques qui se présentent comme grossistes, et l'écrit dans ces
-  termes. Laisser entendre que MACHÉ les a vérifiées serait leur prêter
+  termes. Laisser entendre que MACHE les a vérifiées serait leur prêter
   une caution qui n'existe pas.
 
   Et quand aucune boutique ne s'est déclarée, elle le dit. Une page
   « acheter en gros » remplie d'exemples inventés ferait perdre son
-  temps à un acheteur, et perdre sa confiance à MACHÉ.
+  temps à un acheteur, et perdre sa confiance à MACHE.
 */
 
 import { Link } from "next-view-transitions";
@@ -34,9 +34,9 @@ import { reportOutage } from "@/lib/medusa/outage";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Acheter en gros — MACHÉ",
+  title: "Acheter en gros — MACHE",
   description:
-    "Les boutiques qui vendent en gros sur MACHÉ : demande de devis, prix dégressifs selon la quantité, commande minimum.",
+    "Les boutiques qui vendent en gros sur MACHE : demande de devis, prix dégressifs selon la quantité, commande minimum.",
 };
 
 /*
@@ -79,7 +79,7 @@ export default async function WholesalePage() {
       </h1>
 
       <p className="mt-3 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
-        Pour une boutique, une école, un hôtel, un chantier : sur MACHÉ,
+        Pour une boutique, une école, un hôtel, un chantier : sur MACHE,
         une commande en volume se négocie avant d&apos;être passée.
       </p>
 
@@ -107,10 +107,10 @@ export default async function WholesalePage() {
         {/*
           Dit tout de suite d'où vient cette information. « Grossiste »
           affiché sans précision se lit comme une qualification accordée
-          par MACHÉ.
+          par MACHE.
         */}
         <p className="mt-1.5 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
-          Ces boutiques se présentent elles-mêmes comme grossistes. MACHÉ
+          Ces boutiques se présentent elles-mêmes comme grossistes. MACHE
           n&apos;a pas vérifié cette déclaration : c&apos;est le vendeur qui
           l&apos;a renseignée.
         </p>
@@ -217,7 +217,7 @@ export default async function WholesalePage() {
 
         <p className="mt-1.5 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
           Demander un prix n&apos;engage à rien. Accepter une proposition ne
-          déclenche aucun paiement : MACHÉ n&apos;encaisse pas, le règlement
+          déclenche aucun paiement : MACHE n&apos;encaisse pas, le règlement
           se convient directement avec le vendeur.{" "}
           <Link href="/legal/terms" className="font-semibold text-[var(--mache-primary)] hover:underline">
             Conditions d&apos;utilisation

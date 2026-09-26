@@ -4,7 +4,7 @@
   À quoi cela sert
 
   Un grossiste ne vend pas à l'unité. « Minimum 5 000 HTG » est une
-  condition de vente ordinaire dans le commerce de gros, et MACHÉ
+  condition de vente ordinaire dans le commerce de gros, et MACHE
   annonce des boutiques fournisseurs depuis sa page d'accueil sans
   qu'aucune puisse l'exprimer.
 
@@ -14,7 +14,7 @@
   devise de la région Haïti, celle dans laquelle les paniers sont
   calculés.
 
-  Une limite, dite franchement : si MACHÉ ouvre un jour une seconde
+  Une limite, dite franchement : si MACHE ouvre un jour une seconde
   région dans une autre devise, ce nombre ne voudra plus dire la même
   chose selon qui regarde. Le jour venu, il faudra un montant par
   devise. Aujourd'hui il n'y a qu'une région, et inventer la structure
@@ -23,7 +23,7 @@
   Ce que ce n'est pas
 
   Ce n'est pas un minimum par article ni par panier entier : c'est un
-  minimum PAR BOUTIQUE. Un panier MACHÉ mélange les vendeurs, et chacun
+  minimum PAR BOUTIQUE. Un panier MACHE mélange les vendeurs, et chacun
   pose ses conditions ; additionner les uns avec les autres ferait
   atteindre le minimum d'un grossiste avec les achats faits ailleurs.
 */

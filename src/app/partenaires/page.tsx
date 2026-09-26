@@ -1,20 +1,20 @@
 /*
-  PAGE : les partenaires de MACHÉ.
+  PAGE : les partenaires de MACHE.
 
   Le piège de cette page
 
   « Nos partenaires » est la page qu'on remplit le plus facilement de
   logos qu'on n'a pas le droit d'afficher. Une marque connue posée en
   bas d'une page d'accueil vaut caution : le visiteur en conclut que
-  cette entreprise travaille avec MACHÉ. Si c'est faux, c'est un
+  cette entreprise travaille avec MACHE. Si c'est faux, c'est un
   mensonge, et en droit une atteinte à la marque.
 
   Donc : aucun logo, aucun nom, tant que personne n'a signé.
 
   Ce que la page fait à la place
 
-  Elle dit ce qu'un partenariat avec MACHÉ veut dire, quels quatre
-  types sont recherchés, et ce que MACHÉ donne en échange. Elle est
+  Elle dit ce qu'un partenariat avec MACHE veut dire, quels quatre
+  types sont recherchés, et ce que MACHE donne en échange. Elle est
   utile telle quelle — plus utile, en vérité, qu'un mur de logos, car
   elle s'adresse à quelqu'un qui se demande s'il a sa place ici.
 
@@ -30,16 +30,16 @@ import { Link } from "next-view-transitions";
 import { PARTNERS } from "@/lib/partners";
 
 export const metadata = {
-  title: "Partenaires et sponsors · MACHÉ",
+  title: "Partenaires et sponsors · MACHE",
   description:
-    "Ce qu'est un partenariat avec MACHÉ, les quatre formes recherchées, et comment le proposer.",
+    "Ce qu'est un partenariat avec MACHE, les quatre formes recherchées, et comment le proposer.",
 };
 
 type Partnership = {
   title: string;
   who: string;
   what: string;
-  /* Ce que MACHÉ apporte en retour. Sans cela, la page demande sans offrir. */
+  /* Ce que MACHE apporte en retour. Sans cela, la page demande sans offrir. */
   gives: string;
   /* Est-ce branché aujourd'hui, ou seulement souhaité ? */
   ready: boolean;
@@ -51,7 +51,7 @@ const PARTNERSHIPS: Partnership[] = [
     who: "Une boutique, une pharmacie, un dépôt, un cybercafé — un local ouvert à heures régulières, dans un quartier.",
     what: "Les colis destinés au quartier y attendent leur destinataire. Vous les remettez contre le code que l'acheteur vous donne.",
     gives:
-      "Du passage : chaque retrait amène quelqu'un chez vous. Votre point est affiché avec son adresse et ses horaires sur MACHÉ. La rémunération et les conditions se fixent avec MACHÉ avant le premier colis.",
+      "Du passage : chaque retrait amène quelqu'un chez vous. Votre point est affiché avec son adresse et ses horaires sur MACHE. La rémunération et les conditions se fixent avec MACHE avant le premier colis.",
     ready: true,
   },
   {
@@ -66,7 +66,7 @@ const PARTNERSHIPS: Partnership[] = [
     title: "Encadrer des producteurs",
     who: "Une coopérative agricole, une association d'artisans, une chambre de métiers, une ONG qui accompagne des producteurs.",
     what:
-      "Aider vos membres à ouvrir leur boutique et à tenir leur catalogue. MACHÉ n'a pas d'équipe sur le terrain ; vous, vous connaissez les producteurs.",
+      "Aider vos membres à ouvrir leur boutique et à tenir leur catalogue. MACHE n'a pas d'équipe sur le terrain ; vous, vous connaissez les producteurs.",
     gives:
       "L'ouverture d'une boutique ne coûte rien, et vos membres gardent leur propre marque plutôt que de disparaître derrière la nôtre.",
     ready: false,
@@ -76,7 +76,7 @@ const PARTNERSHIPS: Partnership[] = [
     who: "Un média, une association de la diaspora, une organisation d'événements.",
     what:
       "Faire savoir que les producteurs haïtiens sont joignables en ligne — c'est aujourd'hui le premier obstacle, bien avant la technique.",
-    gives: "Ce qui est à discuter, et honnêtement : MACHÉ n'a pas encore de budget de communication.",
+    gives: "Ce qui est à discuter, et honnêtement : MACHE n'a pas encore de budget de communication.",
     ready: false,
   },
 ];
@@ -92,13 +92,13 @@ export default function PartenairesPage() {
           </span>
 
           <h1 className="mt-4 max-w-3xl text-hero font-black tracking-tightest text-[var(--mache-text)]">
-            MACHÉ ne peut pas faire ça tout seul.
+            MACHE ne peut pas faire ça tout seul.
           </h1>
 
           <p className="mt-5 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
             Connecter les producteurs d&apos;Haïti au reste du monde demande des
             locaux, des routes, des gens qui connaissent les producteurs et des
-            gens qui savent le faire savoir. MACHÉ tient la place de marché ;
+            gens qui savent le faire savoir. MACHE tient la place de marché ;
             le reste se fait à plusieurs.
           </p>
 
@@ -111,9 +111,9 @@ export default function PartenairesPage() {
             chemins lisent maintenant la même liste.
 
             Ce qui est nommé ici l'est sobrement : un nom, ce que cette
-            entreprise fait, son adresse. Pas de logo — MACHÉ n'a
+            entreprise fait, son adresse. Pas de logo — MACHE n'a
             l'accord écrit de personne pour en afficher un — et pas de
-            taux ni de délai, que MACHÉ ne fixe pas et ne vérifie pas.
+            taux ni de délai, que MACHE ne fixe pas et ne vérifie pas.
           */}
           {PARTNERS.length === 0 ? (
             <div className="mt-7 max-w-2xl rounded-[10px] border border-[#e6d6b8] bg-[#fdf8ec] p-5">
@@ -121,9 +121,9 @@ export default function PartenairesPage() {
                 Cette page ne liste encore personne
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
-                MACHÉ démarre, et aucun partenariat n&apos;est signé. Elle
+                MACHE démarre, et aucun partenariat n&apos;est signé. Elle
                 restera vide jusque-là : un logo affiché sans accord donne à
-                croire qu&apos;une entreprise soutient MACHÉ, et c&apos;est le
+                croire qu&apos;une entreprise soutient MACHE, et c&apos;est le
                 genre de caution qui ne se reprend pas. Les noms apparaîtront
                 ici quand ils auront dit oui.
               </p>
@@ -131,7 +131,7 @@ export default function PartenairesPage() {
           ) : (
             <div className="mt-7 max-w-2xl rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
               <h2 className="text-md font-bold text-[var(--mache-text)]">
-                Ils travaillent avec MACHÉ
+                Ils travaillent avec MACHE
               </h2>
 
               <ul className="mt-4 space-y-4">
@@ -158,13 +158,13 @@ export default function PartenairesPage() {
                       LA PHRASE QUI ÉVITE DEUX MALENTENDUS D'UN COUP.
 
                       Qu'un vendeur croie qu'ouvrir une boutique ici lui
-                      ouvre un financement — et que MACHÉ ait à répondre
+                      ouvre un financement — et que MACHE ait à répondre
                       d'un refus qu'elle n'a pas décidé.
                     */}
                     {!partner.mediated && (
                       <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
                         Cela se traite directement avec {partner.name}, selon ses
-                        propres critères. MACHÉ ne dépose pas le dossier, ne
+                        propres critères. MACHE ne dépose pas le dossier, ne
                         garantit rien et ne touche rien dessus.
                       </p>
                     )}
@@ -214,7 +214,7 @@ export default function PartenairesPage() {
 
               <p className="mt-3 border-t border-[var(--mache-line)] pt-3 text-sm leading-relaxed text-[var(--mache-muted)]">
                 <span className="font-semibold text-[var(--mache-text)]">
-                  Ce que MACHÉ apporte :{" "}
+                  Ce que MACHE apporte :{" "}
                 </span>
                 {item.gives}
               </p>
@@ -231,7 +231,7 @@ export default function PartenairesPage() {
           </h2>
 
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
-            MACHÉ ne vend pas d&apos;espace publicitaire et n&apos;a pas de
+            MACHE ne vend pas d&apos;espace publicitaire et n&apos;a pas de
             régie : il n&apos;y a rien à sponsoriser sur le site, ni bannière,
             ni produit mis en avant contre paiement. Le jour où cela existera,
             ce sera écrit ici et signalé comme tel sur les pages concernées —

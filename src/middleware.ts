@@ -85,7 +85,7 @@ function detectLocale(request: NextRequest) {
   ceci ne fait que retirer la porte du trottoir.
 
   Et ça ne protège pas le backend : Medusa sert son propre panneau
-  ailleurs, et ce partage-ci ne déplace que les écrans de MACHÉ.
+  ailleurs, et ce partage-ci ne déplace que les écrans de MACHE.
 */
 
 const ADMIN_PREFIX = "/dashboard/admin";
@@ -106,7 +106,7 @@ function deploymentRole(): Role {
   Un 404 nu, sans page ni indice.
 
   On ne rend pas la jolie page « introuvable » du site : elle porte
-  l'en-tête, le menu, le nom de MACHÉ. Sur le service d'administration,
+  l'en-tête, le menu, le nom de MACHE. Sur le service d'administration,
   qui répond à une adresse que personne ne doit deviner, autant ne rien
   dire du tout. Et pour un robot, 404 est 404.
 */

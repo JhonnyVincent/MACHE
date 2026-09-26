@@ -4,17 +4,17 @@
   Ce qu'elle disait, et qui n'est plus vrai
 
   « Il n'y a ni numéro de suivi, ni preuve de remise. » C'était exact
-  jusqu'au module de livraison : MACHÉ sait désormais par quel chemin
+  jusqu'au module de livraison : MACHE sait désormais par quel chemin
   passe un colis, et surtout constater qu'il est arrivé.
 
   Ce qu'elle explique maintenant
 
   Les quatre chemins, et surtout ce qui les sépare — c'est là que les
-  malentendus coûtent cher. Un client qui croit qu'un « agent MACHÉ »
+  malentendus coûtent cher. Un client qui croit qu'un « agent MACHE »
   et « la boutique du coin qui garde les colis » sont la même chose ne
   saura pas à qui réclamer quand ça coince. Et un client qui croit que
-  MACHÉ suit son colis alors qu'il est chez un transporteur extérieur
-  appellera MACHÉ, qui ne saura rien lui dire.
+  MACHE suit son colis alors qu'il est chez un transporteur extérieur
+  appellera MACHE, qui ne saura rien lui dire.
 
   Le code de remise a sa section, en clair : c'est la seule chose que
   le client doit retenir, et la seule qu'il puisse mal utiliser.
@@ -24,9 +24,9 @@ import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Livraison — MACHÉ",
+  title: "Livraison — MACHE",
   description:
-    "Les quatre façons dont une commande MACHÉ est acheminée, et le code de remise.",
+    "Les quatre façons dont une commande MACHE est acheminée, et le code de remise.",
 };
 
 type Path = {
@@ -41,29 +41,29 @@ const PATHS: Path[] = [
   {
     title: "Le vendeur livre lui-même",
     what: "La boutique vous apporte la commande, ou vous la récupérez chez elle.",
-    who: "Le vendeur. MACHÉ n'intervient pas dans le trajet.",
+    who: "Le vendeur. MACHE n'intervient pas dans le trajet.",
     recourse:
-      "Le vendeur d'abord. MACHÉ garde la trace de la remise : si vous n'avez pas donné votre code, la commande n'est pas marquée livrée.",
+      "Le vendeur d'abord. MACHE garde la trace de la remise : si vous n'avez pas donné votre code, la commande n'est pas marquée livrée.",
   },
   {
-    title: "Un agent MACHÉ porte le colis",
-    what: "Une personne habilitée par MACHÉ prend le colis chez le vendeur et vous l'apporte.",
-    who: "Un agent MACHÉ. Son code se vérifie en ligne avant que vous ne lui remettiez quoi que ce soit.",
-    recourse: "MACHÉ. C'est nous qui avons habilité cette personne, donc nous en répondons.",
+    title: "Un agent MACHE porte le colis",
+    what: "Une personne habilitée par MACHE prend le colis chez le vendeur et vous l'apporte.",
+    who: "Un agent MACHE. Son code se vérifie en ligne avant que vous ne lui remettiez quoi que ce soit.",
+    recourse: "MACHE. C'est nous qui avons habilité cette personne, donc nous en répondons.",
   },
   {
     title: "Le colis attend dans un point de retrait",
     what: "Il est déposé dans un local du quartier — une boutique, une pharmacie, un dépôt — et vous passez le prendre quand vous voulez.",
-    who: "Un LIEU, pas une personne. Le commerçant qui le tient est un agent MACHÉ, mais le point continue d'exister s'il est absent ou remplacé.",
+    who: "Un LIEU, pas une personne. Le commerçant qui le tient est un agent MACHE, mais le point continue d'exister s'il est absent ou remplacé.",
     recourse:
-      "MACHÉ, comme pour un agent. C'est pour cela que le point a son propre code : votre colis ne se perd pas si le tenant change.",
+      "MACHE, comme pour un agent. C'est pour cela que le point a son propre code : votre colis ne se perd pas si le tenant change.",
   },
   {
     title: "Un transporteur extérieur",
-    what: "Le vendeur confie le colis à une société de transport qui n'a rien à voir avec MACHÉ.",
-    who: "Le transporteur. MACHÉ ne le pilote pas et ne sait pas où en est le colis.",
+    what: "Le vendeur confie le colis à une société de transport qui n'a rien à voir avec MACHE.",
+    who: "Le transporteur. MACHE ne le pilote pas et ne sait pas où en est le colis.",
     recourse:
-      "Le transporteur, avec le numéro de suivi, puis le vendeur qui l'a choisi. MACHÉ affiche le numéro mais ne peut rien vous dire de plus — prétendre le contraire vous ferait perdre du temps.",
+      "Le transporteur, avec le numéro de suivi, puis le vendeur qui l'a choisi. MACHE affiche le numéro mais ne peut rien vous dire de plus — prétendre le contraire vous ferait perdre du temps.",
   },
 ];
 
@@ -75,7 +75,7 @@ function ShippingPageEcrit() {
       </h1>
 
       <p className="mt-4 text-md leading-relaxed text-[var(--mache-muted)]">
-        MACHÉ est une place de marché : chaque produit est vendu et expédié par
+        MACHE est une place de marché : chaque produit est vendu et expédié par
         son vendeur. Une commande prise chez plusieurs boutiques donne lieu à
         plusieurs envois, qui arrivent séparément et peuvent emprunter des
         chemins différents.
@@ -88,7 +88,7 @@ function ShippingPageEcrit() {
         </h2>
 
         <p className="mt-3 text-base leading-relaxed text-[var(--mache-muted)]">
-          Pour chaque commande, MACHÉ tire un code de six caractères,{" "}
+          Pour chaque commande, MACHE tire un code de six caractères,{" "}
           <strong className="text-[var(--mache-text)]">
             visible par vous seul
           </strong>{" "}
@@ -116,7 +116,7 @@ function ShippingPageEcrit() {
             <span aria-hidden="true" className="shrink-0 font-bold text-[var(--mache-primary)]">→</span>
             <span>
               Après cinq codes erronés, la remise se bloque et doit être
-              débloquée par MACHÉ. C&apos;est volontaire : sans ce plafond, un
+              débloquée par MACHE. C&apos;est volontaire : sans ce plafond, un
               code finirait par se trouver à force d&apos;essais.
             </span>
           </li>
@@ -124,7 +124,7 @@ function ShippingPageEcrit() {
             <span aria-hidden="true" className="shrink-0 font-bold text-[var(--mache-primary)]">→</span>
             <span>
               Les commandes confiées à un transporteur extérieur n&apos;ont pas
-              de code : leur livreur ne connaît pas MACHÉ. C&apos;est vous qui
+              de code : leur livreur ne connaît pas MACHE. C&apos;est vous qui
               constatez la réception depuis votre espace.
             </span>
           </li>
@@ -177,7 +177,7 @@ function ShippingPageEcrit() {
         </h2>
 
         <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
-          Un agent MACHÉ porte un code. Vous pouvez le vérifier sur{" "}
+          Un agent MACHE porte un code. Vous pouvez le vérifier sur{" "}
           <Link
             href="/verify-agent"
             className="font-semibold text-[var(--mache-primary)] hover:underline"
@@ -197,7 +197,7 @@ function ShippingPageEcrit() {
         </h2>
 
         <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
-          Aucun transporteur n&apos;est raccordé à MACHÉ : le numéro de suivi
+          Aucun transporteur n&apos;est raccordé à MACHE : le numéro de suivi
           d&apos;un transporteur extérieur est recopié à la main par le vendeur,
           et ne se met pas à jour tout seul. Il n&apos;y a ni délai garanti ni
           grille de frais par zone — délais et frais se conviennent avec le

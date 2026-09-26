@@ -1,9 +1,9 @@
 /*
-  Les agents MACHÉ, côté administration.
+  Les agents MACHE, côté administration.
 
   Qui sont-ils
 
-  Des CLIENTS de MACHÉ — ils achètent comme tout le monde — à qui
+  Des CLIENTS de MACHE — ils achètent comme tout le monde — à qui
   s'ajoute une fonction : tenir un point de relais, livrer, ou démarcher
   des commerçants. Ce ne sont pas des administrateurs, et ils ne
   s'authentifient pas comme tels.
@@ -171,7 +171,7 @@ export async function fetchAgents(): Promise<Result<Agent[]>> {
   const groups = result.data.customer_groups ?? [];
 
   /*
-    Qui MACHÉ a suspendu — une appartenance à un groupe, que seule
+    Qui MACHE a suspendu — une appartenance à un groupe, que seule
     l'administration modifie. Ce statut a vécu dans le champ libre du
     client, qui l'écrit lui-même : un agent suspendu n'avait qu'à s'y
     déclarer « non suspendu » pour se rétablir.
@@ -279,7 +279,7 @@ async function groupIdFor(slug: string): Promise<Result<string>> {
 
   On ne crée pas le compte : l'agent doit d'abord avoir un compte
   client, comme n'importe quel acheteur. C'est cohérent avec ce qu'il
-  est — quelqu'un qui achète sur MACHÉ et rend un service en plus — et
+  est — quelqu'un qui achète sur MACHE et rend un service en plus — et
   cela évite de créer un compte dont personne ne connaîtrait le mot de
   passe.
 */
@@ -303,7 +303,7 @@ export async function makeAgent(input: {
     return {
       ok: false,
       reason:
-        "Aucun compte client avec cette adresse. La personne doit d'abord créer son compte sur MACHÉ, comme un acheteur.",
+        "Aucun compte client avec cette adresse. La personne doit d'abord créer son compte sur MACHE, comme un acheteur.",
     };
   }
 
@@ -427,7 +427,7 @@ export async function setAgentSuspended(
 
 /*
   Retirer complètement la qualité d'agent : sortie du groupe, et code
-  effacé. La personne reste cliente de MACHÉ — c'est sa fonction qu'on
+  effacé. La personne reste cliente de MACHE — c'est sa fonction qu'on
   retire, pas son compte.
 */
 export async function revokeAgent(

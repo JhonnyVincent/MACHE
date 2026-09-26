@@ -86,7 +86,7 @@ check("ne choisit pas de profil à la place du vendeur", () => {
   }
 });
 
-check("aucun profil ne se présente comme vérifié par MACHÉ", () => {
+check("aucun profil ne se présente comme vérifié par MACHE", () => {
   /*
     Un badge qui se pose lui-même ne vérifie rien. Le vocabulaire des
     profils ne doit donc jamais suggérer un contrôle : c'est ce qui

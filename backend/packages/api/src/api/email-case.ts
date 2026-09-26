@@ -7,7 +7,7 @@
 
   Medusa retrouve un compte en comparant l'adresse saisie à l'adresse
   enregistrée, caractère pour caractère — et la base compare les
-  majuscules. Or MACHÉ enregistre toujours ses adresses en minuscules,
+  majuscules. Or MACHE enregistre toujours ses adresses en minuscules,
   tandis que le panneau vendeur de Mercur envoie l'adresse telle qu'elle
   a été tapée. Un téléphone met une majuscule à la première lettre d'un
   champ : « Jean@… » ne retrouvait plus « jean@… », et le vendeur, sûr
@@ -17,8 +17,8 @@
 
   Sur le backend, pour TOUTES les routes d'authentification : connexion,
   inscription, demande de nouveau mot de passe. Pas dans chaque
-  formulaire : le site de MACHÉ n'est pas le seul client — il y a les
-  deux panneaux Mercur, que MACHÉ ne peut pas modifier, et quiconque
+  formulaire : le site de MACHE n'est pas le seul client — il y a les
+  deux panneaux Mercur, que MACHE ne peut pas modifier, et quiconque
   appelle l'API directement. Corriger un formulaire aurait laissé les
   autres chemins cassés.
 

@@ -57,7 +57,7 @@ const config: Config = {
       },
 
       /*
-        ÉCHELLE TYPOGRAPHIQUE MACHÉ
+        ÉCHELLE TYPOGRAPHIQUE MACHE
 
         Le site en employait deux en parallèle : l'échelle Tailwind
         (text-3xl, text-5xl) sur les pages anciennes, et vingt-quatre

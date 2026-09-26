@@ -27,18 +27,18 @@ const nextConfig = {
             dont le contenu ressemble à du HTML peut décider de
             l'exécuter comme une page. C'est exactement le chemin par
             lequel un document d'identité piégé se transformerait en
-            vol de session, le jour où MACHÉ en recevra.
+            vol de session, le jour où MACHE en recevra.
           */
           { key: "X-Content-Type-Options", value: "nosniff" },
 
           /*
             NE PAS SE FAIRE ENCADRER.
 
-            Un site pirate affiche l'espace admin de MACHÉ dans un cadre
+            Un site pirate affiche l'espace admin de MACHE dans un cadre
             invisible, par-dessus ses propres boutons : le dirigeant
             croit cliquer sur « accepter les cookies » et clique en
             réalité sur « résilier cette boutique ». C'est du clic
-            détourné, et cela ne demande aucune faille dans MACHÉ.
+            détourné, et cela ne demande aucune faille dans MACHE.
           */
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
@@ -58,7 +58,7 @@ const nextConfig = {
           /*
             NE PAS DEMANDER LA CAMÉRA, LE MICRO NI LA POSITION.
 
-            MACHÉ ne s'en sert nulle part. Le déclarer ferme la porte à
+            MACHE ne s'en sert nulle part. Le déclarer ferme la porte à
             un script injecté qui essaierait de les réclamer, et évite
             qu'un navigateur pose à un acheteur une question qui
             l'inquiétera à raison.

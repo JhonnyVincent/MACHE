@@ -86,7 +86,7 @@ check("une valeur avec une expression ou une URL est rejetée", () => {
   assert.deepEqual(safe, {});
 });
 
-check("un nom de variable hors du préfixe MACHÉ est rejeté", () => {
+check("un nom de variable hors du préfixe MACHE est rejeté", () => {
   /*
     Sans cette règle, une réponse pourrait redéfinir n'importe quelle
     variable de la page, y compris celles de la mise en page.

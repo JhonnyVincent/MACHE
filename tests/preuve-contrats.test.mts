@@ -33,7 +33,7 @@ function check(name: string, run: () => void) {
   console.log(`  ✓ ${name}`);
 }
 
-const TEXTE = "Article 1 — Le vendeur reverse 8 % de commission à MACHÉ.";
+const TEXTE = "Article 1 — Le vendeur reverse 8 % de commission à MACHE.";
 
 function facts(over: Partial<ProofFacts> = {}): ProofFacts {
   return {

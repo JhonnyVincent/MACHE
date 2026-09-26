@@ -3,7 +3,7 @@
 
   Ce qu'ils gardent
 
-  1. Un vendeur connecté sur MACHÉ entre dans le panneau sans
+  1. Un vendeur connecté sur MACHE entre dans le panneau sans
      redemander ses identifiants — dans SA boutique.
   2. Le laissez-passer ne se falsifie pas, expire en 60 secondes, et ne
      sert qu'une fois.

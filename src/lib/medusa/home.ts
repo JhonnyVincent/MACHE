@@ -9,10 +9,10 @@
     création, que le backend fournit ;
   - « Promotions » : des prix réellement inférieurs au tarif habituel,
     ou des codes promotionnels réellement actifs ;
-  - « Sur MACHÉ en ce moment » : une sélection qui TOURNE entre les
+  - « Sur MACHE en ce moment » : une sélection qui TOURNE entre les
     vendeurs (voir src/lib/rotation.ts) — pas un classement ;
   - « Nos marques » : les boutiques qui se DÉCLARENT marque officielle.
-    C'est leur déclaration, pas un contrôle de MACHÉ ;
+    C'est leur déclaration, pas un contrôle de MACHE ;
   - « Nos suggestions pour vous » part des FAVORIS d'un client connecté
     — quelque chose qu'il a choisi de nous dire. Pas d'un historique de
     navigation : il faudrait un cookie de suivi, et la page de
@@ -46,7 +46,7 @@ export type HeroSlide =
   | {
       kind: "promotions";
       key: string;
-      /* Les codes et remises de MACHÉ réellement actifs. */
+      /* Les codes et remises de MACHE réellement actifs. */
       labels: string[];
       products: SlideProduct[];
     }
@@ -98,7 +98,7 @@ export type HomeData = {
 
 /*
   Les rayons proposés à qui n'a encore rien dit de ses goûts. Ce ne sont
-  pas « les plus demandés » — MACHÉ ne mesure pas cela — et la section ne
+  pas « les plus demandés » — MACHE ne mesure pas cela — et la section ne
   le prétend pas.
 */
 export const DEFAULT_TILES = ["maison", "mode", "electronique", "bio", "fait-a-la-main"] as const;
@@ -192,7 +192,7 @@ export async function fetchHomeData({
   }
 
   /* ------------------------------------------------------------------ */
-  /* Sur MACHÉ en ce moment                                              */
+  /* Sur MACHE en ce moment                                              */
   /* ------------------------------------------------------------------ */
 
   /*
@@ -349,7 +349,7 @@ export async function fetchHomeData({
     if (more.length > 0) {
       forYou = {
         title: "À découvrir",
-        subtitle: "D'autres articles en ligne sur MACHÉ",
+        subtitle: "D'autres articles en ligne sur MACHE",
         href: "/shop",
         products: more,
       };

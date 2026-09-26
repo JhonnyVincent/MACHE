@@ -1,12 +1,12 @@
 /*
-  SCRIPT : les groupes d'agents MACHÉ.
+  SCRIPT : les groupes d'agents MACHE.
 
   Qui sont les agents
 
-  Ce ne sont PAS des administrateurs. Ce sont des clients de MACHÉ —
+  Ce ne sont PAS des administrateurs. Ce sont des clients de MACHE —
   ils achètent comme tout le monde — à qui s'ajoute une fonction :
   tenir un point de relais, livrer, ou démarcher des commerçants. Des
-  gens de plus pour que MACHÉ tourne.
+  gens de plus pour que MACHE tourne.
 
   Ils s'authentifient donc comme des clients, avec un compte client.
 
@@ -30,9 +30,9 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { SUSPENDED_MARKER, BLOCKED_MARKER } from "../api/agent-identity";
 
 const GROUPS = [
-  { slug: "mache-point-relais", name: "MACHÉ — Points de relais" },
-  { slug: "mache-livreur", name: "MACHÉ — Livreurs" },
-  { slug: "mache-commercial", name: "MACHÉ — Commerciaux" },
+  { slug: "mache-point-relais", name: "MACHE — Points de relais" },
+  { slug: "mache-livreur", name: "MACHE — Livreurs" },
+  { slug: "mache-commercial", name: "MACHE — Commerciaux" },
 ];
 
 /*
@@ -56,18 +56,18 @@ const GROUPS = [
 */
 const SUSPENDED_GROUP = {
   marker: SUSPENDED_MARKER,
-  name: "MACHÉ — Agents suspendus",
+  name: "MACHE — Agents suspendus",
 };
 
 /*
   Le groupe des comptes bloqués. Il vise les CLIENTS, pas les agents :
-  un acheteur dont MACHÉ ne veut plus. Même mécanique, et pour la même
+  un acheteur dont MACHE ne veut plus. Même mécanique, et pour la même
   raison — une appartenance à un groupe ne se modifie que depuis
   l'administration.
 */
 const BLOCKED_GROUP = {
   marker: BLOCKED_MARKER,
-  name: "MACHÉ — Comptes bloqués",
+  name: "MACHE — Comptes bloqués",
 };
 
 export default async function agentGroups({ container }: ExecArgs) {
@@ -102,7 +102,7 @@ export default async function agentGroups({ container }: ExecArgs) {
   );
 
   if (missing.length === 0 && hasSuspended && hasBlocked) {
-    logger.info("Groupes d'agents MACHÉ déjà en place. Inchangés.");
+    logger.info("Groupes d'agents MACHE déjà en place. Inchangés.");
     return;
   }
 

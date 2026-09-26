@@ -33,7 +33,7 @@ export default async function BuyerOverviewPage() {
         <Panel padded={false}>
           <EmptyState
             title="Connectez-vous"
-            description="Un compte MACHÉ vous permet de suivre vos commandes et de garder vos adresses."
+            description="Un compte MACHE vous permet de suivre vos commandes et de garder vos adresses."
             action={
               <span className="flex flex-wrap justify-center gap-2">
                 <Button href="/compte/connexion" variant="primary">Se connecter</Button>
@@ -45,7 +45,7 @@ export default async function BuyerOverviewPage() {
 
         <div className="mt-4">
           <Notice tone="info" title="Commander sans compte">
-            MACHÉ n&apos;exige pas de compte pour passer commande. Sans
+            MACHE n&apos;exige pas de compte pour passer commande. Sans
             compte en revanche, vous ne pourrez pas revenir consulter le
             suivi depuis ce site.
           </Notice>

@@ -140,7 +140,7 @@ export default async function AdminStoresPage({
 
           <p className="mt-2 text-base leading-relaxed text-[#565959]">
             La boutique disparaît du site et ne peut plus vendre. Ses
-            commandes passées et les commissions qu&apos;elle doit à MACHÉ
+            commandes passées et les commissions qu&apos;elle doit à MACHE
             sont conservées — rien n&apos;est supprimé, et la décision se
             revient.
           </p>
@@ -393,7 +393,7 @@ export default async function AdminStoresPage({
           <br />
           Suspendre et résilier se font ici aussi, avec un motif obligatoire.
           Ni l&apos;un ni l&apos;autre ne supprime quoi que ce soit : les
-          commandes passées et les commissions dues à MACHÉ sont conservées.
+          commandes passées et les commissions dues à MACHE sont conservées.
           Supprimer une boutique les emporterait avec elle.
         </p>
 

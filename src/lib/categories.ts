@@ -1,5 +1,5 @@
 /*
-  RÉFÉRENCE DES CATÉGORIES MACHÉ
+  RÉFÉRENCE DES CATÉGORIES MACHE
 
   Sert à :
   - donner un slug stable pour les URL et un libellé unique pour l'affichage ;

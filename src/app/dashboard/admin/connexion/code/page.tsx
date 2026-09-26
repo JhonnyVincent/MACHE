@@ -60,7 +60,7 @@ export default async function AdminSecondFactorPage({
 
       <p className="mt-2 text-md leading-relaxed text-[var(--mache-muted)]">
         Ouvrez votre application d&apos;authentification et recopiez les six
-        chiffres affichés pour MACHÉ.
+        chiffres affichés pour MACHE.
       </p>
 
       {query.error && (

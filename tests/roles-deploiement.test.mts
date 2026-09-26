@@ -112,7 +112,7 @@ check("le rôle admin ne sert que l'administration", () => {
 check("un refus ne révèle rien", () => {
   /*
     Pas la jolie page « introuvable » du site : elle porte l'en-tête, le
-    menu, le nom de MACHÉ. Sur une adresse que personne ne doit
+    menu, le nom de MACHE. Sur une adresse que personne ne doit
     deviner, autant ne rien dire.
   */
   assert.match(

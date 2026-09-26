@@ -1,5 +1,5 @@
 /*
-  SCRIPT : les taux de commission de MACHÉ.
+  SCRIPT : les taux de commission de MACHE.
 
   Pourquoi ce fichier existe
 
@@ -10,7 +10,7 @@
   où l'on aurait voulu facturer, il n'y aurait rien eu à facturer.
 
   Ce script pose le taux par défaut au démarrage, comme le reste de la
-  mise en place MACHÉ, et sans terminal.
+  mise en place MACHE, et sans terminal.
 
   Ce qu'il ne fait JAMAIS
 
@@ -71,7 +71,7 @@ const STANDARD = 8;
 
 const REDUCED = {
   code: "mache-reduit",
-  name: "MACHÉ — taux réduit (grossistes et marques)",
+  name: "MACHE — taux réduit (grossistes et marques)",
   value: 5,
 };
 
@@ -99,7 +99,7 @@ export default async function commissionRates({ container }: ExecArgs) {
       d'en créer un second qui entrerait en concurrence avec lui.
     */
     logger.warn(
-      "Aucun taux de commission par défaut trouvé. Rien n'est posé : MACHÉ ne crée pas de second taux par défaut, qui ne serait de toute façon jamais appliqué."
+      "Aucun taux de commission par défaut trouvé. Rien n'est posé : MACHE ne crée pas de second taux par défaut, qui ne serait de toute façon jamais appliqué."
     );
   } else if (Number(globalRate.value) === 0) {
     await updateCommissionRatesWorkflow(container).run({
@@ -142,7 +142,7 @@ export default async function commissionRates({ container }: ExecArgs) {
         /*
           La commission porte sur la vente, pas sur le transport : la
           livraison est encaissée pour le compte de qui livre, et en
-          prélever une part reviendrait à taxer un service que MACHÉ ne
+          prélever une part reviendrait à taxer un service que MACHE ne
           rend pas.
         */
         include_shipping: false,

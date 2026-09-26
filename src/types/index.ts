@@ -1,5 +1,5 @@
 /*
-  FICHIER : Types globaux MACHÉ
+  FICHIER : Types globaux MACHE
 
   Sert à :
   - Définir les types principaux utilisés dans tout le projet

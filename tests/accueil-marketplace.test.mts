@@ -15,7 +15,7 @@
   2. LE GRAND BANDEAU N'EMPRUNTE DE PHOTOS QU'AUX VRAIS PRODUITS
 
   Ce qui meuble l'accueil d'une grande place de marché, ce sont des
-  photos. MACHÉ n'en a aucune à lui, hormis sa carte et son logo : les
+  photos. MACHE n'en a aucune à lui, hormis sa carte et son logo : les
   visuels de stock ont été retirés volontairement, et en remettre
   décorerait le site avec des articles qui n'existent pas. Les
   diapositives empruntent donc leurs vignettes aux produits que les
@@ -95,7 +95,7 @@ check("le bandeau disparaît quand il n'y a aucune promotion", () => {
   );
 });
 
-check("le bandeau ne montre que les promotions de MACHÉ", () => {
+check("le bandeau ne montre que les promotions de MACHE", () => {
   /*
     Y faire défiler la promotion d'une boutique lui donnerait une
     vitrine que les autres n'ont pas, sans que personne ne l'ait décidé.
@@ -145,7 +145,7 @@ check("le grand bandeau s'ouvre toujours sur la carte d'Haïti", () => {
 check("le bandeau n'utilise aucune image décorative", () => {
   /*
     Le garde-fou qui compte. Des visuels de stock avaient déjà été
-    retirés une fois : ils décoraient MACHÉ avec des articles que
+    retirés une fois : ils décoraient MACHE avec des articles que
     personne n'y vendait. La tentation revient dès qu'un accueil paraît
     vide — c'est précisément le moment où elle est la plus mauvaise.
   */
@@ -275,7 +275,7 @@ check("la bande du haut défile en continu, et s'arrête pour qui réduit les an
   assert.match(css, /prefers-reduced-motion: reduce\)[\s\S]*\.mache-ticker-fast[\s\S]*animation: none/);
 });
 
-check("« Sur MACHÉ en ce moment » fait passer chaque vendeur à son tour", () => {
+check("« Sur MACHE en ce moment » fait passer chaque vendeur à son tour", () => {
   assert.match(HOME, /rotateFairly\(pool, \(product\) => map\.get\(product\.id\) \?\? null, seed, SPOTLIGHT_COUNT\)/);
   assert.match(HOME, /const seed = hourSeed\(now\);/);
 });
@@ -313,7 +313,7 @@ check("le défilement automatique s'arrête quand il le faut", () => {
 
 check("« Devenez vendeur » ne promet pas d'audience", () => {
   const cta = SECTIONS.slice(SECTIONS.indexOf("export function SellCta"));
-  assert.ok(cta.includes("Devenez vendeur chez MACHÉ"));
+  assert.ok(cta.includes("Devenez vendeur chez MACHE"));
   assert.doesNotMatch(cta, /déjà visité|des milliers|audience/i);
 });
 
@@ -382,15 +382,30 @@ check("« Gagnez de l'argent » : deux vrais rôles, aucun montant inventé", ()
   assert.ok(start > -1);
   /* Aucun chiffre promis : ni gourdes, ni dollars, ni pourcentage, ni « par colis ». */
   assert.doesNotMatch(section, /\d+\s*(HTG|gourdes?|\$|USD|%)|par colis|garanti/i);
-  assert.match(section, /Rémunération et conditions fixées avec MACHÉ avant de commencer/);
+  assert.match(section, /Rémunération et conditions fixées avec MACHE avant de commencer/);
   /* Les candidatures arrivent avec leur objet déjà rempli. */
   assert.match(section, /\/contact\?sujet=autre&objet=\$\{encodeURIComponent\("Devenir point relais"\)\}/);
-  assert.match(section, /\/contact\?sujet=autre&objet=\$\{encodeURIComponent\("Devenir agent MACHÉ"\)\}/);
+  assert.match(section, /\/contact\?sujet=autre&objet=\$\{encodeURIComponent\("Devenir agent MACHE"\)\}/);
   const contact = readFileSync("src/app/contact/page.tsx", "utf8");
   assert.match(contact, /defaultValue=\{typeof query\.objet === "string" \? query\.objet\.slice\(0, 200\) : undefined\}/);
   /* Ce que la section affirme existe : la vérification publique d'un agent. */
   readFileSync("src/app/verify-agent/page.tsx", "utf8");
   readFileSync("src/app/dashboard/agent/page.tsx", "utf8");
+});
+
+
+check("les rangées qui défilent vont assez lentement pour être lues", () => {
+  const css = readFileSync("src/app/globals.css", "utf8");
+  const seconds = (re: RegExp) => Number((css.match(re) ?? [])[1]);
+  assert.ok(seconds(/\.mache-marquee \{\s*animation: macheTicker (\d+)s/) >= 55, "marques");
+  assert.ok(seconds(/\.mache-marquee\.mache-marquee-medium \{\s*animation-duration: (\d+)s/) >= 100, "boutiques et suggestions");
+  assert.ok(seconds(/\.mache-marquee\.mache-marquee-slow \{\s*animation-duration: (\d+)s/) >= 125, "partenaires");
+});
+
+check("le nom s'écrit MACHE, sans accent, partout", () => {
+  for (const source of [PAGE, HEADER, HERO, SECTIONS, ROWS, FAQ, HOME]) {
+    assert.doesNotMatch(source, /MACHÉ|Maché/);
+  }
 });
 
 console.log(`\n${passed} vérifications passées.\n`);

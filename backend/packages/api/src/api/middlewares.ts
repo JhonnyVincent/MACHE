@@ -1,5 +1,5 @@
 /*
-  MIDDLEWARES DU BACKEND MACHÉ.
+  MIDDLEWARES DU BACKEND MACHE.
 
   Un seul pour l'instant : refuser les écritures faites avec la session
   d'un compte bloqué.
@@ -14,7 +14,7 @@
   POURQUOI CE FILTRE ET PAS UN AUTRE
 
   `/store/*` couvre tout ce qu'un client peut faire : commander,
-  déposer un avis, écrire à MACHÉ, se servir de l'espace agent. Les
+  déposer un avis, écrire à MACHE, se servir de l'espace agent. Les
   requêtes d'invité n'ont pas de session client et passent sans la
   moindre lecture — un panier anonyme n'est pas ralenti.
 */

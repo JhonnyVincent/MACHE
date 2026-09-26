@@ -246,7 +246,7 @@ export function Slider({
 
       {/*
         Le bandeau n'a que ses points : ni flèches ni bouton pause, par
-        choix de MACHÉ. Il s'arrête de lui-même au survol, au focus
+        choix de MACHE. Il s'arrête de lui-même au survol, au focus
         clavier et au doigt, et ne défile pas du tout pour qui a demandé
         moins d'animations ; au doigt, on le fait glisser.
       */}

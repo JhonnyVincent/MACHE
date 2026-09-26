@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils";
 
 /*
-  MODÈLE : un contrat que MACHÉ propose à ses marchands.
+  MODÈLE : un contrat que MACHE propose à ses marchands.
 
   LA RÈGLE QUI FAIT TOUT TENIR : un contrat publié ne se modifie plus.
 
@@ -27,7 +27,7 @@ import { model } from "@medusajs/framework/utils";
 
   Une signature électronique qualifiée au sens de la loi. Celle-ci
   demande un prestataire certifié qui vérifie l'identité du signataire.
-  Ce que MACHÉ enregistre est un consentement horodaté et une preuve
+  Ce que MACHE enregistre est un consentement horodaté et une preuve
   d'intégrité du texte : suffisant pour un accord commercial ordinaire,
   insuffisant pour ce que la loi réserve à la signature qualifiée.
   Les écrans le disent ; ce commentaire est là pour qu'on ne l'oublie

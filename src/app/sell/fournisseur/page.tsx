@@ -88,7 +88,7 @@ export default function SellFournisseurPage() {
               <div className="flex items-center gap-3">
                 <img
                   src="/images/logo-haiti-mache-hibiscus.png"
-                  alt="Haiti Maché"
+                  alt="Haiti Mache"
                   className="h-14 w-14 rounded-2xl object-contain"
                 />
                 <div>
@@ -168,7 +168,7 @@ export default function SellFournisseurPage() {
             </h2>
 
             <p className="mt-4 text-neutral-500">
-              Le fournisseur peut utiliser Maché pour présenter son catalogue, recevoir des demandes,
+              Le fournisseur peut utiliser Mache pour présenter son catalogue, recevoir des demandes,
               gérer son stock et préparer des ventes en volume.
             </p>
           </div>
@@ -248,7 +248,7 @@ export default function SellFournisseurPage() {
           <div className="card p-6">
             <img
               src="/images/carte-haiti-mache.png"
-              alt="Carte Haiti Maché"
+              alt="Carte Haiti Mache"
               className="mx-auto max-h-[360px] object-contain"
             />
           </div>
@@ -263,7 +263,7 @@ export default function SellFournisseurPage() {
             </h2>
 
             <p className="mt-4 leading-8 text-neutral-500">
-              Maché peut vous aider à structurer votre présence, vos prix, vos lots et vos futurs
+              Mache peut vous aider à structurer votre présence, vos prix, vos lots et vos futurs
               partenariats de livraison ou d’export.
             </p>
 

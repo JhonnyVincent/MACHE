@@ -48,7 +48,7 @@ const WINDOW_DAYS = 90;
 
 /*
   En dessous de ces deux seuils, il n'y a pas de classement, il y a du
-  bruit. Ils sont bas — MACHÉ démarre — mais pas nuls : un seul
+  bruit. Ils sont bas — MACHE démarre — mais pas nuls : un seul
   acheteur ne doit pas pouvoir décider de ce que la page d'accueil met
   en avant, et c'est exactement ce qui se passerait à 1.
 */

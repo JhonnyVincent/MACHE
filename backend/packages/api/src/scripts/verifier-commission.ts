@@ -1,5 +1,5 @@
 /*
-  SCRIPT DE VÉRIFICATION : le calcul de commission de MACHÉ.
+  SCRIPT DE VÉRIFICATION : le calcul de commission de MACHE.
 
   À quoi il sert
 
@@ -8,7 +8,7 @@
 
   1. Quel fournisseur de commission est réellement actif ? Si les
      options du module n'étaient pas prises en compte, ce serait celui
-     de Mercur — et les promotions financées par MACHÉ seraient
+     de Mercur — et les promotions financées par MACHE seraient
      silencieusement payées par les vendeurs.
 
      On ne peut pas le demander au conteneur de l'application :
@@ -19,7 +19,7 @@
      diverger de ce qui sera réellement facturé.
 
   2. Que calcule-t-il sans promotion ?
-  3. Que calcule-t-il quand MACHÉ finance une remise ?
+  3. Que calcule-t-il quand MACHE finance une remise ?
 
   Il ne modifie rien. À lancer après tout changement de configuration
   touchant les commissions :
@@ -31,7 +31,7 @@ import { ExecArgs } from "@medusajs/framework/types";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { MACHE_FUNDING_KEY } from "../modules/commission-mache";
 
-/* La remise financée par MACHÉ dans le scénario de contrôle. */
+/* La remise financée par MACHE dans le scénario de contrôle. */
 const REMISE_FINANCEE = 400;
 
 type LigneCommission = {
@@ -75,7 +75,7 @@ export default async function verifierCommission({ container }: ExecArgs) {
 
   if (fournisseur !== "mache") {
     logger.error(
-      "ATTENTION : ce n'est pas le fournisseur de MACHÉ. Les promotions financées par MACHÉ seront payées par les vendeurs."
+      "ATTENTION : ce n'est pas le fournisseur de MACHE. Les promotions financées par MACHE seront payées par les vendeurs."
     );
   }
 
@@ -92,7 +92,7 @@ export default async function verifierCommission({ container }: ExecArgs) {
     );
   }
 
-  /* Question 3. Le même article, avec une remise financée par MACHÉ. */
+  /* Question 3. Le même article, avec une remise financée par MACHE. */
   const avecPromo = await commission.getCommissionLines({
     ...base,
     items: [
@@ -117,19 +117,19 @@ export default async function verifierCommission({ container }: ExecArgs) {
   const attendu = commissionSansPromo - REMISE_FINANCEE;
 
   logger.info(
-    `Promotion MACHÉ de ${REMISE_FINANCEE} — commission ${commissionAvecPromo} (attendu : ${attendu}).`
+    `Promotion MACHE de ${REMISE_FINANCEE} — commission ${commissionAvecPromo} (attendu : ${attendu}).`
   );
 
   if (commissionAvecPromo !== attendu) {
     logger.error(
-      "ATTENTION : la remise financée par MACHÉ n'a pas été retirée de la commission. C'est le vendeur qui la paie."
+      "ATTENTION : la remise financée par MACHE n'a pas été retirée de la commission. C'est le vendeur qui la paie."
     );
     return;
   }
 
   if (commissionAvecPromo < 0) {
     logger.info(
-      `La commission est négative : MACHÉ verse ${-commissionAvecPromo} au vendeur, par-dessus le prix encaissé. C'est voulu — le chiffre d'affaires du vendeur reste celui d'une vente sans promotion.`
+      `La commission est négative : MACHE verse ${-commissionAvecPromo} au vendeur, par-dessus le prix encaissé. C'est voulu — le chiffre d'affaires du vendeur reste celui d'une vente sans promotion.`
     );
   }
 

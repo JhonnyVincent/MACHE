@@ -1,5 +1,5 @@
 /*
-  LA RÈGLE DE « SUR MACHÉ EN CE MOMENT » : CHAQUE VENDEUR À SON TOUR.
+  LA RÈGLE DE « SUR MACHE EN CE MOMENT » : CHAQUE VENDEUR À SON TOUR.
 
   Le but : mettre en avant TOUS les vendeurs, pas toujours les mêmes, et
   pas toujours les mêmes articles. Trois règles, dans cet ordre :

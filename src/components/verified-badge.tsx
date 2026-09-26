@@ -1,10 +1,10 @@
 /*
-  Le badge de vérification de MACHÉ.
+  Le badge de vérification de MACHE.
 
   Ce qu'il dit
 
-  Que MACHÉ a contrôlé les documents de cette entreprise. C'est une
-  affirmation de MACHÉ, pas une présentation du vendeur — et c'est
+  Que MACHE a contrôlé les documents de cette entreprise. C'est une
+  affirmation de MACHE, pas une présentation du vendeur — et c'est
   exactement ce qui la distingue du badge de profil, à côté duquel il
   s'affiche souvent.
 
@@ -26,7 +26,7 @@
 export function VerifiedBadge({ compact = false }: { compact?: boolean }) {
   return (
     <span
-      title="MACHÉ a contrôlé les documents de cette entreprise."
+      title="MACHE a contrôlé les documents de cette entreprise."
       className={`inline-flex items-center gap-1 rounded-[3px] bg-[#eaf6ec] font-bold text-[#116b25] ${
         compact ? "px-1.5 py-0.5 text-2xs" : "px-2 py-0.5 text-xs"
       }`}

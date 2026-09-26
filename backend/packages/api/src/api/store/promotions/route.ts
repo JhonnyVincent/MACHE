@@ -13,11 +13,11 @@
 
   CE QU'ELLE NE PUBLIE PAS
 
-  Le porteur du coût. Savoir qu'une remise est payée par MACHÉ plutôt
-  que par la boutique ne regarde que MACHÉ et le vendeur ; l'acheteur,
+  Le porteur du coût. Savoir qu'une remise est payée par MACHE plutôt
+  que par la boutique ne regarde que MACHE et le vendeur ; l'acheteur,
   lui, paie le même prix dans les deux cas.
 
-  Les promotions d'une BOUTIQUE non plus. Le bandeau est celui de MACHÉ :
+  Les promotions d'une BOUTIQUE non plus. Le bandeau est celui de MACHE :
   y faire défiler la promotion d'un vendeur donnerait à sa boutique une
   vitrine que les autres n'ont pas, sans que personne ne l'ait décidé.
   Seules passent les promotions sans vendeur — celles de la place
@@ -94,7 +94,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const rows = (data as unknown as PromotionRow[]) ?? [];
 
   const items = rows
-    /* Celles de MACHÉ, pas celles d'une boutique. */
+    /* Celles de MACHE, pas celles d'une boutique. */
     .filter((promotion) => !promotion.seller)
     .map((promotion) => ({
       id: promotion.id,

@@ -4,7 +4,7 @@
   Pourquoi elle existe
 
   La page contact affichait quatre adresses en @mache.local — un
-  domaine qui n'existe pas. Personne ne recevait rien. MACHÉ n'a pas de
+  domaine qui n'existe pas. Personne ne recevait rien. MACHE n'a pas de
   fournisseur d'e-mail et n'en aura pas demain, donc la conversation vit
   dans le site.
 
@@ -165,7 +165,7 @@ export async function openThread(input: {
       thread: mapThread(result.data.thread),
       /*
         Rendu une seule fois. Pour un visiteur sans compte, c'est la
-        seule clé de sa conversation : MACHÉ n'a pas d'e-mail pour la
+        seule clé de sa conversation : MACHE n'a pas d'e-mail pour la
         lui renvoyer.
       */
       accessToken: str(result.data.access_token) ?? "",
@@ -238,7 +238,7 @@ export const THREAD_CATEGORIES: { value: string; label: string; hint: string }[]
 ];
 
 export const THREAD_STATUS_LABELS: Record<string, string> = {
-  open: "En attente de MACHÉ",
-  answered: "Réponse de MACHÉ",
+  open: "En attente de MACHE",
+  answered: "Réponse de MACHE",
   closed: "Close",
 };

@@ -7,14 +7,14 @@
 
   Pourquoi une application d'authentification et pas un SMS
 
-  D'abord parce que MACHÉ n'a ni fournisseur d'e-mail ni passerelle
+  D'abord parce que MACHE n'a ni fournisseur d'e-mail ni passerelle
   SMS : ce serait impossible aujourd'hui. Mais c'est aussi le meilleur
   des trois — un SMS s'intercepte par détournement de carte SIM, et une
   boîte e-mail compromise livrerait les codes avec le reste.
 
   Les codes de secours ne sont pas un supplément
 
-  Sans fournisseur d'e-mail, MACHÉ n'a AUCUN moyen de réinitialiser quoi
+  Sans fournisseur d'e-mail, MACHE n'a AUCUN moyen de réinitialiser quoi
   que ce soit. Un téléphone perdu sans codes de secours ferme
   l'administration définitivement. La page insiste là-dessus au moment
   où ils s'affichent, parce que c'est le seul moment où on peut les
@@ -22,7 +22,7 @@
 
   La limite est écrite sur la page, pas seulement dans ce commentaire
 
-  Ce second facteur protège les écrans MACHÉ. Il ne protège pas le
+  Ce second facteur protège les écrans MACHE. Il ne protège pas le
   panneau Medusa servi par le backend. Taire cette limite donnerait un
   sentiment de sécurité plus dangereux que pas de protection du tout,
   parce qu'on cesserait de se méfier.
@@ -96,7 +96,7 @@ export default async function AdminSecurityPage({
           </h2>
 
           <p className="mt-2 text-sm leading-relaxed text-[#0f1111]">
-            Ils ne seront <strong>plus jamais affichés</strong>. MACHÉ n&apos;a
+            Ils ne seront <strong>plus jamais affichés</strong>. MACHE n&apos;a
             pas de service d&apos;envoi d&apos;e-mails : si vous perdez votre
             téléphone sans ces codes, personne ne pourra vous rouvrir
             l&apos;administration. Écrivez-les sur papier, rangez-les ailleurs
@@ -133,7 +133,7 @@ export default async function AdminSecurityPage({
           {/* -------------------------------------------------------- */}
           {enrolling && !state.data.enabled && (
             <Panel
-              title="Étape 1 — ajoutez MACHÉ à votre application"
+              title="Étape 1 — ajoutez MACHE à votre application"
               description="Google Authenticator, Authy, Bitwarden, 1Password… toutes fonctionnent."
             >
               <p className="text-sm leading-relaxed text-[#565959]">
@@ -180,7 +180,7 @@ export default async function AdminSecurityPage({
               <p className="mt-4 text-xs leading-relaxed text-[#767676]">
                 Il n&apos;y a pas de code QR : le faire fabriquer par un service
                 extérieur reviendrait à lui envoyer la clé de
-                l&apos;administration de MACHÉ.
+                l&apos;administration de MACHE.
               </p>
 
               <form action={confirmTwoFactorAction} className="mt-6 border-t border-[#d5d9d9] pt-5">
@@ -312,7 +312,7 @@ export default async function AdminSecurityPage({
           {/* -------------------------------------------------------- */}
           <Notice tone="warning" title="Ce que cette protection ne couvre pas">
             {state.data.scopeNote ||
-              "Ce code protège les écrans MACHÉ. Le panneau d'administration servi par le backend reste accessible avec le mot de passe seul."}{" "}
+              "Ce code protège les écrans MACHE. Le panneau d'administration servi par le backend reste accessible avec le mot de passe seul."}{" "}
             Gardez donc un mot de passe long et unique : le second facteur
             s&apos;ajoute à lui, il ne le remplace pas.
           </Notice>

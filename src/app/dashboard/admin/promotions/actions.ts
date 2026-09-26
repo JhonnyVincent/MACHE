@@ -8,10 +8,10 @@
   Il ne change rien à ce que l'acheteur voit ni à ce qu'il paie. Il
   décide de qui sort l'argent :
 
-  - « le vendeur » : la remise sort de son chiffre d'affaires, MACHÉ
+  - « le vendeur » : la remise sort de son chiffre d'affaires, MACHE
     garde sa commission entière ;
-  - « MACHÉ » : la remise entière est retirée de la commission de
-    MACHÉ, et le vendeur touche ce qu'il aurait touché sans promotion ;
+  - « MACHE » : la remise entière est retirée de la commission de
+    MACHE, et le vendeur touche ce qu'il aurait touché sans promotion ;
   - « partagé » : chacun sa part, au pourcentage indiqué.
 
   Il s'applique aux commandes À VENIR
@@ -72,9 +72,9 @@ export async function setCostBearerAction(formData: FormData) {
   done({
     fait:
       bearer === "marketplace"
-        ? "Promotion à la charge de MACHÉ. Sur les prochaines commandes, la remise sera retirée de la commission et le vendeur touchera comme s'il n'y avait pas eu de promotion."
+        ? "Promotion à la charge de MACHE. Sur les prochaines commandes, la remise sera retirée de la commission et le vendeur touchera comme s'il n'y avait pas eu de promotion."
         : bearer === "shared"
-          ? `Promotion partagée : MACHÉ en portera ${Number(percentage)} % sur les prochaines commandes.`
-          : "Promotion à la charge du vendeur. La commission de MACHÉ reste entière.",
+          ? `Promotion partagée : MACHE en portera ${Number(percentage)} % sur les prochaines commandes.`
+          : "Promotion à la charge du vendeur. La commission de MACHE reste entière.",
   });
 }

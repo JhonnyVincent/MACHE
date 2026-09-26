@@ -3,7 +3,7 @@
 
   Ce qu'ils gardent
 
-  1. Le lien mène chez MACHÉ, et seulement chez MACHÉ — construit depuis
+  1. Le lien mène chez MACHE, et seulement chez MACHE — construit depuis
      la configuration, jamais depuis la requête.
   2. Le message n'a qu'une chose à faire passer, le lien, et ne laisse
      personne y glisser du HTML.
@@ -31,7 +31,7 @@ const BASE = "https://mache.example";
 /* Le lien                                                             */
 /* ------------------------------------------------------------------ */
 
-await check("le lien mène à la page MACHÉ, avec le bon espace", () => {
+await check("le lien mène à la page MACHE, avec le bon espace", () => {
   const link = resetLink("member", "abc.def-ghi", BASE)!;
   const url = new URL(link);
   assert.equal(url.origin, BASE);

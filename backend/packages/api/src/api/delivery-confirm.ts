@@ -55,8 +55,8 @@ export async function confirmDelivery(
   }
 
   /*
-    Un transporteur extérieur ne saisit pas de code MACHÉ : il ne
-    connaît pas MACHÉ. Laisser le vendeur en saisir un ici reviendrait
+    Un transporteur extérieur ne saisit pas de code MACHE : il ne
+    connaît pas MACHE. Laisser le vendeur en saisir un ici reviendrait
     à lui laisser confirmer seul une remise à laquelle il n'assistait
     pas — c'est-à-dire à fabriquer une preuve.
   */
@@ -65,7 +65,7 @@ export async function confirmDelivery(
       ok: false,
       status: 409,
       message:
-        "Cette commande passe par un transporteur extérieur : la réception est constatée par l'acheteur, pas par un code MACHÉ.",
+        "Cette commande passe par un transporteur extérieur : la réception est constatée par l'acheteur, pas par un code MACHE.",
     };
   }
 
@@ -82,7 +82,7 @@ export async function confirmDelivery(
       ok: false,
       status: 429,
       message:
-        "Trop de codes erronés. Cette livraison doit être débloquée par MACHÉ.",
+        "Trop de codes erronés. Cette livraison doit être débloquée par MACHE.",
       attempts_left: 0,
     };
   }

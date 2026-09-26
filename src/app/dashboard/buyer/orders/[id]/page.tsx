@@ -158,7 +158,7 @@ export default async function BuyerOrderPage({
             )}
 
             <p className="text-base leading-relaxed text-[#565959]">
-              Votre avis est relu par MACHÉ avant d&apos;être publié.
+              Votre avis est relu par MACHE avant d&apos;être publié.
               Seuls les avis de clients qui ont réellement commandé
               l&apos;article peuvent être déposés.
             </p>

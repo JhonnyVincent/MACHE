@@ -7,7 +7,7 @@
 
   On survole ou on sélectionne un département : son tracé se détache,
   et un panneau donne son chef-lieu, quelques lignes sur lui, et les
-  boutiques MACHÉ qui s'y trouvent.
+  boutiques MACHE qui s'y trouvent.
 
   Pourquoi en SVG et pas en trois dimensions
 

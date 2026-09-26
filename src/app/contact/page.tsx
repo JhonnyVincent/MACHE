@@ -1,5 +1,5 @@
 /*
-  PAGE : écrire à MACHÉ.
+  PAGE : écrire à MACHE.
 
   Ce qu'elle affichait
 
@@ -10,7 +10,7 @@
 
   Ce qu'elle fait maintenant
 
-  Un formulaire qui enregistre la conversation dans MACHÉ. Pas d'e-mail,
+  Un formulaire qui enregistre la conversation dans MACHE. Pas d'e-mail,
   parce qu'il n'y en a pas — et il n'y en aura pas demain.
 
   CE QUE LA PAGE DIT AVANT D'ENVOYER, PAS APRÈS
@@ -31,8 +31,8 @@ import { sendMessageAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Nous écrire — MACHÉ",
-  description: "Une question, une commande, un signalement : écrivez à MACHÉ.",
+  title: "Nous écrire — MACHE",
+  description: "Une question, une commande, un signalement : écrivez à MACHE.",
 };
 
 const inputClass =
@@ -65,7 +65,7 @@ export default async function ContactPage({
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
         Une question, une commande qui coince, une boutique à ouvrir, un produit
         à signaler. Écrivez ici : votre message arrive directement à
-        l&apos;équipe MACHÉ.
+        l&apos;équipe MACHE.
       </p>
 
       {query.error && (
@@ -94,12 +94,12 @@ export default async function ContactPage({
             <Link href="/dashboard/buyer/messages" className="font-medium underline">
               vos messages
             </Link>
-            . MACHÉ n&apos;envoie pas d&apos;e-mail — vous ne serez pas prévenu,
+            . MACHE n&apos;envoie pas d&apos;e-mail — vous ne serez pas prévenu,
             il faudra revenir voir.
           </p>
         ) : (
           <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
-            MACHÉ n&apos;a pas encore de service d&apos;envoi d&apos;e-mails.
+            MACHE n&apos;a pas encore de service d&apos;envoi d&apos;e-mails.
             Après l&apos;envoi, vous recevrez un <strong>lien privé</strong> vers
             votre conversation : gardez-le, c&apos;est le seul moyen de relire
             notre réponse.{" "}

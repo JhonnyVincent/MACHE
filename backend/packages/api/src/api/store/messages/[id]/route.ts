@@ -139,7 +139,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     id: thread.id,
     /*
       Répondre rouvre la conversation. Une réponse à un échange marqué
-      « répondu » doit remonter la pile de MACHÉ, sinon elle attend là
+      « répondu » doit remonter la pile de MACHE, sinon elle attend là
       où personne ne regarde plus.
     */
     status: "open",

@@ -11,22 +11,22 @@
   Ce qu'elle dit maintenant
 
   Ce qu'un vendeur doit faire, ce qu'il ne peut pas faire, et ce que
-  MACHÉ fait en retour. Le tout au présent et à la deuxième personne :
+  MACHE fait en retour. Le tout au présent et à la deuxième personne :
   ces règles s'adressent à quelqu'un.
 
   Ce qu'elle n'invente pas
 
   La commission, les délais de versement et les sanctions graduées
-  engagent MACHÉ commercialement. Ils se décident.
+  engagent MACHE commercialement. Ils se décident.
 */
 
 import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Règles vendeurs — MACHÉ",
+  title: "Règles vendeurs — MACHE",
   description:
-    "Ce qu'on attend d'une boutique sur MACHÉ, et ce que MACHÉ s'engage à faire.",
+    "Ce qu'on attend d'une boutique sur MACHE, et ce que MACHE s'engage à faire.",
 };
 
 function VendorsLegalPageEcrit() {
@@ -37,7 +37,7 @@ function VendorsLegalPageEcrit() {
       </h1>
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
-        Ce qu&apos;on attend de vous, et ce que MACHÉ fait en retour.
+        Ce qu&apos;on attend de vous, et ce que MACHE fait en retour.
       </p>
 
       <div className="mt-8 space-y-7 text-md leading-relaxed text-[var(--mache-muted)]">
@@ -99,7 +99,7 @@ function VendorsLegalPageEcrit() {
 
           <p className="mt-2">
             Le profil que vous déclarez — particulier, boutique,
-            grossiste, marque — s&apos;affiche sur votre vitrine. MACHÉ ne
+            grossiste, marque — s&apos;affiche sur votre vitrine. MACHE ne
             le vérifie pas, et vos clients en sont informés : c&apos;est
             une déclaration de votre part, pas un label.
           </p>
@@ -131,7 +131,7 @@ function VendorsLegalPageEcrit() {
 
         <section>
           <h2 className="text-lg font-bold text-[var(--mache-text)]">
-            Ce que MACHÉ fait
+            Ce que MACHE fait
           </h2>
 
           <ul className="mt-2 space-y-2">
@@ -161,7 +161,7 @@ function VendorsLegalPageEcrit() {
           </h2>
 
           <p className="mt-2 text-base">
-            Trois points relèvent d&apos;une décision de MACHÉ et seront
+            Trois points relèvent d&apos;une décision de MACHE et seront
             précisés avant l&apos;ouverture commerciale : la commission
             retenue sur les ventes, le délai de versement de votre
             argent, et la gradation des sanctions — avertissement,
@@ -201,7 +201,7 @@ function VendorsLegalPageEcrit() {
         </Link>{" "}
         ·{" "}
         <Link href="/sell" className="font-semibold hover:underline">
-          Vendre sur MACHÉ
+          Vendre sur MACHE
         </Link>
       </p>
     </main>

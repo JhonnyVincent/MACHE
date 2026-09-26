@@ -52,7 +52,7 @@ export default async function VitrineEditeurPage() {
     Puck occupe l'écran entier. Une barre de retour posée au-dessus de lui
     se retrouvait recouverte : le vendeur n'avait plus de chemin vers
     l'éditeur en formulaire. Le lien vit donc dans l'en-tête de Puck, que
-    MACHÉ remplace par le sien.
+    MACHE remplace par le sien.
   */
   return (
     <main className="flex min-h-screen flex-col">

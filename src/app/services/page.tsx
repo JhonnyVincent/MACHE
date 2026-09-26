@@ -1,5 +1,5 @@
 /*
-  PAGE : ce que MACHÉ fait
+  PAGE : ce que MACHE fait
 
   Ce qu'elle annonçait
 
@@ -22,9 +22,9 @@
 import { Link } from "next-view-transitions";
 
 export const metadata = {
-  title: "Ce que MACHÉ fait — MACHÉ",
+  title: "Ce que MACHE fait — MACHE",
   description:
-    "Ce qui fonctionne aujourd'hui sur MACHÉ, et ce qui n'est pas encore ouvert.",
+    "Ce qui fonctionne aujourd'hui sur MACHE, et ce qui n'est pas encore ouvert.",
 };
 
 const aujourdhui = [
@@ -74,7 +74,7 @@ const pasEncore = [
   {
     titre: "Paiement en ligne",
     texte:
-      "Ni carte, ni portefeuille mobile. Tant qu'aucun prestataire n'est raccordé, MACHÉ ne prétend pas encaisser.",
+      "Ni carte, ni portefeuille mobile. Tant qu'aucun prestataire n'est raccordé, MACHE ne prétend pas encaisser.",
   },
   {
     titre: "Export international",
@@ -97,7 +97,7 @@ export default function ServicesPage() {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-10 sm:py-14">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
-        Ce que MACHÉ fait
+        Ce que MACHE fait
       </h1>
 
       <p className="mt-3 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
@@ -170,7 +170,7 @@ export default function ServicesPage() {
           href="/sell"
           className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
         >
-          Vendre sur MACHÉ
+          Vendre sur MACHE
         </Link>
         <Link
           href="/faq"
