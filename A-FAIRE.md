@@ -13,12 +13,17 @@ Cochez au fur et à mesure. Rien ici n'est « presque fait » : c'est fait, ou c
 3. [ ] **Envoi des e-mails (mot de passe oublié)** — compte gratuit sur brevo.com → *Expéditeurs* : ajouter l'adresse d'expédition et cliquer le lien de confirmation → *SMTP & API → Clés API* : créer une clé → la coller dans `BREVO_API_KEY` sur `mache-backend`, et mettre **exactement la même adresse** dans `MAIL_FROM`. Détails : `DEPLOIEMENT.md`, « L'envoi des e-mails ».
 4. [ ] **Abonnement « Restez au courant »** — dans Brevo : *Contacts → Listes* → créer une liste « Nouvelles MACHE », noter son numéro, le mettre dans `BREVO_NEWSLETTER_LIST_ID` sur `mache-backend`. Recommandé : créer un modèle de double confirmation et mettre son numéro dans `BREVO_DOI_TEMPLATE_ID`.
 5. [ ] **Photos des rayons (tuiles « Catégories »)** — sur GitHub, dossier `public/images/rayons/` → *Add file → Upload files*. Une photo par sous-rayon, nommée d'après son adresse (`meubles.jpg`, `telephones-accessoires.jpg`, `huiles-essentielles.jpg`…) : la liste est dans le `LISEZ-MOI.md` du dossier. **Libres de droits uniquement** (Unsplash, Pexels) — pas pngtree ni images filigranées.
-6. [ ] **Facultatif** — retirer `MERCUR_BACKEND_URL` de `mache-backend` : elle ne sert plus.
+6. [ ] **Rester connecté au panneau vendeur (Redis)** — Render → *New* → **Key Value** → nom `mache-sessions`, offre **Free**, région **Frankfurt** → *Create*. Copier son **Internal Key Value URL** (`redis://…`) → `mache-backend` → *Environment* → `REDIS_URL` = cette adresse → *Save*. Sans cela, les vendeurs sont déconnectés à chaque fois que le backend s'endort (15 min sans visite).
+7. [ ] **Nom de l'expéditeur des e-mails** — `mache-backend` → *Environment* → `MAIL_FROM_NAME` = `MACHE` (sans accent).
+8. [ ] **Réseaux sociaux** — envoyer à Claude les adresses des pages MACHE (Facebook, Instagram, TikTok, WhatsApp, YouTube, X). Les logos n'apparaissent qu'une fois l'adresse donnée.
+9. [ ] **Facultatif** — retirer `MERCUR_BACKEND_URL` de `mache-backend` : elle ne sert plus.
 
 ## ✅ Terminé et en ligne
 
 - **Panneau vendeur : fin du « Failed to fetch »** — il visait `localhost:9000` ; il appelle désormais l'adresse qui l'affiche. Vérifié dans un navigateur, jusqu'à la liste des boutiques.
 - **Accueil, nouvel ordre** — Nouveautés (3 rangées de 6), Nouvelles boutiques en grandes cartes puis Nos suggestions, qui défilent de droite à gauche ; points relais en vert clair ; FAQ avant le pied de page (mêmes réponses que la page /faq). Tuiles des catégories : une case par sous-rayon, prête à recevoir sa photo.
+- **Panneau vendeur : on reste connecté** — sessions de 3 jours prolongées à l'usage, rangées dans Redis : elles survivent aux réveils du backend. Vérifié avec le vrai backend (sans Redis : déconnecté au redémarrage ; avec : connecté). *Attend la création du Key Value (étape 6).*
+- **Bande du haut** — « Trouver un fournisseur » ; logos des réseaux sociaux prêts (étape 8). Le nom s'écrit MACHE partout.
 - **Panneau vendeur : une seule connexion** — « Ouvrir mon panneau vendeur » sur le site entre directement dans le panneau Mercur, dans la bonne boutique, sans redemander les identifiants (laissez-passer de 60 s, à usage unique). Vérifié avec le vrai backend et dans un navigateur.
 - **Connexion : une majuscule ne refuse plus le compte** — « Jean@… » et « jean@… », c'est la même adresse, partout (site, panneaux Mercur). Les anciens comptes à majuscules sont alignés au démarrage.
 - **Mot de passe oublié** — client, vendeur (site et panneau Mercur), administration. Lien valable 15 min, utilisable une fois ; 3 demandes max par adresse et par heure ; le site ne révèle jamais qui a un compte. *Attend la clé Brevo (étape 3 ci-dessus).*
@@ -42,9 +47,8 @@ Cochez au fur et à mesure. Rien ici n'est « presque fait » : c'est fait, ou c
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
-- [ ] **Supprimer le faux Stripe** (`src/lib/payments/index.ts`) — il répond « payé » sans rien encaisser. *Demandé trois fois, attend votre oui.*
+- [ ] **Supprimer le faux Stripe** (`src/lib/payments/index.ts`) — il répondrait « payé » sans rien encaisser. Plus aucune page ne l'appelle : c'est du code mort, sans danger aujourd'hui, mais un piège si quelqu'un le rebranche. *Attend votre oui.*
 - [ ] **Retirer le catalogue de démonstration** — chaussures fictives en euros, 3 boutiques de démonstration, 20 rayons en anglais. Il remplit encore « Nouveautés ». À faire avant d'ouvrir à de vrais clients.
-- [ ] **Une seule connexion pour MACHE et le panneau vendeur** — aujourd'hui, deux connexions avec les mêmes identifiants (deux adresses différentes, deux sessions). Faisable, à construire proprement.
 - [ ] **Protéger le panneau admin Medusa du backend** — jugé le chantier de sécurité le plus rentable restant.
 - [ ] **Transmettre au backend l'adresse IP réelle des internautes** — le site appelle le backend depuis son propre serveur : pour le backend, tous les clients du site ont la même adresse. Conséquence : les plafonds ne peuvent pas distinguer deux clients passés par le site.
 

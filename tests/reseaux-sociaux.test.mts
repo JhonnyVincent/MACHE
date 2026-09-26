@@ -77,4 +77,10 @@ check("la bande du haut garde sa longueur, donc sa vitesse", () => {
   assert.equal(copies % 2, 0, "un nombre pair de copies");
 });
 
+check("le pied de page n'affiche ni faux réseaux ni langues absentes", () => {
+  const footer = readFileSync("src/components/footer.tsx", "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(footer, /\["f", "in", "tw", "wa"\]/);
+  assert.doesNotMatch(footer, /🇺🇸|🇩🇴|>\s*EN\s*<|>\s*ES\s*</);
+});
+
 console.log(`\n${passed} vérifications passées.`);

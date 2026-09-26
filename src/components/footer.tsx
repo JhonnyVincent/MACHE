@@ -90,34 +90,12 @@ export function Footer({
 
             <SocialLinks className="mt-5 flex text-white" size={22} />
 
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="rounded-md border border-white/10 px-3 py-1 text-2xs text-white/55">
-                🇫🇷 FR
-              </span>
-
-              <span className="rounded-md border border-white/10 px-3 py-1 text-2xs text-white/55">
-                🇺🇸 EN
-              </span>
-
-              <span className="rounded-md border border-white/10 px-3 py-1 text-2xs text-white/55">
-                🇭🇹 HT
-              </span>
-
-              <span className="rounded-md border border-white/10 px-3 py-1 text-2xs text-white/55">
-                🇩🇴 ES
-              </span>
-            </div>
-
-            <div className="mt-5 flex gap-2">
-              {["f", "in", "tw", "wa"].map((item) => (
-                <div
-                  key={item}
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm text-white/70 transition hover:border-transparent hover:bg-[rgba(232,66,10,.35)]"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
+            {/*
+              Ici s'affichaient des pastilles « EN » et « ES » — langues
+              que le site ne propose pas — et quatre ronds « f, in, tw,
+              wa » qui ne menaient nulle part. Remplacés par les vrais
+              comptes de MACHE (au-dessus), dès qu'ils sont renseignés.
+            */}
           </div>
 
           <div>
