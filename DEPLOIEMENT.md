@@ -201,14 +201,15 @@ jour.
 Trois étapes, une seule fois :
 
 1. Créer un compte gratuit sur brevo.com.
-2. **Expéditeurs** → ajouter `contact.bawonlakwa@gmail.com`, puis
+2. **Expéditeurs** → ajouter l'adresse d'expédition de MACHÉ (la même que `MAIL_FROM` sur Render), puis
    cliquer sur le lien de confirmation que Brevo envoie à cette
    adresse. Sans cette confirmation, Brevo refuse tous les envois.
 3. **SMTP & API → Clés API** → créer une clé, et la coller sur
    `mache-backend` → `Environment` → `BREVO_API_KEY`.
 
-`MAIL_FROM` (l'adresse d'expédition) et `MAIL_FROM_NAME` (« MACHÉ »)
-sont déjà posées par le `render.yaml`.
+`MAIL_FROM` (l'adresse d'expédition) se saisit sur Render : elle doit
+être EXACTEMENT celle confirmée chez Brevo. `MAIL_FROM_NAME` (« MACHÉ »)
+est déjà posée par le `render.yaml`.
 
 **À savoir.** Un message « de » une adresse `@gmail.com` mais envoyé
 par un autre service que Gmail arrive plus souvent dans les courriers

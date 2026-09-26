@@ -144,8 +144,11 @@ services:
       # tombe plus souvent dans les indésirables. Acceptable pour
       # démarrer ; la solution durable est une adresse sur un nom de
       # domaine à MACHÉ, authentifié chez Brevo.
+      #
+      # Saisie dans Render, pas écrite ici : elle doit être EXACTEMENT
+      # l'adresse confirmée chez Brevo, et c'est MACHÉ qui la choisit.
       - key: MAIL_FROM
-        value: contact.bawonlakwa@gmail.com
+        sync: false
       # Le nom affiché à côté de l'adresse d'expédition.
       - key: MAIL_FROM_NAME
         value: MACHÉ
