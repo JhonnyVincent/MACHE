@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Link } from "next-view-transitions";
 import type { SitePromotion } from "@/lib/medusa/promotions";
 
 /*
@@ -18,7 +19,8 @@ import type { SitePromotion } from "@/lib/medusa/promotions";
 */
 const translations = {
   fr: {
-    delivery: "Livraison partout en Haïti",
+    track: "Suivre ma livraison",
+    openShop: "Ouvrir une boutique",
     searchPlaceholder: "Rechercher un produit, une boutique...",
     login: "Se connecter",
     register: "S’inscrire",
@@ -35,7 +37,8 @@ const translations = {
     help: "Aide"
   },
   ht: {
-    delivery: "Livrezon toupatou an Ayiti",
+    track: "Swiv livrezon mwen",
+    openShop: "Louvri yon boutik",
     searchPlaceholder: "Chèche yon pwodwi, yon boutik...",
     login: "Konekte",
     register: "Kreye kont",
@@ -55,6 +58,29 @@ const translations = {
 
 type Lang = keyof typeof translations;
 
+/* Les services de la bande défilante du haut. */
+const SERVICES = [
+  { key: "track", icon: "🚚", href: "/dashboard/buyer/orders" },
+  { key: "verifyAgent", icon: "✅", href: "/verify-agent" },
+  { key: "openShop", icon: "🏪", href: "/sell" },
+] as const;
+
+/* La langue choisie, lue dans son cookie. */
+function useLang(): Lang {
+  const [lang, setLang] = useState<Lang>("fr");
+
+  useEffect(() => {
+    const saved = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("mache_locale="))
+      ?.split("=")[1] as Lang | undefined;
+
+    if (saved && translations[saved]) setLang(saved);
+  }, []);
+
+  return lang;
+}
+
 /*
   Le compteur du panier est passé par le serveur.
 
@@ -69,6 +95,7 @@ export function Header({ cartCount = 0,
   promotions?: SitePromotion[];
 }) {
   const count = cartCount;
+  const pathname = usePathname();
 
   const [lang, setLang] = useState<Lang>("fr");
 
@@ -126,20 +153,47 @@ export function Header({ cartCount = 0,
         </div>
       )}
 
-      <div className="border-b bg-black text-white">
-        <div className="container-page flex h-10 items-center justify-between">
-          <div>🚚 {t.delivery}</div>
+      {/*
+        LA BANDE NOIRE DU HAUT DÉFILE EN CONTINU, DE DROITE À GAUCHE.
 
-          <div className="flex items-center gap-5">
+        Elle porte les trois services qu'on cherche sans savoir où ils
+        sont : suivre sa livraison, vérifier un agent, ouvrir une
+        boutique. Elle s'arrête au survol (pour pouvoir cliquer), et
+        reste immobile pour qui a demandé moins d'animations.
+
+        La langue reste à droite, fixe : un sélecteur qui défile ne
+        s'attrape pas.
+      */}
+      <div className="border-b bg-black text-white">
+        <div className="flex h-10 items-center">
+          <div className="relative min-w-0 flex-1 overflow-hidden">
+            <div className="mache-ticker mache-ticker-fast flex w-max gap-16 whitespace-nowrap text-sm">
+              {[0, 1].flatMap((copy) =>
+                SERVICES.map((service) => (
+                  <Link
+                    key={`${copy}-${service.href}`}
+                    href={service.href}
+                    aria-hidden={copy === 1 ? true : undefined}
+                    tabIndex={copy === 1 ? -1 : undefined}
+                    className="hover:text-[var(--mache-primary-strong)] hover:underline"
+                  >
+                    {service.icon} {t[service.key]}
+                  </Link>
+                ))
+              )}
+            </div>
+          </div>
+
+          <div className="shrink-0 px-4">
             <select
               value={lang}
               onChange={(e) => changeLang(e.target.value as Lang)}
-              className="bg-transparent text-white outline-none"
+              aria-label="Langue"
+              className="bg-black text-white outline-none"
             >
               <option value="fr">FR</option>
               <option value="ht">HT</option>
             </select>
-
           </div>
         </div>
       </div>
@@ -222,7 +276,25 @@ export function Header({ cartCount = 0,
         </div>
       </div>
 
-      <nav className="bg-black text-white">
+      {/*
+        Sur l'accueil, le menu noir descend sous le grand bandeau (voir
+        src/app/page.tsx). Partout ailleurs, il reste ici.
+      */}
+      {pathname !== "/" && <MainNav />}
+    </header>
+  );
+}
+
+/*
+  LE MENU NOIR. Exporté pour que l'accueil le place sous son grand
+  bandeau ; ailleurs, l'en-tête l'affiche lui-même.
+*/
+export function MainNav() {
+  const lang = useLang();
+  const t = translations[lang];
+
+  return (
+    <nav className="bg-black text-white">
         <div className="container-page flex h-16 items-center gap-6 overflow-x-auto whitespace-nowrap">
           <Link href="/shop">
             ▦ {t.catalog}
@@ -252,7 +324,6 @@ export function Header({ cartCount = 0,
             🎧 {t.help}
           </Link>
         </div>
-      </nav>
-    </header>
+    </nav>
   );
 }

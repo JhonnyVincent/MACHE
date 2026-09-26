@@ -12,6 +12,7 @@
 */
 
 import Link from "next/link";
+import { AnimatedList } from "@/components/anim/animated-list";
 import { getCart } from "@/lib/medusa/cart";
 import { formatAmount } from "@/lib/medusa/catalog";
 import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
@@ -68,7 +69,8 @@ export default async function CartPage({
         ) : (
           <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_340px]">
             {/* Lignes */}
-            <div className="space-y-2.5">
+            {/* Retirer un article le fait glisser hors de la liste (AutoAnimate). */}
+            <AnimatedList className="space-y-2.5">
               {cart.lines.map((line) => (
                 <div
                   key={line.id}
@@ -144,7 +146,7 @@ export default async function CartPage({
                   </span>
                 </div>
               ))}
-            </div>
+            </AnimatedList>
 
             {/* Récapitulatif */}
             <aside className="h-fit rounded-[10px] border border-[var(--mache-line)] bg-white p-4">

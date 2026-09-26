@@ -8,7 +8,7 @@
     "start": "next start",
     "test:vitrine": "tsx tests/vitrine-blocs.test.mts",
     "test:config": "tsx tests/config-backend.test.mts",
-    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:routes && npm run test:textes && npm run test:attente && npm run test:promotions && npm run test:agents && npm run test:connexion && npm run test:gel && npm run test:protections && npm run test:roles && npm run test:accueil && npm run test:partenaires && npm run test:delais && npm run test:panneaux && npm run test:casse && npm run test:oubli && npm run test:rayons",
+    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:routes && npm run test:textes && npm run test:attente && npm run test:promotions && npm run test:agents && npm run test:connexion && npm run test:gel && npm run test:protections && npm run test:roles && npm run test:accueil && npm run test:partenaires && npm run test:delais && npm run test:panneaux && npm run test:casse && npm run test:oubli && npm run test:rayons && npm run test:rotation",
     "test:profil": "tsx tests/profil-vendeur.test.mts",
     "test:minimum": "tsx tests/commande-minimum.test.mts",
     "test:devis": "tsx tests/devis.test.mts",
@@ -32,13 +32,17 @@
     "test:panneaux": "tsx tests/panneaux-adresse.test.mts",
     "test:casse": "tsx tests/casse-email.test.mts",
     "test:oubli": "tsx tests/mot-de-passe-oublie.test.mts",
-    "test:rayons": "tsx tests/rayons-backend.test.mts"
+    "test:rayons": "tsx tests/rayons-backend.test.mts",
+    "test:rotation": "tsx tests/rotation.test.mts"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.10.0",
     "@measured/puck": "^0.20.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",
+    "motion": "^13.4.4",
     "next": "^15.3.1",
+    "next-view-transitions": "^0.3.5",
     "openai": "^4.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

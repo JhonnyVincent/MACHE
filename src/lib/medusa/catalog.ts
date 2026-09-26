@@ -525,6 +525,36 @@ export async function fetchProductByHandle(
   return { ok: true, data: first ? mapProduct(first) : null };
 }
 
+/*
+  Quelle boutique vend quel article.
+
+  Un produit n'appartient pas à un vendeur : ce sont les OFFRES qui les
+  relient. Une seule lecture des offres suffit à savoir, pour chaque
+  produit, quelle boutique le propose — de quoi faire passer chaque
+  vendeur à son tour sur l'accueil.
+*/
+export async function fetchProductSellerMap(
+  limit = 300
+): Promise<MedusaResult<Map<string, string>>> {
+  const result = await medusaFetch<{ offers: RawProduct[] }>(
+    "/store/offers",
+    { limit, fields: "product_id,seller_id" },
+    { revalidate: 300, tags: ["offers"] }
+  );
+
+  if (!result.ok) return result;
+
+  const map = new Map<string, string>();
+
+  for (const offer of result.data.offers ?? []) {
+    const product = text(offer.product_id);
+    const seller = text(offer.seller_id);
+    if (product && seller && !map.has(product)) map.set(product, seller);
+  }
+
+  return { ok: true, data: map };
+}
+
 export async function fetchSellers(
   limit = 12
 ): Promise<MedusaResult<{ sellers: StoreSeller[]; count: number }>> {

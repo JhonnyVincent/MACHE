@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { SiteChrome } from "@/components/site-chrome";
 import { fetchCategories } from "@/lib/medusa/catalog";
 import { CATEGORY_TREE } from "@/lib/categories";
+import { ViewTransitions } from "next-view-transitions";
 import { getCart } from "@/lib/medusa/cart";
 import { fetchSiteTheme, themeStyle } from "@/lib/medusa/theme";
 import { fetchSitePromotions } from "@/lib/medusa/promotions";
@@ -76,7 +77,14 @@ export default async function RootLayout({
 
   const style = themeStyle(theme);
 
+  /*
+    Les changements de page se font en fondu (View Transitions, via
+    next-view-transitions) : le navigateur fait l'animation lui-même,
+    sans rien ajouter au poids de la page. Un navigateur qui ne connaît
+    pas cette API change de page normalement.
+  */
   return (
+    <ViewTransitions>
     <html lang="fr" data-mache-theme={theme.key}>
       <head>
         {/*
@@ -110,5 +118,6 @@ export default async function RootLayout({
         </SiteChrome>
       </body>
     </html>
+    </ViewTransitions>
   );
 }

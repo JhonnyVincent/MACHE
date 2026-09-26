@@ -657,3 +657,71 @@ aside:not([data-chrome="dark"]) a:active {
   /* Marges d'un document qu'on peut agrafer ou relier. */
   margin: 20mm 18mm;
 }
+
+/* La bande des services défile plus vite que celle des promotions : elle est courte. */
+.mache-ticker-fast {
+  animation-duration: 28s;
+}
+
+/* Défilement continu, de gauche à droite : l'inverse du ticker. */
+.mache-marquee-reverse {
+  animation: macheTicker 40s linear infinite reverse;
+}
+
+.mache-marquee-reverse:hover,
+.mache-marquee:hover {
+  animation-play-state: paused;
+}
+
+.mache-marquee {
+  animation: macheTicker 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mache-marquee,
+  .mache-marquee-reverse,
+  .mache-ticker-fast {
+    animation: none;
+    transform: none;
+  }
+}
+
+/*
+  « Là où est le curseur » : dans une rangée, la carte survolée grandit
+  et passe devant ; les autres s'estompent. Coupé pour qui a demandé
+  moins d'animations.
+*/
+.mache-spotlight > * {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.mache-spotlight:hover > * {
+  opacity: 0.55;
+}
+
+.mache-spotlight > *:hover {
+  opacity: 1;
+  transform: scale(1.08);
+  z-index: 2;
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mache-spotlight > *:hover {
+    transform: none;
+  }
+}
+
+/* Changement de page : un fondu court. Aucun pour qui a demandé moins d'animations. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

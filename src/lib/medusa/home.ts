@@ -1,85 +1,64 @@
 /*
   Les données de la page d'accueil.
 
-  L'accueil doit donner l'impression que la marketplace est vivante : ce
-  qui vient d'arriver, qui vient d'ouvrir, ce qui est en promotion. Tout
-  ce qui est affiché ici vient donc du backend, jamais d'une liste écrite
-  à la main.
+  Tout ce qui est affiché ici vient du backend, jamais d'une liste
+  écrite à la main, et une section n'existe que si la donnée qui la
+  justifie existe :
 
-  Ce qui justifie chaque section
-
-  Une section n'existe que si la donnée qui la justifie existe :
-
-  - « Nouveautés » et « Nouvelles boutiques » reposent sur une date de
+  - « Nouvelles boutiques » et les nouveautés reposent sur une date de
     création, que le backend fournit ;
-  - « Promotions » compare le prix calculé au prix d'origine, tous deux
-    renvoyés par Medusa. Une remise affichée ici est une remise réelle ;
-  - « Les plus vendus » compte de vraies commandes, et le backend refuse
-    de classer tant qu'il n'y en a pas assez (voir bestsellers.ts). Un
-    classement tiré au hasard tromperait à la fois les acheteurs et les
-    vendeurs qui s'y croiraient mis en avant ;
-  - « Vous aimerez » part des FAVORIS d'un client connecté — quelque
-    chose qu'il a choisi de nous dire. Pas d'un historique de
-    navigation : il faudrait un cookie qui suive ce que chacun regarde,
-    et la page de confidentialité promet qu'il n'y en a pas. Sans
-    favoris, la section s'appelle honnêtement « À découvrir ».
+  - « Promotions » : des prix réellement inférieurs au tarif habituel,
+    ou des codes promotionnels réellement actifs ;
+  - « Sur MACHÉ en ce moment » : une sélection qui TOURNE entre les
+    vendeurs (voir src/lib/rotation.ts) — pas un classement ;
+  - « Nos marques » : les boutiques qui se DÉCLARENT marque officielle.
+    C'est leur déclaration, pas un contrôle de MACHÉ ;
+  - « Nos suggestions pour vous » part des FAVORIS d'un client connecté
+    — quelque chose qu'il a choisi de nous dire. Pas d'un historique de
+    navigation : il faudrait un cookie de suivi, et la page de
+    confidentialité promet qu'il n'y en a pas. Sans favoris, la section
+    s'appelle honnêtement « À découvrir ».
 
-  Tolérance aux pannes
-
-  Les lectures partent en parallèle et indépendamment. Si l'une échoue,
-  les autres s'affichent : une marketplace dont l'accueil s'effondre
-  parce qu'une section ne répond pas est pire qu'une section manquante.
+  Tolérance aux pannes : les lectures partent en parallèle et
+  indépendamment. Une section qui échoue n'emporte pas les autres.
 */
 
 import {
-  fetchProducts, fetchSellers, fetchCategories,
+  fetchProducts, fetchSellers, fetchCategories, fetchProductSellerMap,
   type StoreProduct, type StoreSeller, type StoreCategory,
 } from "./catalog";
-import { fetchBestSellers } from "./bestsellers";
+import { fetchSitePromotions } from "./promotions";
 import { PARTNERS, type Partner } from "../partners";
 import { CATEGORY_TREE } from "../categories";
+import { readSellerProfile } from "../seller-profile";
+import { hourSeed, rotateFairly, seededRandom } from "../rotation";
 
 /* Une vignette du grand bandeau : une vraie photo de produit, jamais une image de stock. */
 export type SlideProduct = { title: string; href: string; image: string };
 
 /*
-  LES DIAPOSITIVES DU GRAND BANDEAU (après la carte d'Haïti, qui ouvre
-  toujours le défilement et vit dans la page elle-même).
-
-  Trois formes, et chacune ne dit que ce qui est vrai :
-
-  - « products » : de vraies vignettes, prises aux articles réellement
-    en ligne ;
-  - « partners » : les partenaires réellement signés, nommés, sans logo
-    — MACHÉ n'a l'accord écrit de personne pour en afficher ;
-  - « invite » : un rayon qui existe mais n'a encore aucun article. Il
-    ne prétend pas en avoir : il s'adresse aux vendeurs qui pourraient
-    le remplir. Un bandeau vide promettrait un catalogue absent ; un
-    bandeau d'invitation dit vrai, et sert à quelque chose.
+  LES DIAPOSITIVES DU GRAND BANDEAU, après la carte d'Haïti — qui ouvre
+  toujours le défilement et vit dans la page elle-même.
 */
 export type HeroSlide =
+  | { kind: "shops"; key: string; sellers: StoreSeller[] }
   | {
-      kind: "products";
+      kind: "promotions";
       key: string;
-      eyebrow: string;
-      title: string;
-      text: string;
-      href: string;
-      cta: string;
+      /* Les codes et remises de MACHÉ réellement actifs. */
+      labels: string[];
       products: SlideProduct[];
     }
-  | { kind: "partners"; key: string; partners: Partner[] }
-  | {
-      kind: "invite";
-      key: string;
-      eyebrow: string;
-      /* L'icône du rayon, celle des menus du site. */
-      icon: string | null;
-      title: string;
-      text: string;
-      rayonHref: string;
-      subLinks: { label: string; href: string }[];
-    };
+  | { kind: "partners"; key: string; partners: Partner[] };
+
+export type CategoryTile = {
+  handle: string;
+  name: string;
+  icon: string | null;
+  href: string;
+  /* Jusqu'à quatre vraies photos d'articles du rayon ; aucune s'il est vide. */
+  images: string[];
+};
 
 export type ProductSection = {
   title: string;
@@ -90,36 +69,31 @@ export type ProductSection = {
 
 export type HomeData = {
   slides: HeroSlide[];
-  /* Les articles les plus récents. */
-  newest: StoreProduct[];
-  /* Prix réellement inférieurs au tarif habituel. */
-  deals: StoreProduct[];
-  /* Classés sur de vraies commandes ; vide tant qu'il n'y en a pas assez. */
-  bestSellers: StoreProduct[];
-  /* « Vous aimerez » (d'après les favoris) ou « À découvrir ». */
-  forYou: ProductSection | null;
+  /* Sélection tournante : chaque vendeur à son tour. */
+  spotlight: StoreProduct[];
+  categoryTiles: CategoryTile[];
+  /* Vrai si les rayons proposés viennent des favoris du client. */
+  tilesFromFavorites: boolean;
   newSellers: StoreSeller[];
-  /* Les rayons principaux de MACHÉ présents au catalogue. */
+  /* Boutiques qui se déclarent marque officielle. */
+  brands: StoreSeller[];
+  /* « Nos suggestions pour vous » (d'après les favoris) ou « À découvrir ». */
+  forYou: ProductSection | null;
+  newestCount: number;
   mainRayons: StoreCategory[];
-  /* Raisons de panne, écrites au journal du serveur. */
   problems: string[];
-  /* Faux si le backend n'est pas configuré du tout. */
   configured: boolean;
 };
 
 /*
-  Les rayons du grand bandeau : ce que ce marché a de particulier —
-  ce qui est fait à la main, fait maison, naturel. Ailleurs on vend de
-  l'usine ; ici, beaucoup de vendeurs fabriquent.
+  Les rayons proposés à qui n'a encore rien dit de ses goûts. Ce ne sont
+  pas « les plus demandés » — MACHÉ ne mesure pas cela — et la section ne
+  le prétend pas.
 */
-const SLIDE_RAYONS = ["fait-a-la-main", "fait-maison", "bio"] as const;
+export const DEFAULT_TILES = ["maison", "mode", "electronique", "bio", "fait-a-la-main"] as const;
 
-/* Ce qu'une diapositive d'invitation dit aux vendeurs, rayon par rayon. */
-const INVITE: Record<string, string> = {
-  "fait-a-la-main": "Vous fabriquez vous-même ? Ce rayon attend vos créations.",
-  "fait-maison": "Vous cuisinez, vous préparez chez vous ? Ce rayon attend vos produits.",
-  bio: "Vous produisez naturel ? Ce rayon attend vos articles.",
-};
+const TILE_COUNT = 5;
+const SPOTLIGHT_COUNT = 12;
 
 const productHref = (product: StoreProduct) => `/product/${product.handle ?? product.id}`;
 
@@ -136,31 +110,24 @@ function thumbnails(products: StoreProduct[], max = 4): SlideProduct[] {
 
 export async function fetchHomeData({
   favoriteHandles = [],
-}: { favoriteHandles?: string[] } = {}): Promise<HomeData> {
-  const [latest, discounted, sellers, categories, ranked, favorites] = await Promise.all([
-    fetchProducts({ limit: 16, order: "-created_at" }),
-    /*
-      Les promotions ne se filtrent pas côté API : Medusa applique la
-      remise au calcul du prix, sans exposer de drapeau « soldé ». On lit
-      donc un lot plus large et on retient ceux dont le prix calculé est
-      réellement inférieur au prix d'origine.
-    */
-    fetchProducts({ limit: 50, order: "-created_at" }),
-    fetchSellers(12),
-    /*
-      Tout l'arbre des rayons : il faut les sous-rayons pour remplir un
-      rayon principal, et l'ordre par défaut du catalogue place d'abord
-      les rayons de la démonstration Mercur.
-    */
-    fetchCategories(300),
-    /*
-      Le backend refuse de classer tant qu'il n'y a pas assez de vraies
-      commandes : on reçoit alors une liste vide.
-    */
-    fetchBestSellers(),
-    /* Les favoris du client connecté, avec leurs rayons. Aucun : aucune lecture. */
-    fetchProducts({ handles: favoriteHandles.slice(0, 20), limit: 20, withCategories: true }),
-  ]);
+  now = new Date(),
+}: { favoriteHandles?: string[]; now?: Date } = {}): Promise<HomeData> {
+  const [latest, discounted, sellers, categories, favorites, sellerMap, promotions] =
+    await Promise.all([
+      fetchProducts({ limit: 16, order: "-created_at" }),
+      /*
+        Les promotions ne se filtrent pas côté API : Medusa applique la
+        remise au calcul du prix. On lit donc un lot plus large et on
+        retient ceux dont le prix calculé est réellement inférieur au
+        prix d'origine.
+      */
+      fetchProducts({ limit: 50, order: "-created_at" }),
+      fetchSellers(24),
+      fetchCategories(300),
+      fetchProducts({ handles: favoriteHandles.slice(0, 20), limit: 20, withCategories: true }),
+      fetchProductSellerMap(),
+      fetchSitePromotions(),
+    ]);
 
   const problems: string[] = [];
   let configured = true;
@@ -173,60 +140,9 @@ export async function fetchHomeData({
   }
 
   const newest = latest.ok ? latest.data.products : [];
-
-  const deals = discounted.ok
-    ? discounted.data.products
-        .filter(
-          (product) =>
-            product.originalPrice !== null &&
-            product.price !== null &&
-            product.originalPrice > product.price
-        )
-        .slice(0, 12)
-    : [];
-
-  /*
-    LES PLUS VENDUS, AVEC LEURS PRIX.
-
-    Le classement ne donne que l'ordre ; les fiches complètes (prix,
-    photos) se lisent ensuite, et l'ordre du classement est rétabli —
-    le catalogue, lui, les rendrait dans un ordre quelconque.
-  */
-  let bestSellers: StoreProduct[] = [];
-
-  if (ranked.length > 0) {
-    const found = await fetchProducts({ ids: ranked.map((item) => item.id), limit: ranked.length });
-
-    if (found.ok) {
-      const position = new Map(ranked.map((item, index) => [item.id, index]));
-      bestSellers = [...found.data.products].sort(
-        (a, b) => (position.get(a.id) ?? 99) - (position.get(b.id) ?? 99)
-      );
-    }
-  }
-
-  /* Les rayons principaux de MACHÉ, dans l'ordre du site. */
-  const all = categories.ok ? categories.data : [];
-  const macheOrder = new Map(CATEGORY_TREE.map((node, index) => [node.slug, index]));
-
-  const mainRayons = all
-    .filter((category) => category.parentId === null && macheOrder.has(category.handle))
-    .sort((a, b) => macheOrder.get(a.handle)! - macheOrder.get(b.handle)!);
-
-  const childOrder = new Map(
-    CATEGORY_TREE.flatMap((node) =>
-      (node.children ?? []).map((child, index) => [child.slug, index] as const)
-    )
-  );
-
-  const childrenOf = (parentId: string) =>
-    all
-      .filter((category) => category.parentId === parentId)
-      .sort(
-        (a, b) =>
-          (childOrder.get(a.handle) ?? Number.MAX_SAFE_INTEGER) -
-          (childOrder.get(b.handle) ?? Number.MAX_SAFE_INTEGER)
-      );
+  const total = latest.ok ? latest.data.count : 0;
+  const allSellers = sellers.ok ? sellers.data.sellers : [];
+  const seed = hourSeed(now);
 
   /* ------------------------------------------------------------------ */
   /* Le grand bandeau                                                    */
@@ -234,18 +150,26 @@ export async function fetchHomeData({
 
   const slides: HeroSlide[] = [];
 
-  const newestThumbs = thumbnails(newest);
+  if (allSellers.length > 0) {
+    slides.push({ kind: "shops", key: "shops", sellers: allSellers.slice(0, 8) });
+  }
 
-  if (newestThumbs.length > 0) {
+  const deals = discounted.ok
+    ? discounted.data.products.filter(
+        (product) =>
+          product.originalPrice !== null &&
+          product.price !== null &&
+          product.originalPrice > product.price
+      )
+    : [];
+
+  /* Aucune remise réelle, aucun code actif : pas de diapositive « Promotions ». */
+  if (deals.length > 0 || promotions.length > 0) {
     slides.push({
-      kind: "products",
-      key: "new",
-      eyebrow: "Nouveautés",
-      title: "Ce qui vient d'arriver",
-      text: "Les derniers articles mis en ligne par les vendeurs de MACHÉ.",
-      href: "/shop?sort=new",
-      cta: "Voir les nouveautés",
-      products: newestThumbs,
+      kind: "promotions",
+      key: "promotions",
+      labels: promotions.map((promotion) => promotion.label).slice(0, 4),
+      products: thumbnails(deals),
     });
   }
 
@@ -254,92 +178,101 @@ export async function fetchHomeData({
     slides.push({ kind: "partners", key: "partners", partners: PARTNERS });
   }
 
-  const bestThumbs = thumbnails(bestSellers);
-
-  if (bestThumbs.length > 0) {
-    slides.push({
-      kind: "products",
-      key: "best",
-      eyebrow: "Les plus vendus",
-      title: "Ce que les acheteurs choisissent",
-      text: "Classement des 90 derniers jours, établi sur de vraies commandes.",
-      href: "/shop",
-      cta: "Voir le catalogue",
-      products: bestThumbs,
-    });
-  }
+  /* ------------------------------------------------------------------ */
+  /* Sur MACHÉ en ce moment                                              */
+  /* ------------------------------------------------------------------ */
 
   /*
-    Les rayons du bandeau. Chaque rayon se remplit avec ses articles ET
-    ceux de ses sous-rayons : un vendeur range sa poupée dans « Crochet
-    et tricot », pas dans « Fait à la main ».
-
-    Un rayon qui n'existe pas encore au catalogue n'a pas de
-    diapositive : on n'enverrait personne vers une page vide.
+    Des nouveautés ET des articles plus anciens : un lot récent, plus un
+    lot pris plus loin dans le catalogue, à un endroit tiré au sort qui
+    change toutes les heures. Sans lui, un article vieux d'un mois ne
+    reparaîtrait jamais.
   */
-  const rayonSlides = await Promise.all(
-    SLIDE_RAYONS.map(async (handle): Promise<HeroSlide | null> => {
-      const rayon = mainRayons.find((category) => category.handle === handle);
+  let older: StoreProduct[] = [];
 
-      if (!rayon) return null;
+  if (total > newest.length) {
+    const span = Math.max(0, total - newest.length - 24);
+    const offset = newest.length + Math.floor(seededRandom(seed)() * (span + 1));
+    const found = await fetchProducts({ limit: 24, offset, order: "-created_at" });
+    older = found.ok ? found.data.products : [];
+  }
 
-      const children = childrenOf(rayon.id);
-      const rayonHref = `/shop?category=${encodeURIComponent(rayon.handle)}`;
-      const names = children.map((child) => child.name.toLowerCase());
+  const pool = [...newest, ...older.filter((product) => !newest.some((n) => n.id === product.id))];
+  const map = sellerMap.ok ? sellerMap.data : new Map<string, string>();
+
+  const spotlight = rotateFairly(pool, (product) => map.get(product.id) ?? null, seed, SPOTLIGHT_COUNT);
+
+  /* ------------------------------------------------------------------ */
+  /* Les rayons proposés                                                 */
+  /* ------------------------------------------------------------------ */
+
+  const all = categories.ok ? categories.data : [];
+  const byId = new Map(all.map((category) => [category.id, category]));
+  const macheOrder = new Map(CATEGORY_TREE.map((node, index) => [node.slug, index]));
+
+  const mainRayons = all
+    .filter((category) => category.parentId === null && macheOrder.has(category.handle))
+    .sort((a, b) => macheOrder.get(a.handle)! - macheOrder.get(b.handle)!);
+
+  /* Le rayon principal d'un rayon quelconque. */
+  const mainOf = (id: string): StoreCategory | null => {
+    let current = byId.get(id) ?? null;
+    let guard = 0;
+    while (current && current.parentId && guard < 6) {
+      current = byId.get(current.parentId) ?? null;
+      guard += 1;
+    }
+    return current && macheOrder.has(current.handle) ? current : null;
+  };
+
+  /* Les goûts que le client a exprimés : les rayons de ses favoris, du plus fréquent au moins fréquent. */
+  const favoriteProducts = favorites.ok ? favorites.data.products : [];
+  const frequency = new Map<string, number>();
+
+  for (const product of favoriteProducts) {
+    const seen = new Set<string>();
+    for (const categoryId of product.categoryIds) {
+      const main = mainOf(categoryId);
+      if (main && !seen.has(main.handle)) {
+        seen.add(main.handle);
+        frequency.set(main.handle, (frequency.get(main.handle) ?? 0) + 1);
+      }
+    }
+  }
+
+  const preferred = [...frequency.entries()].sort((a, b) => b[1] - a[1]).map(([handle]) => handle);
+  const tilesFromFavorites = preferred.length > 0;
+
+  const tileHandles = [...new Set([...preferred, ...DEFAULT_TILES])]
+    .filter((handle) => mainRayons.some((rayon) => rayon.handle === handle))
+    .slice(0, TILE_COUNT);
+
+  const categoryTiles = await Promise.all(
+    tileHandles.map(async (handle): Promise<CategoryTile> => {
+      const rayon = mainRayons.find((category) => category.handle === handle)!;
+      const children = all.filter((category) => category.parentId === rayon.id);
 
       const found = await fetchProducts({
         categoryId: [rayon.id, ...children.map((child) => child.id)],
         limit: 8,
       });
 
-      const thumbs = thumbnails(found.ok ? found.data.products : []);
-
-      if (thumbs.length > 0) {
-        return {
-          kind: "products",
-          key: `rayon-${handle}`,
-          eyebrow: rayon.name,
-          title: rayon.name,
-          /*
-            « Rangés par les vendeurs » : c'est le vendeur qui classe son
-            article. MACHÉ ne certifie ni le « fait main » ni le « bio ».
-          */
-          text: names.length
-            ? `Les articles que les vendeurs ont rangés ici : ${names.slice(0, 4).join(", ")}…`
-            : "Les articles que les vendeurs ont rangés dans ce rayon.",
-          href: rayonHref,
-          cta: "Voir le rayon",
-          products: thumbs,
-        };
-      }
-
       return {
-        kind: "invite",
-        key: `rayon-${handle}`,
-        eyebrow: "Appel aux vendeurs",
+        handle,
+        name: rayon.name,
         icon: CATEGORY_TREE.find((node) => node.slug === handle)?.icon ?? null,
-        title: rayon.name,
-        text: `${names.length ? `${names.slice(0, 4).join(", ")}… ` : ""}${
-          INVITE[handle] ?? "Ce rayon attend ses premiers articles."
-        }`,
-        rayonHref,
-        subLinks: children.slice(0, 6).map((child) => ({
-          label: child.name,
-          href: `/shop?category=${encodeURIComponent(child.handle)}`,
-        })),
+        href: `/shop?category=${encodeURIComponent(handle)}`,
+        images: thumbnails(found.ok ? found.data.products : []).map((thumb) => thumb.image),
       };
     })
   );
 
-  slides.push(...rayonSlides.filter((slide): slide is HeroSlide => slide !== null));
-
   /* ------------------------------------------------------------------ */
-  /* « Vous aimerez », ou « À découvrir »                                */
+  /* Suggestions                                                         */
   /* ------------------------------------------------------------------ */
 
   let forYou: ProductSection | null = null;
 
-  const favoriteProducts = favorites.ok ? favorites.data.products : [];
   const favoriteCategoryIds = [
     ...new Set(favoriteProducts.flatMap((product) => product.categoryIds)),
   ].slice(0, 8);
@@ -354,7 +287,7 @@ export async function fetchHomeData({
 
     if (picks.length > 0) {
       forYou = {
-        title: "Vous aimerez",
+        title: "Nos suggestions pour vous",
         subtitle: "D'après les articles que vous avez mis en favoris",
         href: "/favorites",
         products: picks,
@@ -363,20 +296,20 @@ export async function fetchHomeData({
   }
 
   /*
-    Pas de favoris : « À découvrir », et pas « Vous aimerez ». Sans rien
+    Pas de favoris : « À découvrir », et pas « pour vous ». Sans rien
     savoir des goûts du visiteur, prétendre deviner ce qu'il aimera
-    serait un mensonge. Ce sont d'autres articles récents — ceux que le
-    bandeau ne montre pas déjà.
+    serait un mensonge. Ce sont d'autres articles, ceux que la section
+    tournante ne montre pas déjà.
   */
   if (!forYou) {
-    const shown = new Set(newestThumbs.map((thumb) => thumb.href));
-    const more = newest.filter((product) => !shown.has(productHref(product))).slice(0, 12);
+    const shown = new Set(spotlight.map((product) => product.id));
+    const more = pool.filter((product) => !shown.has(product.id)).slice(0, 12);
 
     if (more.length > 0) {
       forYou = {
         title: "À découvrir",
-        subtitle: "D'autres articles mis en ligne récemment",
-        href: "/shop?sort=new",
+        subtitle: "D'autres articles en ligne sur MACHÉ",
+        href: "/shop",
         products: more,
       };
     }
@@ -384,11 +317,13 @@ export async function fetchHomeData({
 
   return {
     slides,
-    newest,
-    deals,
-    bestSellers,
+    spotlight,
+    categoryTiles,
+    tilesFromFavorites,
+    newSellers: allSellers.slice(0, 12),
+    brands: allSellers.filter((seller) => readSellerProfile(seller.metadata) === "marque"),
     forYou,
-    newSellers: sellers.ok ? sellers.data.sellers.slice(0, 12) : [],
+    newestCount: Math.min(newest.length, 12),
     mainRayons,
     problems,
     configured,

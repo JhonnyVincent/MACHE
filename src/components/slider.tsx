@@ -50,6 +50,8 @@ type Props = {
   autoplayMs?: number;
   /* Largeur de chaque élément d'un rail (classes Tailwind). */
   itemClassName?: string;
+  /* Classes en plus sur la rangée elle-même (effet de survol, marges). */
+  trackClassName?: string;
 };
 
 export function Slider({
@@ -58,6 +60,7 @@ export function Slider({
   variant = "rail",
   autoplayMs = 0,
   itemClassName = "w-[46%] sm:w-[31%] lg:w-[23%] xl:w-[18.5%]",
+  trackClassName = "",
 }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
   const items = Children.toArray(children);
@@ -208,7 +211,7 @@ export function Slider({
         aria-live={running ? "off" : "polite"}
         className={`mache-slider-track relative flex snap-x snap-mandatory overflow-x-auto ${
           hero ? "" : "gap-3 scroll-px-1 px-1 pb-2"
-        }`}
+        } ${trackClassName}`}
       >
         {items.map((item, index) => (
           <div

@@ -149,6 +149,21 @@ services:
       # Le nom affiché à côté de l'adresse d'expédition.
       - key: MAIL_FROM_NAME
         value: MACHÉ
+      # L'abonnement aux nouvelles de MACHÉ (bandeau « Restez au
+      # courant » de l'accueil). Les adresses vont dans une liste de
+      # contacts Brevo ; les lettres se composent et s'envoient depuis
+      # Brevo, qui gère le désabonnement.
+      #
+      # L'identifiant de la liste : Brevo > Contacts > Listes. Sans lui,
+      # le site répond franchement que l'abonnement n'est pas ouvert.
+      - key: BREVO_NEWSLETTER_LIST_ID
+        sync: false
+      # Facultatif, recommandé : un modèle Brevo de double confirmation
+      # (« confirmez votre inscription »). Empêche d'inscrire l'adresse
+      # de quelqu'un d'autre ; attendu par les règles européennes pour
+      # les abonnés de la diaspora.
+      - key: BREVO_DOI_TEMPLATE_ID
+        sync: false
       # Le compte d'administration MACHÉ, créé au premier démarrage.
       #
       # Le plan gratuit de Render n'offre pas d'onglet Shell : sans

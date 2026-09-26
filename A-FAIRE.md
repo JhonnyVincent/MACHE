@@ -11,7 +11,8 @@ Cochez au fur et à mesure. Rien ici n'est « presque fait » : c'est fait, ou c
 1. [ ] **Vérifier que le backend s'est redéployé** après le dernier envoi (`mache-backend` → *Events*). Sinon : **Manual Deploy**. C'est ce redéploiement qui reconstruit le panneau vendeur et met fin au « Failed to fetch ».
 2. [ ] **Compte d'administration** — `mache-backend` → *Environment* : poser `ADMIN_EMAIL` et `ADMIN_PASSWORD` (8 caractères minimum), puis **Manual Deploy**. Le compte est créé au démarrage. Il ouvre `/dashboard/admin` sur le site **et** le panneau `/dashboard` du backend. Ensuite, **retirer `ADMIN_PASSWORD`** : le compte reste.
 3. [ ] **Envoi des e-mails (mot de passe oublié)** — compte gratuit sur brevo.com → *Expéditeurs* : ajouter `contact.bawonlakwa@gmail.com` et cliquer le lien de confirmation → *SMTP & API → Clés API* : créer une clé → la coller dans `BREVO_API_KEY` sur `mache-backend`. Détails : `DEPLOIEMENT.md`, « L'envoi des e-mails ».
-4. [ ] **Facultatif** — retirer `MERCUR_BACKEND_URL` de `mache-backend` : elle ne sert plus.
+4. [ ] **Abonnement « Restez au courant »** — dans Brevo : *Contacts → Listes* → créer une liste « Nouvelles MACHÉ », noter son numéro, le mettre dans `BREVO_NEWSLETTER_LIST_ID` sur `mache-backend`. Recommandé : créer un modèle de double confirmation et mettre son numéro dans `BREVO_DOI_TEMPLATE_ID`.
+5. [ ] **Facultatif** — retirer `MERCUR_BACKEND_URL` de `mache-backend` : elle ne sert plus.
 
 ## ✅ Terminé et en ligne
 

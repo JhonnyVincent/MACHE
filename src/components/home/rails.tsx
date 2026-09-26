@@ -9,7 +9,7 @@
   marque réservé aux actions et aux remises, tout le reste en noir et gris.
 */
 
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatAmount } from "@/lib/format";
 import { Slider } from "@/components/slider";
@@ -145,6 +145,7 @@ export function ProductRailSection({
   linkLabel,
   products,
   autoplayMs = 0,
+  spotlight = false,
 }: {
   title: string;
   subtitle?: string;
@@ -153,6 +154,8 @@ export function ProductRailSection({
   products: StoreProduct[];
   /* Défilement automatique, en millisecondes ; 0 pour aucun. */
   autoplayMs?: number;
+  /* La carte survolée grandit et passe devant, les autres s'estompent. */
+  spotlight?: boolean;
 }) {
   if (products.length === 0) return null;
 
@@ -160,7 +163,11 @@ export function ProductRailSection({
     <section className="mache-reveal container-page py-5">
       <RailHeader title={title} subtitle={subtitle} href={href} linkLabel={linkLabel} />
 
-      <Slider label={title} autoplayMs={autoplayMs}>
+      <Slider
+        label={title}
+        autoplayMs={autoplayMs}
+        trackClassName={spotlight ? "mache-spotlight py-5" : ""}
+      >
         {products.slice(0, 12).map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -188,7 +195,8 @@ export function SellerRailSection({
     <section className="mache-reveal container-page py-5">
       <RailHeader title={title} subtitle={subtitle} href="/shop" linkLabel="Toutes les boutiques" />
 
-      <Slider label={title} itemClassName="w-[70%] sm:w-[40%] lg:w-[24%]">
+      {/* Au survol, la boutique sous le curseur grandit et passe devant. */}
+      <Slider label={title} itemClassName="w-[70%] sm:w-[40%] lg:w-[24%]" trackClassName="mache-spotlight py-5">
         {sellers.map((seller) => (
           <Link
             key={seller.id}

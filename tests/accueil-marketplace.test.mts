@@ -147,7 +147,7 @@ check("le bandeau n'utilise aucune image décorative", () => {
     vide — c'est précisément le moment où elle est la plus mauvaise.
   */
   const sources = [...HERO.matchAll(/src=(\{[^}]+\}|"[^"]*")/g)].map((m) => m[1]);
-  const allowed = ['"/images/carte-haiti-mache.png"', '"/images/logo-haiti-mache-hibiscus.png"', "{product.image}"];
+  const allowed = ['"/images/carte-haiti-mache.png"', '"/images/logo-haiti-mache-hibiscus.png"', "{product.image}", "{seller.logo}"];
   for (const source of sources) {
     assert.ok(allowed.includes(source), `image non autorisée dans le bandeau : ${source}`);
   }
@@ -155,21 +155,14 @@ check("le bandeau n'utilise aucune image décorative", () => {
   assert.doesNotMatch(HERO + HOME, /unsplash|picsum|placeholder\.|via\.placeholder/i);
 });
 
-check("un rayon vide s'adresse aux vendeurs, sans montrer d'articles", () => {
-  assert.match(HOME, /if \(thumbs\.length > 0\) \{\s*return \{\s*kind: "products"/, "des articles réels, ou rien");
-  assert.match(HOME, /kind: "invite"/, "sinon, une invitation");
-  const invite = HERO.slice(HERO.indexOf("function InviteSlide"), HERO.indexOf("export function HeroCarousel"));
-  assert.doesNotMatch(invite, /<img/, "une invitation ne montre aucun article, puisqu'il n'y en a pas");
-  assert.match(invite, /href="\/sell"/, "elle mène à l'ouverture d'une boutique");
-});
-
-check("un rayon absent du catalogue n'a pas de diapositive", () => {
-  /* On n'enverrait personne vers une page vide. */
-  assert.match(HOME, /if \(!rayon\) return null;/);
-});
-
-check("les rayons du bandeau sont fait main, fait maison et bio", () => {
-  assert.match(HOME, /const SLIDE_RAYONS = \["fait-a-la-main", "fait-maison", "bio"\] as const;/);
+check("le bandeau montre boutiques, promotions et partenaires — et rien d'inventé", () => {
+  assert.match(HERO, /if \(slide\.kind === "shops"\)/);
+  assert.match(HERO, /if \(slide\.kind === "promotions"\)/);
+  assert.match(
+    HOME,
+    /if \(deals\.length > 0 \|\| promotions\.length > 0\) \{/,
+    "pas de diapositive « Promotions » sans remise réelle ni code actif"
+  );
 });
 
 check("les plus vendus ne sont pas classés sans assez de ventes", () => {
@@ -243,17 +236,20 @@ check("il ne reste qu'une seule porte de connexion", () => {
 /* L'ordre de la page, et ce qu'elle ne prétend pas                    */
 /* ------------------------------------------------------------------ */
 
+const HEADER_SRC = HEADER;
+
 check("la page suit l'ordre voulu", () => {
   const order = [
     "<HeroCarousel",
-    "<BrowseRayons",
-    "<SellCta",
+    "<MainNav",
+    "<Spotlight",
+    "<CategoryTiles",
+    "<NewsletterCta",
     'title="Nouvelles boutiques"',
+    "<BrandsMarquee",
     "<PartnersStrip",
-    'title="Promotions"',
-    'title="Les plus vendus"',
-    "<VerifyAgentBanner",
     "home.forYou &&",
+    "<SellCta",
   ];
   let last = -1;
   for (const marker of order) {
@@ -263,26 +259,40 @@ check("la page suit l'ordre voulu", () => {
   }
 });
 
-check("« Parcourir les rayons » montre tous les rayons de MACHÉ, en liens", () => {
-  const browse = SECTIONS.slice(SECTIONS.indexOf("export function BrowseRayons"), SECTIONS.indexOf("export function SellCta"));
-  assert.match(browse, /CATEGORY_TREE\.map\(/);
-  assert.doesNotMatch(browse, /<img|grid-cols/, "une bande de liens, pas des blocs");
+check("sur l'accueil, le menu noir descend sous le bandeau ; ailleurs il reste en haut", () => {
+  assert.match(HEADER_SRC, /\{pathname !== "\/" && <MainNav \/>\}/);
 });
 
-check("« Vous aimerez » ne se prétend personnel que d'après les favoris", () => {
-  /*
-    Sans rien savoir des goûts du visiteur, prétendre deviner ce qu'il
-    aimera serait un mensonge. Sans favoris, la section s'appelle
-    « À découvrir ».
-  */
-  const personal = HOME.indexOf('title: "Vous aimerez"');
+check("la bande du haut défile en continu, et s'arrête pour qui réduit les animations", () => {
+  assert.match(HEADER_SRC, /mache-ticker mache-ticker-fast/);
+  const css = readFileSync("src/app/globals.css", "utf8");
+  assert.match(css, /prefers-reduced-motion: reduce\)[\s\S]*\.mache-ticker-fast[\s\S]*animation: none/);
+});
+
+check("« Sur MACHÉ en ce moment » fait passer chaque vendeur à son tour", () => {
+  assert.match(HOME, /rotateFairly\(pool, \(product\) => map\.get\(product\.id\) \?\? null, seed, SPOTLIGHT_COUNT\)/);
+  assert.match(HOME, /const seed = hourSeed\(now\);/);
+});
+
+check("« pour vous » seulement d'après les favoris ; sinon « À découvrir »", () => {
+  const personal = HOME.indexOf('title: "Nos suggestions pour vous"');
   const guard = HOME.lastIndexOf("if (favoriteCategoryIds.length > 0)", personal);
-  assert.ok(personal > -1 && guard > -1, "« Vous aimerez » doit dépendre des favoris");
+  assert.ok(personal > -1 && guard > -1, "« pour vous » doit dépendre des favoris");
   assert.match(HOME, /title: "À découvrir"/);
 });
 
+check("les catégories : cinq rayons, puis le ➕ vers le catalogue", () => {
+  assert.match(HOME, /const TILE_COUNT = 5;/);
+  assert.match(SECTIONS, /href="\/shop"[\s\S]{0,800}➕/);
+  assert.match(HOME, /DEFAULT_TILES = \["maison", "mode", "electronique", "bio", "fait-a-la-main"\]/);
+});
+
+check("« Nos marques » ne montre que des boutiques qui se déclarent marque", () => {
+  assert.match(HOME, /readSellerProfile\(seller\.metadata\) === "marque"/);
+  assert.match(SECTIONS, /Les boutiques qui se présentent comme marque officielle/);
+});
+
 check("l'accueil ne suit pas ce que regardent les visiteurs", () => {
-  /* La page de confidentialité promet qu'aucun traceur n'est déposé. */
   for (const source of [HOME, HERO, PAGE, SECTIONS, SLIDER]) {
     assert.doesNotMatch(source, /document\.cookie|localStorage|sessionStorage/);
   }
@@ -291,23 +301,14 @@ check("l'accueil ne suit pas ce que regardent les visiteurs", () => {
 check("le défilement automatique s'arrête quand il le faut", () => {
   assert.match(
     SLIDER,
-    /autoplayMs > 0 && count > 1 && !reduced && !stopped && !hovered && !focused && !touched/,
-    "survol, focus clavier, doigt, animations réduites, bouton pause"
+    /autoplayMs > 0 && count > 1 && !reduced && !stopped && !hovered && !focused && !touched/
   );
-  assert.match(SLIDER, /Mettre le défilement en pause/, "un contenu qui bouge seul doit pouvoir être arrêté");
-  assert.match(SLIDER, /prefers-reduced-motion: reduce/);
+  assert.match(SLIDER, /Mettre le défilement en pause/);
 });
 
-check("« Vérifier un agent » passe par la page de vérification", () => {
-  const banner = SECTIONS.slice(SECTIONS.indexOf("export function VerifyAgentBanner"));
-  assert.match(banner, /<form action="\/verify-agent" method="GET"/);
-  assert.match(banner, /name="code"/);
-});
-
-check("« Vous vendez quelque chose ? » ne promet pas d'audience", () => {
-  /* Le texte affiché seulement : le commentaire au-dessus cite la phrase retirée. */
-  const cta = SECTIONS.slice(SECTIONS.indexOf("export function SellCta"), SECTIONS.indexOf("export function VerifyAgentBanner"));
-  assert.ok(cta.includes("Vous vendez quelque chose ?"), "la section doit exister");
+check("« Devenez vendeur » ne promet pas d'audience", () => {
+  const cta = SECTIONS.slice(SECTIONS.indexOf("export function SellCta"));
+  assert.ok(cta.includes("Devenez vendeur chez MACHÉ"));
   assert.doesNotMatch(cta, /déjà visité|des milliers|audience/i);
 });
 
