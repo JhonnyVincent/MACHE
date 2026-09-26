@@ -36,7 +36,14 @@ d'accepter le moindre paiement réel**.
 ## 1. Le backend et la base
 
 Sur **render.com** : `New` → **`Blueprint`** → dépôt
-`JhonnyVincent/MACHE` → branche `main`.
+`JhonnyVincent/MACHE` → branche `claude/quirky-bardeen-9fp6v4`.
+
+> **La branche `main` n'existe plus.** La branche principale du dépôt
+> est désormais `claude/quirky-bardeen-9fp6v4`. Un service Render
+> resté réglé sur `main` ne peut plus rien déployer : il garde sa
+> dernière version, sans erreur visible, et aucune correction ne
+> l'atteint. À vérifier sur **chacun des deux services** :
+> `Settings` → `Build & Deploy` → `Branch`.
 
 Render lit `render.yaml` et propose `mache-backend` et `mache-db`.
 
@@ -62,7 +69,7 @@ générés : n'y touchez pas.
 
 ## 2. Le site
 
-`New` → **`Web Service`** → même dépôt → branche `main`.
+`New` → **`Web Service`** → même dépôt → branche `claude/quirky-bardeen-9fp6v4`.
 
 | Réglage | Valeur |
 |---|---|
