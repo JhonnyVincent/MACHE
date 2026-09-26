@@ -29,6 +29,7 @@
 
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { DELIVERY_MODULE } from "../../../../modules/delivery";
+import { payoutStateAfterConfirmation } from "../../../payout-freeze";
 import {
   buyerDelivery,
   tokenMatches,
@@ -109,7 +110,13 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     confirmed_by: "customer",
     confirmed_at: new Date(),
     confirmation_note: text((req.body as { note?: unknown })?.note, MAX_NOTE),
-    payout_state: "releasable",
+    /*
+      Même règle que pour une confirmation par code : si la boutique
+      est gelée, la réception reste constatée mais la somme reste
+      retenue. Un transporteur extérieur n'est pas une raison de
+      relâcher l'argent d'une boutique sous enquête.
+    */
+    payout_state: await payoutStateAfterConfirmation(req.scope, delivery.seller_id),
   })) as DeliveryRow;
 
   return res.json({ delivery: buyerDelivery(updated) });

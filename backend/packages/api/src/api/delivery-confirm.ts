@@ -15,21 +15,37 @@
 */
 
 import { MAX_CODE_ATTEMPTS, awaitsCode, codeMatches, text, MAX_NOTE, type DeliveryRow } from "./delivery-helpers";
+import { DELIVERY_MODULE } from "../modules/delivery";
+import { payoutStateAfterConfirmation } from "./payout-freeze";
 
 type Service = {
   updateDeliveries: (data: Record<string, unknown>) => Promise<unknown>;
 };
+
+/*
+  Le conteneur, et non le service déjà résolu.
+
+  Confirmer une remise décide aussi du versement, et cette décision a
+  besoin de lire le gel de la boutique. En recevant le conteneur, ce
+  fichier reste le SEUL endroit qui tranche : une route ne peut pas
+  libérer un versement sans passer par la règle. C'était le risque du
+  service seul — trois routes, trois occasions d'oublier le gel, et
+  c'est l'oubli que la fraude aurait emprunté.
+*/
+type Scope = { resolve: (key: string) => unknown };
 
 export type ConfirmOutcome =
   | { ok: true; delivery: DeliveryRow }
   | { ok: false; status: number; message: string; attempts_left?: number };
 
 export async function confirmDelivery(
-  service: Service,
+  scope: Scope,
   delivery: DeliveryRow,
   body: { code?: unknown; note?: unknown },
   actor: "seller" | "agent" | "admin"
 ): Promise<ConfirmOutcome> {
+  const service = scope.resolve(DELIVERY_MODULE) as Service;
+
   if (delivery.status === "delivered") {
     return { ok: false, status: 409, message: "Cette livraison est déjà confirmée." };
   }
@@ -99,8 +115,13 @@ export async function confirmDelivery(
       La preuve de remise et l'autorisation de payer sont la même
       décision : c'est ici, et nulle part ailleurs, que ce qui est dû au
       vendeur devient reversable.
+
+      Sauf si la boutique est GELÉE. La remise reste alors enregistrée —
+      elle a eu lieu, c'est un fait, et le nier punirait un acheteur qui
+      n'y est pour rien — mais la somme reste retenue au lieu d'être
+      portée comme due.
     */
-    payout_state: "releasable",
+    payout_state: await payoutStateAfterConfirmation(scope, delivery.seller_id),
   })) as DeliveryRow;
 
   return { ok: true, delivery: updated };

@@ -1999,3 +1999,119 @@ export async function setCustomerBlocked(
 
   return { ok: true, data: true };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Geler les versements d'une boutique                                        */
+/* -------------------------------------------------------------------------- */
+
+/*
+  GELER N'EST PAS SUSPENDRE.
+
+  Suspendre arrête la VENTE. Geler arrête l'ARGENT. On veut souvent
+  l'un sans l'autre : laisser une boutique honorer les commandes déjà
+  passées tout en retenant les sommes le temps de vérifier, ou fermer
+  une boutique dont les versements sont à jour.
+
+  CE QUE LE GEL NE FAIT PAS
+
+  MACHÉ n'encaisse pas : l'acheteur règle le vendeur en main propre.
+  Geler ne reprend donc rien à un vendeur qui a déjà l'argent. Ce qu'il
+  fait — et c'est réel — : une livraison confirmée cesse de porter sa
+  somme comme due, et les versements déjà autorisés sont repris.
+*/
+export type PayoutFreeze = {
+  id: string;
+  sellerId: string;
+  reason: string;
+  frozenBy: string | null;
+  active: boolean;
+  liftedBy: string | null;
+  liftedReason: string | null;
+  liftedAt: string | null;
+  createdAt: string | null;
+  /* Combien de livraisons de cette boutique sont retenues. */
+  deliveriesHeld: number;
+};
+
+function payoutFreeze(raw: Raw): PayoutFreeze {
+  return {
+    id: str(raw.id) ?? "",
+    sellerId: str(raw.seller_id) ?? "",
+    reason: str(raw.reason) ?? "",
+    frozenBy: str(raw.frozen_by),
+    active: raw.active !== false,
+    liftedBy: str(raw.lifted_by),
+    liftedReason: str(raw.lifted_reason),
+    liftedAt: str(raw.lifted_at),
+    createdAt: str(raw.created_at),
+    deliveriesHeld: Number(raw.deliveries_held) || 0,
+  };
+}
+
+export async function fetchPayoutFreezes(): Promise<
+  Result<{ freezes: PayoutFreeze[]; note: string }>
+> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ freezes?: Raw[]; note?: string }>(
+    "/admin/mache/payout-freezes",
+    { token }
+  );
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      freezes: (result.data.freezes ?? []).map(payoutFreeze),
+      note: str(result.data.note) ?? "",
+    },
+  };
+}
+
+/*
+  Geler, ou lever le gel. Les deux exigent un motif.
+
+  Un gel sans motif ne pourra ni être défendu s'il est contesté, ni
+  levé par quelqu'un d'autre. Un dégel sans motif ne pourra pas être
+  expliqué si l'argent repart et que la fraude était réelle.
+*/
+export async function setPayoutFreeze(input: {
+  sellerId: string;
+  freeze: boolean;
+  reason: string;
+}): Promise<Result<{ pulledBack: number }>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const reason = input.reason.trim();
+
+  if (!reason) {
+    return {
+      ok: false,
+      reason: input.freeze
+        ? "Dites ce que vous reprochez à cette boutique : un gel sans motif ne se défend pas."
+        : "Dites pourquoi vous levez le gel.",
+    };
+  }
+
+  const result = await request<{ pulled_back?: number }>(
+    "/admin/mache/payout-freezes",
+    {
+      method: "POST",
+      token,
+      body: {
+        seller_id: input.sellerId,
+        action: input.freeze ? "freeze" : "lift",
+        reason,
+      },
+    }
+  );
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: { pulledBack: Number(result.data.pulled_back) || 0 } };
+}

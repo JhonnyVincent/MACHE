@@ -1,5 +1,5 @@
 import { MedusaService } from "@medusajs/framework/utils";
-import { Delivery, RelayPoint } from "./models";
+import { Delivery, RelayPoint, PayoutFreeze } from "./models";
 
 /*
   Le service par défaut suffit, comme pour les devis : il donne les
@@ -10,6 +10,10 @@ import { Delivery, RelayPoint } from "./models";
   sait qui appelle. Les écrire ici les rendrait applicables à un appel
   interne qui n'a pas d'appelant.
 */
-class DeliveryModuleService extends MedusaService({ Delivery, RelayPoint }) {}
+class DeliveryModuleService extends MedusaService({
+  Delivery,
+  RelayPoint,
+  PayoutFreeze,
+}) {}
 
 export default DeliveryModuleService;

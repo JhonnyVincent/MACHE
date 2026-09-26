@@ -12,7 +12,6 @@
 */
 
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { DELIVERY_MODULE } from "../../../../../modules/delivery";
 import { partyDelivery } from "../../../../delivery-helpers";
 import { confirmDelivery } from "../../../../delivery-confirm";
 import { sellerDelivery } from "../route";
@@ -24,12 +23,8 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return res.status(404).json({ message: "Livraison introuvable." });
   }
 
-  const service = req.scope.resolve(DELIVERY_MODULE) as Parameters<
-    typeof confirmDelivery
-  >[0];
-
   const outcome = await confirmDelivery(
-    service,
+    req.scope,
     delivery,
     (req.body ?? {}) as { code?: unknown; note?: unknown },
     "seller"

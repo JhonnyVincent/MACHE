@@ -62,6 +62,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { label: "Promotions", href: "/dashboard/admin/promotions" },
         { label: "Boutiques", href: "/dashboard/admin/stores", badge: pending },
         { label: "Modération", href: "/dashboard/admin/moderation" },
+        { label: "Gel des versements", href: "/dashboard/admin/gel-des-versements" },
         { label: "Agents", href: "/dashboard/admin/agents" },
         { label: "Points de retrait", href: "/dashboard/admin/points-de-retrait" },
         { label: "Utilisateurs", href: "/dashboard/admin/users" },

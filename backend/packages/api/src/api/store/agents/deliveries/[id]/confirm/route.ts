@@ -14,7 +14,6 @@
 */
 
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { DELIVERY_MODULE } from "../../../../../../modules/delivery";
 import { resolveAgent } from "../../../../../agent-context";
 import { partyDelivery, customerId } from "../../../../../delivery-helpers";
 import { confirmDelivery } from "../../../../../delivery-confirm";
@@ -45,12 +44,8 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     return res.status(404).json({ message: "Colis introuvable." });
   }
 
-  const service = req.scope.resolve(DELIVERY_MODULE) as Parameters<
-    typeof confirmDelivery
-  >[0];
-
   const outcome = await confirmDelivery(
-    service,
+    req.scope,
     delivery,
     (req.body ?? {}) as { code?: unknown; note?: unknown },
     "agent"
