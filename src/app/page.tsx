@@ -17,9 +17,10 @@
   7. Nouvelles boutiques, de droite à gauche, en grandes cartes.
   8. Nos suggestions pour vous — ou « À découvrir » —, de droite à gauche.
   9. Nos marques, de droite à gauche (seulement s'il y en a).
-  10. Nos partenaires, de gauche à droite.
-  11. Devenez vendeur chez MACHÉ.
-  12. Questions fréquentes — puis le pied de page.
+  10. Gagnez de l'argent avec MACHÉ : point relais ou agent vérifié.
+  11. Nos partenaires, de gauche à droite.
+  12. Devenez vendeur chez MACHÉ.
+  13. Questions fréquentes — puis le pied de page.
 
   Ce qui ne change pas
 
@@ -34,7 +35,7 @@ import { PartnersStrip } from "@/components/partners-strip";
 import { HeroCarousel } from "@/components/home/hero";
 import { NewsletterCta } from "@/components/home/newsletter";
 import { BrandsMarquee, CategoryTiles, SellCta, Spotlight } from "@/components/home/sections";
-import { HomeFaq, NewArrivals, NewShopsMarquee, SuggestionsMarquee } from "@/components/home/rows";
+import { EarnWithMache, HomeFaq, NewArrivals, NewShopsMarquee, SuggestionsMarquee } from "@/components/home/rows";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,8 @@ export default async function HomePage() {
       )}
 
       <BrandsMarquee brands={home.brands} />
+
+      <EarnWithMache />
 
       <PartnersStrip />
 

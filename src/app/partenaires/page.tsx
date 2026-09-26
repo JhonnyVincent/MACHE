@@ -51,7 +51,7 @@ const PARTNERSHIPS: Partnership[] = [
     who: "Une boutique, une pharmacie, un dépôt, un cybercafé — un local ouvert à heures régulières, dans un quartier.",
     what: "Les colis destinés au quartier y attendent leur destinataire. Vous les remettez contre le code que l'acheteur vous donne.",
     gives:
-      "Du passage : chaque retrait amène quelqu'un chez vous. Votre point est affiché avec son adresse et ses horaires sur MACHÉ.",
+      "Du passage : chaque retrait amène quelqu'un chez vous. Votre point est affiché avec son adresse et ses horaires sur MACHÉ. La rémunération et les conditions se fixent avec MACHÉ avant le premier colis.",
     ready: true,
   },
   {

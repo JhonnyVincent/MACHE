@@ -241,6 +241,123 @@ export function SuggestionsMarquee({
 }
 
 /* -------------------------------------------------------------------------- */
+/* Gagner de l'argent avec MACHÉ, sans ouvrir de boutique                     */
+/* -------------------------------------------------------------------------- */
+
+/*
+  Deux rôles qui existent vraiment dans MACHÉ :
+
+  - le POINT RELAIS : le module de livraison sait déposer un colis dans
+    un commerce et l'y faire remettre contre le code de l'acheteur, et
+    le point est affiché avec son adresse et ses horaires ;
+  - l'AGENT : il porte un code que chacun peut vérifier sur la page
+    publique /verify-agent, et suit ses colis depuis son espace.
+
+  Ce que la section ne dit pas : un montant. Aucun n'est fixé ; la
+  rémunération se convient avec MACHÉ avant de commencer, et c'est
+  exactement ce qui est écrit. Un chiffre inventé ici serait une
+  promesse que personne n'a faite.
+
+  Les candidatures arrivent dans la messagerie de MACHÉ, objet déjà
+  rempli : l'équipe sait tout de suite de quoi il s'agit.
+*/
+const EARN_ROLES = [
+  {
+    key: "relais",
+    icon: "📍",
+    title: "Devenir point relais",
+    who: "Boutique, pharmacie, cybercafé, dépôt…",
+    points: [
+      "Chaque retrait fait entrer un client dans votre commerce.",
+      "Votre point est affiché sur MACHÉ, avec son adresse et ses horaires.",
+      "Vous gardez le colis et le remettez contre le code de l'acheteur.",
+    ],
+    cta: "Devenir point relais",
+    href: `/contact?sujet=autre&objet=${encodeURIComponent("Devenir point relais")}`,
+    tone: "border-[#bbf7d0] bg-gradient-to-br from-[#f0fdf4] via-white to-[#dcfce7]",
+    accent: "text-[#15803d]",
+  },
+  {
+    key: "agent",
+    icon: "🛵",
+    title: "Devenir agent vérifié",
+    who: "Livreur, coursier, moto-taxi…",
+    points: [
+      "Vous livrez les colis MACHÉ dans votre zone.",
+      "Votre carte porte un code que chaque client vérifie sur MACHÉ : on vous ouvre en confiance.",
+      "Vos colis et leurs étapes se suivent depuis votre téléphone.",
+    ],
+    cta: "Devenir agent",
+    href: `/contact?sujet=autre&objet=${encodeURIComponent("Devenir agent MACHÉ")}`,
+    tone: "border-[#bfdbfe] bg-gradient-to-br from-[#eff6ff] via-white to-[#dbeafe]",
+    accent: "text-[#1d4ed8]",
+  },
+];
+
+export function EarnWithMache() {
+  return (
+    <section className="mache-reveal container-page py-8">
+      <div className="overflow-hidden rounded-[16px] bg-gradient-to-br from-[#111827] via-[#1e293b] to-[#1e3a8a] p-6 text-white sm:p-10">
+        <div className="max-w-2xl">
+          <span className="inline-block rounded-[3px] bg-[var(--mache-primary)] px-2 py-1 text-xs font-bold uppercase tracking-widest">
+            Sans ouvrir de boutique
+          </span>
+          <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">
+            Gagnez de l&apos;argent avec MACHÉ
+          </h2>
+          <p className="mt-3 text-md leading-relaxed text-white/80">
+            Faites de votre commerce un point relais, ou devenez agent vérifié
+            dans votre quartier. MACHÉ grandit avec ceux qui livrent et qui
+            accueillent.
+          </p>
+        </div>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {EARN_ROLES.map((role) => (
+            <Link
+              key={role.key}
+              href={role.href}
+              className={`group flex flex-col rounded-[12px] border p-6 text-[var(--mache-text)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(0,0,0,0.35)] motion-reduce:transform-none ${role.tone}`}
+            >
+              <span className="flex items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-sm transition-transform duration-300 group-hover:scale-110 motion-reduce:transform-none"
+                >
+                  {role.icon}
+                </span>
+                <span>
+                  <span className="block text-xl font-black">{role.title}</span>
+                  <span className="block text-sm text-[var(--mache-muted)]">{role.who}</span>
+                </span>
+              </span>
+
+              <ul className="mt-5 space-y-2.5">
+                {role.points.map((point) => (
+                  <li key={point} className="flex gap-2 text-base leading-snug">
+                    <span aria-hidden="true" className={`font-black ${role.accent}`}>✓</span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <p className="mt-5 text-sm text-[var(--mache-muted)]">
+                Rémunération et conditions fixées avec MACHÉ avant de commencer :
+                rien ne vous engage sans que vous les connaissiez.
+              </p>
+
+              <span className={`mt-auto pt-5 text-base font-bold ${role.accent}`}>
+                {role.cta} <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">→</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* FAQ                                                                        */
 /* -------------------------------------------------------------------------- */
 

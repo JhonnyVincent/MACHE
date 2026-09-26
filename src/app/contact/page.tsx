@@ -41,7 +41,7 @@ const inputClass =
 export default async function ContactPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string; sujet?: string }>;
+  searchParams?: Promise<{ error?: string; sujet?: string; objet?: string }>;
 }) {
   const query = searchParams ? await searchParams : {};
 
@@ -174,7 +174,15 @@ export default async function ContactPage({
           <label htmlFor="subject" className="block text-sm font-semibold text-[var(--mache-text)]">
             Objet
           </label>
-          <input id="subject" name="subject" required maxLength={200} className={inputClass} />
+          {/* Prérempli quand on arrive d'un bouton précis (« Devenir point relais »…). */}
+          <input
+            id="subject"
+            name="subject"
+            required
+            maxLength={200}
+            defaultValue={typeof query.objet === "string" ? query.objet.slice(0, 200) : undefined}
+            className={inputClass}
+          />
         </div>
 
         <div>

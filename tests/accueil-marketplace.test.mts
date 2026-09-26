@@ -252,6 +252,7 @@ check("la page suit l'ordre voulu", () => {
     "<NewShopsMarquee",
     "<SuggestionsMarquee",
     "<BrandsMarquee",
+    "<EarnWithMache",
     "<PartnersStrip",
     "<SellCta",
     "<HomeFaq",
@@ -372,6 +373,24 @@ check("tuiles des catégories : chaque case mène à son sous-rayon", () => {
   assert.match(HOME, /href: `\/shop\?category=\$\{encodeURIComponent\(category\.handle\)\}`/);
   assert.match(HOME, /image: rayonImage\(category\.handle\)/);
   assert.match(SECTIONS, /href=\{cell\.href\}/);
+});
+
+
+check("« Gagnez de l'argent » : deux vrais rôles, aucun montant inventé", () => {
+  const start = ROWS.indexOf("const EARN_ROLES");
+  const section = ROWS.slice(start, ROWS.indexOf("/* FAQ", start));
+  assert.ok(start > -1);
+  /* Aucun chiffre promis : ni gourdes, ni dollars, ni pourcentage, ni « par colis ». */
+  assert.doesNotMatch(section, /\d+\s*(HTG|gourdes?|\$|USD|%)|par colis|garanti/i);
+  assert.match(section, /Rémunération et conditions fixées avec MACHÉ avant de commencer/);
+  /* Les candidatures arrivent avec leur objet déjà rempli. */
+  assert.match(section, /\/contact\?sujet=autre&objet=\$\{encodeURIComponent\("Devenir point relais"\)\}/);
+  assert.match(section, /\/contact\?sujet=autre&objet=\$\{encodeURIComponent\("Devenir agent MACHÉ"\)\}/);
+  const contact = readFileSync("src/app/contact/page.tsx", "utf8");
+  assert.match(contact, /defaultValue=\{typeof query\.objet === "string" \? query\.objet\.slice\(0, 200\) : undefined\}/);
+  /* Ce que la section affirme existe : la vérification publique d'un agent. */
+  readFileSync("src/app/verify-agent/page.tsx", "utf8");
+  readFileSync("src/app/dashboard/agent/page.tsx", "utf8");
 });
 
 console.log(`\n${passed} vérifications passées.\n`);
