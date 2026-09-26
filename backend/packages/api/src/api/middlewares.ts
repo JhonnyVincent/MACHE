@@ -21,6 +21,7 @@
 
 import { defineMiddlewares } from "@medusajs/medusa";
 import { refuseBlockedCustomer } from "./blocked-customers";
+import { throttleLogin } from "./login-throttle";
 
 export default defineMiddlewares({
   routes: [
@@ -28,6 +29,21 @@ export default defineMiddlewares({
       matcher: "/store/*",
       method: ["POST", "PUT", "PATCH", "DELETE"],
       middlewares: [refuseBlockedCustomer],
+    },
+    /*
+      Les tentatives de connexion, toutes actrices confondues :
+      administrateur, vendeur, client. C'est le chemin qu'emprunte
+      quelqu'un qui essaie des mots de passe en boucle — de loin la
+      façon la plus fréquente dont un compte tombe.
+
+      Posé sur le backend et non sur le site, parce que le formulaire
+      du site n'est pas le seul chemin : qui connaît l'adresse du
+      backend appelle ces routes directement.
+    */
+    {
+      matcher: "/auth/*",
+      method: ["POST"],
+      middlewares: [throttleLogin],
     },
   ],
 });

@@ -8,7 +8,7 @@
     "start": "next start",
     "test:vitrine": "tsx tests/vitrine-blocs.test.mts",
     "test:config": "tsx tests/config-backend.test.mts",
-    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:routes && npm run test:textes && npm run test:attente && npm run test:promotions && npm run test:agents && npm run test:connexion && npm run test:gel",
+    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:routes && npm run test:textes && npm run test:attente && npm run test:promotions && npm run test:agents && npm run test:connexion && npm run test:gel && npm run test:protections",
     "test:profil": "tsx tests/profil-vendeur.test.mts",
     "test:minimum": "tsx tests/commande-minimum.test.mts",
     "test:devis": "tsx tests/devis.test.mts",
@@ -23,7 +23,8 @@
     "test:promotions": "tsx tests/promotions-financees.test.mts",
     "test:agents": "tsx tests/agents-suspension.test.mts",
     "test:connexion": "tsx tests/connexion-vendeur.test.mts",
-    "test:gel": "tsx tests/gel-versements.test.mts"
+    "test:gel": "tsx tests/gel-versements.test.mts",
+    "test:protections": "tsx tests/protections-site.test.mts"
   },
   "dependencies": {
     "@measured/puck": "^0.20.2",
