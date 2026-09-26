@@ -33,11 +33,15 @@
 
 name: Vérifications
 
+# Sur TOUTES les branches, pas seulement `main`. Quand `main` a été
+# supprimée, le workflow ne se déclenchait plus du tout : Render, réglé
+# sur « After CI Checks Pass », attendait de nouveau des vérifications
+# qui ne venaient jamais, et le site ne se mettait plus à jour.
+# `workflow_dispatch` permet de le relancer à la main depuis GitHub.
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   site:
