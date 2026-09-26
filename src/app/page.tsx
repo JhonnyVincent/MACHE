@@ -20,6 +20,7 @@
 import Link from "next/link";
 import { fetchHomeData } from "@/lib/medusa/home";
 import { FEATURED_CATEGORIES } from "@/lib/categories";
+import { PartnersStrip } from "@/components/partners-strip";
 import {
   ProductRailSection, SellerRailSection, CategoryMosaicSection,
   CollectionRailSection,
@@ -257,6 +258,14 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/*
+        Les partenaires, juste nommés et liés.
+
+        Vide tant que personne n'a signé : la bande ne s'affiche pas du
+        tout plutôt que d'annoncer un réseau qui n'existe pas.
+      */}
+      <PartnersStrip />
 
       {/* Appel aux vendeurs. */}
       <section className="mache-reveal container-page py-5">

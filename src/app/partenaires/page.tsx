@@ -27,6 +27,7 @@
 */
 
 import Link from "next/link";
+import { PARTNERS } from "@/lib/partners";
 
 export const metadata = {
   title: "Partenaires et sponsors · MACHÉ",
@@ -102,22 +103,76 @@ export default function PartenairesPage() {
           </p>
 
           {/*
-            L'encadré qui évite le mensonge le plus facile de cette page.
-            Il est en haut, pas en bas : quelqu'un qui cherche des
-            références doit l'apprendre avant de faire défiler.
+            LA LISTE, OU SON ABSENCE — JAMAIS LES DEUX.
+
+            L'encadré « personne pour l'instant » était écrit en dur et
+            serait resté affiché au-dessus des premiers partenaires
+            signés, à démentir la liste juste en dessous. Les deux
+            chemins lisent maintenant la même liste.
+
+            Ce qui est nommé ici l'est sobrement : un nom, ce que cette
+            entreprise fait, son adresse. Pas de logo — MACHÉ n'a
+            l'accord écrit de personne pour en afficher un — et pas de
+            taux ni de délai, que MACHÉ ne fixe pas et ne vérifie pas.
           */}
-          <div className="mt-7 max-w-2xl rounded-[10px] border border-[#e6d6b8] bg-[#fdf8ec] p-5">
-            <h2 className="text-md font-bold text-[var(--mache-text)]">
-              Cette page ne liste encore personne
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
-              MACHÉ démarre, et aucun partenariat n&apos;est signé. Elle restera
-              vide jusque-là : un logo affiché sans accord donne à croire
-              qu&apos;une entreprise soutient MACHÉ, et c&apos;est le genre de
-              caution qui ne se reprend pas. Les noms apparaîtront ici quand ils
-              auront dit oui.
-            </p>
-          </div>
+          {PARTNERS.length === 0 ? (
+            <div className="mt-7 max-w-2xl rounded-[10px] border border-[#e6d6b8] bg-[#fdf8ec] p-5">
+              <h2 className="text-md font-bold text-[var(--mache-text)]">
+                Cette page ne liste encore personne
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
+                MACHÉ démarre, et aucun partenariat n&apos;est signé. Elle
+                restera vide jusque-là : un logo affiché sans accord donne à
+                croire qu&apos;une entreprise soutient MACHÉ, et c&apos;est le
+                genre de caution qui ne se reprend pas. Les noms apparaîtront
+                ici quand ils auront dit oui.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-7 max-w-2xl rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
+              <h2 className="text-md font-bold text-[var(--mache-text)]">
+                Ils travaillent avec MACHÉ
+              </h2>
+
+              <ul className="mt-4 space-y-4">
+                {PARTNERS.map((partner) => (
+                  <li key={partner.name}>
+                    <a
+                      href={partner.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-md font-bold text-[var(--mache-text)] underline-offset-4 hover:underline"
+                    >
+                      {partner.name}
+                      <span className="ml-1 text-xs text-[var(--mache-muted)]" aria-hidden="true">
+                        ↗
+                      </span>
+                      <span className="sr-only"> (site externe)</span>
+                    </a>
+
+                    <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
+                      {partner.does}
+                    </p>
+
+                    {/*
+                      LA PHRASE QUI ÉVITE DEUX MALENTENDUS D'UN COUP.
+
+                      Qu'un vendeur croie qu'ouvrir une boutique ici lui
+                      ouvre un financement — et que MACHÉ ait à répondre
+                      d'un refus qu'elle n'a pas décidé.
+                    */}
+                    {!partner.mediated && (
+                      <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
+                        Cela se traite directement avec {partner.name}, selon ses
+                        propres critères. MACHÉ ne dépose pas le dossier, ne
+                        garantit rien et ne touche rien dessus.
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </section>
 
