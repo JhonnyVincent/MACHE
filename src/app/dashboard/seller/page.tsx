@@ -7,7 +7,7 @@
   Pourquoi ce choix
 
   Les trente-cinq pages précédentes lisaient les tables commerce de
-  Supabase. Depuis que le catalogue, le stock et les commandes vivent dans
+  l'ancien socle. Depuis que le catalogue, le stock et les commandes vivent dans
   Medusa, elles montraient à chaque vendeur des chiffres qui ne
   correspondaient plus à rien — un stock qui n'était plus le sien, un
   chiffre d'affaires figé. Les réécrire aurait voulu dire réimplémenter,
@@ -20,12 +20,10 @@
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { vendorLogoutAction } from "./connexion/actions";
 import { reportOutage } from "@/lib/medusa/outage";
-import { supabaseConfigured } from "@/lib/supabase/env";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +48,7 @@ export default async function SellerEntryPage({
   /*
     On vérifie seulement qu'une session existe, sans exiger de rôle : le
     panneau vendeur a sa propre authentification, et refuser ici quelqu'un
-    qui a un compte vendeur Mercur mais pas de rôle Supabase serait un
+    qui a un compte vendeur Mercur mais pas de rôle dans l'ancien socle serait un
     verrou sans objet.
   */
   /*
@@ -59,18 +57,6 @@ export default async function SellerEntryPage({
     attend d'être approuvée.
   */
   const vendor = await getVendorSeller();
-
-  let signedIn = false;
-
-  if (supabaseConfigured()) {
-    try {
-      const supabase = await createSupabaseServerClient();
-      const { data } = await supabase.auth.getUser();
-      signedIn = Boolean(data.user);
-    } catch {
-      /* Session illisible : la page reste consultable. */
-    }
-  }
 
   /*
     Un vendeur n'est pas l'exploitant du site : lui montrer le nom d'une

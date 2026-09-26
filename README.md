@@ -22,8 +22,9 @@ Deux vendeurs peuvent proposer le même article à deux prix. Une commande
 portant sur deux vendeurs devient un *order group* : une commande pour le
 client, deux commandes vendeur.
 
-Supabase ne sert plus qu'aux rôles internes de MACHÉ (administration,
-agents, partenaires).
+Les rôles internes de MACHÉ — administration, agents — vivent eux aussi
+dans Medusa : un agent est un client rangé dans un groupe, et ces groupes
+ne se modifient que depuis l'administration.
 
 ## Ce qui marche aujourd'hui
 

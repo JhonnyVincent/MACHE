@@ -2,7 +2,7 @@
   PAGE : connexion client
 
   Distincte de /login, qui sert au personnel MACHÉ — administration,
-  agents, partenaires — sur les rôles Supabase. Un client achète ; il n'a
+  agents, partenaires — sur les anciens rôles. Un client achète ; il n'a
   aucune raison de passer par la même porte qu'un administrateur, ni de
   voir un formulaire qui parle de rôles.
 */
@@ -93,7 +93,7 @@ export default async function CustomerLoginPage({
           Connexion vendeur
         </Link>
         . Vous faites partie de l&apos;équipe MACHÉ ?{" "}
-        <Link href="/login" className="font-semibold hover:underline">
+        <Link href="/dashboard/admin/connexion" className="font-semibold hover:underline">
           Connexion personnel
         </Link>
         .

@@ -3,8 +3,7 @@
 
   Ce qui a changé, et pourquoi
 
-  Cet espace lisait ses comptes et ses rôles dans Supabase. Le projet
-  Supabase a été supprimé : chaque écran d'administration authentifiait
+  Cet espace lisait ses comptes et ses rôles dans l'ancien socle. l'ancien socle de comptes a été supprimé : chaque écran d'administration authentifiait
   donc contre un service qui n'existe plus. Les comptes vivent
   désormais dans Medusa — la table `user`, celle du personnel, distincte
   des clients et des vendeurs.

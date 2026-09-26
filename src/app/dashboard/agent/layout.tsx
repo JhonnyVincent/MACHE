@@ -1,8 +1,8 @@
 /*
   LAYOUT : espace agent.
 
-  Il lisait Supabase pour savoir qui était connecté, et comptait la
-  tournée du jour dans une table d'un projet supprimé. Il est passé sur
+  Il lisait l'ancien socle pour savoir qui était connecté, et comptait la
+  tournée du jour dans une table d'un socle supprimé depuis. Il est passé sur
   Medusa : un agent est un client, il a une session client.
 
   Pourquoi il ne garde plus la porte
@@ -14,7 +14,7 @@
   session : le contrôle qui compte est là, pas dans une mise en page.
 
   La navigation a maigri. Les deux écrans supprimés — « historique » et
-  « ma carte » — lisaient Supabase eux aussi. Leur contenu tient
+  « ma carte » — lisaient l'ancien socle eux aussi. Leur contenu tient
   maintenant dans l'écran des colis : l'historique est le même écran
   avec un autre filtre, et la carte est le bandeau du haut.
 */

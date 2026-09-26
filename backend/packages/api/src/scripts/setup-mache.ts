@@ -245,7 +245,7 @@ export default async function setupMache({ container }: ExecArgs) {
   logger.info("");
   logger.info("========================================================");
   logger.info("  À reporter dans les variables d'environnement du site");
-  logger.info("  (Vercel → Settings → Environment Variables), PUIS");
+  logger.info("  (Render → le service du site → Environment), PUIS");
   logger.info("  REDÉPLOYER : ces valeurs sont lues à la construction.");
   logger.info("--------------------------------------------------------");
   logger.info(`  NEXT_PUBLIC_MEDUSA_BACKEND_URL=${publicUrl || "<adresse publique de ce serveur>"}`);

@@ -11,14 +11,14 @@
 
   CE QUI EN A ÉTÉ RETIRÉ, ET POURQUOI
 
-  Il rafraîchissait aussi une session Supabase. Ce code n'a donc jamais
+  Il rafraîchissait aussi une session d'un service distant. Ce code n'a donc jamais
   servi — et le réveiller tel quel aurait été pire que de le laisser
-  dormir : le projet Supabase a été supprimé, mais des variables
+  dormir : l'ancien socle de comptes a été supprimé, mais des variables
   héritées d'un ancien déploiement suffisent à le faire passer pour
   configuré. Chaque page aurait alors attendu un appel réseau vers un
   hôte qui ne répond plus. L'erreur était attrapée ; l'attente, non.
 
-  Les quelques pages qui touchent encore Supabase vérifient elles-mêmes
+  Les quelques pages qui touchaient encore ce service vérifient elles-mêmes
   sa présence et se dégradent proprement. Elles n'ont pas besoin de ce
   rafraîchissement.
 

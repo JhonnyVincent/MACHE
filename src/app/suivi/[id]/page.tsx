@@ -88,7 +88,7 @@ export default async function SuiviPage({
           <p className="mt-2 text-sm leading-relaxed text-[#565959]">
             Vérifiez le lien que le vendeur vous a transmis : il contient une
             clé qui ne peut pas être devinée. Si vous avez un compte,{" "}
-            <Link href="/login" className="underline">
+            <Link href="/compte/connexion" className="underline">
               connectez-vous
             </Link>{" "}
             — vos livraisons y sont accessibles sans lien.

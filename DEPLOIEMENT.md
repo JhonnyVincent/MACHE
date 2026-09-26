@@ -132,7 +132,7 @@ Render ne fournit pas `RENDER_EXTERNAL_URL` pendant la construction.
 ### Le compte d'administration MACHÉ
 
 L'administration du site s'authentifie sur les comptes **du personnel
-Medusa**, pas sur Supabase.
+Medusa**.
 
 Il n'y a pas d'inscription publique, et c'est délibéré : ouvrir la
 création de comptes d'administration d'une marketplace reviendrait à
@@ -187,7 +187,7 @@ n'abîme rien, mais donne l'impression que le site est configuré alors
 qu'il ne l'est pas.
 
 Et si une variable `*_CORS` du backend pointe encore vers une ancienne
-adresse — un déploiement Vercel abandonné, par exemple — elle prend le
+adresse — un déploiement abandonné, par exemple — elle prend le
 pas sur celle que `STOREFRONT_URL` déduit, et le navigateur refusera
 tous les appels du site au backend. Supprimez-la plutôt que de la
 corriger : sans elle, l'adresse se déduit toute seule.

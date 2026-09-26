@@ -3,7 +3,7 @@
 
   Ce qu'elle était
 
-  Elle lisait une table Supabase d'un projet supprimé, et affichait
+  Elle lisait une ancienne table d'un socle supprimé depuis, et affichait
   donc « espace indisponible » à tout le monde. Elle est passée sur
   Medusa, comme le reste du compte : un agent est un client à qui
   s'ajoute une fonction, il n'a qu'une porte.

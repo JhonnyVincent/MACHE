@@ -1,7 +1,7 @@
 /*
   PAGE : les articles mis de côté.
 
-  Elle lisait Supabase, dont les identifiants de produits ne désignent
+  Elle lisait l'ancien socle, dont les identifiants de produits ne désignent
   plus rien depuis que le catalogue vit dans Medusa : elle affichait une
   liste vide à qui avait mis dix articles de côté, et aucun écran ne
   permettait d'en ajouter. Une entrée de l'en-tête, présente sur chaque

@@ -3,7 +3,7 @@
 
   Ce qu'ils étaient
 
-  Des lignes Supabase portant des identifiants de produits Supabase.
+  D'anciennes lignes portant les identifiants d'un autre catalogue.
   Depuis que le catalogue vit dans Medusa, ces identifiants ne
   désignaient plus rien : la page affichait une liste vide à qui avait
   mis dix articles de côté, et le bouton d'ajout n'existait nulle part.

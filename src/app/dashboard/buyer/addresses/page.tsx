@@ -1,7 +1,7 @@
 /*
   PAGE : mes adresses
 
-  Lit le carnet d'adresses Medusa. Il lisait auparavant la table Supabase
+  Lit le carnet d'adresses Medusa. Il lisait auparavant l'ancienne table
   `addresses`, qui n'est plus celle utilisée au moment de commander : le
   client aurait modifié une adresse sans effet sur ses livraisons.
 */

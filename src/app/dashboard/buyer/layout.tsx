@@ -3,7 +3,7 @@
 
   L'identité vient désormais de Medusa : c'est là que vivent les
   commandes, les adresses et le profil. Il lisait auparavant le compte
-  Supabase et comptait des commandes qui ne sont plus alimentées.
+  de l'ancien socle et comptait des commandes qui ne sont plus alimentées.
 
   L'espace reste accessible sans être connecté : chaque page dit alors
   quoi faire. Rediriger vers une connexion depuis le gabarit priverait le

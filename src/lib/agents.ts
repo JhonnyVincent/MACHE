@@ -2,12 +2,12 @@
   La vérification publique d'un agent MACHÉ.
 
   Ce fichier portait aussi l'espace agent : contrôle d'accès par rôle
-  Supabase, statuts d'expédition, transitions autorisées. Tout cela est
+  d'un ancien socle, statuts d'expédition, transitions autorisées. Tout cela est
   parti — l'espace agent est passé sur Medusa, où un agent est un client
   à qui s'ajoute une fonction, et non un rôle à part.
 
   Ce qui restait ici après ce déménagement ne servait plus à personne :
-  `requireAgent` interrogeait un projet Supabase supprimé, et les
+  `requireAgent` interrogeait un socle supprimé depuis, et les
   libellés d'expédition n'étaient plus lus nulle part. Du code mort qui
   parle à une base disparue est un piège pour qui le rebranchera un
   jour sans savoir.
@@ -69,7 +69,7 @@ export type AgentVerification =
 /*
   Vérification publique d'un code agent, sur Medusa.
 
-  Elle lisait Supabase, dont le projet a été supprimé : la page
+  Elle lisait l'ancien socle, dont le socle a été supprimé : la page
   répondait « impossible à vérifier » à tout le monde, à l'instant
   précis où quelqu'un hésite à remettre de l'argent liquide.
 

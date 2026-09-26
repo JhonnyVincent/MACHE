@@ -33,19 +33,15 @@ import { NextResponse } from "next/server";
   moment de la construction uniquement quand la clé est écrite en
   toutes lettres.
 
-  Render injecte RENDER_GIT_COMMIT pendant la construction. Ailleurs,
-  les noms usuels des autres hébergeurs sont acceptés, puis une valeur
+  Render injecte RENDER_GIT_COMMIT pendant la construction. GIT_COMMIT
+  reste accepté pour une construction faite ailleurs, puis une valeur
   qui dit franchement qu'on ne sait pas — plutôt qu'un « inconnu »
   qu'on prendrait pour un identifiant.
 */
 const COMMIT =
-  process.env.RENDER_GIT_COMMIT ||
-  process.env.VERCEL_GIT_COMMIT_SHA ||
-  process.env.GIT_COMMIT ||
-  "";
+  process.env.RENDER_GIT_COMMIT || process.env.GIT_COMMIT || "";
 
-const BRANCH =
-  process.env.RENDER_GIT_BRANCH || process.env.VERCEL_GIT_COMMIT_REF || "";
+const BRANCH = process.env.RENDER_GIT_BRANCH || process.env.GIT_BRANCH || "";
 
 /*
   Figée à la construction : c'est précisément ce qu'on veut savoir —

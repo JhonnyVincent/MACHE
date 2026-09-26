@@ -1,111 +1,107 @@
 /*
-  PAGE : aiguillage /dashboard
+  PAGE : l'aiguillage vers son espace.
 
-  Redirige vers l'espace correspondant au rôle du compte connecté.
+  Elle lisait un rôle dans l'ancien socle pour décider où envoyer la
+  personne. Ce projet est supprimé : la page ne savait donc plus rien
+  et affichait « espace indisponible » à tout le monde, y compris à des
+  vendeurs et des administrateurs parfaitement identifiés ailleurs.
 
-  Cette page ne devine plus. Quand la fiche `users` ne peut pas être lue
-  — ligne absente, ou politique RLS qui empêche le compte de lire sa
-  propre ligne — le rôle était remplacé par "buyer" et l'utilisateur
-  atterrissait dans l'espace acheteur sans le moindre message. Un vendeur
-  n'avait alors aucun moyen de comprendre pourquoi il n'accédait pas à son
-  espace. On affiche désormais ce qui bloque, sans rediriger : une
-  redirection vers /login donnerait une boucle.
+  Il n'y a plus de « rôle » à lire quelque part. Chaque espace a sa
+  propre identité, et c'est la bonne façon de faire : un vendeur est un
+  membre de boutique chez Mercur, un agent est un client dans un groupe,
+  un administrateur est un membre du personnel. On demande donc à
+  chacun, dans l'ordre du plus privilégié au moins privilégié, et le
+  premier qui répond gagne.
+
+  POURQUOI CET ORDRE
+
+  Une même personne peut être les deux : le dirigeant de MACHÉ achète
+  aussi. L'envoyer vers son espace d'achat alors qu'il vient piloter le
+  site serait le geste le plus agaçant possible — et l'inverse n'est
+  jamais grave, puisqu'un lien mène toujours à l'autre espace.
+
+  SI PERSONNE NE RÉPOND
+
+  On ne renvoie pas vers une page de connexion : on ne sait pas
+  laquelle. On montre les portes, et la personne sait laquelle est la
+  sienne mieux que nous.
 */
-
-export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isSellerRole } from "@/lib/authz";
-import { supabaseConfigured } from "@/lib/supabase/env";
-import { StaffUnavailable } from "@/components/staff-unavailable";
+import { getAdminUser } from "@/lib/medusa/admin";
+import { getVendorSeller } from "@/lib/medusa/vendor";
+import { getCustomer } from "@/lib/medusa/customer";
+
+export const dynamic = "force-dynamic";
+
+const PORTES = [
+  {
+    titre: "Espace client",
+    texte: "Vos commandes, vos adresses, vos devis et vos messages.",
+    href: "/compte/connexion",
+  },
+  {
+    titre: "Espace vendeur",
+    texte: "Votre boutique, vos livraisons, vos contrats avec MACHÉ.",
+    href: "/dashboard/seller/connexion",
+  },
+  {
+    titre: "Espace agent",
+    texte: "Les colis que vous portez ou que vous gardez en point de retrait.",
+    href: "/dashboard/agent/connexion",
+  },
+  {
+    titre: "Administration",
+    texte: "Réservé à l'équipe de MACHÉ.",
+    href: "/dashboard/admin/connexion",
+  },
+];
 
 export default async function DashboardRedirectPage() {
-  if (!supabaseConfigured()) {
-    return <StaffUnavailable area="Tableau de bord" />;
-  }
+  /*
+    Dans cet ordre, et chacun est demandé à part : ces trois identités
+    vivent dans des sessions différentes, et être l'une n'apprend rien
+    sur les autres.
+  */
+  const admin = await getAdminUser();
 
-  const supabase = await createSupabaseServerClient();
+  if (admin) redirect("/dashboard/admin");
 
-  const { data: userData } = await supabase.auth.getUser();
+  const vendor = await getVendorSeller();
 
-  if (!userData.user) {
-    redirect("/login?next=/dashboard");
-  }
+  if (vendor) redirect("/dashboard/seller");
 
-  const { data: profile, error } = await supabase
-    .from("users")
-    .select("role")
-    .eq("id", userData.user.id)
-    .maybeSingle();
+  const customer = await getCustomer();
 
-  if (error) {
-    console.error("[dashboard] lecture du profil:", error.message);
-  }
+  if (customer) redirect("/dashboard/buyer");
 
-  if (!profile) {
-    return (
-      <main className="container-page py-12">
-        <div className="card mx-auto max-w-lg p-6">
-          <h1 className="text-2xl font-bold">Profil introuvable</h1>
+  return (
+    <main className="mx-auto w-full max-w-2xl px-4 py-10 sm:py-14">
+      <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
+        Quel espace ?
+      </h1>
 
-          <p className="mt-3 text-sm leading-relaxed text-neutral-600">
-            Vous êtes bien connecté, mais votre fiche utilisateur n&apos;a pas
-            pu être lue. Tant qu&apos;elle est absente, votre rôle reste inconnu
-            et aucun espace ne peut vous être attribué.
-          </p>
+      <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
+        Vous n&apos;êtes connecté à aucun. Chacun a sa propre entrée — celle
+        que vous utilisez d&apos;habitude est la bonne.
+      </p>
 
-          <dl className="mt-5 space-y-2 rounded-xl bg-neutral-50 p-4 text-sm">
-            <div className="flex justify-between gap-4">
-              <dt className="text-neutral-500">Compte</dt>
-              <dd className="font-medium">{userData.user.email}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-neutral-500">Identifiant</dt>
-              <dd className="font-mono tabular-nums text-xs">{userData.user.id}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-neutral-500">Cause</dt>
-              <dd className="text-right font-medium">
-                {error
-                  ? "Lecture refusée par la base"
-                  : "Aucune ligne pour ce compte"}
-              </dd>
-            </div>
-          </dl>
-
-          <p className="mt-4 text-xs leading-relaxed text-neutral-500">
-            {error
-              ? "La base a refusé la lecture. Une politique d'accès (RLS) sur la table users empêche probablement le compte de lire sa propre ligne."
-              : "Aucune ligne de la table users ne correspond à cet identifiant. La fiche n'a jamais été créée à l'inscription."}
-          </p>
-
-          <Link href="/" className="btn-secondary mt-6">
-            Retour à l&apos;accueil
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  const role = String(profile.role || "").toLowerCase().trim();
-
-  if (isSellerRole(role)) {
-    redirect("/dashboard/seller");
-  }
-
-  if (role === "agent") {
-    redirect("/dashboard/agent");
-  }
-
-  if (role === "admin" || role === "super_admin") {
-    redirect("/dashboard/admin");
-  }
-
-  if (role === "partner") {
-    redirect("/dashboard/partner");
-  }
-
-  redirect("/dashboard/buyer");
+      <ul className="mt-6 space-y-3">
+        {PORTES.map((porte) => (
+          <li key={porte.href}>
+            <Link
+              href={porte.href}
+              className="block rounded-lg border border-[var(--mache-line)] bg-white p-4 transition-colors hover:border-[var(--mache-primary)]"
+            >
+              <p className="font-semibold text-[var(--mache-text)]">{porte.titre}</p>
+              <p className="mt-0.5 text-sm leading-relaxed text-[var(--mache-muted)]">
+                {porte.texte}
+              </p>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
 }

@@ -6,7 +6,7 @@
   achètent sur MACHÉ comme tout le monde, et rendent un service en
   plus.
 
-  Cette page lisait Supabase, dont le projet a été supprimé. Elle lit
+  Cette page lisait l'ancien socle, dont le socle a été supprimé. Elle lit
   maintenant Medusa, et surtout elle AGIT : nommer, suspendre, retirer.
   Jusqu'ici il fallait passer par le panneau du backend et y fouiller
   les groupes de clients.

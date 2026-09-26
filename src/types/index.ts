@@ -7,11 +7,11 @@
   - Garder une structure propre pour UserRole, Product, AgentProfile, etc.
   - Permettre au site de comprendre les produits venant :
     1. de l’ancien système avec "images"
-    2. du nouveau système Supabase avec "image_urls"
+    2. du autre format avec "image_urls"
 
   Important :
   - "images" = ancien format utilisé dans mock-data
-  - "image_urls" = nouveau format Supabase pour plusieurs images produit
+  - "image_urls" = autre format pour plusieurs images produit
 */
 
 export type UserRole =
@@ -57,7 +57,7 @@ export interface Product {
   // Ancien système : utilisé par les produits mock/local
   images: string[];
 
-  // Nouveau système : utilisé par Supabase pour plusieurs images produit
+  // Nouveau système : utilisé autrefois pour plusieurs images produit
   image_urls?: string[];
 
   vendorName: string;

@@ -32,7 +32,24 @@ const tickerTranslations = {
   ]
 };
 
-const tickerLink = "https://bawon-eta.vercel.app/";
+/*
+  LE BANDEAU NE POINTE PLUS NULLE PART, ET C'EST VOULU.
+
+  Il renvoyait chaque ligne vers un ancien déploiement de BAWON, retiré
+  depuis : les liens seraient tombés dans le vide.
+
+  Et on ne les a pas repointés vers une page de MACHÉ. Ces lignes —
+  trouver un financement, investir dans des projets, se faire
+  accompagner pour créer son entreprise — sont des services de BAWON.
+  Les faire mener à MACHÉ reviendrait à lui faire promettre du
+  financement et de l'accompagnement qu'il n'offre pas. Un lien mort
+  est ennuyeux ; une promesse fausse coûte la confiance d'un commerçant
+  qui l'aura crue.
+
+  Le texte reste : il annonce ce que l'écosystème propose. Dès que la
+  nouvelle adresse de BAWON est connue, il suffit de la remettre ici et
+  de redonner leur lien aux lignes.
+*/
 
 const translations = {
   fr: {
@@ -111,15 +128,7 @@ export function Header({ cartCount = 0 }: { cartCount?: number }) {
         <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
           {[...tickerTranslations[lang], ...tickerTranslations[lang]].map(
             (item, index) => (
-              <a
-                key={`${item}-${index}`}
-                href={tickerLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-black hover:underline"
-              >
-                ✦ {item}
-              </a>
+              <span key={`${item}-${index}`}>✦ {item}</span>
             )
           )}
         </div>

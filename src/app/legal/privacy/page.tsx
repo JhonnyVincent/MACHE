@@ -4,7 +4,7 @@
   Ce qu'elle était
 
   Trois phrases, dont une qui disait : « Les données sensibles doivent
-  être protégées via Supabase, permissions strictes et RLS. » C'était une
+  être protégées par un socle à permissions strictes. » C'était une
   note technique adressée à soi-même, pas une information destinée à un
   client — et depuis la bascule sur Medusa, c'était en partie faux.
 

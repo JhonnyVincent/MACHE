@@ -4,8 +4,7 @@
   Ce qu'il remplace
 
   `/login`, `/register`, `/forgot-password`, `/reset-password` et la
-  connexion par code lisaient leurs comptes dans Supabase. Le projet
-  Supabase a été supprimé : ces pages affichaient toujours un
+  connexion par code lisaient leurs comptes dans l'ancien socle. l'ancien socle de comptes a été supprimé : ces pages affichaient toujours un
   formulaire complet, qui échouait à l'envoi.
 
   Un formulaire qui ne peut pas aboutir est pire qu'une page absente.

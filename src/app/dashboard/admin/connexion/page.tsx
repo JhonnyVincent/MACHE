@@ -3,7 +3,7 @@
 
   Les comptes du personnel vivent dans Medusa — la table `user`,
   distincte des clients et des vendeurs. Cet espace authentifiait
-  auparavant contre Supabase ; le projet Supabase a été supprimé, et
+  auparavant contre l'ancien socle ; l'ancien socle de comptes a été supprimé, et
   chaque écran d'administration tombait alors en erreur serveur.
 
   Un compte se crée en ligne de commande, côté backend :

@@ -43,10 +43,14 @@ Ce que le schéma apporte **sans une ligne de code à écrire** :
 
 ### Storefront — racine du dépôt
 
-Next.js 15 / React 19, déployé sur Vercel. Il reste **à la racine** et non
+Next.js 15 / React 19, déployé sur Render. Il reste **à la racine** et non
 dans `apps/storefront` : déplacer la racine du projet Next obligerait à
-changer le « Root Directory » du projet Vercel à la main, et casserait le
+changer le répertoire racine du service à la main, et casserait le
 déploiement entre-temps. Le gain serait cosmétique.
+
+Le même code peut tourner **deux fois**, sur deux services : `MACHE_ROLE`
+dit à chacun ce qu'il sert — le site public sans l'administration, ou
+l'administration seule. Absente, il sert tout.
 
 ---
 
@@ -56,28 +60,30 @@ déploiement entre-temps. Le gain serait cosmétique.
 |---|---|---|
 | Catalogue, stock, prix, promotions, panier, commandes, paiements, taxes, expéditions | **Medusa** | Moteur éprouvé ; le réécrire prendrait un an |
 | Vendeurs, commissions, payouts, commandes multi-vendeurs, panneau vendeur | **Mercur** | Couche marketplace au-dessus de Medusa, pas un second moteur |
-| Rendu public, SEO, pages marketing, page d'accueil dynamique | **Next.js / Vercel** | Rendu au plus près de l'utilisateur |
-| Images et fichiers | **Supabase Storage** *(décision en attente, §5)* | Déjà en place, CDN inclus |
-| Comptes et sessions | **à décider** *(§5)* | Point le plus structurant |
+| Rendu public, SEO, pages marketing, page d'accueil dynamique | **Next.js / Render** | Un service Node, comme le backend |
+| Images et fichiers | **à décider** | Rien n'est en place : aucun téléversement n'existe dans le code |
+| Comptes et sessions | **Medusa** | Clients, vendeurs, agents et personnel y vivent tous |
 
 **Règle de non-duplication** : une donnée commerce a **une seule** source
 de vérité, Medusa. Le storefront ne recalcule ni un prix, ni un stock, ni
-un total. Les tables commerce Supabase des migrations `0001`–`0006` ne
-sont pas reprises.
+un total. Les anciennes tables commerce, et les migrations qui les
+créaient, ont été supprimées du dépôt.
 
 ---
 
 ## 3. Hébergement
 
-Medusa est un serveur Node persistant avec Postgres et Redis. **Il ne peut
-pas tourner sur Vercel** : les fonctions serverless n'ont ni processus
-long, ni scheduler, ni connexions persistantes.
+Medusa est un serveur Node persistant avec Postgres et Redis. Il lui faut
+donc un hébergeur qui fait tourner un **processus long** : un
+environnement de fonctions éphémères n'a ni scheduler, ni connexions
+persistantes, et ne convient pas.
 
 ```
-Vercel            →  storefront Next.js
-Hébergeur Node    →  backend Medusa + Mercur (Railway, Render, Fly, Medusa Cloud…)
-Postgres managé   →  base commerce
-Redis managé      →  file d'événements, cache, verrous
+Render  →  storefront Next.js          (MACHE_ROLE=public)
+Render  →  storefront Next.js          (MACHE_ROLE=admin, facultatif)
+Render  →  backend Medusa + Mercur
+Postgres managé  →  base commerce
+Redis managé     →  file d'événements, cache, verrous
 ```
 
 En développement, Redis est facultatif : Medusa bascule sur une instance
@@ -111,26 +117,29 @@ production.
 
 ## 5. Décisions prises
 
-1. **Comptes** — tout sur Medusa. Supabase Auth ne gouverne plus le
-   commerce ; le panneau vendeur Mercur a sa propre inscription.
+1. **Comptes** — tout sur Medusa. Clients, vendeurs, agents et personnel
+   de MACHÉ y vivent tous ; l'ancien fournisseur d'authentification a été
+   retiré du code.
 2. **Hébergement** — Render, plan gratuit. `render.yaml` est prêt, avec
    ses limites écrites sans euphémisme : base supprimée au bout de
    30 jours, service endormi après 15 minutes, pas de Redis. Bon pour
    montrer la plateforme, pas pour encaisser.
 3. **Visuels** — seuls le logo hibiscus et la carte d'Haïti sont
    conservés. Les douze liens Unsplash ont été retirés.
-4. **Espace vendeur** — le panneau Mercur. Les 35 pages Next lisaient des
-   tables Supabase qui ne sont plus la source de vérité : elles montraient
-   à chaque vendeur des chiffres morts.
+4. **Espace vendeur** — le panneau Mercur, plus les écrans propres à
+   MACHÉ (livraisons, contrats, devis, vitrine). Les 35 pages Next
+   d'origine lisaient des tables qui n'étaient plus la source de vérité :
+   elles montraient à chaque vendeur des chiffres morts.
 5. **Administration** — panneau Medusa pour le commerce, et en Next
-   seulement ce que Medusa ne connaît pas : agents, vérification des
-   boutiques, rôles, partenaires.
+   seulement ce que Medusa ne connaît pas : agents, points de retrait,
+   contrats, textes légaux, gel des versements, qui paie une promotion.
 
 ### Ce qui n'a pas pu être vérifié
 
-L'environnement de travail n'a pas accès au projet Supabase. Les
-migrations `0001`–`0006` n'ayant jamais été appliquées, il n'y a
-probablement rien à migrer — mais c'est une déduction, pas un constat.
+L'ancien projet d'authentification et ses migrations ont été supprimés
+sans avoir jamais été appliqués ; il n'y avait donc rien à reprendre.
+C'était une déduction au moment de l'audit, et elle n'a jamais été
+démentie depuis.
 
 ---
 

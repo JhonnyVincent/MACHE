@@ -1,9 +1,9 @@
 /*
   LAYOUT : espace d'administration.
 
-  L'authentification est passée de Supabase à Medusa.
+  L'authentification est passée de l'ancien socle à Medusa.
 
-  Pourquoi : le projet Supabase a été supprimé, et cet espace
+  Pourquoi : l'ancien socle de comptes a été supprimé, et cet espace
   authentifiait donc contre un service qui n'existe plus — chaque écran
   levait une erreur serveur. Les comptes du personnel vivent maintenant
   dans Medusa, la table `user`, distincte des clients et des vendeurs.
@@ -70,24 +70,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { label: "Contrats", href: "/dashboard/admin/contrats" },
         { label: "Textes du site", href: "/dashboard/admin/textes" },
         { label: "Sécurité du compte", href: "/dashboard/admin/securite" },
-      ],
-    },
-    {
-      /*
-        Ces deux-là lisent leurs données dans Supabase et restent hors
-        service tant qu'il n'est pas rebranché. Ils sont laissés dans la
-        navigation, et chacun le dit en s'ouvrant : les retirer ferait
-        croire qu'ils n'ont jamais existé.
-
-        « Agents » ne figure plus ici : cet écran est passé sur Medusa,
-        où un agent est un client à qui s'ajoute une fonction. Le
-        laisser dans cette section annonçait un écran hors service
-        alors qu'il marche — un faux sur la page même où l'on pilote.
-      */
-      label: "Sur Supabase",
-      items: [
-        { label: "Partenaires", href: "/dashboard/admin/partners" },
-        { label: "Blocs de contenu", href: "/dashboard/admin/widgets" },
       ],
     },
   ];

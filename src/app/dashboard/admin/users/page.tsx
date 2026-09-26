@@ -1,7 +1,7 @@
 /*
   PAGE : les comptes.
 
-  Elle listait les comptes de Supabase et leurs rôles. Les comptes
+  Elle listait les comptes de l'ancien socle et leurs rôles. Les comptes
   vivent maintenant dans Medusa, et y sont déjà administrés : clients,
   vendeurs et membres du personnel, chacun avec ses écrans, dans le
   panneau du backend.

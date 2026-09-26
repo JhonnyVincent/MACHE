@@ -1,8 +1,7 @@
 /*
   PAGE : mes commandes
 
-  Lit les commandes du client dans Medusa. Elle lisait auparavant la table
-  Supabase `orders`, qui n'est plus alimentée depuis que le tunnel de
+  Lit les commandes du client dans Medusa. Elle lisait auparavant l'ancienne table `orders`, qui n'est plus alimentée depuis que le tunnel de
   commande passe par le backend commerce : un client venant de commander
   n'y trouvait rien.
 */

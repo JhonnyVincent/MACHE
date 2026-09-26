@@ -1,7 +1,7 @@
 /*
   PAGE : Espace client — vue d'ensemble
 
-  Les commandes viennent de Medusa. Cette page lisait la table Supabase
+  Les commandes viennent de Medusa. Cette page lisait l'ancienne table
   `orders`, qui n'est plus alimentée : un client venant de commander y
   voyait zéro.
 */

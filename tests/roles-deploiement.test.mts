@@ -139,23 +139,25 @@ check("le refus est décidé avant tout le reste", () => {
   );
 });
 
-check("plus rien ne réveille Supabase à chaque requête", () => {
+check("le middleware n'appelle rien au loin", () => {
   /*
-    Ce middleware rafraîchissait une session Supabase — du code qui n'a
-    jamais tourné. Le réveiller aurait été pire que de le laisser
-    dormir : le projet est supprimé, mais d'anciennes variables
-    suffisent à le faire passer pour configuré, et chaque page aurait
-    alors attendu un appel réseau vers un hôte muet.
+    Il tourne sur CHAQUE page. Un appel réseau posé ici — rafraîchir une
+    session chez un service tiers, par exemple — se paie sur toutes les
+    visites du site, et pas seulement quand il échoue : un hôte qui ne
+    répond plus fait attendre chaque page jusqu'au délai. C'est
+    exactement ce qui dormait ici avant d'être retiré.
+
+    Plutôt que d'interdire un paquet par son nom — ce qui ne protège que
+    de celui-là — on exige que ce fichier n'importe RIEN d'autre que ce
+    dont Next a besoin. Tout ajout futur devra passer par ce test, quel
+    qu'il soit.
   */
-  /*
-    On cherche le CODE, pas la prose : le commentaire ci-dessus contient
-    le mot, et une recherche naïve tomberait sur lui. Première écriture
-    de ce test, d'ailleurs — elle échouait sur son propre commentaire.
-  */
-  assert.equal(
-    /from "@supabase|createServerClient\(|getSupabaseCredentials\(/.test(SOURCE),
-    false,
-    "le middleware tourne sur chaque page : il ne doit rien appeler au loin"
+  const imports = [...SOURCE.matchAll(/from\s+"([^"]+)"/g)].map((m) => m[1]);
+
+  assert.deepEqual(
+    imports,
+    ["next/server"],
+    `le middleware ne doit importer que next/server, or il importe : ${imports.join(", ")}`
   );
 });
 

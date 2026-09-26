@@ -6,7 +6,7 @@
   Le tunnel de commande a été ouvert avant que le storefront sache
   authentifier un client : on pouvait donc commander sans jamais revoir sa
   commande. `/store/orders` exige une session client, et l'espace client
-  lisait encore les commandes Supabase, c'est-à-dire des commandes qui
+  lisait encore d'anciennes commandes, c'est-à-dire des commandes qui
   n'existent plus.
 
   Le jeton
@@ -18,8 +18,7 @@
 
   Ce que ce fichier ne couvre pas
 
-  L'administration, les agents et les partenaires restent sur les rôles
-  Supabase : Medusa ne connaît pas ces métiers, qui sont propres à MACHÉ.
+  L'administration, les agents et les partenaires restent sur les anciens rôles : Medusa ne connaît pas ces métiers, qui sont propres à MACHÉ.
   Les vendeurs, eux, s'authentifient sur le panneau Mercur. Trois publics,
   trois portes — mais une seule par public, jamais deux pour le même.
 */
