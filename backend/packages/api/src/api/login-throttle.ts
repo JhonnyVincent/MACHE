@@ -62,19 +62,31 @@ type Bucket = { count: number; resetAt: number };
 const attempts = new Map<string, Bucket>();
 
 /*
-  L'adresse de l'appelant. Derrière l'hébergement, la vraie adresse est
-  dans `x-forwarded-for` ; on prend la PREMIÈRE, celle du client, les
-  suivantes étant les relais. Tronquée : une valeur fabriquée ne doit
-  pas pouvoir servir de clé sans fin.
+  L'adresse de l'appelant — la DERNIÈRE de `x-forwarded-for`, pas la
+  première.
+
+  La première est celle que le CLIENT a écrite. Render n'efface jamais
+  cet en-tête : il ajoute à la fin l'adresse qu'il voit réellement, et
+  laisse le reste tel quel. Prendre la première, c'était laisser
+  l'attaquant choisir sa clé — une adresse inventée à chaque essai, un
+  compteur neuf à chaque essai, et le plafond de huit tentatives ne
+  plafonnait plus rien.
+
+  La dernière est celle que Render a lui-même constatée : on ne peut
+  pas la falsifier. C'est aussi ce que fait Express avec le réglage
+  `trust proxy = 1` que Medusa applique.
+
+  Tronquée : une valeur fabriquée ne doit pas pouvoir servir de clé
+  sans fin.
 */
-function clientIp(req: MedusaRequest): string {
+export function clientIp(req: MedusaRequest): string {
   const header = req.headers["x-forwarded-for"];
 
-  const raw = Array.isArray(header) ? header[0] : header;
+  const raw = Array.isArray(header) ? header[header.length - 1] : header;
 
-  const first = (raw ?? "").split(",")[0]?.trim();
+  const last = (raw ?? "").split(",").map((part) => part.trim()).filter(Boolean).pop();
 
-  return (first || req.socket?.remoteAddress || "inconnu").slice(0, 64);
+  return (last || req.socket?.remoteAddress || "inconnu").slice(0, 64);
 }
 
 /* L'identifiant visé, quand le corps en porte un. */

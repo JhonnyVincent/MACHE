@@ -121,6 +121,34 @@ services:
       # pas.
       - key: SEED_DEMO
         sync: false
+      # L'envoi des e-mails — pour l'instant, le lien « mot de passe
+      # oublié » (client, vendeur, administration).
+      #
+      # Par Brevo, et non par le SMTP de Gmail : le plan gratuit de
+      # Render BLOQUE les ports SMTP sortants (25, 465, 587). Un envoi
+      # par Gmail y partirait dans le vide, sans le moindre message
+      # d'erreur. Brevo passe par HTTPS ; son offre gratuite couvre 300
+      # e-mails par jour.
+      #
+      # À saisir : la clé d'API Brevo (compte Brevo > SMTP & API > Clés
+      # API). C'est un secret : jamais dans le code, jamais ailleurs
+      # qu'ici. Sans elle, aucun e-mail ne part, et les journaux le
+      # disent.
+      - key: BREVO_API_KEY
+        sync: false
+      # L'adresse d'expédition. Brevo exige de la confirmer une fois
+      # (Expéditeurs > Ajouter un expéditeur), en cliquant sur le lien
+      # qu'il y envoie.
+      #
+      # Une adresse @gmail.com envoyée par un autre service que Gmail
+      # tombe plus souvent dans les indésirables. Acceptable pour
+      # démarrer ; la solution durable est une adresse sur un nom de
+      # domaine à MACHÉ, authentifié chez Brevo.
+      - key: MAIL_FROM
+        value: contact.bawonlakwa@gmail.com
+      # Le nom affiché à côté de l'adresse d'expédition.
+      - key: MAIL_FROM_NAME
+        value: MACHÉ
       # Le compte d'administration MACHÉ, créé au premier démarrage.
       #
       # Le plan gratuit de Render n'offre pas d'onglet Shell : sans

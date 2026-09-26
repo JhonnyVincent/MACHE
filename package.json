@@ -8,7 +8,7 @@
     "start": "next start",
     "test:vitrine": "tsx tests/vitrine-blocs.test.mts",
     "test:config": "tsx tests/config-backend.test.mts",
-    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:routes && npm run test:textes && npm run test:attente && npm run test:promotions && npm run test:agents && npm run test:connexion && npm run test:gel && npm run test:protections && npm run test:roles && npm run test:accueil && npm run test:partenaires && npm run test:delais && npm run test:panneaux && npm run test:casse",
+    "test": "npm run test:vitrine && npm run test:config && npm run test:profil && npm run test:minimum && npm run test:themes && npm run test:devis && npm run test:tarifs && npm run test:habillage && npm run test:codes && npm run test:contrats && npm run test:routes && npm run test:textes && npm run test:attente && npm run test:promotions && npm run test:agents && npm run test:connexion && npm run test:gel && npm run test:protections && npm run test:roles && npm run test:accueil && npm run test:partenaires && npm run test:delais && npm run test:panneaux && npm run test:casse && npm run test:oubli",
     "test:profil": "tsx tests/profil-vendeur.test.mts",
     "test:minimum": "tsx tests/commande-minimum.test.mts",
     "test:devis": "tsx tests/devis.test.mts",
@@ -30,7 +30,8 @@
     "test:partenaires": "tsx tests/partenaires.test.mts",
     "test:delais": "tsx tests/delais-versement.test.mts",
     "test:panneaux": "tsx tests/panneaux-adresse.test.mts",
-    "test:casse": "tsx tests/casse-email.test.mts"
+    "test:casse": "tsx tests/casse-email.test.mts",
+    "test:oubli": "tsx tests/mot-de-passe-oublie.test.mts"
   },
   "dependencies": {
     "@measured/puck": "^0.20.2",

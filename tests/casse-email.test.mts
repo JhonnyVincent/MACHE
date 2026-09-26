@@ -49,7 +49,7 @@ check("une valeur qui n'est pas du texte passe telle quelle", () => {
 check("la mise en minuscules passe avant le plafond de tentatives", () => {
   /* Sinon « Jean@… » et « jean@… » compteraient comme deux comptes. */
   const source = readFileSync("backend/packages/api/src/api/middlewares.ts", "utf8");
-  assert.match(source, /middlewares: \[normalizeAuthEmail, throttleLogin\]/);
+  assert.match(source, /middlewares: \[normalizeAuthEmail, throttleResetRequests, throttleLogin\]/);
 });
 
 const EXISTING = readFileSync("backend/packages/api/src/scripts/email-case-existing.ts", "utf8");

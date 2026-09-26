@@ -174,6 +174,47 @@ Le terminal reste possible là où l'hébergeur en offre un
 (`medusa user -e ... -p ...`), mais il n'est plus nécessaire : le plan
 gratuit de Render n'a pas d'onglet `Shell`.
 
+Mot de passe oublié ? Le lien « Mot de passe oublié ? » de la page de
+connexion administration fonctionne comme pour les clients et les
+vendeurs — une fois l'envoi d'e-mails configuré (section suivante).
+
+### L'envoi des e-mails (mot de passe oublié)
+
+Le backend envoie les liens « mot de passe oublié » — clients, vendeurs
+et administration, y compris depuis le lien « Reset » du panneau
+vendeur Mercur.
+
+**Pourquoi pas directement par Gmail.** Le plan gratuit de Render
+**bloque les ports SMTP sortants** (25, 465 et 587). Un envoi par le
+SMTP de Gmail y partirait dans le vide, sans le moindre message
+d'erreur. L'envoi passe donc par **Brevo**, qui s'appelle en HTTPS —
+le port que Render laisse ouvert. Offre gratuite : 300 e-mails par
+jour.
+
+Trois étapes, une seule fois :
+
+1. Créer un compte gratuit sur brevo.com.
+2. **Expéditeurs** → ajouter `contact.bawonlakwa@gmail.com`, puis
+   cliquer sur le lien de confirmation que Brevo envoie à cette
+   adresse. Sans cette confirmation, Brevo refuse tous les envois.
+3. **SMTP & API → Clés API** → créer une clé, et la coller sur
+   `mache-backend` → `Environment` → `BREVO_API_KEY`.
+
+`MAIL_FROM` (l'adresse d'expédition) et `MAIL_FROM_NAME` (« MACHÉ »)
+sont déjà posées par le `render.yaml`.
+
+**À savoir.** Un message « de » une adresse `@gmail.com` mais envoyé
+par un autre service que Gmail arrive plus souvent dans les courriers
+indésirables — les messageries vérifient que l'expéditeur est bien
+celui qu'il prétend. La page de confirmation le rappelle au client.
+La solution durable : une adresse sur un nom de domaine à MACHÉ,
+authentifiée chez Brevo.
+
+**Ce que les journaux montrent.** « lien envoyé (espace member) »
+quand tout va bien ; la raison exacte sinon (clé absente, expéditeur
+non confirmé…). Jamais le lien lui-même, ni l'adresse du destinataire :
+le lien ouvre le compte pendant 15 minutes.
+
 ### Deux services, deux jeux de variables — ne pas les mélanger
 
 C'est l'erreur la plus coûteuse, parce qu'elle ne produit aucun message

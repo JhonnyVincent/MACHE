@@ -27,7 +27,7 @@ export const dynamic = "force-dynamic";
 export default async function VendorLoginPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string; next?: string }>;
+  searchParams?: Promise<{ error?: string; next?: string; reinitialise?: string }>;
 }) {
   const query = searchParams ? await searchParams : {};
 
@@ -70,6 +70,12 @@ export default async function VendorLoginPage({
       <p className="mt-2 text-md leading-relaxed text-[var(--mache-muted)]">
         Accédez à votre boutique, vos produits et vos commandes.
       </p>
+
+      {query.reinitialise && (
+        <div className="mt-4 rounded-[8px] border border-[#b7dfc0] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+          Mot de passe changé. Connectez-vous avec le nouveau.
+        </div>
+      )}
 
       {query.error && (
         <div className="mt-5 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base leading-relaxed text-[#b01124]">
@@ -141,6 +147,12 @@ export default async function VendorLoginPage({
           Se connecter
         </SubmitButton>
       </form>
+
+      <p className="mt-3 text-sm">
+        <Link href="/mot-de-passe?acteur=member" className="font-semibold text-[var(--mache-primary)] hover:underline">
+          Mot de passe oublié ?
+        </Link>
+      </p>
 
       <p className="mt-6 border-t border-[var(--mache-line)] pt-4 text-base text-[var(--mache-muted)]">
         Pas encore de boutique ?{" "}

@@ -23,6 +23,7 @@ import { defineMiddlewares } from "@medusajs/medusa";
 import { refuseBlockedCustomer } from "./blocked-customers";
 import { throttleLogin } from "./login-throttle";
 import { normalizeAuthEmail } from "./email-case";
+import { throttleResetRequests } from "./reset-throttle";
 
 export default defineMiddlewares({
   routes: [
@@ -49,7 +50,12 @@ export default defineMiddlewares({
         voient la même : sinon « Jean@… » et « jean@… » compteraient
         comme deux comptes différents.
       */
-      middlewares: [normalizeAuthEmail, throttleLogin],
+      /*
+        Les demandes de nouveau mot de passe ont leur propre plafond,
+        avant celui des connexions : elles réussissent toujours, et
+        celui-ci ne compte que les échecs.
+      */
+      middlewares: [normalizeAuthEmail, throttleResetRequests, throttleLogin],
     },
   ],
 });

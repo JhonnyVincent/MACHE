@@ -30,7 +30,7 @@ const inputClass =
 export default async function AdminLoginPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string }>;
+  searchParams?: Promise<{ error?: string; reinitialise?: string }>;
 }) {
   const query = searchParams ? await searchParams : {};
 
@@ -71,6 +71,12 @@ export default async function AdminLoginPage({
       <p className="mt-2 text-md text-[var(--mache-muted)]">
         Réservé au personnel de la marketplace.
       </p>
+
+      {query.reinitialise && (
+        <div className="mt-4 rounded-[8px] border border-[#b7dfc0] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+          Mot de passe changé. Connectez-vous avec le nouveau.
+        </div>
+      )}
 
       {query.error && (
         <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
@@ -115,6 +121,12 @@ export default async function AdminLoginPage({
           Se connecter
         </SubmitButton>
       </form>
+
+      <p className="mt-3 text-sm">
+        <Link href="/mot-de-passe?acteur=user" className="font-semibold text-[var(--mache-primary)] hover:underline">
+          Mot de passe oublié ?
+        </Link>
+      </p>
 
       {/*
         Les deux autres portes, nommées. Un vendeur ou un client qui
