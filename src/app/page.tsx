@@ -22,7 +22,7 @@ import { fetchHomeData } from "@/lib/medusa/home";
 import { FEATURED_CATEGORIES } from "@/lib/categories";
 import { PartnersStrip } from "@/components/partners-strip";
 import {
-  ProductRailSection, SellerRailSection, CategoryMosaicSection,
+  ProductRailSection, SellerRailSection, HomeBoardSection,
   CollectionRailSection,
 } from "@/components/home/rails";
 
@@ -217,8 +217,8 @@ export default async function HomePage() {
         Le repli en liens texte reste, pour le cas où le catalogue ne
         répond pas : une carte du site vaut mieux qu'un trou.
       */}
-      {home.categoryTiles.length > 0 ? (
-        <CategoryMosaicSection tiles={home.categoryTiles} />
+      {home.boards.length > 0 ? (
+        <HomeBoardSection cards={home.boards} />
       ) : (
         <section className="mache-reveal container-page py-5">
           <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">

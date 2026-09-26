@@ -80,6 +80,54 @@ export const CATEGORY_TREE: CategoryNode[] = [
     icon: "🎨",
     children: [{ slug: "arts-artisanat-couture", label: "Arts, artisanat et couture" }],
   },
+  /*
+    TROIS RAYONS QUI DISENT COMMENT C'EST FAIT, PAS CE QUE C'EST.
+
+    « Crochet » tombait dans Artisanat, « confiture maison » dans
+    Alimentation, « savon sans produits chimiques » dans Beauté — et
+    l'acheteur qui vient précisément chercher du fait-main, du fait-
+    maison ou du naturel n'avait aucun chemin pour les trouver. C'est
+    pourtant ce que ce marché a de particulier : ailleurs on vend de
+    l'usine, ici beaucoup de vendeurs fabriquent.
+
+    Ils croisent les rayons existants au lieu de les remplacer : une
+    poupée en crochet reste de l'artisanat, et se range aussi ici.
+  */
+  {
+    slug: "fait-a-la-main",
+    label: "Fait à la main",
+    icon: "🧶",
+    children: [
+      { slug: "crochet-tricot", label: "Crochet et tricot" },
+      { slug: "tableaux-peintures", label: "Tableaux et peintures" },
+      { slug: "vannerie-paille", label: "Vannerie et paille" },
+      { slug: "bois-sculpture", label: "Bois et sculpture" },
+      { slug: "couture-brodee", label: "Couture et broderie" },
+      { slug: "bijoux-faits-main", label: "Bijoux faits main" },
+    ],
+  },
+  {
+    slug: "fait-maison",
+    label: "Fait maison",
+    icon: "🏡",
+    children: [
+      { slug: "confitures-conserves", label: "Confitures et conserves" },
+      { slug: "patisserie-maison", label: "Pâtisserie maison" },
+      { slug: "epices-sauces", label: "Épices et sauces" },
+      { slug: "boissons-maison", label: "Boissons maison" },
+      { slug: "savons-cosmetiques-maison", label: "Savons et cosmétiques maison" },
+    ],
+  },
+  {
+    slug: "bio",
+    label: "Bio et naturel",
+    icon: "🌱",
+    children: [
+      { slug: "produits-bio", label: "Produits bio" },
+      { slug: "huiles-essentielles", label: "Huiles et plantes" },
+      { slug: "soins-naturels", label: "Soins naturels" },
+    ],
+  },
   {
     slug: "electronique",
     label: "Électronique",

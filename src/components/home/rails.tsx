@@ -12,7 +12,7 @@
 import Link from "next/link";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { formatAmount } from "@/lib/format";
-import type { CategoryTile } from "@/lib/medusa/home";
+import type { BoardCard, BoardTile } from "@/lib/medusa/home";
 import type {
   StoreProduct,
   StoreSeller,
@@ -279,18 +279,14 @@ export function CollectionRailSection({ collections }: { collections: StoreColle
   cases vides annonce un site vide ; les mêmes cases reléguées plus bas
   annoncent un catalogue qui commence.
 */
-export function CategoryMosaicSection({ tiles }: { tiles: CategoryTile[] }) {
-  if (tiles.length === 0) return null;
-
-  const ordered = [...tiles].sort(
-    (a, b) => b.thumbnails.length - a.thumbnails.length || b.count - a.count
-  );
+export function HomeBoardSection({ cards }: { cards: BoardCard[] }) {
+  if (cards.length === 0) return null;
 
   return (
     <section className="mache-reveal container-page py-5">
       <div className="mb-3 flex items-baseline justify-between gap-4">
         <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
-          Parcourir les rayons
+          Sur MACHÉ en ce moment
         </h2>
 
         <Link
@@ -302,64 +298,134 @@ export function CategoryMosaicSection({ tiles }: { tiles: CategoryTile[] }) {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {ordered.map((tile) => (
-          <Link
-            key={tile.id}
-            href={`/shop?category=${encodeURIComponent(tile.handle)}`}
-            className="group flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4 transition-colors hover:border-[var(--mache-primary)]"
+        {cards.map((card) => (
+          <article
+            key={card.key}
+            className="flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4"
           >
-            <div className="flex items-baseline justify-between gap-2">
-              <h3 className="text-md font-bold leading-snug text-[var(--mache-text)]">
-                {tile.name}
-              </h3>
-              <span
-                aria-hidden="true"
-                className="text-[var(--mache-muted)] transition-transform group-hover:translate-x-0.5"
-              >
-                ›
-              </span>
-            </div>
+            {/*
+              Le titre de la carte est son propre lien, et les vignettes
+              en dessous ont chacune le leur. Une seule grande zone
+              cliquable engloberait les deux : on croirait ouvrir la
+              poupée en crochet qu'on regarde, et on tomberait sur le
+              rayon entier.
+            */}
+            <CardTitle card={card} />
 
-            {tile.thumbnails.length > 0 ? (
+            {card.tiles.length > 0 ? (
               <div className="mt-3 grid grid-cols-2 gap-2">
-                {tile.thumbnails.map((src, index) => (
-                  <div
-                    key={`${tile.id}-${index}`}
-                    className="aspect-square overflow-hidden rounded-[6px] bg-[var(--mache-bg-2)]"
-                  >
-                    {/*
-                      `alt` vide et `aria-hidden` : ces vignettes
-                      décorent le nom du rayon, qui est juste au-dessus.
-                      Les décrire ferait entendre quatre fois la même
-                      chose à qui navigue au clavier ou à la voix.
-                    */}
-                    <img
-                      src={src}
-                      alt=""
-                      aria-hidden="true"
-                      loading="lazy"
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
+                {card.tiles.map((tile, index) => (
+                  <BoardTileLink key={`${card.key}-${index}`} tile={tile} />
                 ))}
               </div>
             ) : (
-              <div className="mt-3 flex flex-1 items-center rounded-[6px] border border-dashed border-[var(--mache-line)] px-3 py-5">
-                <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
-                  Aucun article pour l&apos;instant. Ce rayon se remplira dès
-                  qu&apos;un vendeur y déposera le sien.
-                </p>
-              </div>
+              card.emptyNote && (
+                <div className="mt-3 flex flex-1 items-center rounded-[6px] border border-dashed border-[var(--mache-line)] px-3 py-5">
+                  <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
+                    {card.emptyNote}
+                  </p>
+                </div>
+              )
             )}
 
-            {tile.count > 0 && (
+            {card.count > 0 && (
               <p className="tnum mt-3 text-sm text-[var(--mache-muted)]">
-                {tile.count} article{tile.count > 1 ? "s" : ""}
+                {card.count} article{card.count > 1 ? "s" : ""}
               </p>
             )}
-          </Link>
+          </article>
         ))}
       </div>
     </section>
+  );
+}
+
+function CardTitle({ card }: { card: BoardCard }) {
+  const content = (
+    <>
+      <h3 className="text-md font-bold leading-snug text-[var(--mache-text)] group-hover:text-[var(--mache-primary)]">
+        {card.title}
+      </h3>
+      <span
+        aria-hidden="true"
+        className="text-[var(--mache-muted)] transition-transform group-hover:translate-x-0.5"
+      >
+        ›
+      </span>
+    </>
+  );
+
+  const className = "group flex items-baseline justify-between gap-2";
+
+  if (card.external) {
+    return (
+      <a href={card.href} target="_blank" rel="noopener noreferrer" className={className}>
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={card.href} className={className}>
+      {content}
+    </Link>
+  );
+}
+
+/*
+  UNE VIGNETTE : une vraie photo quand elle existe, jamais autre chose.
+
+  Sans photo — c'est le cas des partenaires, dont MACHÉ n'a pas le
+  droit d'afficher le logo — la case porte le nom en toutes lettres
+  plutôt qu'une image de remplissage.
+
+  `alt` vide et `aria-hidden` sur l'image : le nom est écrit juste en
+  dessous, et le décrire ferait entendre deux fois la même chose à qui
+  navigue au clavier ou à la voix.
+*/
+function BoardTileLink({ tile }: { tile: BoardTile }) {
+  const content = (
+    <>
+      <div className="aspect-square overflow-hidden rounded-[6px] bg-[var(--mache-bg-2)]">
+        {tile.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={tile.image}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-2 text-center text-base font-bold text-[var(--mache-text)]">
+            {tile.label}
+          </div>
+        )}
+      </div>
+
+      <p className="mt-1.5 line-clamp-2 text-sm leading-snug text-[var(--mache-text)] group-hover:underline">
+        {tile.label}
+        {tile.external && (
+          <>
+            <span className="ml-1 text-xs text-[var(--mache-muted)]" aria-hidden="true">↗</span>
+            <span className="sr-only"> (site externe)</span>
+          </>
+        )}
+      </p>
+    </>
+  );
+
+  if (tile.external) {
+    return (
+      <a href={tile.href} target="_blank" rel="noopener noreferrer" className="group block">
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={tile.href} className="group block">
+      {content}
+    </Link>
   );
 }

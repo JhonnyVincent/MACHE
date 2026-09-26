@@ -35,6 +35,8 @@ import {
   fetchProducts, fetchSellers, fetchCategories, fetchCollections,
   type StoreProduct, type StoreSeller, type StoreCategory, type StoreCollection,
 } from "./catalog";
+import { fetchBestSellers } from "./bestsellers";
+import { PARTNERS } from "../partners";
 
 export type ProductRail = {
   key: string;
@@ -45,25 +47,46 @@ export type ProductRail = {
 };
 
 /*
-  UNE TUILE DE RAYON, TELLE QU'UN ACCUEIL DE PLACE DE MARCHÉ EN MONTRE.
+  LE DAMIER DE L'ACCUEIL, TEL QU'UNE PLACE DE MARCHÉ EN MONTRE UN.
 
   Ce qui meuble l'accueil d'Amazon ou de Cdiscount n'est pas du texte :
-  ce sont des PHOTOS de produits, rangées par rayon. MACHÉ n'a aucune
-  photo à lui — les visuels de stock ont été retirés volontairement —
-  mais les vendeurs, eux, en mettent sur leurs articles.
+  ce sont des cartes, chacune coiffée d'un titre et remplie de quatre
+  vignettes nommées, chaque vignette menant quelque part.
 
-  Une tuile emprunte donc jusqu'à quatre vraies photos au rayon qu'elle
-  annonce. Un rayon encore vide n'en a aucune : il s'affiche alors sans
-  mentir, plutôt que de recevoir une image décorative qui lui
-  promettrait un catalogue qu'il n'a pas.
+  MACHÉ n'a aucune photo à lui — les visuels de stock ont été retirés
+  volontairement — mais les vendeurs, eux, en mettent sur leurs
+  articles. Chaque carte emprunte donc jusqu'à quatre VRAIES vignettes
+  à ce qu'elle annonce, et les nomme. Une carte sans rien à montrer le
+  dit, plutôt que de recevoir une image décorative qui lui promettrait
+  un catalogue qu'elle n'a pas.
+
+  TOUTES LES CARTES SORTENT DE LA MÊME FABRIQUE
+
+  Rayons, nouveautés, meilleures ventes, partenaires : même forme, même
+  règle. Une seule chose les distingue, et c'est une donnée — ce
+  qu'elles ont réellement à montrer. Une carte spéciale pour chaque
+  sujet aurait fini par en laisser une mentir pendant que les autres
+  disaient vrai.
 */
-export type CategoryTile = {
-  id: string;
-  handle: string;
-  name: string;
-  /* Jusqu'à quatre vignettes réelles, prises aux produits du rayon. */
-  thumbnails: string[];
-  /* Combien d'articles le rayon contient en tout. */
+export type BoardTile = {
+  label: string;
+  href: string;
+  /* Une vraie photo de produit, ou rien. Jamais une image de stock. */
+  image: string | null;
+  /* Le lien quitte-t-il MACHÉ ? */
+  external?: boolean;
+};
+
+export type BoardCard = {
+  key: string;
+  title: string;
+  /* Où mène le titre de la carte. */
+  href: string;
+  external?: boolean;
+  tiles: BoardTile[];
+  /* Ce que la carte dit quand elle n'a rien à montrer. Sinon, rien. */
+  emptyNote: string | null;
+  /* Combien d'articles derrière, quand ce chiffre existe vraiment. */
   count: number;
 };
 
@@ -73,8 +96,8 @@ export type HomeData = {
   newSellers: StoreSeller[];
   verifiedSellers: StoreSeller[];
   categories: StoreCategory[];
-  /* Les rayons, illustrés par leurs propres produits. */
-  categoryTiles: CategoryTile[];
+  /* Le damier : rayons, nouveautés, meilleures ventes, partenaires. */
+  boards: BoardCard[];
   collections: StoreCollection[];
   /* Raisons de panne, écrites au journal du serveur. */
   problems: string[];
@@ -83,7 +106,7 @@ export type HomeData = {
 };
 
 export async function fetchHomeData(): Promise<HomeData> {
-  const [latest, discounted, sellers, categories, collections] = await Promise.all([
+  const [latest, discounted, sellers, categories, collections, bestSellers] = await Promise.all([
     fetchProducts({ limit: 12, order: "-created_at" }),
     /*
       Les promotions ne se filtrent pas côté API : Medusa applique la
@@ -95,6 +118,12 @@ export async function fetchHomeData(): Promise<HomeData> {
     fetchSellers(12),
     fetchCategories(24),
     fetchCollections(12),
+    /*
+      Les meilleures ventes viennent de vraies commandes. Le backend
+      refuse de classer tant qu'il n'y en a pas assez : on reçoit alors
+      une liste vide, et la carte ne s'affiche pas.
+    */
+    fetchBestSellers(),
   ]);
 
   const problems: string[] = [];
@@ -141,36 +170,127 @@ export async function fetchHomeData(): Promise<HomeData> {
   const allSellers = sellers.ok ? sellers.data.sellers : [];
 
   /*
-    LES TUILES DE RAYONS, ILLUSTRÉES PAR LEURS PROPRES PRODUITS.
+    LE DAMIER, CARTE PAR CARTE.
+
+    L'ordre n'est pas décoratif. Les partenaires d'abord : ce sont des
+    engagements pris, et ils tiennent en une carte qui ne dépend
+    d'aucun catalogue. Puis ce qui bouge — les nouveautés, les
+    meilleures ventes — puis les rayons.
+  */
+  const boards: BoardCard[] = [];
+
+  /*
+    LES PARTENAIRES.
+
+    Pas de vignettes : afficher un logo demande un accord écrit, et
+    MACHÉ n'en a aucun. Des noms, et l'adresse derrière. Aucun
+    partenaire signé : pas de carte — une carte « Partenaires » vide
+    annoncerait un réseau qui n'existe pas.
+  */
+  if (PARTNERS.length > 0) {
+    boards.push({
+      key: "partners",
+      title: "Partenaires",
+      href: "/partenaires",
+      tiles: PARTNERS.map((partner) => ({
+        label: partner.name,
+        href: partner.href,
+        image: null,
+        external: true,
+      })),
+      emptyNote: null,
+      count: 0,
+    });
+  }
+
+  /*
+    LES NOUVEAUTÉS, sur la même date de création que le rayon plus bas.
+    C'est la carte qui rend l'accueil différent d'une visite à l'autre
+    sans que personne n'ait rien à faire.
+  */
+  const newest = latest.ok ? latest.data.products.slice(0, 4) : [];
+
+  if (newest.length > 0) {
+    boards.push({
+      key: "new",
+      title: "Nouveautés",
+      href: "/shop?sort=new",
+      tiles: newest.map((product) => ({
+        label: product.title,
+        href: `/product/${product.handle ?? product.id}`,
+        image: product.thumbnail ?? null,
+      })),
+      emptyNote: null,
+      count: latest.ok ? latest.data.count : 0,
+    });
+  }
+
+  /*
+    LES PLUS VENDUS.
+
+    Absents tant que le backend refuse de classer, c'est-à-dire tant
+    qu'il n'y a pas assez de commandes réelles pour que le mot veuille
+    dire quelque chose. Ce rayon apparaîtra tout seul le jour venu.
+  */
+  if (bestSellers.length > 0) {
+    boards.push({
+      key: "best",
+      title: "Les plus vendus",
+      href: "/shop",
+      tiles: bestSellers.slice(0, 4).map((product) => ({
+        label: product.title,
+        href: `/product/${product.handle ?? product.id}`,
+        image: product.thumbnail,
+      })),
+      emptyNote: null,
+      count: 0,
+    });
+  }
+
+  /*
+    LES RAYONS, ILLUSTRÉS PAR LEURS PROPRES PRODUITS.
 
     Une lecture par rayon, toutes lancées ensemble. C'est ce qui coûte
     le plus cher sur cette page, et c'est pour cela qu'on se limite aux
-    premiers rayons : douze tuiles suffisent à meubler un accueil, et
+    premiers rayons : douze cartes suffisent à meubler un accueil, et
     vingt-quatre lectures pour des cases qu'on ne voit qu'en faisant
     défiler seraient payées par tous les visiteurs.
 
     Un rayon qui échoue ou qui est vide ne fait pas tomber les autres :
-    il sort avec zéro vignette, et la tuile le dit.
+    il sort sans vignette, et sa carte le dit.
   */
   const topCategories = categories.ok ? categories.data.slice(0, 12) : [];
 
-  const tiles = await Promise.all(
-    topCategories.map(async (category) => {
+  const categoryCards = await Promise.all(
+    topCategories.map(async (category): Promise<BoardCard> => {
       const found = await fetchProducts({ categoryId: category.id, limit: 4 });
 
       const products = found.ok ? found.data.products : [];
 
       return {
-        id: category.id,
-        handle: category.handle,
-        name: category.name,
-        thumbnails: products
-          .map((product) => product.thumbnail)
-          .filter((thumbnail): thumbnail is string => Boolean(thumbnail))
-          .slice(0, 4),
+        key: `cat-${category.id}`,
+        title: category.name,
+        href: `/shop?category=${encodeURIComponent(category.handle)}`,
+        tiles: products
+          .filter((product) => Boolean(product.thumbnail))
+          .slice(0, 4)
+          .map((product) => ({
+            label: product.title,
+            href: `/product/${product.handle ?? product.id}`,
+            image: product.thumbnail as string,
+          })),
+        emptyNote:
+          "Aucun article pour l'instant. Ce rayon se remplira dès qu'un vendeur y déposera le sien.",
         count: found.ok ? found.data.count : 0,
       };
     })
+  );
+
+  /* Les rayons alimentés d'abord : un accueil ne s'ouvre pas sur du vide. */
+  boards.push(
+    ...categoryCards.sort(
+      (a, b) => b.tiles.length - a.tiles.length || b.count - a.count
+    )
   );
 
   return {
@@ -178,7 +298,7 @@ export async function fetchHomeData(): Promise<HomeData> {
     newSellers: allSellers.slice(0, 8),
     verifiedSellers: allSellers.filter((seller) => seller.isPremium).slice(0, 6),
     categories: categories.ok ? categories.data : [],
-    categoryTiles: tiles,
+    boards,
     collections: collections.ok ? collections.data : [],
     problems,
     configured,

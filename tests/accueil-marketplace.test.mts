@@ -42,6 +42,7 @@ function check(name: string, run: () => void) {
 
 const HEADER = readFileSync("src/components/header.tsx", "utf8");
 const MOSAIC = readFileSync("src/components/home/rails.tsx", "utf8");
+const HOME = readFileSync("src/lib/medusa/home.ts", "utf8");
 const ROUTE = readFileSync(
   "backend/packages/api/src/api/store/promotions/route.ts",
   "utf8"
@@ -126,7 +127,7 @@ check("une promotion automatique n'annonce pas de code", () => {
 /* La mosaïque                                                         */
 /* ------------------------------------------------------------------ */
 
-check("la mosaïque n'utilise aucune image décorative", () => {
+check("le damier n'utilise aucune image décorative", () => {
   /*
     Le garde-fou qui compte. Des visuels de stock avaient déjà été
     retirés une fois du site : ils décoraient MACHÉ avec des articles
@@ -134,9 +135,9 @@ check("la mosaïque n'utilise aucune image décorative", () => {
     paraît vide — c'est précisément le moment où elle est la plus
     mauvaise.
   */
-  const debut = MOSAIC.indexOf("export function CategoryMosaicSection");
+  const debut = MOSAIC.indexOf("export function HomeBoardSection");
 
-  assert.ok(debut > -1, "la mosaïque doit exister");
+  assert.ok(debut > -1, "le damier doit exister");
 
   const section = MOSAIC.slice(debut);
 
@@ -148,24 +149,69 @@ check("la mosaïque n'utilise aucune image décorative", () => {
 
   assert.match(
     section,
-    /src=\{src\}/,
+    /src=\{tile\.image\}/,
     "chaque vignette doit venir de la liste passée en donnée"
   );
 });
 
 check("un rayon vide le dit au lieu d'être illustré", () => {
-  const section = MOSAIC.slice(MOSAIC.indexOf("export function CategoryMosaicSection"));
+  const section = MOSAIC.slice(MOSAIC.indexOf("export function HomeBoardSection"));
 
   assert.match(
     section,
-    /tile\.thumbnails\.length > 0 \?/,
-    "une tuile sans produit doit suivre un autre chemin"
+    /card\.tiles\.length > 0 \?/,
+    "une carte sans produit doit suivre un autre chemin"
   );
 
   assert.match(
-    section,
+    HOME,
     /Aucun article pour l/,
     "et dire franchement qu'elle est vide"
+  );
+});
+
+check("les plus vendus ne sont pas classés sans assez de ventes", () => {
+  /*
+    C'est LE rayon qu'on invente le plus volontiers : quatre produits
+    pris au hasard, personne ne peut vérifier, et l'accueil paraît
+    plein. Il ment à deux personnes à la fois — l'acheteur, qui croit
+    suivre le choix des autres, et le vendeur, qui se croit mis en
+    avant par son mérite alors qu'il a été tiré au sort.
+  */
+  const route = readFileSync(
+    "backend/packages/api/src/api/store/bestsellers/route.ts",
+    "utf8"
+  );
+
+  const seuil = route.match(/MIN_SALES_TO_RANK = (\d+)/);
+
+  assert.ok(seuil, "un seuil en dessous duquel on ne classe pas doit exister");
+
+  const valeur = Number(seuil![1]);
+
+  assert.ok(
+    valeur >= 5 && valeur <= 500,
+    `le seuil doit rester dans une fourchette qui protège vraiment, or il vaut ${valeur}`
+  );
+
+  assert.match(
+    route,
+    /if \(total < MIN_SALES_TO_RANK\)[\s\S]{0,120}ranked: false/,
+    "en dessous du seuil, la route doit refuser de classer"
+  );
+
+  assert.match(
+    route,
+    /IGNORED_STATUSES = new Set\(\["canceled", "draft"\]\)/,
+    "une commande annulée n'est pas une vente"
+  );
+
+  const client = readFileSync("src/lib/medusa/bestsellers.ts", "utf8");
+
+  assert.match(
+    client,
+    /ranked === false\) return \[\]/,
+    "l'accueil ne doit pas contourner le refus du backend"
   );
 });
 
