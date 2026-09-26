@@ -301,9 +301,8 @@ check("l'accueil ne suit pas ce que regardent les visiteurs", () => {
 check("le défilement automatique s'arrête quand il le faut", () => {
   assert.match(
     SLIDER,
-    /autoplayMs > 0 && count > 1 && !reduced && !stopped && !hovered && !focused && !touched/
+    /autoplayMs > 0 && count > 1 && !reduced && !hovered && !focused && !touched/
   );
-  assert.match(SLIDER, /Mettre le défilement en pause/);
 });
 
 check("« Devenez vendeur » ne promet pas d'audience", () => {

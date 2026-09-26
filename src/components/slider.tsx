@@ -28,8 +28,7 @@
   - quand l'onglet est caché ;
   - toujours, pour qui a demandé à son appareil de réduire les
     animations ;
-  - et sur demande : le bandeau a un bouton pause, parce qu'un contenu
-    qui bouge tout seul doit pouvoir être arrêté.
+  - et au doigt : on le fait glisser soi-même.
 */
 
 import {
@@ -73,7 +72,6 @@ export function Slider({
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [touched, setTouched] = useState(false);
-  const [stopped, setStopped] = useState(false);
   const [reduced, setReduced] = useState(false);
 
   useEffect(() => {
@@ -148,7 +146,7 @@ export function Slider({
   );
 
   const running =
-    autoplayMs > 0 && count > 1 && !reduced && !stopped && !hovered && !focused && !touched;
+    autoplayMs > 0 && count > 1 && !reduced && !hovered && !focused && !touched;
 
   useEffect(() => {
     if (!running) return;
@@ -179,14 +177,6 @@ export function Slider({
   }, [running, autoplayMs, hero, active, goTo, elements]);
 
   if (count === 0) return null;
-
-  /*
-    Couleurs en dur (blanc, noir translucide) et non en variables du
-    thème : une couleur de variable ne prend pas d'opacité en Tailwind,
-    et les points inactifs étaient devenus invisibles.
-  */
-  const controlClass =
-    "flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-base leading-none text-[#181818] shadow-sm ring-1 ring-black/10 hover:bg-white";
 
   const arrowClass =
     "absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--mache-line)] bg-[var(--mache-white)] text-xl text-[var(--mache-text)] shadow-[0_4px_14px_rgba(16,24,32,0.12)] transition-opacity hover:text-[var(--mache-primary)] disabled:pointer-events-none disabled:opacity-0 sm:flex";
@@ -254,17 +244,14 @@ export function Slider({
         </>
       )}
 
+      {/*
+        Le bandeau n'a que ses points : ni flèches ni bouton pause, par
+        choix de MACHÉ. Il s'arrête de lui-même au survol, au focus
+        clavier et au doigt, et ne défile pas du tout pour qui a demandé
+        moins d'animations ; au doigt, on le fait glisser.
+      */}
       {hero && count > 1 && (
         <div className="absolute bottom-3 left-0 right-0 flex items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            aria-label="Diapositive précédente"
-            className={controlClass}
-          >
-            ‹
-          </button>
-
           {items.map((_, index) => (
             <button
               key={index}
@@ -275,30 +262,10 @@ export function Slider({
               className={`h-2.5 rounded-full transition-all ${
                 index === active
                   ? "w-6 bg-[var(--mache-primary)]"
-                  : "w-2.5 bg-black/25 hover:bg-black/45"
+                  : "w-2.5 bg-black/25 ring-1 ring-white/70 hover:bg-black/45"
               }`}
             />
           ))}
-
-          <button
-            type="button"
-            onClick={() => step(1)}
-            aria-label="Diapositive suivante"
-            className={controlClass}
-          >
-            ›
-          </button>
-
-          {autoplayMs > 0 && !reduced && (
-            <button
-              type="button"
-              onClick={() => setStopped((value) => !value)}
-              aria-label={stopped ? "Reprendre le défilement" : "Mettre le défilement en pause"}
-              className={`${controlClass} text-xs`}
-            >
-              {stopped ? "▶" : "❚❚"}
-            </button>
-          )}
         </div>
       )}
     </div>
