@@ -22,6 +22,7 @@
 import { defineMiddlewares } from "@medusajs/medusa";
 import { refuseBlockedCustomer } from "./blocked-customers";
 import { throttleLogin } from "./login-throttle";
+import { normalizeAuthEmail } from "./email-case";
 
 export default defineMiddlewares({
   routes: [
@@ -43,7 +44,12 @@ export default defineMiddlewares({
     {
       matcher: "/auth/*",
       method: ["POST"],
-      middlewares: [throttleLogin],
+      /*
+        L'adresse d'abord, pour que le plafond de tentatives et Medusa
+        voient la même : sinon « Jean@… » et « jean@… » compteraient
+        comme deux comptes différents.
+      */
+      middlewares: [normalizeAuthEmail, throttleLogin],
     },
   ],
 });

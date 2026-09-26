@@ -56,6 +56,7 @@ import demoShippingHaiti from "./demo-shipping-haiti";
 import adminUser from "./admin-user";
 import commissionRates from "./commission-rates";
 import agentGroups from "./agent-groups";
+import emailCaseExisting from "./email-case-existing";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -78,6 +79,22 @@ export default async function bootstrap(args: ExecArgs) {
     Son échec n'interrompt rien d'autre : le serveur doit démarrer même
     sans lui.
   */
+  /*
+    Les adresses de connexion, avant tout le reste.
+
+    Le backend compare désormais les adresses en minuscules : un compte
+    enregistré avec une majuscule doit être aligné AVANT que le serveur
+    n'accepte la moindre connexion, sinon son propriétaire est refusé.
+    Son échec n'empêche pas le démarrage.
+  */
+  try {
+    await emailCaseExisting(args);
+  } catch (error) {
+    logger.error(
+      `Adresses de connexion : ${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+
   try {
     await adminUser(args);
   } catch (error) {
