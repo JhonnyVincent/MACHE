@@ -22,9 +22,11 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         q: "Comment je paie ?",
         a: (
           <>
-            À la livraison, en main propre, après avoir vérifié le colis.
-            MACHE ne demande aucune donnée bancaire. Le paiement par
-            carte n&apos;est pas proposé aujourd&apos;hui.
+            En Haïti : à la livraison, en main propre, après avoir vérifié
+            le colis. Hors d&apos;Haïti : MACHE vous indique le moyen de
+            paiement avec les frais d&apos;expédition, avant l&apos;envoi.
+            MACHE ne demande aucune donnée bancaire sur le site. Le
+            paiement par carte n&apos;est pas proposé aujourd&apos;hui.
           </>
         ),
       },
@@ -46,6 +48,22 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
             Chacune a sa livraison, son délai et son interlocuteur.
             Certaines boutiques demandent un montant minimum : le panier
             vous le dit avant de commander.
+          </>
+        ),
+      },
+      {
+        q: "J'habite hors d'Haïti : puis-je commander ?",
+        a: (
+          <>
+            Oui. Choisissez votre pays à la commande (États-Unis, Canada,
+            France…). Les frais d&apos;expédition vers l&apos;étranger ne
+            sont pas encore calculés automatiquement : MACHE vous écrit
+            ensuite avec leur montant et le moyen de paiement, et{" "}
+            <strong>rien n&apos;est expédié ni payé avant votre accord</strong>.
+            Vous pouvez aussi faire livrer un proche en Haïti.{" "}
+            <Link href="/legal/shipping" className="font-semibold text-[var(--mache-primary)] hover:underline">
+              Comment se passe la livraison
+            </Link>
           </>
         ),
       },
@@ -158,10 +176,12 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         q: "Peut-on exporter depuis Haïti avec MACHE ?",
         a: (
           <>
-            Pas encore. Les vendeurs livrent là où ils livrent, et
-            aujourd&apos;hui c&apos;est Haïti. L&apos;export demande des
-            formalités douanières et une logistique internationale que
-            MACHE ne prend pas en charge pour l&apos;instant.
+            Oui, sur confirmation. Un acheteur à l&apos;étranger peut
+            commander chez vous : MACHE chiffre l&apos;expédition, la fait
+            accepter par l&apos;acheteur, puis vous donne le feu vert pour
+            expédier. Il n&apos;y a pas encore de tarif de transporteur
+            négocié ni de paiement en ligne : chaque envoi est chiffré à la
+            demande.
           </>
         ),
       },
@@ -173,6 +193,7 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
 export const HOME_FAQ_QUESTIONS = [
   "Comment je paie ?",
   "J'achète chez plusieurs boutiques, que se passe-t-il ?",
+  "J'habite hors d'Haïti : puis-je commander ?",
   "Un livreur se présente chez moi, comment savoir s'il est bien de MACHE ?",
   "Qui peut ouvrir une boutique ?",
   "Combien MACHE prend sur mes ventes ?",

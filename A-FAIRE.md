@@ -25,6 +25,8 @@ Cochez au fur et à mesure.
 
 ## ✅ Terminé et en ligne
 
+- **Commander depuis l'étranger** — 21 pays de la diaspora. La commande se fait « sur confirmation » : frais d'expédition affichés « À confirmer », rien à payer tout de suite ; l'acheteur, le vendeur (« n'expédiez rien avant la confirmation ») et l'équipe reçoivent chacun leur e-mail. **À chaque commande internationale, l'équipe chiffre l'envoi et l'envoie au client** avec le moyen de paiement.
+- **Page de commande** — e-mail et nom préremplis pour un client connecté, adresse qui reste affichée, modes de livraison en français, numéro de commande sur la confirmation.
 - **Référencement et partage** — un vrai titre et une description sur chaque page, aperçu WhatsApp/Facebook (photo + prix sur les produits), icône du site, `sitemap.xml`, `robots.txt`, page 404 en français.
 - **Site plus léger** — logo 1,2 Mo → 14 Ko, carte 1,2 Mo → 65 Ko, photos des rayons ÷ 3. Images chargées à la demande.
 - **Contrastes** — textes pâles corrigés sur tout le site (pied de page, menus, rouge de la marque).

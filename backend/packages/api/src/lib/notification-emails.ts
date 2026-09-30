@@ -165,21 +165,27 @@ export function orderForSellerEmail(input: {
   phone: string | null;
   address: string;
   cashOnDelivery: boolean | null;
+  international?: boolean;
 }): RenderedEmail {
   const { order } = input;
 
   return layout(
-    `Nouvelle commande n° ${order.displayId} — ${order.sellerName}`,
+    `${input.international ? "Commande internationale" : "Nouvelle commande"} n° ${order.displayId} — ${order.sellerName}`,
     [
       { kind: "p", text: `Bonjour ${order.sellerName},` },
-      { kind: "p", text: "Une nouvelle commande vient d'être passée dans votre boutique MACHE. Préparez-la et contactez le client pour la livraison." },
+      input.international
+        ? {
+            kind: "p",
+            text: "Une commande vient d'être passée dans votre boutique MACHE, pour une livraison HORS D'HAÏTI. Préparez les articles, mais N'EXPÉDIEZ RIEN avant la confirmation de MACHE : les frais d'expédition et le paiement sont d'abord convenus avec le client.",
+          }
+        : { kind: "p", text: "Une nouvelle commande vient d'être passée dans votre boutique MACHE. Préparez-la et contactez le client pour la livraison." },
       {
         kind: "rows",
         rows: [
           ["Commande", `n° ${order.displayId}`],
           ["Articles", linesText(order.lines)],
-          ["Total", money(order.total, order.currency)],
-          ...paymentRows(input.cashOnDelivery),
+          ["Total", input.international ? `${money(order.total, order.currency)} (hors frais d'expédition)` : money(order.total, order.currency)],
+          ...(input.international ? [["Paiement", "Convenu avec le client avant l'envoi"] as [string, string]] : paymentRows(input.cashOnDelivery)),
           ["Client", input.customerName || "—"],
           ["Téléphone", input.phone || "—"],
           ["Adresse de livraison", input.address || "—"],
@@ -196,6 +202,7 @@ export function orderConfirmationEmail(input: {
   customerName: string;
   orders: OrderSummary[];
   cashOnDelivery: boolean | null;
+  international?: boolean;
 }): RenderedEmail {
   const blocks: Block[] = [
     { kind: "p", text: input.customerName ? `Bonjour ${input.customerName},` : "Bonjour," },
@@ -216,6 +223,18 @@ export function orderConfirmationEmail(input: {
         ["Articles", linesText(order.lines)],
         ["Total", money(order.total, order.currency)],
       ],
+    });
+  }
+
+  if (input.international) {
+    blocks.push({
+      kind: "p",
+      text: "Livraison hors d'Haïti : les frais d'expédition ne sont pas encore comptés. MACHE vous écrit pour vous indiquer leur montant et le moyen de paiement. Rien n'est expédié, et rien ne vous est demandé, avant votre accord.",
+    });
+
+    return layout("Votre commande MACHE est enregistrée — frais d'expédition à confirmer", blocks, {
+      label: "Suivre mes commandes",
+      url: siteLink("/dashboard/buyer/orders"),
     });
   }
 

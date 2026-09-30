@@ -77,9 +77,9 @@ const pasEncore = [
       "Ni carte, ni portefeuille mobile. Tant qu'aucun prestataire n'est raccordé, MACHE ne prétend pas encaisser.",
   },
   {
-    titre: "Export international",
+    titre: "Expédition internationale automatique",
     texte:
-      "Les vendeurs livrent là où ils livrent, et aujourd'hui c'est Haïti. Les formalités douanières et la logistique internationale ne sont pas prises en charge.",
+      "Un acheteur à l'étranger peut commander, mais les frais d'expédition lui sont confirmés à la main, avant l'envoi. Pas encore de tarif de transporteur négocié, de suivi transfrontalier ni de paiement en ligne.",
   },
   {
     titre: "Rédaction assistée",

@@ -24,9 +24,11 @@ const CONFIRMATION_COOKIE = "mache_last_order";
 
 type Confirmation = {
   orderGroupId: string;
+  orderNumbers?: number[];
   sellerCount: number;
   total: number;
   currency: string;
+  international?: boolean;
 };
 
 export default async function CheckoutSuccessPage() {
@@ -74,13 +76,23 @@ export default async function CheckoutSuccessPage() {
       {confirmation && (
         <dl className="mt-5 space-y-2 rounded-[10px] border border-[var(--mache-line)] bg-white p-4 text-base">
           <div className="flex justify-between gap-4">
-            <dt className="text-[var(--mache-muted)]">Référence</dt>
-            <dd className="font-mono tabular-nums text-sm font-semibold">
-              {confirmation.orderGroupId}
+            {/*
+              Le numéro que le client retrouve dans « Mes commandes » (#4),
+              plutôt que l'identifiant technique du groupe (og_01M3…).
+            */}
+            <dt className="text-[var(--mache-muted)]">
+              {(confirmation.orderNumbers?.length ?? 0) > 1 ? "Commandes" : "Commande"}
+            </dt>
+            <dd className="tabular-nums font-semibold">
+              {confirmation.orderNumbers?.length
+                ? confirmation.orderNumbers.map((number) => `n° ${number}`).join(", ")
+                : <span className="font-mono text-sm">{confirmation.orderGroupId}</span>}
             </dd>
           </div>
           <div className="flex justify-between gap-4 border-t border-[var(--mache-line)] pt-2">
-            <dt className="text-[var(--mache-muted)]">Montant total</dt>
+            <dt className="text-[var(--mache-muted)]">
+              {confirmation.international ? "Montant des articles" : "Montant total"}
+            </dt>
             <dd className="font-black">
               {formatAmount(confirmation.total, confirmation.currency)}
             </dd>
@@ -88,7 +100,7 @@ export default async function CheckoutSuccessPage() {
           <div className="flex justify-between gap-4 border-t border-[var(--mache-line)] pt-2">
             <dt className="text-[var(--mache-muted)]">Paiement</dt>
             <dd className="font-semibold text-[#946200]">
-              À régler à la livraison
+              {confirmation.international ? "Après votre accord sur les frais d'expédition" : "À régler à la livraison"}
             </dd>
           </div>
         </dl>
@@ -99,9 +111,19 @@ export default async function CheckoutSuccessPage() {
           Rien n&apos;a été prélevé
         </h2>
         <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
-          Aucun paiement n&apos;a été encaissé et aucune donnée bancaire ne
-          vous a été demandée. Vous réglerez en main propre à la réception,
-          après avoir vérifié le colis.
+          {confirmation?.international ? (
+            <>
+              Votre commande part hors d&apos;Haïti. MACHE vous écrit pour vous
+              indiquer les frais d&apos;expédition et le moyen de paiement. Rien
+              n&apos;est expédié, et rien ne vous est demandé, avant votre accord.
+            </>
+          ) : (
+            <>
+              Aucun paiement n&apos;a été encaissé et aucune donnée bancaire ne
+              vous a été demandée. Vous réglerez en main propre à la réception,
+              après avoir vérifié le colis.
+            </>
+          )}
         </p>
       </div>
 

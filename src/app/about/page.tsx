@@ -47,9 +47,9 @@ export const metadata = {
 const AMBITIONS = [
   {
     title: "Connecter Haïti au monde",
-    now: "La diaspora achète chez des vendeurs qui sont en Haïti, depuis n'importe où, et fait livrer à ses proches sur place. Le site est en français et en créole.",
+    now: "La diaspora achète chez des vendeurs qui sont en Haïti, depuis n'importe où : elle fait livrer ses proches sur place, ou se fait expédier la commande à l'étranger, après confirmation des frais d'expédition.",
     missing:
-      "L'export hors d'Haïti n'est pas ouvert : il demande des partenaires logistiques et des formalités douanières que nous n'avons pas encore.",
+      "Pas encore de tarifs négociés avec un transporteur ni de paiement en ligne : chaque envoi à l'étranger est chiffré un par un. Le site est en français ; le créole ne couvre pour l'instant que la navigation.",
   },
   {
     title: "Encourager les échanges entre producteurs",

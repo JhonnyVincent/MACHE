@@ -21,18 +21,13 @@ import { saveAddressAction, chooseShippingAction, placeOrderAction } from "./act
 import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
 import { blockingGroups } from "@/lib/seller-minimum";
 import { privateMetadata } from "@/lib/seo";
+import { getCustomer } from "@/lib/medusa/customer";
+import { INTERNATIONAL_COUNTRIES, INTERNATIONAL_OPTION_NAME, countryLabel } from "@/lib/countries";
 
 export const metadata = privateMetadata("Commander");
 
 export const dynamic = "force-dynamic";
 
-/* Pays proposés : là où MACHE livre ou expédie aujourd'hui. */
-const COUNTRIES = [
-  { code: "ht", label: "Haïti" },
-  { code: "fr", label: "France" },
-  { code: "us", label: "États-Unis" },
-  { code: "ca", label: "Canada" },
-];
 
 function Step({
   number,
@@ -120,6 +115,20 @@ export default async function CheckoutPage({
 
   const state = stateResult.data;
 
+  /*
+    Ce que le client a déjà donné est réaffiché : l'adresse validée ne
+    disparaît plus de l'écran, et un client connecté n'a pas à retaper
+    son e-mail ni son nom.
+  */
+  const customer = await getCustomer();
+  const prefill = {
+    ...state.prefill,
+    email: state.prefill.email || customer?.email || "",
+    firstName: state.prefill.firstName || customer?.firstName || "",
+    lastName: state.prefill.lastName || customer?.lastName || "",
+    phone: state.prefill.phone || customer?.phone || "",
+  };
+
   return (
     <main className="bg-[var(--mache-bg)] pb-10">
       <div className="container-page py-6">
@@ -142,7 +151,7 @@ export default async function CheckoutPage({
                   <label htmlFor="email" className="text-sm font-semibold text-[var(--mache-text)]">
                     Adresse e-mail *
                   </label>
-                  <input id="email" name="email" type="email" required className={`mt-1 ${inputClass}`} />
+                  <input id="email" name="email" type="email" required defaultValue={prefill.email} autoComplete="email" className={`mt-1 ${inputClass}`} />
                   <p className="mt-1 text-xs text-[var(--mache-muted)]">
                     Elle sert à vous envoyer la confirmation et le suivi.
                   </p>
@@ -152,54 +161,64 @@ export default async function CheckoutPage({
                   <label htmlFor="first_name" className="text-sm font-semibold text-[var(--mache-text)]">
                     Prénom *
                   </label>
-                  <input id="first_name" name="first_name" required className={`mt-1 ${inputClass}`} />
+                  <input id="first_name" name="first_name" required defaultValue={prefill.firstName} autoComplete="given-name" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
                   <label htmlFor="last_name" className="text-sm font-semibold text-[var(--mache-text)]">
                     Nom *
                   </label>
-                  <input id="last_name" name="last_name" required className={`mt-1 ${inputClass}`} />
+                  <input id="last_name" name="last_name" required defaultValue={prefill.lastName} autoComplete="family-name" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="address_1" className="text-sm font-semibold text-[var(--mache-text)]">
                     Adresse *
                   </label>
-                  <input id="address_1" name="address_1" required className={`mt-1 ${inputClass}`} />
+                  <input id="address_1" name="address_1" required defaultValue={prefill.address1} autoComplete="address-line1" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label htmlFor="address_2" className="text-sm font-semibold text-[var(--mache-text)]">
                     Complément — repère, étage
                   </label>
-                  <input id="address_2" name="address_2" className={`mt-1 ${inputClass}`} />
+                  <input id="address_2" name="address_2" defaultValue={prefill.address2} autoComplete="address-line2" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
                   <label htmlFor="city" className="text-sm font-semibold text-[var(--mache-text)]">
                     Ville *
                   </label>
-                  <input id="city" name="city" required className={`mt-1 ${inputClass}`} />
+                  <input id="city" name="city" required defaultValue={prefill.city} autoComplete="address-level2" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
                   <label htmlFor="province" className="text-sm font-semibold text-[var(--mache-text)]">
-                    Département
+                    Département / État / région
                   </label>
-                  <input id="province" name="province" className={`mt-1 ${inputClass}`} />
+                  <input id="province" name="province" defaultValue={prefill.province} autoComplete="address-level1" className={`mt-1 ${inputClass}`} />
                 </div>
 
                 <div>
                   <label htmlFor="country_code" className="text-sm font-semibold text-[var(--mache-text)]">
                     Pays *
                   </label>
-                  <select id="country_code" name="country_code" required className={`mt-1 ${inputClass}`}>
-                    {COUNTRIES.map((country) => (
-                      <option key={country.code} value={country.code}>
-                        {country.label}
-                      </option>
-                    ))}
+                  <select
+                    id="country_code"
+                    name="country_code"
+                    required
+                    defaultValue={prefill.countryCode}
+                    autoComplete="country"
+                    className={`mt-1 ${inputClass}`}
+                  >
+                    <option value="ht">Haïti</option>
+                    <optgroup label="Hors d'Haïti : frais d'expédition confirmés avant envoi">
+                      {INTERNATIONAL_COUNTRIES.map((country) => (
+                        <option key={country.code} value={country.code}>
+                          {country.label}
+                        </option>
+                      ))}
+                    </optgroup>
                   </select>
                 </div>
 
@@ -207,9 +226,10 @@ export default async function CheckoutPage({
                   <label htmlFor="phone" className="text-sm font-semibold text-[var(--mache-text)]">
                     Téléphone *
                   </label>
-                  <input id="phone" name="phone" required inputMode="tel" className={`mt-1 ${inputClass}`} />
+                  <input id="phone" name="phone" required inputMode="tel" defaultValue={prefill.phone} autoComplete="tel" className={`mt-1 ${inputClass}`} />
                   <p className="mt-1 text-xs text-[var(--mache-muted)]">
                     Le livreur appelle. Sans numéro, la livraison échoue.
+                    Hors d&apos;Haïti, indiquez l&apos;indicatif (+1, +33…).
                   </p>
                 </div>
 
@@ -222,6 +242,20 @@ export default async function CheckoutPage({
                   </button>
                 </div>
               </form>
+
+              {state.international && (
+                <div className="mt-4 rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] p-3.5 text-sm leading-relaxed text-[#1e3a5f]">
+                  <p className="font-bold">
+                    Livraison vers : {countryLabel(prefill.countryCode)} — commande sur confirmation
+                  </p>
+                  <p className="mt-1">
+                    Vous passez votre commande maintenant. MACHE vous écrit ensuite pour vous
+                    indiquer les frais d&apos;expédition et le moyen de paiement.{" "}
+                    <strong>Rien n&apos;est expédié, et rien ne vous est demandé, avant votre accord.</strong>{" "}
+                    Vous pouvez aussi commander pour un proche en Haïti : choisissez alors Haïti comme pays.
+                  </p>
+                </div>
+              )}
             </Step>
 
             {/* 2. Livraison par vendeur */}
@@ -274,9 +308,9 @@ export default async function CheckoutPage({
                                   {chosen ? "✓ " : ""}
                                   {option.name}
                                 </span>
-                                <span className="text-base font-semibold text-[var(--mache-text)]">
-                                  {option.amount === null
-                                    ? "Tarif à confirmer"
+                                <span className="shrink-0 text-base font-semibold text-[var(--mache-text)]">
+                                  {option.amount === null || option.name === INTERNATIONAL_OPTION_NAME
+                                    ? "À confirmer"
                                     : formatAmount(option.amount, cart.currency)}
                                 </span>
                               </button>
@@ -292,16 +326,30 @@ export default async function CheckoutPage({
 
             {/* 3. Paiement */}
             <Step number={3} title="Paiement">
-              <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
-                <p className="text-base font-semibold text-[var(--mache-text)]">
-                  Paiement à la livraison
-                </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-[var(--mache-muted)]">
-                  Vous réglez en main propre au moment de recevoir le colis.
-                  Vérifiez son contenu avant de payer : c&apos;est le moment où
-                  un refus est le plus simple, pour vous comme pour le vendeur.
-                </p>
-              </div>
+              {state.international ? (
+                <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
+                  <p className="text-base font-semibold text-[var(--mache-text)]">
+                    Rien à payer maintenant
+                  </p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-[var(--mache-muted)]">
+                    Pour une livraison hors d&apos;Haïti, MACHE vous envoie par e-mail le
+                    total avec les frais d&apos;expédition et le moyen de paiement. La
+                    commande n&apos;est expédiée qu&apos;après votre accord et votre
+                    paiement.
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
+                  <p className="text-base font-semibold text-[var(--mache-text)]">
+                    Paiement à la livraison
+                  </p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-[var(--mache-muted)]">
+                    Vous réglez en main propre au moment de recevoir le colis.
+                    Vérifiez son contenu avant de payer : c&apos;est le moment où
+                    un refus est le plus simple, pour vous comme pour le vendeur.
+                  </p>
+                </div>
+              )}
 
               {/*
                 Aucun autre moyen n'est proposé, et aucun n'est annoncé
@@ -345,9 +393,11 @@ export default async function CheckoutPage({
               <div className="flex justify-between">
                 <dt className="text-[var(--mache-muted)]">Livraison</dt>
                 <dd className="font-medium">
-                  {state.allSellersShipped
-                    ? formatAmount(cart.shippingTotal, cart.currency)
-                    : "À choisir"}
+                  {state.international
+                    ? "À confirmer"
+                    : state.allSellersShipped
+                      ? formatAmount(cart.shippingTotal, cart.currency)
+                      : "À choisir"}
                 </dd>
               </div>
 
@@ -359,7 +409,7 @@ export default async function CheckoutPage({
               )}
 
               <div className="flex justify-between border-t border-[var(--mache-line)] pt-2 text-lg">
-                <dt className="font-bold">Total</dt>
+                <dt className="font-bold">{state.international ? "Total (hors expédition)" : "Total"}</dt>
                 <dd className="font-black">{formatAmount(cart.total, cart.currency)}</dd>
               </div>
             </dl>
@@ -370,7 +420,7 @@ export default async function CheckoutPage({
                 disabled={!state.readyToPay}
                 className="w-full rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)] disabled:cursor-not-allowed disabled:bg-[var(--mache-line)] disabled:text-[var(--mache-muted)]"
               >
-                Confirmer la commande
+                {state.international ? "Envoyer ma commande" : "Confirmer la commande"}
               </button>
             </form>
 

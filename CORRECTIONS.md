@@ -50,8 +50,9 @@ La page Confidentialité mentionne désormais Brevo (e-mails), l'hébergement Re
   - pièces d'identité des vendeurs : durée de la relation + **5 ans** (lutte contre la fraude) ;
   - journaux techniques : **12 mois**.
   Elles ne seront écrites sur la page Confidentialité qu'une fois validées **et** appliquées par une suppression automatique : annoncer une durée qu'aucun programme ne respecte serait une fausse promesse.
-- **Société** : « Mache », une LLC dont une partie est détenue par BAWON, créée pour être la marketplace qui relie le marché haïtien au reste du monde (partenariats, échanges). Pour la page **Mentions légales**, il manque : nom légal exact, État d'immatriculation et numéro, adresse du siège, nom du responsable de la publication. La participation de BAWON n'a pas à y figurer.
-- **Livraison** : pas encore de tarifs (DHL envisagé, d'autres à comparer). En attendant : Haïti seulement, et retrait des pays étrangers de la page de commande (correction diaspora n° 1).
+- **Société** (précisé le 30/09) : une LLC nommée « Mache », immatriculée aux États-Unis, dont une partie est détenue par BAWON, créée pour relier le marché haïtien au reste du monde (partenariats, échanges). Adresse exacte : à venir. La gestion du site pourrait être confiée à une société tierce, voire la part cédée : **pas encore décidé**. Pour la page **Mentions légales**, il manque donc : nom légal exact (ex. « Mache LLC »), État et numéro d'immatriculation, adresse, et qui exploite le site (la LLC ou la société de gestion). La participation de BAWON n'a pas à y figurer.
+- **Sens du nom** : à choisir parmi les propositions de Claude (voir la conversation du 30/09) — rien n'est affiché sur le site avant ton choix.
+- **Livraison** : pas encore de tarifs (DHL envisagé, d'autres à comparer). **Décidé le 30/09 : on ne ferme pas l'étranger** — l'objectif est de relier Haïti au monde. ✅ Fait : la « commande sur confirmation » (voir Diaspora ci-dessous).
 - **Points relais et agents** : rémunérés en fonction des colis livrés, montants à étudier. C'est ce que disent maintenant l'accueil et la page Partenaires, sans chiffre.
 - **Prix selon le pays du visiteur + traduction complète** : voir le chantier ci-dessous.
 
@@ -80,19 +81,21 @@ La page Confidentialité mentionne désormais Brevo (e-mails), l'hébergement Re
 - [ ] **Fiche produit : boutiques en double** (Kickz Corner ×2, Trailhead ×2, Sole Society ×2). N'afficher chaque boutique qu'une fois.
 - [ ] **Fiche produit** : le bouton « Aide rapide » cache le dernier « Demander un devis ».
 - [ ] **Un avis affiche « (avis product) »** : texte technique à retirer.
-- [ ] **Page de commande :**
-  - [ ] l'e-mail du client connecté n'est pas prérempli ;
-  - [ ] l'adresse se vide à l'écran une fois validée (elle est pourtant enregistrée) : la réafficher ;
-  - [ ] les modes de livraison s'appellent « Standard Shipping » et « Express Shipping », en anglais, au même prix de démonstration (350 HTG) : les renommer et fixer de vrais tarifs.
-- [ ] **Confirmation** : la référence technique « og_01M3SB… » s'affiche au lieu du numéro de commande « #4 ».
+- [x] **Page de commande :**
+  - [x] e-mail, prénom, nom et téléphone du client connecté préremplis ;
+  - [x] l'adresse reste affichée une fois validée ;
+  - [x] les modes de la démonstration s'appellent « Livraison standard / express en Haïti » — [ ] **les vrais tarifs restent à fixer** (350 HTG = démonstration).
+- [x] **Confirmation** : le numéro de commande (« n° 7 ») remplace la référence technique pour un client connecté ; un invité voit encore la référence (Mercur ne donne les numéros qu'aux clients connectés).
 - [ ] **Détail de commande** : « Paiement : Autorisé » pour un paiement à la livraison. Écrire « À régler à la livraison ».
 - [x] **E-mail de confirmation de commande.**
 
 ### ✈️ Acheteur de la diaspora
 
-- [ ] **France, États-Unis et Canada sont proposés, mais la commande échoue** avec un message technique en anglais (« Country with code fr is not within region Haïti »). Retirer ces pays tant qu'il n'y a pas de transporteur, ou afficher un message clair en français.
-- [ ] **Préciser qu'on peut commander pour sa famille en Haïti** (ça fonctionne déjà).
-- [ ] **Prix affichés en HTG seulement** : ajouter un équivalent indicatif en dollars ou en euros (à décider).
+- [x] **Commander depuis l'étranger fonctionne** (30/09) — « commande sur confirmation » : 21 pays de la diaspora (États-Unis, Canada, France, Antilles, République dominicaine…) ; mode « Expédition internationale — frais confirmés avant envoi », affiché « À confirmer » ; paiement « Rien à payer maintenant » ; e-mail à l'acheteur (frais à confirmer), au vendeur (« N'EXPÉDIEZ RIEN avant la confirmation »), et alerte à l'équipe pour chiffrer l'envoi. Testé de bout en bout depuis Paris.
+  - [ ] **À faire par l'équipe à chaque commande internationale** : calculer l'expédition, l'envoyer au client avec le moyen de paiement, puis donner le feu vert au vendeur.
+  - [ ] **Plus tard** : tarifs automatiques (DHL ou autre) et paiement en ligne, pour que la confirmation manuelle disparaisse.
+- [x] **Préciser qu'on peut commander pour sa famille en Haïti** : dit sur la page de commande, la FAQ et la page Livraison.
+- [ ] **Prix selon le pays du visiteur** (décidé : détection de la connexion, prix indicatif en dollars / euros, paiement en gourdes) — voir « Chantier à venir : langues et devises ».
 
 ### 📦 Grossiste / acheteur en volume
 
@@ -151,4 +154,6 @@ La page Confidentialité mentionne désormais Brevo (e-mails), l'hébergement Re
 6. **Pages légales** : RGPD complétée et mentions légales, dès que la LLC et les durées de conservation sont décidées.
 7. **Avec ton accord** : retirer la démonstration, ménage des boutiques de test.
 
-**Décisions qui t'attendent** : outil de statistiques · durées de conservation des données · identité de la société (LLC) · retrait de la démonstration · tarifs de livraison · pays livrés · rémunération des points relais et agents · affichage d'un prix en dollars ou en euros.
+**Décisions qui t'attendent** (mises à jour le 30/09) : jeton Cloudflare pour les statistiques · validation des durées de conservation · identité exacte de la LLC et de qui exploite le site · sens du nom MACHE · retrait de la démonstration · tarifs de transporteur (DHL ou autre) · montants de rémunération des points relais et agents.
+
+**Déjà tranché** : statistiques = Cloudflare Web Analytics · étranger = commande sur confirmation · points relais et agents payés selon les colis livrés · prix affiché selon le pays du visiteur.

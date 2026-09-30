@@ -82,6 +82,27 @@ function ShippingPageEcrit() {
       </p>
 
       {/* ---------------------------------------------------------------- */}
+      <section className="mt-9 rounded-[10px] border border-[#bfdbfe] bg-[#eff6ff] p-5">
+        <h2 className="text-xl font-black tracking-tight text-[var(--mache-text)]">
+          Hors d&apos;Haïti : la commande sur confirmation
+        </h2>
+        <p className="mt-3 text-base leading-relaxed text-[var(--mache-muted)]">
+          Vous vivez aux États-Unis, au Canada, en France ou ailleurs ? Vous
+          pouvez commander chez les boutiques haïtiennes de MACHE. Les frais
+          d&apos;expédition vers l&apos;étranger ne sont pas encore calculés
+          automatiquement : après votre commande,{" "}
+          <strong className="text-[var(--mache-text)]">
+            MACHE vous écrit avec le montant de l&apos;expédition et le moyen de paiement
+          </strong>
+          . Rien n&apos;est expédié, et rien ne vous est demandé, avant votre accord.
+        </p>
+        <p className="mt-3 text-base leading-relaxed text-[var(--mache-muted)]">
+          Vous pouvez aussi faire livrer un proche en Haïti : indiquez alors
+          son adresse en Haïti, et la commande suit le chemin habituel.
+        </p>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
       <section className="mt-9 rounded-[10px] border-2 border-[var(--mache-primary)] bg-[var(--mache-white)] p-5">
         <h2 className="text-xl font-black tracking-tight text-[var(--mache-text)]">
           Votre code de remise

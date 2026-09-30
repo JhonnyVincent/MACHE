@@ -26,6 +26,7 @@
 
 import { cookies } from "next/headers";
 import { getMedusaConfig } from "./config";
+import { isInternational } from "../countries";
 import {
   backendTimeoutSignal,
   isTimeout,
@@ -51,9 +52,25 @@ export type SellerShipping = {
   chosenOptionId: string | null;
 };
 
+/* Ce que le client a déjà saisi : réaffiché, jamais à retaper. */
+export type CheckoutPrefill = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  address1: string;
+  address2: string;
+  city: string;
+  province: string;
+  countryCode: string;
+  phone: string;
+};
+
 export type CheckoutState = {
   hasEmail: boolean;
   hasAddress: boolean;
+  prefill: CheckoutPrefill;
+  /* Adresse hors d'Haïti : commande sur confirmation (voir lib/countries.ts). */
+  international: boolean;
   shippingBySeller: SellerShipping[];
   allSellersShipped: boolean;
   readyToPay: boolean;
@@ -195,6 +212,25 @@ export async function getCheckoutState(): Promise<Result<CheckoutState>> {
   const shippingAddress = cart.shipping_address as Raw | null;
   const hasAddress = Boolean(shippingAddress && str(shippingAddress.address_1));
 
+  /*
+    L'e-mail du panier, sinon celui du client connecté : quelqu'un qui a
+    un compte n'a pas à retaper son adresse.
+  */
+  const customer = cart.customer as Raw | null | undefined;
+  const text = (value: unknown) => str(value) ?? "";
+
+  const prefill: CheckoutPrefill = {
+    email: text(cart.email) || text(customer?.email),
+    firstName: text(shippingAddress?.first_name) || text(customer?.first_name),
+    lastName: text(shippingAddress?.last_name) || text(customer?.last_name),
+    address1: text(shippingAddress?.address_1),
+    address2: text(shippingAddress?.address_2),
+    city: text(shippingAddress?.city),
+    province: text(shippingAddress?.province),
+    countryCode: text(shippingAddress?.country_code).toLowerCase() || "ht",
+    phone: text(shippingAddress?.phone) || text(customer?.phone),
+  };
+
   const chosenMethods = Array.isArray(cart.shipping_methods)
     ? (cart.shipping_methods as Raw[])
     : [];
@@ -255,6 +291,8 @@ export async function getCheckoutState(): Promise<Result<CheckoutState>> {
     data: {
       hasEmail,
       hasAddress,
+      prefill,
+      international: hasAddress && isInternational(prefill.countryCode),
       shippingBySeller,
       allSellersShipped,
       readyToPay: hasEmail && hasAddress && allSellersShipped,
@@ -276,9 +314,12 @@ export async function chooseShippingOption(optionId: string): Promise<Result<Raw
 
 export type PlacedOrder = {
   orderGroupId: string;
+  /* Les numéros que le client retrouve dans « Mes commandes » (#4, #5…). */
+  orderNumbers: number[];
   sellerCount: number;
   total: number;
   currency: string;
+  international: boolean;
 };
 
 /*
@@ -315,6 +356,12 @@ export async function placeOrder(): Promise<Result<PlacedOrder>> {
 
   if (!session.ok) return session;
 
+  /* Le pays de livraison, lu avant que le panier ne soit consommé. */
+  const before = await call<{ cart: Raw }>(`/store/carts/${id}?fields=shipping_address.country_code`);
+  const destination = before.ok
+    ? str((before.data.cart?.shipping_address as Raw | null)?.country_code)
+    : null;
+
   const completed = await call<Raw>(`/store/carts/${id}/complete`, {
     method: "POST",
   });
@@ -340,6 +387,28 @@ export async function placeOrder(): Promise<Result<PlacedOrder>> {
     };
   }
 
+  /*
+    Les numéros de commande (#6…), ceux que le client retrouve dans
+    « Mes commandes ». La réponse de finalisation ne les porte pas ; le
+    groupe les donne, mais seulement à un client connecté. Pour un
+    invité, on garde la référence du groupe.
+  */
+  let orderNumbers = (Array.isArray(source.orders) ? (source.orders as Raw[]) : group ? [] : [source])
+    .map((entry) => Number(entry.display_id))
+    .filter((value) => Number.isFinite(value) && value > 0);
+
+  if (orderNumbers.length === 0 && group) {
+    const detail = await call<{ order_group: Raw }>(
+      `/store/order-groups/${String(group.id)}?fields=id,orders.id,orders.display_id`
+    );
+
+    if (detail.ok && Array.isArray(detail.data.order_group?.orders)) {
+      orderNumbers = (detail.data.order_group.orders as Raw[])
+        .map((entry) => Number(entry.display_id))
+        .filter((value) => Number.isFinite(value) && value > 0);
+    }
+  }
+
   /* Le panier est consommé : son cookie ne doit plus désigner rien. */
   const store = await cookies();
   store.delete(CART_COOKIE);
@@ -348,9 +417,11 @@ export async function placeOrder(): Promise<Result<PlacedOrder>> {
     ok: true,
     data: {
       orderGroupId: String(source.id),
+      orderNumbers,
       sellerCount: Number(source.seller_count ?? 1) || 1,
       total: Number(source.total ?? 0),
       currency: (str(source.currency_code) ?? "htg").toUpperCase(),
+      international: isInternational(destination),
     },
   };
 }

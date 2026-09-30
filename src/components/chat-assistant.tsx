@@ -71,10 +71,10 @@ const REPONSES: Reponse[] = [
     lien: { href: "/legal/returns", label: "Retours et remboursements" },
   },
   {
-    question: "Peut-on exporter depuis Haïti ?",
+    question: "J'habite hors d'Haïti, puis-je commander ?",
     reponse:
-      "Pas encore. Les vendeurs livrent en Haïti. Les formalités douanières et le transport international ne sont pas pris en charge par la plateforme.",
-    lien: { href: "/export", label: "Exporter depuis Haïti" },
+      "Oui, sur confirmation : choisissez votre pays à la commande. MACHE vous écrit ensuite avec les frais d'expédition et le moyen de paiement ; rien n'est expédié ni payé avant votre accord.",
+    lien: { href: "/legal/shipping", label: "Livraison hors d'Haïti" },
   },
 ];
 

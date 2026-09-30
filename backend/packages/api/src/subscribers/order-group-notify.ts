@@ -12,6 +12,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { notify } from "../lib/notify";
 import { orderConfirmationEmail } from "../lib/notification-emails";
 import { ORDER_FIELDS, customerName, isCashOnDelivery, summary, type RawOrder } from "../lib/order-notifications";
+import { isInternational } from "../lib/international";
 
 export default async function orderGroupNotify({ event, container }: SubscriberArgs<{ id?: string }>) {
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
@@ -52,6 +53,7 @@ export default async function orderGroupNotify({ event, container }: SubscriberA
         customerName: customerName(first).split(" ")[0] ?? "",
         orders: orders.map(summary),
         cashOnDelivery: isCashOnDelivery(providers),
+        international: isInternational(first.shipping_address?.country_code),
       })
     );
   } catch (error) {

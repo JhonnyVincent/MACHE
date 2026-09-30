@@ -58,6 +58,7 @@ import commissionRates from "./commission-rates";
 import agentGroups from "./agent-groups";
 import emailCaseExisting from "./email-case-existing";
 import macheCategories from "./mache-categories";
+import livraisonInternationale from "./livraison-internationale";
 
 /* « 1 », « true », « yes », « oui » — on ne chicane pas sur la forme. */
 function asked(value: string | undefined): boolean {
@@ -154,6 +155,12 @@ export default async function bootstrap(args: ExecArgs) {
       */
       await demoShippingHaiti(args);
     }
+
+    /*
+      Après la démonstration : ses boutiques doivent déjà avoir une
+      livraison en Haïti pour recevoir le mode international.
+    */
+    await livraisonInternationale(args);
   } catch (error) {
     logger.error(
       `Mise en place MACHE interrompue : ${error instanceof Error ? error.message : String(error)}`

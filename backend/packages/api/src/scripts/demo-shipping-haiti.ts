@@ -67,12 +67,26 @@ export default async function demoShippingHaiti({ container }: ExecArgs) {
     { relations: ["geo_zones"] }
   );
 
+  /* Les zones de la démonstration Mercur, et elles seules. */
+  const isDemoZone = (name: string) => / Europe$/.test(name);
+
   let zonesUpdated = 0;
 
   for (const zone of zones) {
     const countries = (zone.geo_zones ?? [])
       .filter((geo) => geo.type === "country")
       .map((geo) => String(geo.country_code || "").toLowerCase());
+
+    if (isDemoZone(zone.name) && (countries.length !== 1 || countries[0] !== HAITI)) {
+      await updateServiceZonesWorkflow(container).run({
+        input: {
+          selector: { id: zone.id },
+          update: { geo_zones: [{ country_code: HAITI, type: "country" as const }] },
+        },
+      });
+      zonesUpdated += 1;
+      continue;
+    }
 
     if (countries.includes(HAITI)) continue;
 
@@ -101,7 +115,7 @@ export default async function demoShippingHaiti({ container }: ExecArgs) {
 
   logger.info(
     zonesUpdated > 0
-      ? `Livraison : Haïti ajoutée à ${zonesUpdated} zone(s).`
+      ? `Livraison : ${zonesUpdated} zone(s) de démonstration ramenée(s) à Haïti.`
       : "Livraison : Haïti déjà couverte par toutes les zones."
   );
 
@@ -158,6 +172,22 @@ export default async function demoShippingHaiti({ container }: ExecArgs) {
     });
 
     priced += 1;
+  }
+
+  /* Des noms français pour les modes de la démonstration. */
+  const FRENCH_NAMES: Record<string, string> = {
+    "Standard Shipping": "Livraison standard en Haïti",
+    "Express Shipping": "Livraison express en Haïti",
+  };
+
+  for (const option of options as { id: string; name: string }[]) {
+    const french = FRENCH_NAMES[option.name];
+
+    if (!french) continue;
+
+    await updateShippingOptionsWorkflow(container).run({
+      input: [{ id: option.id, name: french }] as never,
+    });
   }
 
   logger.info(

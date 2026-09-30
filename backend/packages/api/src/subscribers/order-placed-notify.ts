@@ -13,7 +13,8 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 import { notify } from "../lib/notify";
-import { orderForSellerEmail } from "../lib/notification-emails";
+import { adminAlertAddress, adminAlertEmail, money, orderForSellerEmail } from "../lib/notification-emails";
+import { isInternational } from "../lib/international";
 import {
   ORDER_FIELDS, addressText, customerName, isCashOnDelivery, summary, type RawOrder,
 } from "../lib/order-notifications";
@@ -40,6 +41,7 @@ export default async function orderPlacedNotify({ event, container }: Subscriber
     if (!order) return;
 
     const providers = order.order_group?.cart?.payment_collection?.payment_sessions?.map((s) => s.provider_id) ?? [];
+    const international = isInternational(order.shipping_address?.country_code);
 
     await notify(
       logger,
@@ -51,8 +53,38 @@ export default async function orderPlacedNotify({ event, container }: Subscriber
         phone: order.shipping_address?.phone ?? null,
         address: addressText(order.shipping_address ?? null),
         cashOnDelivery: isCashOnDelivery(providers),
+        international,
       })
     );
+
+    /*
+      Une commande vers l'étranger attend MACHE : c'est l'équipe qui
+      donne au client le prix de l'expédition et le moyen de paiement.
+    */
+    if (international) {
+      const country = String(order.shipping_address?.country_code || "").toUpperCase();
+
+      await notify(
+        logger,
+        "commande internationale (équipe)",
+        adminAlertAddress(),
+        adminAlertEmail({
+          subject: `Commande internationale n° ${order.display_id ?? order.id} à confirmer (${country})`,
+          intro:
+            "Une commande doit partir hors d'Haïti. À faire : calculer les frais d'expédition, les envoyer au client avec le moyen de paiement, et prévenir le vendeur quand il peut expédier.",
+          rows: [
+            ["Boutique", String(order.seller?.name || "—")],
+            ["Client", `${customerName(order) || "—"} — ${order.email || "e-mail inconnu"}`],
+            ["Téléphone", order.shipping_address?.phone || "—"],
+            ["Pays", country],
+            ["Articles", summary(order).lines.map((line) => `${line.quantity} × ${line.title}`).join("\n")],
+            ["Total articles", money(summary(order).total, order.currency_code)],
+          ],
+          path: "/dashboard/admin",
+          label: "Ouvrir l'administration",
+        })
+      );
+    }
   } catch (error) {
     logger.error(`Nouvelle commande : e-mail au vendeur impossible (${error instanceof Error ? error.message : String(error)}).`);
   }
