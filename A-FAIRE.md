@@ -1,7 +1,9 @@
 # MACHE — ce qui est fait, ce qui attend
 
 Dernière mise à jour : 26 septembre 2026.
-Cochez au fur et à mesure. Rien ici n'est « presque fait » : c'est fait, ou c'est dans la liste.
+Cochez au fur et à mesure.
+
+📋 **La liste complète des corrections (20 points de contrôle + chaque profil : vendeur, acheteur, diaspora, grossiste, agent, admin) est dans [`CORRECTIONS.md`](CORRECTIONS.md).** Rien ici n'est « presque fait » : c'est fait, ou c'est dans la liste.
 
 ---
 
