@@ -91,11 +91,11 @@ export default async function AdminMessagesPage({
         ne prévient personne. Sans cela, on croit le dossier traité
         parce qu'on a écrit.
       */}
-      <Notice tone="warning" title="Vos réponses ne préviennent personne">
-        MACHE n&apos;a pas de service d&apos;envoi d&apos;e-mails. Une réponse
-        s&apos;affiche dans la conversation, et la personne la découvre en
-        revenant. Pour les urgences, le téléphone laissé par le demandeur est
-        le seul canal immédiat.
+      <Notice tone="warning" title="Le demandeur est prévenu par e-mail">
+        Chaque réponse (pas les notes internes) envoie un e-mail au demandeur
+        avec le lien de la conversation ; le texte de la réponse n&apos;y figure
+        pas. Un e-mail peut finir dans les indésirables : pour les urgences,
+        le téléphone laissé par le demandeur reste le canal le plus sûr.
       </Notice>
 
       {!result.ok ? (

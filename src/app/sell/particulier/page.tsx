@@ -1,4 +1,12 @@
 import { Link } from "next-view-transitions";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Vendre en tant que particulier",
+  description:
+    "Vendre quelques articles ou votre artisanat sur MACHE, sans être une entreprise : comment ça marche, ce qu'il faut pour commencer.",
+  path: "/sell/particulier",
+});
 
 const benefits = [
   "Commencer avec peu de produits",
@@ -31,7 +39,9 @@ export default function SellParticulierPage() {
         <div className="absolute inset-0 opacity-20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/carte-haiti-mache.png"
+            loading="lazy"
+            decoding="async"
+            src="/images/carte-haiti-mache.webp"
             alt=""
             aria-hidden="true"
             className="h-full w-full object-contain object-right"
@@ -72,7 +82,9 @@ export default function SellParticulierPage() {
             <div className="rounded-[1.5rem] bg-white p-5 text-neutral-950">
               <div className="flex items-center gap-3">
                 <img
-                  src="/images/logo-haiti-mache-hibiscus.png"
+                  loading="lazy"
+                  decoding="async"
+                  src="/images/logo-mache.webp"
                   alt="Haiti Mache"
                   className="h-14 w-14 rounded-2xl object-contain"
                 />

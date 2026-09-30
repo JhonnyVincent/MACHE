@@ -21,6 +21,9 @@ import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/medusa/admin";
 import { adminLoginAction } from "../actions";
 import { isMedusaConfigured } from "@/lib/medusa/config";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Connexion administration");
 
 export const dynamic = "force-dynamic";
 

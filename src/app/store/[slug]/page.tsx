@@ -14,6 +14,9 @@
   ne doit pas être une page blanche.
 */
 
+import { cache } from "react";
+import type { Metadata } from "next";
+import { storeMetadata } from "@/lib/seo";
 import { Link } from "next-view-transitions";
 import { reportOutage } from "@/lib/medusa/outage";
 import { notFound } from "next/navigation";
@@ -31,6 +34,22 @@ import { VerifiedBadge } from "@/components/verified-badge";
 
 export const dynamic = "force-dynamic";
 
+/* Une seule lecture de la boutique pour les métadonnées et la page. */
+const loadSeller = cache(fetchSellerByHandle);
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await loadSeller(slug);
+
+  if (!result.ok || !result.data) return { title: "Boutique introuvable", robots: { index: false } };
+
+  return storeMetadata(result.data);
+}
+
 export default async function StorePage({
   params,
 }: {
@@ -38,7 +57,7 @@ export default async function StorePage({
 }) {
   const { slug } = await params;
 
-  const sellerResult = await fetchSellerByHandle(slug);
+  const sellerResult = await loadSeller(slug);
 
   if (!sellerResult.ok) {
     reportOutage("boutique", sellerResult.reason);
@@ -115,7 +134,7 @@ export default async function StorePage({
           <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-md font-bold text-[var(--mache-muted)]">
             {seller.logo ? (
               /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={seller.logo} alt="" className="h-full w-full object-cover" />
+              <img loading="lazy" decoding="async" src={seller.logo} alt="" className="h-full w-full object-cover" />
             ) : (
               seller.name.slice(0, 2).toUpperCase()
             )}

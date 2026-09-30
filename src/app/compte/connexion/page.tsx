@@ -12,6 +12,15 @@ import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/lib/medusa/customer";
 import { loginAction } from "../actions";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Connexion à mon compte",
+  description:
+    "Connectez-vous à votre compte MACHE pour suivre vos commandes, vos devis et vos favoris.",
+  path: "/compte/connexion",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 

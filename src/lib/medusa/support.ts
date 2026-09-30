@@ -165,8 +165,8 @@ export async function openThread(input: {
       thread: mapThread(result.data.thread),
       /*
         Rendu une seule fois. Pour un visiteur sans compte, c'est la
-        seule clé de sa conversation : MACHE n'a pas d'e-mail pour la
-        lui renvoyer.
+        clé de sa conversation ; l'e-mail envoyé à chaque réponse de
+        MACHE la contient aussi.
       */
       accessToken: str(result.data.access_token) ?? "",
     },

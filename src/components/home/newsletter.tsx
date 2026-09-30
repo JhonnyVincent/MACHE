@@ -13,6 +13,7 @@
 
 import { useActionState } from "react";
 import { subscribeAction, type NewsletterState } from "@/app/newsletter-actions";
+import { AntiSpamFields } from "@/components/anti-spam-fields";
 
 const initial: NewsletterState = { status: "idle", message: "" };
 
@@ -42,6 +43,7 @@ export function NewsletterCta() {
             </p>
           ) : (
             <form action={action} className="flex w-full flex-col gap-2 sm:flex-row lg:w-[420px]">
+              <AntiSpamFields />
               <label htmlFor="newsletter-email" className="sr-only">
                 Adresse e-mail
               </label>

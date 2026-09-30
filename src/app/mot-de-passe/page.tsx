@@ -18,7 +18,7 @@ import { requestResetAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Mot de passe oublié · MACHE",
+  title: "Mot de passe oublié",
   robots: { index: false },
 };
 

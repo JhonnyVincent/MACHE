@@ -1,4 +1,12 @@
 import { Link } from "next-view-transitions";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Vendre sur MACHE : ouvrir sa boutique en ligne en Haïti",
+  description:
+    "Particulier, boutique, fournisseur ou marque : ouvrez votre boutique sur MACHE et vendez en Haïti et à la diaspora. Inscription en quelques minutes.",
+  path: "/sell",
+});
 
 const sellerProfiles = [
   {
@@ -79,7 +87,9 @@ export default function SellPage() {
         <div className="absolute inset-0 opacity-20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/carte-haiti-mache.png"
+            loading="lazy"
+            decoding="async"
+            src="/images/carte-haiti-mache.webp"
             alt=""
             aria-hidden="true"
             className="h-full w-full object-contain object-right"
@@ -343,8 +353,10 @@ export default function SellPage() {
 
           <div className="overflow-hidden rounded-[2rem] border bg-neutral-100">
             <img
-              src="/images/carte-haiti-mache.png"
-              alt="Dashboard vendeur Mache"
+              loading="lazy"
+              decoding="async"
+              src="/images/carte-haiti-mache.webp"
+              alt="Carte d'Haïti aux couleurs de MACHE"
               className="h-[520px] w-full object-cover"
             />
           </div>
@@ -419,7 +431,9 @@ export default function SellPage() {
         <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
           <div className="card p-6">
             <img
-              src="/images/carte-haiti-mache.png"
+              loading="lazy"
+              decoding="async"
+              src="/images/carte-haiti-mache.webp"
               alt="Carte Haiti Mache"
               className="mx-auto max-h-[380px] object-contain"
             />

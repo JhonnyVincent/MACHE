@@ -15,6 +15,9 @@ import { Link } from "next-view-transitions";
 import { fetchQuote, QUOTE_LABELS } from "@/lib/medusa/quotes";
 import { formatAmount } from "@/lib/format";
 import { answerQuoteAction } from "../actions";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Mon devis");
 
 export const dynamic = "force-dynamic";
 
@@ -122,7 +125,8 @@ export default async function QuotePage({
       {quote.status === "pending" && (
         <p className="mt-6 text-base leading-relaxed text-[var(--mache-muted)]">
           Le vendeur a reçu votre demande. Il répond depuis son espace
-          vendeur ; vous verrez sa proposition sur cette page.
+          vendeur ; vous verrez sa proposition sur cette page, et vous
+          serez prévenu par e-mail.
         </p>
       )}
 

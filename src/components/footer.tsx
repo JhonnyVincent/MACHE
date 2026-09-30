@@ -82,7 +82,7 @@ export function Footer({
               l'annoncer dans le pied de page de chaque page en faisait
               une promesse permanente.
             */}
-            <p className="mt-4 max-w-md text-sm leading-7 text-white/40">
+            <p className="mt-4 max-w-md text-sm leading-7 text-white/70">
               La place de marché d&apos;Haïti. Des boutiques
               indépendantes, des marques et des fournisseurs d&apos;ici et
               de la diaspora, réunis au même endroit.
@@ -106,7 +106,7 @@ export function Footer({
             <div className="space-y-2">
               <Link
                 href="/shop"
-                className="block text-sm text-white/40 transition hover:text-white"
+                className="block text-sm text-white/70 transition hover:text-white"
               >
                 Tout le catalogue
               </Link>
@@ -119,7 +119,7 @@ export function Footer({
               */}
               <Link
                 href="/gros"
-                className="block text-sm text-white/40 transition hover:text-white"
+                className="block text-sm text-white/70 transition hover:text-white"
               >
                 Acheter en gros
               </Link>
@@ -134,7 +134,7 @@ export function Footer({
                 <Link
                   key={category.handle}
                   href={`/shop?category=${encodeURIComponent(category.handle)}`}
-                  className="block text-sm text-white/40 transition hover:text-white"
+                  className="block text-sm text-white/70 transition hover:text-white"
                 >
                   {category.name}
                 </Link>
@@ -152,7 +152,7 @@ export function Footer({
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="block text-sm text-white/40 transition hover:text-white"
+                  className="block text-sm text-white/70 transition hover:text-white"
                 >
                   {item.label}
                 </Link>
@@ -170,7 +170,7 @@ export function Footer({
                 <Link
                   key={item.label}
                   href={item.href}
-                  className="block text-sm text-white/40 transition hover:text-white"
+                  className="block text-sm text-white/70 transition hover:text-white"
                 >
                   {item.label}
                 </Link>
@@ -179,7 +179,7 @@ export function Footer({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/30">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/60">
           <div>
             © 2026 Mache — Tous droits réservés.
           </div>

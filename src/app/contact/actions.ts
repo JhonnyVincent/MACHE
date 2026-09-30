@@ -22,12 +22,17 @@ import { redirect } from "next/navigation";
 import { openThread } from "@/lib/medusa/support";
 import { isControlFlow, reasonOf } from "@/lib/safe-action";
 import { reportOutage } from "@/lib/medusa/outage";
+import { spamCheck } from "@/lib/anti-spam";
 
 function fail(message: string): never {
   redirect(`/contact?error=${encodeURIComponent(message)}`);
 }
 
 export async function sendMessageAction(formData: FormData) {
+  const blocked = await spamCheck("contact", formData);
+
+  if (blocked) fail(blocked);
+
   const fromName = String(formData.get("from_name") || "").trim();
   const fromEmail = String(formData.get("from_email") || "").trim().toLowerCase();
   const fromPhone = String(formData.get("from_phone") || "").trim();

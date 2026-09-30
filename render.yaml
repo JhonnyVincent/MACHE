@@ -161,6 +161,10 @@ services:
       # Le nom affiché à côté de l'adresse d'expédition.
       - key: MAIL_FROM_NAME
         value: MACHE
+      # Où l'équipe MACHE reçoit ses alertes : nouvelle boutique à
+      # approuver, nouveau message. Facultatif : à défaut, MAIL_FROM.
+      - key: ADMIN_ALERT_EMAIL
+        sync: false
       # L'abonnement aux nouvelles de MACHE (bandeau « Restez au
       # courant » de l'accueil). Les adresses vont dans une liste de
       # contacts Brevo ; les lettres se composent et s'envoient depuis

@@ -225,6 +225,8 @@ export default async function AdminModerationPage({
                   {product.thumbnail && (
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
+                      loading="lazy"
+                      decoding="async"
                       src={product.thumbnail}
                       alt=""
                       className="h-10 w-10 shrink-0 rounded-[4px] border border-[#d5d9d9] object-cover"

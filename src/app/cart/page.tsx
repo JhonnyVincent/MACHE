@@ -18,6 +18,9 @@ import { formatAmount } from "@/lib/medusa/catalog";
 import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
 import { blockingGroups } from "@/lib/seller-minimum";
 import { updateCartLineAction, removeCartLineAction } from "./actions";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Mon panier");
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +82,7 @@ export default async function CartPage({
                   <span className="h-20 w-20 shrink-0 overflow-hidden rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-bg)]">
                     {line.thumbnail ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={line.thumbnail} alt="" className="h-full w-full object-cover" />
+                      <img loading="lazy" decoding="async" src={line.thumbnail} alt="" className="h-full w-full object-cover" />
                     ) : null}
                   </span>
 

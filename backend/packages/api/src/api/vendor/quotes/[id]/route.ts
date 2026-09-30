@@ -21,6 +21,9 @@ import {
   withExpiry,
   type QuoteRow,
 } from "../../../quote-helpers";
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import { notify } from "../../../../lib/notify";
+import { quoteAnsweredEmail, quoteLink } from "../../../../lib/notification-emails";
 
 type Service = {
   retrieveQuote: (id: string) => Promise<QuoteRow>;
@@ -94,6 +97,8 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
       seller_message: text(body.seller_message, MAX_MESSAGE),
     });
 
+    void notifyBuyer(req, updated, false);
+
     return res.json({ quote: publicQuote(updated) });
   }
 
@@ -149,5 +154,29 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     valid_until: validUntil,
   });
 
+  void notifyBuyer(req, updated, true);
+
   return res.json({ quote: publicQuote(updated) });
+}
+
+/*
+  L'acheteur est prévenu que le vendeur a répondu. Le prix n'est pas
+  dans l'e-mail : il le lit sur sa page de devis, où il peut accepter
+  ou refuser.
+*/
+async function notifyBuyer(req: MedusaRequest, quote: QuoteRow, accepted: boolean) {
+  const logger = req.scope.resolve(ContainerRegistrationKeys.LOGGER);
+
+  await notify(
+    logger,
+    "réponse à un devis (acheteur)",
+    quote.buyer_email,
+    quoteAnsweredEmail({
+      buyerName: quote.buyer_name,
+      displayId: quote.display_id,
+      productTitle: quote.product_title,
+      accepted,
+      link: quoteLink(quote.id, quote.access_token),
+    })
+  );
 }

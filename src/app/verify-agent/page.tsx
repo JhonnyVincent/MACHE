@@ -17,6 +17,14 @@
 
 import { Link } from "next-view-transitions";
 import { verifyAgentCode, AGENT_STATUS_LABELS } from "@/lib/agents";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Vérifier un agent MACHE",
+  description:
+    "Un agent MACHE se présente chez vous ? Saisissez le code de sa carte pour vérifier qu'il est bien habilité, avant de lui remettre un colis ou de l'argent.",
+  path: "/verify-agent",
+});
 
 export const dynamic = "force-dynamic";
 
@@ -155,6 +163,8 @@ export default async function VerifyAgentPage({
                 {result.photoUrl && (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={result.photoUrl}
                     alt=""
                     className="h-20 w-20 shrink-0 rounded-full object-cover"

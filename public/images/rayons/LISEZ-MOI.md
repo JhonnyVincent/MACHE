@@ -18,3 +18,9 @@ Jamais d'image filigranée (pngtree, Shutterstock…) ni copiée d'un autre site
 
 Un rayon qui a moins de quatre sous-rayons peut aussi avoir sa propre photo :
 `electronique`, `bio`, `beaute`, `saveurs`, etc.
+
+## Poids des photos
+
+Les photos sont servies au format **WebP**, réduites à 560 pixels de large (elles s'affichent en 200 à 280 pixels). Une photo de rayon pèse ainsi 15 à 40 Ko au lieu de 60 à 150 Ko : important en Haïti, où beaucoup de visiteurs paient leurs données mobiles.
+
+Une nouvelle photo peut être déposée en `.jpg` ou `.png` : demandez simplement à Claude de la convertir.

@@ -11,10 +11,13 @@
 */
 
 import { Link } from "next-view-transitions";
+import { privateSectionMetadata } from "@/lib/seo";
 import { getCustomer, getCustomerOrders } from "@/lib/medusa/customer";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
 import { logoutAction } from "@/app/compte/actions";
+
+export const metadata = privateSectionMetadata("Mon compte client");
 
 export const dynamic = "force-dynamic";
 
@@ -70,7 +73,7 @@ export default async function BuyerLayout({ children }: { children: React.ReactN
         <div className="border-b border-white/10 px-4 py-3">
           <Link href="/" className="block">
             <p className="text-md font-bold leading-none tracking-widest">MACHE</p>
-            <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/40">
+            <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/70">
               Espace client
             </p>
           </Link>
@@ -82,7 +85,7 @@ export default async function BuyerLayout({ children }: { children: React.ReactN
           {customer ? (
             <>
               <p className="truncate text-xs font-medium">{displayName}</p>
-              <p className="truncate text-2xs text-white/40">{customer.email}</p>
+              <p className="truncate text-2xs text-white/70">{customer.email}</p>
 
               <form action={logoutAction} className="mt-2">
                 <button

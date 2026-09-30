@@ -34,7 +34,7 @@ import { reportOutage } from "@/lib/medusa/outage";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Acheter en gros — MACHE",
+  title: "Acheter en gros",
   description:
     "Les boutiques qui vendent en gros sur MACHE : demande de devis, prix dégressifs selon la quantité, commande minimum.",
 };

@@ -28,6 +28,9 @@ import { getCustomer } from "@/lib/medusa/customer";
 import { getThread, THREAD_STATUS_LABELS } from "@/lib/medusa/support";
 import { SubmitButton } from "@/components/submit-button";
 import { replyAction } from "./actions";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Ma conversation avec MACHE");
 
 export const dynamic = "force-dynamic";
 
@@ -126,9 +129,9 @@ export default async function ThreadPage({
                 <strong className="text-[var(--mache-text)]">
                   Gardez ce lien.
                 </strong>{" "}
-                C&apos;est le seul moyen de relire notre réponse : MACHE
-                n&apos;a pas de service d&apos;e-mail et ne pourra pas vous le
-                renvoyer.
+                Nous vous prévenons par e-mail quand MACHE répond, mais
+                l&apos;e-mail peut arriver dans les indésirables : ce lien reste
+                le moyen sûr de relire notre réponse.
               </p>
 
               {privateLink && (

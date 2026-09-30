@@ -150,7 +150,7 @@ check("le bandeau n'utilise aucune image décorative", () => {
     vide — c'est précisément le moment où elle est la plus mauvaise.
   */
   const sources = [...HERO.matchAll(/src=(\{[^}]+\}|"[^"]*")/g)].map((m) => m[1]);
-  const allowed = ['"/images/carte-haiti-mache.png"', '"/images/logo-haiti-mache-hibiscus.png"', "{product.image}", "{seller.logo}"];
+  const allowed = ['"/images/carte-haiti-mache.webp"', '"/images/logo-mache.webp"', "{product.image}", "{seller.logo}"];
   for (const source of sources) {
     assert.ok(allowed.includes(source), `image non autorisée dans le bandeau : ${source}`);
   }
@@ -382,7 +382,7 @@ check("« Gagnez de l'argent » : deux vrais rôles, aucun montant inventé", ()
   assert.ok(start > -1);
   /* Aucun chiffre promis : ni gourdes, ni dollars, ni pourcentage, ni « par colis ». */
   assert.doesNotMatch(section, /\d+\s*(HTG|gourdes?|\$|USD|%)|par colis|garanti/i);
-  assert.match(section, /Rémunération et conditions fixées avec MACHE avant de commencer/);
+  assert.match(section, /Rémunéré en fonction des colis livrés\. Montants et conditions\s+fixés avec MACHE avant de commencer/);
   /* Les candidatures arrivent avec leur objet déjà rempli. */
   assert.match(section, /\/contact\?sujet=autre&objet=\$\{encodeURIComponent\("Devenir point relais"\)\}/);
   assert.match(section, /\/contact\?sujet=autre&objet=\$\{encodeURIComponent\("Devenir agent MACHE"\)\}/);

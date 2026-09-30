@@ -1,4 +1,12 @@
 import { Link } from "next-view-transitions";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Vendre en tant que boutique",
+  description:
+    "Boutiques et commerces : un catalogue en ligne, des commandes et une vitrine à votre nom sur MACHE, la marketplace haïtienne.",
+  path: "/sell/business",
+});
 
 const benefits = [
   "Gérer un gros catalogue",
@@ -46,7 +54,9 @@ export default function SellBusinessPage() {
         <div className="absolute inset-0 opacity-20">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/carte-haiti-mache.png"
+            loading="lazy"
+            decoding="async"
+            src="/images/carte-haiti-mache.webp"
             alt=""
             aria-hidden="true"
             className="h-full w-full object-contain object-right"
@@ -87,7 +97,9 @@ export default function SellBusinessPage() {
             <div className="rounded-[1.5rem] bg-white p-5 text-neutral-950">
               <div className="flex items-center gap-3">
                 <img
-                  src="/images/logo-haiti-mache-hibiscus.png"
+                  loading="lazy"
+                  decoding="async"
+                  src="/images/logo-mache.webp"
                   alt="Haiti Mache"
                   className="h-14 w-14 rounded-2xl object-contain"
                 />
@@ -243,7 +255,9 @@ export default function SellBusinessPage() {
         <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
           <div className="card p-6">
             <img
-              src="/images/carte-haiti-mache.png"
+              loading="lazy"
+              decoding="async"
+              src="/images/carte-haiti-mache.webp"
               alt="Carte Haiti Mache"
               className="mx-auto max-h-[360px] object-contain"
             />

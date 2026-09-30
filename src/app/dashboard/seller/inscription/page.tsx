@@ -26,6 +26,15 @@ import { getVendorSeller } from "@/lib/medusa/vendor";
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import { reportOutage } from "@/lib/medusa/outage";
 import { registerVendorAction } from "./actions";
+import { pageMetadata } from "@/lib/seo";
+import { AntiSpamFields } from "@/components/anti-spam-fields";
+
+export const metadata = pageMetadata({
+  title: "Ouvrir ma boutique",
+  description:
+    "Ouvrez votre boutique sur MACHE en quelques minutes : nom, adresse e-mail, mot de passe. Vous ajoutez vos produits ensuite.",
+  path: "/dashboard/seller/inscription",
+});
 
 export const dynamic = "force-dynamic";
 
@@ -84,6 +93,7 @@ export default async function VendorRegistrationPage({
       )}
 
       <form action={registerVendorAction} className="mt-6 space-y-5">
+        <AntiSpamFields />
         <fieldset className="space-y-3">
           <legend className="text-md font-bold text-[var(--mache-text)]">
             Votre boutique

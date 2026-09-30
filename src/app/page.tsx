@@ -36,6 +36,17 @@ import { HeroCarousel } from "@/components/home/hero";
 import { NewsletterCta } from "@/components/home/newsletter";
 import { BrandsMarquee, CategoryTiles, SellCta, Spotlight } from "@/components/home/sections";
 import { EarnWithMache, HomeFaq, NewArrivals, NewShopsMarquee, SuggestionsMarquee } from "@/components/home/rows";
+import { pageMetadata, SITE_DESCRIPTION } from "@/lib/seo";
+
+export const metadata = {
+  ...pageMetadata({
+  title: "MACHE — La marketplace haïtienne : acheter et vendre en Haïti",
+  description: SITE_DESCRIPTION,
+  path: "/",
+  }),
+  /* L'accueil garde le titre complet, sans « | MACHE » en double. */
+  title: { absolute: "MACHE — La marketplace haïtienne : acheter et vendre en Haïti" },
+};
 
 export const dynamic = "force-dynamic";
 

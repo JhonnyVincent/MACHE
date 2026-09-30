@@ -8,6 +8,8 @@ import { ViewTransitions } from "next-view-transitions";
 import { getCart } from "@/lib/medusa/cart";
 import { fetchSiteTheme, themeStyle } from "@/lib/medusa/theme";
 import { fetchSitePromotions } from "@/lib/medusa/promotions";
+import { siteUrl, SITE_NAME, SITE_DESCRIPTION, DEFAULT_SHARE_IMAGE } from "@/lib/seo";
+import { Analytics } from "@/components/analytics";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,10 +17,29 @@ const inter = Inter({
   variable: "--font-inter"
 });
 
+/*
+  Chaque page donne son propre titre ; le modèle y ajoute « | MACHE ».
+  Une page qui n'en donne pas prend le titre par défaut, jamais « MACHE »
+  tout seul, qui ne dit rien à Google ni à qui reçoit le lien.
+*/
 export const metadata: Metadata = {
-  title: "MACHE",
-  description:
-    "Marketplace haïtienne : boutiques indépendantes, marques et fournisseurs d'Haïti et de la diaspora."
+  metadataBase: new URL(siteUrl()),
+  title: {
+    default: "MACHE — La marketplace haïtienne : acheter et vendre en Haïti",
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "fr_FR",
+    title: "MACHE — La marketplace haïtienne",
+    description: SITE_DESCRIPTION,
+    url: "/",
+    images: [{ url: DEFAULT_SHARE_IMAGE, width: 1200, height: 630, alt: "MACHE, la marketplace haïtienne" }],
+  },
+  twitter: { card: "summary_large_image", images: [DEFAULT_SHARE_IMAGE] },
 };
 
 /*
@@ -116,6 +137,8 @@ export default async function RootLayout({
         >
           {children}
         </SiteChrome>
+
+        <Analytics />
       </body>
     </html>
     </ViewTransitions>

@@ -14,6 +14,9 @@
 import { Link } from "next-view-transitions";
 import { cookies } from "next/headers";
 import { formatAmount } from "@/lib/medusa/catalog";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Commande enregistrée");
 
 export const dynamic = "force-dynamic";
 

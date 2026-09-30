@@ -16,14 +16,14 @@ import { model } from "@medusajs/framework/utils";
 
   LA LIMITE QU'IL FAUT REGARDER EN FACE
 
-  Sans e-mail, MACHE ne peut prévenir personne qu'une réponse est
-  arrivée. Trois cas, trois sorts différents :
+  Chaque réponse de MACHE envoie un e-mail au demandeur, avec le lien
+  de la conversation (voir api/admin/mache/messages/[id]). Mais un
+  e-mail peut se perdre ou finir dans les indésirables :
 
   - un CLIENT ou un VENDEUR connecté retrouve sa conversation dans son
     espace. Il la verra en revenant ;
   - quelqu'un SANS COMPTE ne la retrouve que par le lien privé qu'on lui
-    donne à l'envoi. S'il le perd, la réponse est perdue pour lui ;
-  - dans tous les cas, personne n'est notifié.
+    donne à l'envoi, et que l'e-mail de réponse contient aussi.
 
   Les écrans le disent au moment d'envoyer, pas après. Une messagerie
   qui laisse croire à une alerte qui n'existe pas est pire qu'un

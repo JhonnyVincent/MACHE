@@ -37,6 +37,8 @@ import {
   withExpiry,
   type QuoteRow,
 } from "../../quote-helpers";
+import { notify } from "../../../lib/notify";
+import { quoteRequestEmail } from "../../../lib/notification-emails";
 
 /*
   Garde-fous contre l'envoi en masse.
@@ -197,6 +199,12 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   });
 
   /*
+    Le vendeur est prévenu par e-mail. Sans attendre : la demande est
+    enregistrée, un e-mail lent ou refusé ne doit pas la faire échouer.
+  */
+  void notifySellerOfQuote(req, created);
+
+  /*
     Le jeton n'est renvoyé qu'ici, une seule fois : c'est le lien que
     l'acheteur garde pour relire la réponse.
   */
@@ -204,4 +212,31 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     quote: publicQuote(created),
     access_token: accessToken,
   });
+}
+
+async function notifySellerOfQuote(req: MedusaRequest, quote: QuoteRow) {
+  const logger = req.scope.resolve(ContainerRegistrationKeys.LOGGER);
+
+  try {
+    const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
+    const { data } = await query.graph({ entity: "seller", fields: ["id", "name", "email"], filters: { id: quote.seller_id } });
+    const seller = data?.[0] as { name?: string | null; email?: string | null } | undefined;
+
+    await notify(
+      logger,
+      "demande de devis (vendeur)",
+      seller?.email,
+      quoteRequestEmail({
+        sellerName: String(seller?.name || "Bonjour"),
+        displayId: quote.display_id,
+        productTitle: quote.product_title,
+        quantity: quote.quantity,
+        buyerName: quote.buyer_name,
+        buyerCompany: quote.buyer_company,
+        message: quote.message,
+      })
+    );
+  } catch (error) {
+    logger.error(`Demande de devis : e-mail au vendeur impossible (${error instanceof Error ? error.message : String(error)}).`);
+  }
 }

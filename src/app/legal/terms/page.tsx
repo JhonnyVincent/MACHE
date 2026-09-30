@@ -27,7 +27,7 @@ import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Conditions générales — MACHE",
+  title: "Conditions générales",
   description:
     "Comment fonctionne la place de marché MACHE : qui vend, qui livre, qui répond.",
 };

@@ -52,10 +52,11 @@ export const STOREFRONT_THEMES: StorefrontTheme[] = [
     hint: "Le rouge de MACHE.",
     /*
       #e91e3a, la teinte d'origine, donne 4,46 sur blanc — sous le seuil
-      de lisibilité. Deux pour cent plus sombre suffit à passer, et la
-      différence ne se voit pas.
+      de lisibilité. #e41d39 passait sur blanc (4,63) mais pas sur les
+      fonds crème du site (4,23 sur #f7f4f1). #d41834 passe partout
+      (4,82 sur crème, 5,28 sur blanc) et reste le même rouge à l'œil.
     */
-    primary: "#e41d39",
+    primary: "#d41834",
     soft: "#ffe8ee",
     dark: "#9f1024",
     strong: "#ff3f61",

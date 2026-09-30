@@ -12,6 +12,7 @@
 
 import { redirect } from "next/navigation";
 import { requestQuote, answerQuote } from "@/lib/medusa/quotes";
+import { spamCheck } from "@/lib/anti-spam";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -38,6 +39,10 @@ export async function requestQuoteAction(formData: FormData) {
     ...(productId ? { produit: productId } : {}),
     ...(variantId ? { variante: variantId } : {}),
   }).toString()}`;
+
+  const blocked = await spamCheck("devis", formData);
+
+  if (blocked) fail(back, blocked);
 
   const buyerName = field(formData, "buyer_name");
   const buyerEmail = field(formData, "buyer_email").toLowerCase();

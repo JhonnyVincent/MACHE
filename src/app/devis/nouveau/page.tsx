@@ -15,6 +15,16 @@ import { Link } from "next-view-transitions";
 import { SubmitButton } from "@/components/submit-button";
 import { requestQuoteAction } from "../actions";
 import { getCustomer } from "@/lib/medusa/customer";
+import { pageMetadata } from "@/lib/seo";
+import { AntiSpamFields } from "@/components/anti-spam-fields";
+
+export const metadata = pageMetadata({
+  title: "Demander un devis",
+  description:
+    "Demandez un prix pour une quantité : le vendeur vous répond avec un prix total.",
+  path: "/devis/nouveau",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 
@@ -104,6 +114,7 @@ export default async function NewQuotePage({
       )}
 
       <form action={requestQuoteAction} className="mt-6 space-y-4">
+        <AntiSpamFields />
         <input type="hidden" name="seller_id" value={sellerId} />
         <input type="hidden" name="product_title" value={productTitle} />
         <input type="hidden" name="product_id" value={query.produit || ""} />

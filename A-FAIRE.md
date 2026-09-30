@@ -1,6 +1,6 @@
 # MACHE — ce qui est fait, ce qui attend
 
-Dernière mise à jour : 26 septembre 2026.
+Dernière mise à jour : 30 septembre 2026.
 Cochez au fur et à mesure.
 
 📋 **La liste complète des corrections (20 points de contrôle + chaque profil : vendeur, acheteur, diaspora, grossiste, agent, admin) est dans [`CORRECTIONS.md`](CORRECTIONS.md).** Rien ici n'est « presque fait » : c'est fait, ou c'est dans la liste.
@@ -19,8 +19,18 @@ Cochez au fur et à mesure.
 7. [ ] **Nom de l'expéditeur des e-mails** — `mache-backend` → *Environment* → `MAIL_FROM_NAME` = `MACHE` (sans accent).
 8. [ ] **Réseaux sociaux** — envoyer à Claude les adresses des pages MACHE (Facebook, Instagram, TikTok, WhatsApp, YouTube, X). Les logos n'apparaissent qu'une fois l'adresse donnée.
 9. [ ] **Facultatif** — retirer `MERCUR_BACKEND_URL` de `mache-backend` : elle ne sert plus.
+10. [ ] **Statistiques de visite (gratuit, sans cookie)** — créer un compte sur dash.cloudflare.com → *Analytics & Logs* → *Web Analytics* → *Add a site* → saisir l'adresse du site (`mache-1.onrender.com`) → choisir l'installation **par script JavaScript** → copier le **token** (32 caractères, dans `data-cf-beacon='{"token": "…"}'`). Sur Render, service **du site** → *Environment* → `CF_ANALYTICS_TOKEN` = ce token → *Save*. Les chiffres apparaissent dans Cloudflare au bout de quelques minutes.
+11. [ ] **E-mails automatiques** — ils partent dès que `BREVO_API_KEY` et `MAIL_FROM` sont posées (étape 3). Facultatif : `ADMIN_ALERT_EMAIL` sur `mache-backend` pour recevoir les alertes (nouvelle boutique, nouveau message) ailleurs que sur `MAIL_FROM`. Vérifier que `STOREFRONT_URL` = l'adresse du site : les liens des e-mails en dépendent.
+12. [ ] **Le jour du nom de domaine** — poser `NEXT_PUBLIC_SITE_URL` (ex. `https://mache.ht`) sur le service du site, puis déclarer `https://…/sitemap.xml` dans Google Search Console.
 
 ## ✅ Terminé et en ligne
+
+- **Référencement et partage** — un vrai titre et une description sur chaque page, aperçu WhatsApp/Facebook (photo + prix sur les produits), icône du site, `sitemap.xml`, `robots.txt`, page 404 en français.
+- **Site plus léger** — logo 1,2 Mo → 14 Ko, carte 1,2 Mo → 65 Ko, photos des rayons ÷ 3. Images chargées à la demande.
+- **Contrastes** — textes pâles corrigés sur tout le site (pied de page, menus, rouge de la marque).
+- **Anti-spam** — champ piège, délai minimum, plafond par connexion, sur les 5 formulaires publics. Sans captcha.
+- **E-mails automatiques** — commandes (vendeur + acheteur), devis (demande + réponse), réponses de MACHE, boutique approuvée, alertes à l'équipe. *Attend la clé Brevo (étape 3).*
+- **Statistiques** — prêtes, sans cookie. *Attend le jeton Cloudflare (étape 10).*
 
 - **Panneau vendeur : fin du « Failed to fetch »** — il visait `localhost:9000` ; il appelle désormais l'adresse qui l'affiche. Vérifié dans un navigateur, jusqu'à la liste des boutiques.
 - **Accueil, nouvel ordre** — Nouveautés (3 rangées de 6), Nouvelles boutiques en grandes cartes puis Nos suggestions, qui défilent de droite à gauche ; points relais en vert clair ; FAQ avant le pied de page (mêmes réponses que la page /faq). Tuiles des catégories : une case par sous-rayon, prête à recevoir sa photo.

@@ -16,6 +16,7 @@ import {
   registerCustomer, loginCustomer, clearCustomerSession,
 } from "@/lib/medusa/customer";
 import { safeInternalPath } from "@/lib/safe-url";
+import { spamCheck } from "@/lib/anti-spam";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -33,6 +34,10 @@ export async function registerAction(formData: FormData) {
     `redirect()` fonctionne en levant : on le relaie intact, sinon la
     redirection de fin ne se produirait jamais.
   */
+  const blocked = await spamCheck("inscription", formData);
+
+  if (blocked) fail("/compte/inscription", blocked);
+
   try {
     const email = String(formData.get("email") || "").trim().toLowerCase();
     const password = String(formData.get("password") || "");

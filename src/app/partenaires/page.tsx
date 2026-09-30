@@ -30,7 +30,7 @@ import { Link } from "next-view-transitions";
 import { PARTNERS } from "@/lib/partners";
 
 export const metadata = {
-  title: "Partenaires et sponsors · MACHE",
+  title: "Partenaires et sponsors",
   description:
     "Ce qu'est un partenariat avec MACHE, les quatre formes recherchées, et comment le proposer.",
 };
@@ -51,7 +51,7 @@ const PARTNERSHIPS: Partnership[] = [
     who: "Une boutique, une pharmacie, un dépôt, un cybercafé — un local ouvert à heures régulières, dans un quartier.",
     what: "Les colis destinés au quartier y attendent leur destinataire. Vous les remettez contre le code que l'acheteur vous donne.",
     gives:
-      "Du passage : chaque retrait amène quelqu'un chez vous. Votre point est affiché avec son adresse et ses horaires sur MACHE. La rémunération et les conditions se fixent avec MACHE avant le premier colis.",
+      "Du passage : chaque retrait amène quelqu'un chez vous. Votre point est affiché avec son adresse et ses horaires sur MACHE. Vous êtes rémunéré en fonction des colis livrés ; les montants et les conditions se fixent avec MACHE avant le premier colis.",
     ready: true,
   },
   {

@@ -30,7 +30,7 @@ import { reportOutage } from "@/lib/medusa/outage";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Haïti, région par région — MACHE",
+  title: "Haïti, région par région",
   description:
     "Les dix départements d'Haïti, leurs chefs-lieux, et les boutiques MACHE qu'on y trouve.",
 };

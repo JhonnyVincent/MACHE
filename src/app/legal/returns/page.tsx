@@ -14,7 +14,7 @@ import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Retours et remboursements — MACHE",
+  title: "Retours et remboursements",
   description: "Comment demander un retour ou un remboursement sur MACHE.",
 };
 

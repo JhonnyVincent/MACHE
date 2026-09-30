@@ -20,6 +20,9 @@ import { formatAmount } from "@/lib/medusa/catalog";
 import { saveAddressAction, chooseShippingAction, placeOrderAction } from "./actions";
 import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
 import { blockingGroups } from "@/lib/seller-minimum";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Commander");
 
 export const dynamic = "force-dynamic";
 

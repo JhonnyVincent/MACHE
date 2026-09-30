@@ -31,6 +31,9 @@ import {
   type ThreadRow,
   type MessageRow,
 } from "../../support-helpers";
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import { notify } from "../../../lib/notify";
+import { adminAlertAddress, adminAlertEmail } from "../../../lib/notification-emails";
 
 type Service = {
   listThreads: (filters?: unknown, config?: unknown) => Promise<ThreadRow[]>;
@@ -130,6 +133,23 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     body: message,
     internal: false,
   });
+
+  void notify(
+    req.scope.resolve(ContainerRegistrationKeys.LOGGER),
+    "nouveau message (équipe)",
+    adminAlertAddress(),
+    adminAlertEmail({
+      subject: `Nouveau message n° ${thread.display_id} : ${subject}`,
+      intro: "Un nouveau message attend une réponse de MACHE.",
+      rows: [
+        ["De", fromName],
+        ["Objet", subject],
+        ["Catégorie", String(thread.category)],
+      ],
+      path: `/dashboard/admin/messages/${thread.id}`,
+      label: "Lire et répondre",
+    })
+  );
 
   const messages = await service.listThreadMessages({ thread_id: thread.id });
 

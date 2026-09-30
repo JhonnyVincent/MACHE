@@ -146,7 +146,7 @@ export default async function AdminAppearancePage({
                         className="mt-1.5 rounded-[4px] px-3 py-1.5 text-center text-sm font-semibold text-white"
                         style={{
                           backgroundColor:
-                            theme.variables["--mache-primary"] ?? "#e41d39",
+                            theme.variables["--mache-primary"] ?? "#d41834",
                         }}
                       >
                         {theme.banner}

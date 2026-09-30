@@ -28,6 +28,9 @@ import {
   type ThreadRow,
   type MessageRow,
 } from "../../../../support-helpers";
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import { notify } from "../../../../../lib/notify";
+import { messageReplyEmail, threadLink } from "../../../../../lib/notification-emails";
 
 type Service = {
   listThreads: (filters?: unknown, config?: unknown) => Promise<ThreadRow[]>;
@@ -111,6 +114,21 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
           awaiting_sender: true,
           last_message_at: new Date(),
         });
+
+    /* Une vraie réponse (pas une note interne) prévient le demandeur. */
+    if (!internal) {
+      void notify(
+        req.scope.resolve(ContainerRegistrationKeys.LOGGER),
+        "réponse de MACHE (demandeur)",
+        thread.from_email,
+        messageReplyEmail({
+          name: thread.from_name,
+          displayId: thread.display_id,
+          subject: thread.subject,
+          link: threadLink(thread.id, thread.access_token),
+        })
+      );
+    }
 
     const messages = await messagesOf(req, thread.id);
 

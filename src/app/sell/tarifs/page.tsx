@@ -26,7 +26,7 @@ import {
 } from "@/lib/tarifs";
 
 export const metadata = {
-  title: "Tarifs vendeurs — MACHE",
+  title: "Tarifs vendeurs",
   description:
     "Ce que MACHE facture aux vendeurs : commission sur les ventes, abonnement pour les marques officielles, tarif sur devis pour les grossistes.",
 };

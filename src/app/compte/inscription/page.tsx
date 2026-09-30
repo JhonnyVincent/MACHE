@@ -7,6 +7,16 @@ import { SubmitButton } from "@/components/submit-button";
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/lib/medusa/customer";
 import { registerAction } from "../actions";
+import { pageMetadata } from "@/lib/seo";
+import { AntiSpamFields } from "@/components/anti-spam-fields";
+
+export const metadata = pageMetadata({
+  title: "Créer un compte client",
+  description:
+    "Créez votre compte MACHE en une minute pour commander et suivre vos achats.",
+  path: "/compte/inscription",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +50,7 @@ export default async function CustomerRegisterPage({
       )}
 
       <form action={registerAction} className="mt-6 space-y-4">
+        <AntiSpamFields />
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="first_name" className="text-sm font-semibold text-[var(--mache-text)]">

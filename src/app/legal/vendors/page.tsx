@@ -24,7 +24,7 @@ import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
 
 export const metadata = {
-  title: "Règles vendeurs — MACHE",
+  title: "Règles vendeurs",
   description:
     "Ce qu'on attend d'une boutique sur MACHE, et ce que MACHE s'engage à faire.",
 };

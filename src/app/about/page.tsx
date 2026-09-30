@@ -121,7 +121,9 @@ export default async function AboutPage() {
           <div className="overflow-hidden rounded-[20px] p-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/carte-haiti-mache.png"
+              loading="lazy"
+              decoding="async"
+              src="/images/carte-haiti-mache.webp"
               alt="Carte d'Haïti aux couleurs de MACHE"
               className="h-[340px] w-full object-contain"
             />

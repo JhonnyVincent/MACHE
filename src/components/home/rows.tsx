@@ -342,8 +342,9 @@ export function EarnWithMache() {
               </ul>
 
               <p className="mt-5 text-sm text-[var(--mache-muted)]">
-                Rémunération et conditions fixées avec MACHE avant de commencer :
-                rien ne vous engage sans que vous les connaissiez.
+                Rémunéré en fonction des colis livrés. Montants et conditions
+                fixés avec MACHE avant de commencer : rien ne vous engage sans
+                que vous les connaissiez.
               </p>
 
               <span className={`mt-auto pt-5 text-base font-bold ${role.accent}`}>

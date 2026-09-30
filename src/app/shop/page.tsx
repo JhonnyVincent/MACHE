@@ -14,6 +14,54 @@ import { reportOutage } from "@/lib/medusa/outage";
 import { fetchProducts, fetchCategories, fetchSellers } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
 import { StaggerIn } from "@/components/anim/stagger-in";
+import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
+
+/*
+  Le titre suit ce que la page montre : un rayon a son nom (« Mode »),
+  une recherche rappelle ce qui a été cherché. Les pages de recherche
+  restent hors de Google : il en existe autant que de mots tapés, et
+  elles se feraient concurrence entre elles.
+*/
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; category?: string }>;
+}): Promise<Metadata> {
+  const query = await searchParams;
+  const search = (query.q || "").trim().slice(0, 80);
+  const handle = (query.category || "").trim();
+
+  if (search) {
+    return pageMetadata({
+      title: `Résultats pour « ${search} »`,
+      path: `/shop?q=${encodeURIComponent(search)}`,
+      noIndex: true,
+    });
+  }
+
+  if (handle) {
+    const categories = await fetchCategories(300);
+    const category = categories.ok ? categories.data.find((entry) => entry.handle === handle) : undefined;
+
+    if (category) {
+      return pageMetadata({
+        title: `${category.name} — acheter en ligne en Haïti`,
+        description:
+          category.description ||
+          `${category.name} : les produits des boutiques, artisans et fournisseurs haïtiens sur MACHE.`,
+        path: `/shop?category=${encodeURIComponent(category.handle)}`,
+      });
+    }
+  }
+
+  return pageMetadata({
+    title: "Tout le catalogue",
+    description:
+      "Tous les produits des boutiques, artisans, marques et fournisseurs haïtiens sur MACHE : mode, maison, bio, fait à la main, électronique…",
+    path: "/shop",
+  });
+}
 
 export const dynamic = "force-dynamic";
 

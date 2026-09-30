@@ -18,7 +18,7 @@ import { setPasswordAction } from "../actions";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Nouveau mot de passe · MACHE",
+  title: "Nouveau mot de passe",
   robots: { index: false },
   referrer: "no-referrer",
 };

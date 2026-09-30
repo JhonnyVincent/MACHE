@@ -22,7 +22,7 @@
 import { Link } from "next-view-transitions";
 
 export const metadata = {
-  title: "Ce que MACHE fait — MACHE",
+  title: "Ce que MACHE fait",
   description:
     "Ce qui fonctionne aujourd'hui sur MACHE, et ce qui n'est pas encore ouvert.",
 };

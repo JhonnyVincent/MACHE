@@ -231,7 +231,7 @@ export function BrandsMarquee({ brands }: { brands: StoreSeller[] }) {
                   <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[var(--mache-bg)] text-sm font-black">
                     {brand.logo ? (
                       /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={brand.logo} alt="" className="h-full w-full object-cover" />
+                      <img loading="lazy" decoding="async" src={brand.logo} alt="" className="h-full w-full object-cover" />
                     ) : (
                       brand.name.slice(0, 2).toUpperCase()
                     )}
@@ -260,7 +260,7 @@ export function SellCta() {
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[var(--mache-primary)] p-6 text-white">
         <div>
           <h2 className="text-xl font-black tracking-tight">Devenez vendeur chez MACHE</h2>
-          <p className="mt-1.5 max-w-xl text-base leading-relaxed text-white/85">
+          <p className="mt-1.5 max-w-xl text-base leading-relaxed text-white">
             Vous vendez quelque chose ? Ouvrez votre boutique et gardez votre marque.
             Particuliers, entreprises, fournisseurs et marques officielles.
           </p>

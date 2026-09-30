@@ -123,7 +123,7 @@ export default async function BuyerOrderPage({
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[3px] border border-[#e3e6e6] bg-[#f7f8f8]">
                       {item.thumbnail ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
-                        <img src={item.thumbnail} alt="" className="h-full w-full object-cover" />
+                        <img loading="lazy" decoding="async" src={item.thumbnail} alt="" className="h-full w-full object-cover" />
                       ) : null}
                     </span>
                     {item.title}

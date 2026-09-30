@@ -27,11 +27,12 @@ import { getCustomer } from "@/lib/medusa/customer";
 import { THREAD_CATEGORIES } from "@/lib/medusa/support";
 import { SubmitButton } from "@/components/submit-button";
 import { sendMessageAction } from "./actions";
+import { AntiSpamFields } from "@/components/anti-spam-fields";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Nous écrire — MACHE",
+  title: "Nous écrire",
   description: "Une question, une commande, un signalement : écrivez à MACHE.",
 };
 
@@ -112,6 +113,7 @@ export default async function ContactPage({
       </div>
 
       <form action={sendMessageAction} className="mt-8 space-y-4">
+        <AntiSpamFields />
         <div>
           <label htmlFor="category" className="block text-sm font-semibold text-[var(--mache-text)]">
             De quoi s&apos;agit-il ?

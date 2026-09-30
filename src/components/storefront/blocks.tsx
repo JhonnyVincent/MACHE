@@ -45,6 +45,8 @@ function Hero({ props, seller }: { props: Record<string, unknown>; seller: Store
         <div className="absolute inset-0 opacity-35">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            loading="lazy"
+            decoding="async"
             src={safeImageSrc(seller.banner) as string}
             alt=""
             className="h-full w-full object-cover"

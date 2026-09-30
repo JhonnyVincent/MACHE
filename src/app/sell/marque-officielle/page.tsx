@@ -31,7 +31,7 @@ import { Link } from "next-view-transitions";
 import { TARIFS, billingLine, htgFromEur, formatHtg, EUR_TO_HTG_DATE, COMMISSION_RATE_REDUCED } from "@/lib/tarifs";
 
 export const metadata = {
-  title: "Marque officielle · Vendre sur MACHE",
+  title: "Vendre comme marque officielle",
   description:
     "Le profil vendeur destiné aux marques : boutique identifiée, commission réduite, abonnement mensuel.",
 };

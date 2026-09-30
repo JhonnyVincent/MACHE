@@ -26,9 +26,10 @@
 
 import { Link } from "next-view-transitions";
 import { LegalPage } from "@/components/legal-page";
+import { analyticsEnabled } from "@/lib/analytics";
 
 export const metadata = {
-  title: "Confidentialité — MACHE",
+  title: "Confidentialité",
   description:
     "Quelles données MACHE collecte, pourquoi, et ce qui est déposé dans votre navigateur.",
 };
@@ -118,7 +119,7 @@ function PrivacyPageEcrit() {
           </h2>
 
           <p className="mt-2">
-            Cinq cookies, tous nécessaires au fonctionnement du site.
+            Des cookies tous nécessaires au fonctionnement du site.
             MACHE ne dépose{" "}
             <strong className="text-[var(--mache-text)]">
               aucun cookie publicitaire, ni aucun traceur d&apos;audience
@@ -144,11 +145,58 @@ function PrivacyPageEcrit() {
               <code className="text-sm">mache_locale</code> — retient la
               langue que vous avez choisie.
             </li>
+            <li>
+              <code className="text-sm">connect.sid</code> — garde un
+              vendeur connecté à son panneau vendeur.
+            </li>
           </ul>
 
           <p className="mt-3">
             Les jetons de connexion sont inaccessibles aux scripts de la
             page, ce qui les protège du vol par un script injecté.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
+            Les e-mails
+          </h2>
+
+          <p className="mt-2">
+            Les e-mails de MACHE (confirmation de commande, réponse à un
+            devis ou à un message, nouveau mot de passe, nouvelles de
+            MACHE si vous vous y êtes abonné) sont envoyés par{" "}
+            <strong className="text-[var(--mache-text)]">Brevo</strong>, un
+            service d&apos;envoi d&apos;e-mails. Brevo reçoit l&apos;adresse et le
+            contenu du message, pour l&apos;envoyer et rien d&apos;autre. Chaque
+            e-mail de nouvelles contient un lien de désabonnement.
+          </p>
+        </section>
+
+        {analyticsEnabled() && (
+          <section>
+            <h2 className="text-lg font-bold text-[var(--mache-text)]">
+              Les statistiques de visite
+            </h2>
+
+            <p className="mt-2">
+              MACHE compte ses visites avec Cloudflare Web Analytics : pages
+              vues, pays, type d&apos;appareil. Cet outil ne dépose aucun
+              cookie et ne reconnaît pas une personne d&apos;une visite à
+              l&apos;autre ni d&apos;un site à l&apos;autre.
+            </p>
+          </section>
+        )}
+
+        <section>
+          <h2 className="text-lg font-bold text-[var(--mache-text)]">
+            Où sont les données
+          </h2>
+
+          <p className="mt-2">
+            Le site est hébergé par Render. La base de données, qui
+            contient les comptes et les commandes, est chez Render dans son
+            centre de données de Francfort (Allemagne).
           </p>
         </section>
 

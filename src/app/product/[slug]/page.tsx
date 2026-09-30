@@ -26,6 +26,28 @@ import {
 } from "@/lib/medusa/catalog";
 import { ProductRailSection } from "@/components/home/rails";
 import { addToCartAction } from "@/app/cart/actions";
+import { cache } from "react";
+import type { Metadata } from "next";
+import { productMetadata } from "@/lib/seo";
+
+/*
+  Une seule lecture du produit par affichage : les métadonnées (titre,
+  aperçu WhatsApp) et la page la partagent.
+*/
+const loadProduct = cache(fetchProductByHandle);
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await loadProduct(slug);
+
+  if (!result.ok || !result.data) return { title: "Produit introuvable", robots: { index: false } };
+
+  return productMetadata(result.data);
+}
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +61,7 @@ export default async function ProductPage({
   const { slug } = await params;
   const query = searchParams ? await searchParams : {};
 
-  const result = await fetchProductByHandle(slug);
+  const result = await loadProduct(slug);
 
   if (!result.ok) {
     reportOutage("produit", result.reason);
@@ -134,6 +156,7 @@ export default async function ProductPage({
                 {product.thumbnail ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
+                    fetchPriority="high"
                     src={product.thumbnail}
                     alt={product.title}
                     className="h-full w-full cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-125 motion-reduce:transform-none"
@@ -154,7 +177,7 @@ export default async function ProductPage({
                     className="aspect-square overflow-hidden rounded-[6px] border border-[var(--mache-line)] bg-white"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={image} alt="" className="h-full w-full object-cover transition-transform duration-300 hover:scale-110 motion-reduce:transform-none" />
+                    <img loading="lazy" decoding="async" src={image} alt="" className="h-full w-full object-cover transition-transform duration-300 hover:scale-110 motion-reduce:transform-none" />
                   </span>
                 ))}
               </div>

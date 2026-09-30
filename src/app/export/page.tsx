@@ -22,7 +22,7 @@
 import { Link } from "next-view-transitions";
 
 export const metadata = {
-  title: "Exporter depuis Haïti — MACHE",
+  title: "Exporter depuis Haïti",
   description:
     "Ce que MACHE permet aujourd'hui pour vendre hors d'Haïti, et ce qui n'est pas encore ouvert.",
 };

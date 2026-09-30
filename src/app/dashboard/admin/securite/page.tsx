@@ -96,10 +96,9 @@ export default async function AdminSecurityPage({
           </h2>
 
           <p className="mt-2 text-sm leading-relaxed text-[#0f1111]">
-            Ils ne seront <strong>plus jamais affichés</strong>. MACHE n&apos;a
-            pas de service d&apos;envoi d&apos;e-mails : si vous perdez votre
-            téléphone sans ces codes, personne ne pourra vous rouvrir
-            l&apos;administration. Écrivez-les sur papier, rangez-les ailleurs
+            Ils ne seront <strong>plus jamais affichés</strong>, et ils ne se
+            récupèrent pas par e-mail : si vous perdez votre téléphone sans
+            ces codes, personne ne pourra vous rouvrir l&apos;administration. Écrivez-les sur papier, rangez-les ailleurs
             que sur ce téléphone.
           </p>
 

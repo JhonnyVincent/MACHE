@@ -23,6 +23,7 @@ import { isControlFlow, reasonOf } from "@/lib/safe-action";
 import { reportOutage } from "@/lib/medusa/outage";
 import { registerVendor } from "@/lib/medusa/vendor";
 import { toHandle } from "@/lib/handle";
+import { spamCheck } from "@/lib/anti-spam";
 
 const BASE = "/dashboard/seller/inscription";
 
@@ -40,6 +41,10 @@ export async function registerVendorAction(formData: FormData) {
     `redirect()` fonctionne en levant : on le relaie intact, sinon
     la redirection de fin ne se produirait jamais.
   */
+  const blocked = await spamCheck("boutique", formData);
+
+  if (blocked) redirect(`${BASE}?error=${encodeURIComponent(blocked)}`);
+
   try {
     const shopName = String(formData.get("shop_name") || "").trim();
     const rawHandle = String(formData.get("handle") || "").trim();

@@ -20,10 +20,13 @@
 */
 
 import { Link } from "next-view-transitions";
+import { privateSectionMetadata } from "@/lib/seo";
 import { getAdminUser, fetchMarketplaceState } from "@/lib/medusa/admin";
 import { adminLogoutAction } from "./actions";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
+
+export const metadata = privateSectionMetadata("Administration");
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getAdminUser();
@@ -83,7 +86,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="border-b border-white/10 px-4 py-3">
           <Link href="/" className="block">
             <p className="text-md font-bold leading-none tracking-widest">MACHE</p>
-            <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/40">
+            <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/70">
               Administration
             </p>
           </Link>
@@ -93,7 +96,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         <div className="border-t border-white/10 px-4 py-2.5">
           <p className="truncate text-xs font-medium">{displayName}</p>
-          <p className="truncate text-2xs text-white/40">{user.email}</p>
+          <p className="truncate text-2xs text-white/70">{user.email}</p>
 
           <form action={adminLogoutAction} className="mt-2">
             <button

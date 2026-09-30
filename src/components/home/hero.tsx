@@ -90,13 +90,17 @@ function MapSlide({ counts }: { counts: HeroCount[] }) {
         <div className="relative hidden justify-center lg:flex">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/carte-haiti-mache.png"
+            src="/images/carte-haiti-mache.webp"
+            width={1000}
+            height={800}
             alt="Carte d'Haïti aux couleurs de MACHE"
             className="w-full max-w-[420px] object-contain"
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/logo-haiti-mache-hibiscus.png"
+            loading="lazy"
+            decoding="async"
+            src="/images/logo-mache.webp"
             alt=""
             aria-hidden="true"
             className="absolute -bottom-2 right-2 w-24 object-contain opacity-90"
@@ -140,7 +144,7 @@ function ShopsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "shops" }> })
                 <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-base font-black text-[var(--mache-muted)]">
                   {seller.logo ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={seller.logo} alt="" className="h-full w-full object-cover" />
+                    <img loading="lazy" decoding="async" src={seller.logo} alt="" className="h-full w-full object-cover" />
                   ) : (
                     seller.name.slice(0, 2).toUpperCase()
                   )}

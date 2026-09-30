@@ -229,8 +229,11 @@ export function Header({ cartCount = 0,
       <div className="container-page grid grid-cols-[1fr_auto] items-center gap-4 py-3 md:grid-cols-[260px_1fr_280px] md:gap-8 md:py-5">
         <Link href="/" className="flex min-w-0 items-center gap-2 md:gap-4">
           <img
-            src="/images/logo-haiti-mache-hibiscus.png"
+            src="/images/logo-mache.webp"
             alt="Logo Mache"
+            width={80}
+            height={80}
+            fetchPriority="high"
             className="h-12 w-12 shrink-0 md:h-20 md:w-20"
           />
 

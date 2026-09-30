@@ -23,6 +23,9 @@ import {
   adminSecondFactorAction,
   adminCancelSecondFactorAction,
 } from "../../actions";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Code de sécurité");
 
 export const dynamic = "force-dynamic";
 

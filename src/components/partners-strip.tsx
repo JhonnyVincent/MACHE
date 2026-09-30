@@ -99,7 +99,7 @@ export function PartnersStrip() {
                   tabIndex={copy > 0 ? -1 : undefined}
                   className={`${block} ${role.tone}`}
                 >
-                  <span className="text-xs font-bold uppercase tracking-widest text-[var(--mache-gold)]">
+                  <span className="text-xs font-bold uppercase tracking-widest text-[#8a5a00]">
                     Place à prendre
                   </span>
                   <span className="mt-2 text-2xl font-black text-[var(--mache-text)]">

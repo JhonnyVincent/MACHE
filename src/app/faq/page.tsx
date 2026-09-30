@@ -21,7 +21,7 @@ import { Link } from "next-view-transitions";
 import { FAQ_SECTIONS } from "@/lib/faq";
 
 export const metadata = {
-  title: "Questions fréquentes — MACHE",
+  title: "Questions fréquentes",
   description: "Comment acheter, payer, vendre et se faire livrer sur MACHE.",
 };
 

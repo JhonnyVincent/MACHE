@@ -22,7 +22,7 @@ import { agentLoginAction } from "./actions";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Espace agent · MACHE",
+  title: "Espace agent",
   description: "Connexion des agents MACHE : livreurs, points de retrait, commerciaux.",
 };
 

@@ -42,6 +42,9 @@ import {
   TRACKING_METHOD_LABELS,
 } from "@/lib/medusa/delivery-tracking";
 import { confirmReceiptAction } from "./actions";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Suivi de ma livraison");
 
 export const dynamic = "force-dynamic";
 

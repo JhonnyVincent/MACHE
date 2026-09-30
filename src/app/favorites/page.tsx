@@ -24,6 +24,9 @@ import { fetchProductByHandle } from "@/lib/medusa/catalog";
 import { ProductCard } from "@/components/home/rails";
 import { StaggerIn } from "@/components/anim/stagger-in";
 import { toggleFavoriteAction } from "./actions";
+import { privateMetadata } from "@/lib/seo";
+
+export const metadata = privateMetadata("Mes favoris");
 
 export const dynamic = "force-dynamic";
 

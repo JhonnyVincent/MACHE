@@ -6,10 +6,9 @@
   Quelqu'un sans compte n'a que l'adresse privée qu'on lui a donnée à
   l'envoi.
 
-  L'écran distingue ce qui attend le client de ce qui attend MACHE. Sans
-  e-mail, personne n'est prévenu d'une réponse : c'est cette liste qui
-  en tient lieu, et une réponse non lue doit donc s'y voir au premier
-  coup d'œil.
+  L'écran distingue ce qui attend le client de ce qui attend MACHE. Un
+  e-mail prévient d'une réponse, mais peut finir dans les indésirables :
+  une réponse non lue doit donc aussi se voir ici au premier coup d'œil.
 */
 
 import { Link } from "next-view-transitions";

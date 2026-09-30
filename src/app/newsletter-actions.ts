@@ -2,6 +2,7 @@
 
 import { medusaBackendUrl, medusaPublishableKey } from "@/lib/medusa/config";
 import { backendTimeoutSignal, isTimeout, TIMEOUT_MESSAGE } from "@/lib/medusa/timeout";
+import { spamCheck } from "@/lib/anti-spam";
 
 export type NewsletterState = { status: "idle" | "ok" | "error"; message: string };
 
@@ -15,6 +16,10 @@ export async function subscribeAction(
   _previous: NewsletterState,
   formData: FormData
 ): Promise<NewsletterState> {
+  const blocked = await spamCheck("newsletter", formData);
+
+  if (blocked) return { status: "error", message: blocked };
+
   const email = String(formData.get("email") || "").trim();
   const url = medusaBackendUrl();
 

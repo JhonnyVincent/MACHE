@@ -37,7 +37,7 @@ export function SellerSidebarNav({ sections }: { sections: NavSection[] }) {
     <nav className="scrollbar-slim flex-1 overflow-y-auto py-2">
       {sections.map((section) => (
         <div key={section.label} className="mb-4 last:mb-0">
-          <p className="px-4 pb-1.5 text-2xs font-semibold uppercase tracking-widest text-white/30">
+          <p className="px-4 pb-1.5 text-2xs font-semibold uppercase tracking-widest text-white/60">
             {section.label}
           </p>
 

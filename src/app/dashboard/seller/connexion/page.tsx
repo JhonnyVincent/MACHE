@@ -21,6 +21,15 @@ import { getVendorSeller } from "@/lib/medusa/vendor";
 import { medusaBackendUrl } from "@/lib/medusa/config";
 import { reportOutage } from "@/lib/medusa/outage";
 import { vendorLoginAction } from "./actions";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata = pageMetadata({
+  title: "Connexion vendeur",
+  description:
+    "Connexion à l'espace vendeur MACHE.",
+  path: "/dashboard/seller/connexion",
+  noIndex: true,
+});
 
 export const dynamic = "force-dynamic";
 
