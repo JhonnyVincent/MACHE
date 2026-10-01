@@ -239,6 +239,10 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   for (const block of ["premiers-pas", "demandes", "ventes", "grossiste", "boutique", "pub", "avis"]) assert.match(home, new RegExp(`id: "${block}"`), block);
   assert.match(home, /Personnaliser mon accueil/);
   assert.match(home, /localStorage\.setItem\(STORAGE_KEY/);
+  /* Visite guidée : s'ouvre une fois, se passe d'un clic, se relance à la demande. */
+  assert.match(home, /Passer la visite/);
+  assert.match(home, /localStorage\.setItem\(TOUR_KEY/);
+  assert.match(home, /Visite guidée/);
   /* La publicité n'existe pas encore : le bloc ne promet rien. */
   assert.match(home, /ne sont pas encore ouverts/);
   assert.match(read("backend/apps/vendor/src/routes/fournisseurs/page.tsx"), /\/vendor\/suppliers/);

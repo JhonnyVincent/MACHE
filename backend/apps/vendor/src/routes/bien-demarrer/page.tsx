@@ -178,6 +178,46 @@ function saveLayout(layout: Layout) {
   }
 }
 
+/*
+  Visite guidée : quelques cartes, une par rubrique utile, qu'on peut
+  suivre ou passer d'un clic. Elle s'ouvre à la première visite, puis
+  reste disponible par le bouton « Visite guidée ».
+*/
+const TOUR: Array<{ title: string; text: string; href: string; action: string }> = [
+  {
+    title: "Gérer vos commandes",
+    text: "Quand un client commande, vous recevez un e-mail et la commande apparaît ici. Appelez le client pour organiser la livraison, puis marquez-la comme envoyée.",
+    href: "/seller/orders",
+    action: "Voir mes commandes",
+  },
+  {
+    title: "Voir qui vous a contacté",
+    text: "Les acheteurs et les autres vendeurs vous demandent un prix pour une quantité : ce sont les devis. Répondez avec un prix total, ils reçoivent votre réponse par e-mail.",
+    href: "/seller/devis",
+    action: "Ouvrir les devis",
+  },
+  {
+    title: "Ajouter vos produits",
+    text: "Un titre clair, une bonne photo, le prix en gourdes et le stock. C'est ce qui fait vendre.",
+    href: "/seller/products",
+    action: "Mes produits",
+  },
+  {
+    title: "Trouver un grossiste ou une marque",
+    text: "Vous cherchez de quoi revendre ? Les grossistes et les marques ne sont visibles que des vendeurs. Contactez-les et demandez un devis.",
+    href: "/seller/fournisseurs",
+    action: "Chercher un fournisseur",
+  },
+  {
+    title: "Suivre votre argent",
+    text: "Vos ventes, les chiffres de la période et vos versements sont dans « Chiffres » et « Versements ».",
+    href: "/seller/analytics",
+    action: "Voir mes chiffres",
+  },
+];
+
+const TOUR_KEY = "mache.visite.v1";
+
 const widgetBox = {
   border: "1px solid #e5e7eb",
   borderRadius: 12,
@@ -220,11 +260,19 @@ const BienDemarrerPage = () => {
   const [loaded, setLoaded] = useState(false);
   const [layout, setLayout] = useState<Layout>(DEFAULT_LAYOUT);
   const [editing, setEditing] = useState(false);
+  const [tour, setTour] = useState<number | null>(null);
 
   useEffect(() => {
     let alive = true;
 
     setLayout(readLayout());
+
+    /* La visite s'ouvre une seule fois ; sans stockage, elle ne s'impose pas. */
+    try {
+      if (!window.localStorage.getItem(TOUR_KEY)) setTour(0);
+    } catch {
+      /* rien */
+    }
 
     loadStatus().then((next) => {
       if (alive) {
@@ -237,6 +285,15 @@ const BienDemarrerPage = () => {
       alive = false;
     };
   }, []);
+
+  const closeTour = () => {
+    setTour(null);
+    try {
+      window.localStorage.setItem(TOUR_KEY, "1");
+    } catch {
+      /* rien */
+    }
+  };
 
   const update = (next: Layout) => {
     setLayout(next);
@@ -377,6 +434,13 @@ const BienDemarrerPage = () => {
         </h1>
         <button
           type="button"
+          onClick={() => setTour(0)}
+          style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", marginLeft: "auto", marginRight: 8 }}
+        >
+          Visite guidée
+        </button>
+        <button
+          type="button"
           onClick={() => setEditing(!editing)}
           style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
         >
@@ -452,6 +516,38 @@ const BienDemarrerPage = () => {
         <p style={{ marginTop: 16, fontSize: 14, color: "#6b7280" }}>
           Aucun bloc affiché. Cliquez sur « Personnaliser mon accueil » pour en choisir.
         </p>
+      )}
+
+      {tour !== null && (
+        <div
+          role="dialog"
+          aria-label="Visite guidée"
+          style={{ position: "fixed", right: 20, bottom: 20, width: 340, maxWidth: "calc(100vw - 40px)", background: "#2f5fd0", color: "#ffffff", borderRadius: 12, padding: "16px 18px", boxShadow: "0 8px 30px rgba(0,0,0,.25)", zIndex: 50 }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, opacity: 0.85 }}>
+            <span>Étape {tour + 1} sur {TOUR.length}</span>
+            <button type="button" aria-label="Fermer" onClick={closeTour} style={{ background: "none", border: "none", color: "#fff", fontSize: 18, cursor: "pointer" }}>×</button>
+          </div>
+          <p style={{ margin: "6px 0 4px", fontSize: 17, fontWeight: 800 }}>{TOUR[tour].title}</p>
+          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55 }}>{TOUR[tour].text}</p>
+          <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
+            <a href={TOUR[tour].href} style={{ padding: "8px 12px", borderRadius: 8, background: "#fff", color: "#1e3a8a", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
+              {TOUR[tour].action}
+            </a>
+            {tour < TOUR.length - 1 ? (
+              <button type="button" onClick={() => setTour(tour + 1)} style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #fff", background: "transparent", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                Suivant
+              </button>
+            ) : (
+              <button type="button" onClick={closeTour} style={{ padding: "8px 12px", borderRadius: 8, border: "1px solid #fff", background: "transparent", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                Terminer
+              </button>
+            )}
+            <button type="button" onClick={closeTour} style={{ padding: "8px 4px", background: "none", border: "none", color: "#fff", textDecoration: "underline", fontSize: 13, cursor: "pointer" }}>
+              Passer la visite
+            </button>
+          </div>
+        </div>
       )}
 
       <p style={{ marginTop: 24, fontSize: 13, color: "#6b7280" }}>
