@@ -122,6 +122,17 @@ Décision du fondateur : on s'en occupe une fois la LLC déclarée et le domaine
 - **Partenaires de MACHE** = toutes les entreprises qui proposent des **services en plus** sur la place de marché (photographe, financement, etc.).
 - [ ] **Espace Services / Partenaires** : permettre à ces entreprises de se présenter et d'être contactées (idée proche de « Agences & Business » chez Katalog). À concevoir : inscription, fiche, catégories de services, contact. Aucun service ne doit être présenté comme garanti par MACHE.
 
+## 🏦 Paiements : ordre des prérequis (bloqué par le juridique)
+
+Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ; tout passe par un prestataire agréé. Le branchement technique est faisable ; ce qui bloque est juridique.
+
+1. [ ] **Déclarer la LLC** (nom légal, État, numéro, adresse) et ouvrir **un compte bancaire professionnel** au nom de la société.
+2. [ ] **Consulter un juriste** : cadre pour qu'une marketplace encaisse pour des vendeurs (haïtiens et étrangers) sans détenir elle-même les fonds ; obligations liées à l'identité des clients et vendeurs ; conditions d'envoi d'argent vers Haïti.
+3. [ ] **Demander aux prestataires** (questions identiques à chacun) : MonCash Business (Digicel), Pay'm, Stripe, et un service de transfert vers Haïti : peuvent-ils (a) encaisser pour une marketplace, (b) verser des vendeurs haïtiens, (c) quelles pièces et quels frais, (d) quels délais de versement ?
+4. [ ] **Choisir le circuit** : hors Haïti (Stripe, cartes) + en Haïti (MonCash/Pay'm), et comment l'argent encaissé à l'étranger rejoint les vendeurs en Haïti. (Stripe ne supporte pas Haïti : à revérifier sur sa liste officielle.)
+5. [ ] **Branchement technique** (par Claude) : prestataire de versement de Mercur (interface prévue pour d'autres prestataires que Stripe) + tâches planifiées de capture et de versement + deux devises (HTG, USD).
+6. [ ] **Tests avec de petites vraies sommes**, puis ouverture.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
