@@ -21,6 +21,7 @@
 
 import { defineMiddlewares } from "@medusajs/medusa";
 import { refuseBlockedCustomer } from "./blocked-customers";
+import { staffGuard } from "./staff-guard";
 import { throttleLogin } from "./login-throttle";
 import { normalizeAuthEmail } from "./email-case";
 import { throttleResetRequests } from "./reset-throttle";
@@ -31,6 +32,14 @@ export default defineMiddlewares({
       matcher: "/store/*",
       method: ["POST", "PUT", "PATCH", "DELETE"],
       middlewares: [refuseBlockedCustomer],
+    },
+    /*
+      L'équipe : un membre délégué ne passe que sur son espace
+      (voir lib/staff.ts). Le propriétaire passe partout.
+    */
+    {
+      matcher: "/admin/*",
+      middlewares: [staffGuard],
     },
     /*
       Les tentatives de connexion, toutes actrices confondues :

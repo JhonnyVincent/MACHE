@@ -25,6 +25,8 @@ import { getAdminUser, fetchMarketplaceState } from "@/lib/medusa/admin";
 import { adminLogoutAction } from "./actions";
 import { initialsOf } from "@/lib/seller";
 import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components/seller/nav";
+import { StaffGate } from "@/components/staff-gate";
+import { roleMaySee, STAFF_ROLE_LABELS } from "@/lib/staff";
 
 export const metadata = privateSectionMetadata("Administration");
 
@@ -75,10 +77,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { label: "Apparence du site", href: "/dashboard/admin/apparence" },
         { label: "Contrats", href: "/dashboard/admin/contrats" },
         { label: "Textes du site", href: "/dashboard/admin/textes" },
+        { label: "Équipe", href: "/dashboard/admin/equipe" },
         { label: "Sécurité du compte", href: "/dashboard/admin/securite" },
       ],
     },
-  ];
+  ].map((section) => ({
+    ...section,
+    /* Un membre délégué ne voit que son espace ; le propriétaire voit tout. */
+    items: section.items.filter((item) => roleMaySee(user.role, item.href)),
+  }));
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#eef1f3] font-sans text-base text-[#0f1111] antialiased">
@@ -100,6 +107,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="border-t border-white/10 px-4 py-2.5">
           <p className="truncate text-xs font-medium">{displayName}</p>
           <p className="truncate text-2xs text-white/70">{user.email}</p>
+          {user.role !== "owner" && <p className="mt-0.5 truncate text-2xs text-white/70">{STAFF_ROLE_LABELS[user.role]}</p>}
 
           <form action={adminLogoutAction} className="mt-2">
             <button
@@ -139,7 +147,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <SellerMobileNav sections={sections} />
 
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1200px] p-3 sm:p-5">{children}</div>
+          <div className="mx-auto max-w-[1200px] p-3 sm:p-5">
+            <StaffGate role={user.role}>{children}</StaffGate>
+          </div>
         </main>
       </div>
     </div>

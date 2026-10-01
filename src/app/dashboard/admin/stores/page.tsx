@@ -28,6 +28,8 @@ import { formatDate } from "@/lib/seller";
 import { approveSellerAction } from "./approve-action";
 import { suspendSellerAction, restoreSellerAction } from "./suspend-action";
 import { setVerifiedAction } from "./verify-action";
+import { inviteSellerAction } from "./invite-action";
+import { SubmitButton } from "@/components/submit-button";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +89,30 @@ export default async function AdminStoresPage({
           marketplace.
         </p>
       </div>
+
+      <details className="rounded-[8px] border border-[#d5d9d9] bg-white p-4">
+        <summary className="cursor-pointer text-base font-bold">+ Inviter un vendeur</summary>
+        <form action={inviteSellerAction} className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="text-sm font-semibold">E-mail du vendeur
+            <input name="email" type="email" required className="w-full rounded-[6px] border border-[#d5d9d9] px-3 py-2 text-base" />
+          </label>
+          <label className="text-sm font-semibold">Son nom (facultatif)
+            <input name="name" className="w-full rounded-[6px] border border-[#d5d9d9] px-3 py-2 text-base" />
+          </label>
+          <label className="text-sm font-semibold sm:col-span-2">Message personnel (facultatif)
+            <textarea name="note" rows={2} maxLength={600} className="w-full rounded-[6px] border border-[#d5d9d9] px-3 py-2 text-base" />
+          </label>
+          <p className="text-sm text-[#565959] sm:col-span-2">
+            Il reçoit un e-mail avec le lien d&apos;inscription et crée lui-même son compte. Sa boutique reste soumise
+            à votre approbation.
+          </p>
+          <div className="sm:col-span-2">
+            <SubmitButton pendingLabel="Envoi…" className="rounded-[6px] bg-[#0f1111] px-4 py-2 text-base font-bold text-white">
+              Envoyer l&apos;invitation
+            </SubmitButton>
+          </div>
+        </form>
+      </details>
 
       {query.verifiee === "1" && (
         <div className="rounded-[8px] border border-[#b7e0bf] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">

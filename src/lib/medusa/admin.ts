@@ -25,6 +25,7 @@
   de la marketplace, et il mène au panneau pour agir.
 */
 
+import { parseStaffRole, type StaffRole } from "../staff";
 import { cookies } from "next/headers";
 import { getMedusaConfig } from "./config";
 import {
@@ -59,6 +60,8 @@ export type AdminUser = {
   email: string;
   firstName: string | null;
   lastName: string | null;
+  /* « owner » = propriétaire ; sinon le rôle délégué. */
+  role: StaffRole;
 };
 
 type Raw = Record<string, unknown>;
@@ -304,6 +307,7 @@ function parseUser(raw: Raw): AdminUser {
     email: str(raw.email) ?? "",
     firstName: str(raw.first_name),
     lastName: str(raw.last_name),
+    role: parseStaffRole((raw.metadata as Raw | null) ?? null),
   };
 }
 
@@ -2282,6 +2286,60 @@ export async function actOnPartner(
     body: { action, ...extra },
     token,
   });
+
+  return result.ok ? { ok: true, data: true } : result;
+}
+
+/* L'équipe (propriétaire seulement). */
+export type TeamMember = { id: string; email: string; firstName: string | null; lastName: string | null; role: StaffRole };
+
+export async function fetchTeam(): Promise<Result<TeamMember[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ team?: Raw[] }>("/admin/mache/team", { token });
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: (result.data.team ?? []).map((row) => ({
+      id: String(row.id),
+      email: str(row.email) ?? "",
+      firstName: str(row.first_name),
+      lastName: str(row.last_name),
+      role: (["owner", "support", "contenu"].includes(String(row.role)) ? row.role : "owner") as StaffRole,
+    })),
+  };
+}
+
+export async function createTeamMember(body: Record<string, string>): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>("/admin/mache/team", { method: "POST", body, token });
+
+  return result.ok ? { ok: true, data: true } : result;
+}
+
+export async function actOnTeamMember(id: string, body: Record<string, string>): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(`/admin/mache/team/${encodeURIComponent(id)}`, { method: "POST", body, token });
+
+  return result.ok ? { ok: true, data: true } : result;
+}
+
+export async function inviteSeller(body: Record<string, string>): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>("/admin/mache/seller-invites", { method: "POST", body, token });
 
   return result.ok ? { ok: true, data: true } : result;
 }

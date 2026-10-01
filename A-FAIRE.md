@@ -141,6 +141,13 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 - [ ] **Boutiques côté administration** : suspendre et résilier (= bannir) existent déjà. **Ajouter une boutique à la main** et **supprimer** ne sont pas faits : une boutique a besoin d'un compte propriétaire (e-mail + mot de passe) et supprimer effacerait ses commandes et ses commissions. Proposition : bouton « inviter un vendeur » (lien d'inscription envoyé par e-mail) et « résilier » à la place de supprimer.
 - [ ] **Alternative à Tally pour une page d'atterrissage sponsorisable** : Brevo (déjà utilisé pour les e-mails) propose des pages d'atterrissage et des formulaires ; Carrd ou Systeme.io permettent d'installer le pixel publicitaire (Meta/Google). À décider.
 
+## ✅ Fait : équipe déléguée et invitation de vendeurs
+
+- [x] **Propriétaire + membres délégués** (`/dashboard/admin/equipe`, réservé au propriétaire) : deux espaces — **Suivi des clients** (messages, comptes pro, avis, clients bloqués) et **Site et mises à jour** (apparence, textes, promotions, partenaires). Le membre reçoit un e-mail pour choisir son mot de passe. La règle est appliquée **côté serveur** sur chaque route d'administration (testée : un délégué reçoit « refusé » sur les revenus, l'équipe, la suspension d'une boutique…).
+- [x] **Inviter un vendeur** (page Boutiques) : e-mail avec le lien d'inscription ; le vendeur crée lui-même son compte, la boutique reste soumise à approbation.
+- [ ] Un compte administrateur **sans rôle noté est propriétaire** : ne créer les membres délégués que par la page Équipe. Pour un second propriétaire, créer le compte dans le panneau du backend.
+- [ ] Un troisième espace (ex. logistique, comptabilité) : à ajouter dans `backend/packages/api/src/lib/staff.ts` et `src/lib/staff.ts` (même liste, un test le vérifie).
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
