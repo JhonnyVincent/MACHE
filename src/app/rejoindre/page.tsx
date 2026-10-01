@@ -57,6 +57,12 @@ export default async function RejoindrePage({
         premiers contactés pour ouvrir votre boutique.
       </p>
 
+      <ul className="mt-5 space-y-1.5 text-md text-[var(--mache-text)]">
+        <li>🇭🇹 MACHE est une marketplace haïtienne : des boutiques d&apos;Haïti et de la diaspora au même endroit.</li>
+        <li>🛍️ Vous mettez vos produits en ligne, les clients commandent, vous livrez.</li>
+        <li>📦 Les grossistes vendent par quantité aux autres vendeurs.</li>
+      </ul>
+
       {query.error && (
         <p role="alert" className="mt-5 rounded-[6px] border border-[#f2c2c8] bg-[#fdeaec] px-3 py-2.5 text-sm text-[#b01124]">
           {query.error}
@@ -115,6 +121,34 @@ export default async function RejoindrePage({
             Quantité minimale <span className="font-normal text-[var(--mache-muted)]">(grossistes seulement)</span>
           </label>
           <input id="minimum" name="minimum" maxLength={200} placeholder="Ex. 50 pièces" className={inputClass} />
+        </div>
+
+        <div className="rounded-[10px] border border-[var(--mache-line)] bg-[#f8f8f8] p-4">
+          <p className="text-md font-bold text-[var(--mache-text)]">
+            3 petites questions <span className="font-normal text-[var(--mache-muted)]">(facultatif — elles nous aident à améliorer MACHE)</span>
+          </p>
+
+          <div className="mt-3 space-y-4">
+            <div>
+              <label htmlFor="channel" className={label}>Comment vendez-vous aujourd&apos;hui ?</label>
+              <select id="channel" name="channel" defaultValue="" className={inputClass}>
+                <option value="">Choisir…</option>
+                <option>WhatsApp</option>
+                <option>Facebook / Instagram</option>
+                <option>Boutique ou marché physique</option>
+                <option>Autre site en ligne</option>
+                <option>Je ne vends pas encore</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="wish" className={label}>Qu&apos;est-ce qui vous ferait rejoindre MACHE ?</label>
+              <textarea id="wish" name="wish" rows={2} maxLength={800} className={inputClass} />
+            </div>
+            <div>
+              <label htmlFor="worry" className={label}>Qu&apos;est-ce qui vous inquiète ?</label>
+              <textarea id="worry" name="worry" rows={2} maxLength={800} className={inputClass} />
+            </div>
+          </div>
         </div>
 
         <SubmitButton className="btn-primary" pendingLabel="Envoi…">Rejoindre la liste</SubmitButton>

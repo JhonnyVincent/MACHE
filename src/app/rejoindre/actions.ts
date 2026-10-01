@@ -39,6 +39,10 @@ export async function preRegisterAction(formData: FormData) {
   const city = String(formData.get("city") || "").trim().slice(0, 120);
   const products = String(formData.get("products") || "").trim().slice(0, 1500);
   const minimum = String(formData.get("minimum") || "").trim().slice(0, 200);
+  /* Sondage, facultatif : sert à améliorer MACHE avant l'ouverture. */
+  const channel = String(formData.get("channel") || "").trim().slice(0, 100);
+  const wish = String(formData.get("wish") || "").trim().slice(0, 800);
+  const worry = String(formData.get("worry") || "").trim().slice(0, 800);
 
   if (!KINDS[kind]) fail("Choisissez : vendeur, grossiste ou marque.");
   if (!name) fail("Indiquez votre nom.");
@@ -54,6 +58,11 @@ export async function preRegisterAction(formData: FormData) {
     kind === "grossiste" && minimum ? `Quantité minimale : ${minimum}` : null,
     "",
     `Produits : ${products}`,
+    "",
+    "Sondage",
+    `Vend aujourd'hui : ${channel || "non indiqué"}`,
+    `Ce qui lui ferait rejoindre MACHE : ${wish || "non indiqué"}`,
+    `Ce qui l'inquiète : ${worry || "non indiqué"}`,
   ]
     .filter((line) => line !== null)
     .join("\n");
