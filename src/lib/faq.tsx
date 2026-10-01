@@ -104,7 +104,7 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         a: (
           <>
             Toute personne ou entreprise. Vous déclarez un profil —
-            particulier, boutique, grossiste ou marque — qui s&apos;affiche
+            vendeur, grossiste ou marque — qui s&apos;affiche
             sur votre vitrine.{" "}
             <Link href="/dashboard/seller/inscription" className="font-semibold text-[var(--mache-primary)] hover:underline">
               Ouvrir ma boutique

@@ -26,16 +26,25 @@ function check(name: string, run: () => void) {
 
 console.log("\nProfil déclaré d'une boutique");
 
-check("les quatre profils annoncés par les pages /sell existent", () => {
+check("les trois profils annoncés par les pages /sell existent", () => {
   assert.deepEqual(
     SELLER_PROFILES.map((entry) => entry.id).sort(),
-    ["business", "fournisseur", "marque", "particulier"]
+    ["fournisseur", "marque", "vendeur"]
   );
 
   /* Chaque profil renvoie vers la page qui le présente. */
   for (const entry of SELLER_PROFILES) {
     assert.match(entry.sellPage, /^\/sell\//, entry.id);
   }
+});
+
+check("les anciens profils particulier et business se lisent « vendeur »", () => {
+  assert.equal(readSellerProfile({ profile: "particulier" }), "vendeur");
+  assert.equal(readSellerProfile({ profile: "business" }), "vendeur");
+  assert.equal(readSellerProfile({ profile: "fournisseur" }), "fournisseur");
+  /* On ne peut plus en choisir un depuis l'espace vendeur. */
+  assert.equal(isSellerProfile("particulier"), false);
+  assert.equal(isSellerProfile("business"), false);
 });
 
 check("refuse tout ce qui n'est pas un profil déclaré", () => {

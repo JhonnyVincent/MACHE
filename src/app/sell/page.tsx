@@ -4,24 +4,17 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "Vendre sur MACHE : ouvrir sa boutique en ligne en Haïti",
   description:
-    "Particulier, boutique, fournisseur ou marque : ouvrez votre boutique sur MACHE et vendez en Haïti et à la diaspora. Inscription en quelques minutes.",
+    "Vendeur, grossiste ou marque : ouvrez votre boutique sur MACHE et vendez en Haïti et à la diaspora. Inscription en quelques minutes.",
   path: "/sell",
 });
 
 const sellerProfiles = [
   {
-    title: "Petit vendeur",
-    href: "/sell/particulier",
+    title: "Vendeur",
+    href: "/sell/vendeur",
     badge: "Simple",
-    description: "Pour vendre quelques produits rapidement avec un espace facile à gérer.",
-    points: ["Vente locale", "Peu de stock", "Dashboard simple"],
-  },
-  {
-    title: "Business",
-    href: "/sell/business",
-    badge: "Pro",
-    description: "Pour les boutiques avec catalogue, commandes, livraisons et publicité.",
-    points: ["Gros stock", "Analytics", "Produits sponsorisés"],
+    description: "Pour vendre vos produits, seul ou avec une boutique. Un vendeur peut aussi acheter auprès des grossistes et des marques.",
+    points: ["Boutique et catalogue", "Commandes et livraisons", "Accès aux grossistes"],
   },
   {
     title: "Fournisseur",
@@ -107,7 +100,7 @@ export default function SellPage() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
-              Une plateforme pensée pour les particuliers, boutiques, fournisseurs et marques :
+              Une plateforme pensée pour les vendeurs, grossistes et marques :
               vente en ligne, stock, commandes, publicité, dashboard vendeur et outils business.
             </p>
 

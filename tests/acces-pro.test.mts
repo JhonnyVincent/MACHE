@@ -99,7 +99,7 @@ check("un champ de demande abîmé ne fait pas planter la lecture", () => {
 
 check("seul le profil « fournisseur » est réservé ; la marque reste publique", () => {
   assert.equal(isTradeOnlyProfile("fournisseur"), true);
-  for (const open of ["marque", "business", "particulier", null, undefined, ""]) assert.equal(isTradeOnlyProfile(open as string), false);
+  for (const open of ["marque", "vendeur", "business", "particulier", null, undefined, ""]) assert.equal(isTradeOnlyProfile(open as string), false);
   assert.equal(readSellerProfile({ profile: "fournisseur" }), "fournisseur");
 });
 

@@ -94,12 +94,12 @@ check("le taux réduit va aux grossistes et aux marques, à personne d'autre", (
   assert.deepEqual([...REDUCED_PROFILES].sort(), ["fournisseur", "marque"]);
 });
 
-check("les quatre profils ont un tarif, et un seul", () => {
+check("les trois profils ont un tarif, et un seul", () => {
   const profiles = TARIFS.map((tarif) => tarif.profile);
 
   assert.deepEqual(
     [...profiles].sort(),
-    ["business", "fournisseur", "marque", "particulier"]
+    ["fournisseur", "marque", "vendeur"]
   );
 
   assert.equal(new Set(profiles).size, profiles.length);

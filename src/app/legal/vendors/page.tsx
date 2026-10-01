@@ -98,7 +98,7 @@ function VendorsLegalPageEcrit() {
           </h2>
 
           <p className="mt-2">
-            Le profil que vous déclarez — particulier, boutique,
+            Le profil que vous déclarez — vendeur,
             grossiste, marque — s&apos;affiche sur votre vitrine. MACHE ne
             le vérifie pas, et vos clients en sont informés : c&apos;est
             une déclaration de votre part, pas un label.

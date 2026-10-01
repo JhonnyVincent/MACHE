@@ -137,29 +137,19 @@ export type Tarif = {
 
 export const TARIFS: Tarif[] = [
   {
-    profile: "particulier",
-    title: "Particulier",
-    audience: "Vous vendez vos propres articles, en petite quantité.",
+    profile: "vendeur",
+    title: "Vendeur",
+    audience: "Vous vendez vos articles, seul ou avec une boutique.",
     billing: { kind: "commission" },
     included: [
       "Boutique et catalogue",
       "Commandes et suivi de livraison",
       "Demandes de devis de vos acheteurs",
-    ],
-    sellPage: "/sell/particulier",
-  },
-  {
-    profile: "business",
-    title: "Business / Boutique",
-    audience: "Vous tenez un commerce déclaré, avec un catalogue suivi.",
-    billing: { kind: "commission" },
-    included: [
-      "Tout ce qui précède",
+      "Accès aux grossistes et aux marques, pour acheter ou revendre",
       "Plusieurs personnes dans la boutique, avec des droits distincts",
-      "Vitrine personnalisable et thème de boutique",
-      "Commande minimum par boutique",
+      "Vitrine personnalisable et commande minimum",
     ],
-    sellPage: "/sell/business",
+    sellPage: "/sell/vendeur",
   },
   {
     profile: "fournisseur",

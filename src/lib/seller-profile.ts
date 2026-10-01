@@ -1,8 +1,8 @@
 /*
   Les profils de vendeur.
 
-  MACHE présente quatre façons de vendre, chacune avec sa page :
-  particulier, business, fournisseur, marque officielle. Jusqu'ici
+  MACHE présente trois façons de vendre, chacune avec sa page :
+  vendeur, fournisseur (grossiste), marque officielle. Jusqu'ici
   c'était du discours : les quatre pages menaient au même endroit, et
   rien dans le système ne savait à quel profil appartenait une boutique.
   Un acheteur ne pouvait donc pas distinguer un artisan d'un grossiste.
@@ -27,11 +27,14 @@
   champ que le vendeur ne peut pas écrire.
 */
 
-export type SellerProfile =
-  | "particulier"
-  | "business"
-  | "fournisseur"
-  | "marque";
+export type SellerProfile = "vendeur" | "fournisseur" | "marque";
+
+/*
+  Anciens profils, fusionnés en « vendeur » : particulier, boutique et
+  business ne changeaient rien à ce que voit un acheteur. Les boutiques
+  qui les avaient déclarés restent valables : on les lit comme « vendeur ».
+*/
+const LEGACY_VENDEUR = ["particulier", "business"];
 
 export type SellerProfileInfo = {
   id: SellerProfile;
@@ -53,21 +56,12 @@ export type SellerProfileInfo = {
 
 export const SELLER_PROFILES: SellerProfileInfo[] = [
   {
-    id: "particulier",
-    label: "Particulier",
-    badge: "Vendeur particulier",
+    id: "vendeur",
+    label: "Vendeur",
+    badge: "Vendeur",
     meaning:
-      "Une personne qui vend ses propres articles, en petite quantité.",
-    sellPage: "/sell/particulier",
-    wholesale: false,
-  },
-  {
-    id: "business",
-    label: "Business / Boutique",
-    badge: "Boutique",
-    meaning:
-      "Un commerce déclaré, avec un catalogue suivi et des horaires.",
-    sellPage: "/sell/business",
+      "Une personne ou une boutique qui vend ses articles. Un vendeur peut aussi acheter auprès des grossistes et des marques.",
+    sellPage: "/sell/vendeur",
     wholesale: false,
   },
   {
@@ -92,7 +86,7 @@ export const SELLER_PROFILES: SellerProfileInfo[] = [
 
 export function profileInfo(id: SellerProfile): SellerProfileInfo {
   /*
-    Le tableau contient les quatre identifiants du type : la recherche
+    Le tableau contient les trois identifiants du type : la recherche
     aboutit toujours. Le repli existe pour les données venues de la base,
     qui ne passent pas par le typage.
   */
@@ -113,7 +107,11 @@ export function readSellerProfile(
 
   if (typeof raw !== "string") return null;
 
-  const match = SELLER_PROFILES.find((entry) => entry.id === raw.trim());
+  const value = raw.trim();
+
+  if (LEGACY_VENDEUR.includes(value)) return "vendeur";
+
+  const match = SELLER_PROFILES.find((entry) => entry.id === value);
 
   return match ? match.id : null;
 }
