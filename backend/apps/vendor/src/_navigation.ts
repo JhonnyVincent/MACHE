@@ -1,16 +1,12 @@
 /*
-  LE MENU DU PANNEAU VENDEUR, SIMPLIFIÉ.
+  LE MENU DU PANNEAU VENDEUR.
 
-  Le panneau Mercur montre tout ce qu'une grande boutique en ligne
-  utilise. Pour un vendeur MACHE qui débute, la moitié de ces rubriques
-  ne sert à rien et fait peur. On garde, dans l'ordre d'usage :
+  Le menu complet de Mercur est gardé. On ne fait que fixer l'ordre :
   Accueil, Commandes, Produits (avec Offres et Stock),
   Fournisseurs, Devis,
-  Clients, Promotions, Versements, Avis, Chiffres.
+  Clients, Promotions, Versements, Avis, Chiffres, Applications.
 
-  Masqué (toujours joignable par son adresse si un jour il sert) :
-  listes de prix, collections, catégories (les rayons sont fixés par
-  MACHE), groupes de clients, campagnes, réservations.
+  Le menu complet de Mercur est gardé : rien n'est masqué.
 */
 import { defineNavigationConfig } from "@mercurjs/dashboard-sdk";
 
@@ -23,11 +19,5 @@ export default defineNavigationConfig({
     { id: "payouts", rank: 7 },
     /* Mercur ne traduit pas ce libellé en français. */
     { id: "reviews", rank: 8, label: "Avis" },
-    { id: "price-lists", hidden: true },
-    { id: "collections", hidden: true },
-    { id: "categories", hidden: true },
-    { id: "customer-groups", hidden: true },
-    { id: "campaigns", hidden: true },
-    { id: "reservations", hidden: true },
   ],
 });

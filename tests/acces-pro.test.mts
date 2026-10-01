@@ -229,9 +229,8 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   /* Bascule unique vers le français, même si l'anglais était déjà retenu ; ensuite le choix de l'utilisateur prime. */
   assert.match(html, /mache\.lng\.fr/);
   const nav = read("backend/apps/vendor/src/_navigation.ts");
-  for (const hidden of ["price-lists", "collections", "categories", "customer-groups", "campaigns", "reservations"]) {
-    assert.match(nav, new RegExp(`id: "${hidden}", hidden: true`), hidden);
-  }
+  /* Le menu complet est gardé : rien n'est masqué. */
+  assert.doesNotMatch(nav, /hidden: true/);
   assert.match(nav, /label: "Avis"/);
   assert.match(read("backend/apps/vendor/src/routes/bien-demarrer/page.tsx"), /rank: 0,/);
   /* L'accueil vendeur est composé de blocs que le vendeur affiche, masque et range. */
@@ -245,6 +244,10 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   assert.match(home, /Visite guidée/);
   /* La publicité n'existe pas encore : le bloc ne promet rien. */
   assert.match(home, /ne sont pas encore ouverts/);
+  const apps = read("backend/apps/vendor/src/routes/applications/page.tsx");
+  assert.match(apps, /label: "Applications"/);
+  assert.match(apps, /status: "soon"/);
+  assert.doesNotMatch(apps, /status: "available"[^}]*name/);
   assert.match(read("backend/apps/vendor/src/routes/fournisseurs/page.tsx"), /\/vendor\/suppliers/);
   const route = read("backend/packages/api/src/api/vendor/suppliers/route.ts");
   assert.match(route, /seller\.id !== me && seller\.status === "open"/);

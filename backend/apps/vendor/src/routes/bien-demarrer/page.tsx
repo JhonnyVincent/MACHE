@@ -404,6 +404,8 @@ const BienDemarrerPage = () => {
         <a href="/seller/products" style={linkStyle}>Mes produits →</a>
         <br />
         <a href="/seller/settings/store" style={linkStyle}>Fiche de la boutique →</a>
+        <br />
+        <a href="/seller/settings/users" style={linkStyle}>Mon équipe →</a>
       </Widget>
     ),
     pub: (
