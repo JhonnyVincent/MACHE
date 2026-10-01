@@ -154,6 +154,17 @@ export default async function ProductPage({
     return true;
   });
 
+  /*
+    LA MARQUE ET SES REVENDEURS.
+
+    Quand une boutique « marque » propose ce produit, les autres
+    boutiques qui le proposent sont ses revendeurs : leur ligne porte le
+    tag « Revendeur de @Marque ». Rien n'est déclaré à part — c'est lu
+    dans les offres. Si la marque ne propose pas elle-même le produit, il
+    n'y a pas de tag : on n'affirme pas un lien qu'on ne voit pas.
+  */
+  const brandOffer = offers.find((offer) => readSellerProfile(offer.sellerMetadata) === "marque");
+
   /* Tout ce qui est proposé l'est par des grossistes, et le visiteur n'y a pas accès. */
   const tradeOnly = !access.allowed && allOffers.length > 0 && offers.length === 0;
 
@@ -485,6 +496,15 @@ export default async function ProductPage({
                           vendeur lui-même.
                         */}
                         {offer.sellerVerified && <VerifiedBadge compact />}
+
+                        {brandOffer && brandOffer.sellerId !== offer.sellerId && (
+                          <Link
+                            href={`/store/${brandOffer.sellerHandle}`}
+                            className="rounded-full bg-[#eef2ff] px-2 py-0.5 text-xs font-semibold text-[#1e3a8a] hover:underline"
+                          >
+                            Revendeur de @{brandOffer.sellerName}
+                          </Link>
+                        )}
 
                         {readSellerProfile(offer.sellerMetadata) && (
                           <SellerProfileBadge

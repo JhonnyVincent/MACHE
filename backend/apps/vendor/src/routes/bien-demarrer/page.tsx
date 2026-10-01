@@ -49,7 +49,11 @@ type Status = {
   weekRevenue: string | null;
   profile: Profile | null;
   minOrder: number;
+  resellers: Reseller[] | null;
+  resellerProducts: number | null;
 };
+
+type Reseller = { id: string; name: string; handle: string; shared_products: number; examples: string[] };
 
 const EMPTY: Status = {
   sellerName: null,
@@ -62,6 +66,8 @@ const EMPTY: Status = {
   status: null,
   profile: null,
   minOrder: 0,
+  resellers: null,
+  resellerProducts: null,
   awaiting: null,
   weekOrders: null,
   weekRevenue: null,
@@ -127,7 +133,7 @@ async function loadStatus(): Promise<Status> {
   const seller = me?.seller ?? null;
   const address = (seller?.address ?? null) as Record<string, unknown> | null;
 
-  return {
+  const status: Status = {
     sellerName: typeof seller?.name === "string" ? seller.name : null,
     hasAddress: seller ? Boolean(address && (address.address_1 || address.city)) : null,
     hasPhone: seller ? Boolean(seller.phone) : null,
@@ -145,7 +151,21 @@ async function loadStatus(): Promise<Status> {
         ? "0"
         : week.currencies.map((c) => `${Math.round(c.revenue).toLocaleString("fr-FR")} ${c.currency_code.toUpperCase()}`).join(" + ")
       : null,
+    resellers: null,
+    resellerProducts: null,
   };
+
+  /* Les revendeurs ne sont lus que pour une marque : c'est elle qui en a. */
+  if (status.profile === "marque") {
+    const data = await read<{ resellers?: Reseller[]; products?: number }>("/vendor/resellers");
+
+    if (data?.resellers) {
+      status.resellers = data.resellers;
+      status.resellerProducts = typeof data.products === "number" ? data.products : null;
+    }
+  }
+
+  return status;
 }
 
 type Step = {
@@ -491,14 +511,27 @@ const BienDemarrerPage = () => {
     ),
     marque: (
       <Widget title="Ma marque et mes revendeurs">
-        <p style={{ margin: "0 0 6px" }}>
-          Les vendeurs vous trouvent dans l&apos;annuaire « Fournisseurs » et vous demandent des devis pour revendre vos
-          produits.
-        </p>
+        {status.resellers === null ? (
+          <p style={{ margin: "0 0 6px" }}>Chargement de vos revendeurs…</p>
+        ) : status.resellers.length === 0 ? (
+          <p style={{ margin: "0 0 6px" }}>
+            Aucun revendeur ne propose encore vos produits. Quand un vendeur propose une offre sur un de vos produits,
+            il apparaît ici, avec votre nom de marque sur sa fiche.
+          </p>
+        ) : (
+          <>
+            <Count value={status.resellers.length} label={status.resellers.length > 1 ? "revendeurs proposent vos produits" : "revendeur propose vos produits"} />
+            <ul style={{ margin: "0 0 8px", paddingLeft: 18 }}>
+              {status.resellers.slice(0, 5).map((reseller) => (
+                <li key={reseller.id}>
+                  <strong>{reseller.name}</strong> · {reseller.shared_products} produit{reseller.shared_products > 1 ? "s" : ""}
+                  {reseller.examples.length > 0 ? ` (${reseller.examples.join(", ")})` : ""}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
         <a href="/seller/devis" style={linkStyle}>Voir les demandes des revendeurs →</a>
-        <p style={{ margin: "8px 0 0", fontSize: 13, color: "#6b7280" }}>
-          Le suivi de vos revendeurs (qui vend quoi) n&apos;est pas encore disponible.
-        </p>
       </Widget>
     ),
   };

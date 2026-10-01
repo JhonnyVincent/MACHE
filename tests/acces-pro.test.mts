@@ -282,8 +282,21 @@ check("accueil vendeur : vendeur, grossiste et marque ne voient pas la même cho
   assert.match(home, /gros: "fournisseur", marque: "marque"/);
   assert.match(home, /\["demandes", "gros"\]/);
   assert.match(home, /particulier" \|\| raw === "business"/);
-  /* La fonction « suivi des revendeurs » n'existe pas : le bloc le dit au lieu de la promettre. */
-  assert.match(home, /n&apos;est pas encore disponible/);
+  /* Le suivi des revendeurs d'une marque est lu dans les offres (route /vendor/resellers). */
+  assert.match(home, /\/vendor\/resellers/);
+  assert.match(home, /Aucun revendeur ne propose encore vos produits/);
+});
+
+check("marque : ses revendeurs sont lus dans les offres, et portent le tag « Revendeur de @Marque »", () => {
+  const route = read("backend/packages/api/src/api/vendor/resellers/route.ts");
+  assert.match(route, /entity: "offer"/);
+  assert.match(route, /filters: \{ product_id: productIds \}/);
+  assert.match(route, /seller === me/);
+  assert.match(route, /seller\.status === "open"/);
+  const page = read("src/app/product/[slug]/page.tsx");
+  assert.match(page, /=== "marque"\);/);
+  assert.match(page, /Revendeur de @\{brandOffer\.sellerName\}/);
+  assert.match(page, /brandOffer\.sellerId !== offer\.sellerId/);
 });
 
 check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {
