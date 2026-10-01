@@ -34,8 +34,8 @@ export function isResetActor(value: unknown): value is ResetActor {
 /* Ce que chaque espace s'appelle, pour que le destinataire sache de quel compte il s'agit. */
 const SPACE: Record<ResetActor, string> = {
   customer: "votre compte client",
-  member: "votre espace vendeur",
-  user: "l'administration de MACHE",
+  member: "MACHE Boutik",
+  user: "MACHE Pilote",
 };
 
 export function storefrontBase(): string | null {

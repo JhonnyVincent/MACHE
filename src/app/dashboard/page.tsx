@@ -42,7 +42,7 @@ const PORTES = [
     href: "/compte/connexion",
   },
   {
-    titre: "Espace vendeur",
+    titre: "MACHE Boutik",
     texte: "Votre boutique, vos livraisons, vos contrats avec MACHE.",
     href: "/dashboard/seller/connexion",
   },
@@ -52,7 +52,7 @@ const PORTES = [
     href: "/dashboard/agent/connexion",
   },
   {
-    titre: "Administration",
+    titre: "MACHE Pilote",
     texte: "Réservé à l'équipe de MACHE.",
     href: "/dashboard/admin/connexion",
   },

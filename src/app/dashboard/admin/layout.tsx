@@ -28,7 +28,7 @@ import { SellerSidebarNav, SellerMobileNav, type NavSection } from "@/components
 import { StaffGate } from "@/components/staff-gate";
 import { roleMaySee, STAFF_ROLE_LABELS } from "@/lib/staff";
 
-export const metadata = privateSectionMetadata("Administration");
+export const metadata = privateSectionMetadata("MACHE Pilote");
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getAdminUser();
@@ -97,7 +97,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Link href="/" className="block">
             <p className="text-md font-bold leading-none tracking-widest">MACHE</p>
             <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/70">
-              Administration
+              Pilote
             </p>
           </Link>
         </div>

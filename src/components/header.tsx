@@ -26,7 +26,7 @@ const translations = {
     searchPlaceholder: "Rechercher un produit, une boutique...",
     login: "Se connecter",
     register: "S’inscrire",
-    sellerLogin: "Espace vendeur",
+    sellerLogin: "MACHE Boutik",
     account: "Mon compte",
     favorites: "Favoris",
     cart: "Panier",

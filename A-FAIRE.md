@@ -148,6 +148,12 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 - [ ] Un compte administrateur **sans rôle noté est propriétaire** : ne créer les membres délégués que par la page Équipe. Pour un second propriétaire, créer le compte dans le panneau du backend.
 - [ ] Un troisième espace (ex. logistique, comptabilité) : à ajouter dans `backend/packages/api/src/lib/staff.ts` et `src/lib/staff.ts` (même liste, un test le vérifie).
 
+## 🏷️ Noms des espaces (décidés le 1er octobre 2026)
+
+- **MACHE Pilote** : la gestion de la marketplace (le propriétaire et son équipe déléguée).
+- **MACHE Boutik** : l'espace de chaque vendeur, grossiste ou marque. Chacun invite son équipe dans Paramètres → Utilisateurs, avec cinq rôles (administration, stocks, commandes, comptabilité, support).
+- Appliqués dans les titres, menus, pages de connexion et e-mails. Si un texte ancien (« Espace vendeur », « Administration ») apparaît encore quelque part, le remplacer.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.

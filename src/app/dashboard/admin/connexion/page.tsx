@@ -23,7 +23,7 @@ import { adminLoginAction } from "../actions";
 import { isMedusaConfigured } from "@/lib/medusa/config";
 import { privateMetadata } from "@/lib/seo";
 
-export const metadata = privateMetadata("Connexion administration");
+export const metadata = privateMetadata("Connexion MACHE Pilote");
 
 export const dynamic = "force-dynamic";
 
@@ -46,7 +46,7 @@ export default async function AdminLoginPage({
     return (
       <main className="mx-auto w-full max-w-md px-4 py-16">
         <h1 className="text-2xl font-bold text-[var(--mache-text)]">
-          Administration indisponible
+          MACHE Pilote indisponible
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           Les comptes du personnel sont gérés par le backend commerce,
@@ -68,11 +68,11 @@ export default async function AdminLoginPage({
   return (
     <main className="mx-auto w-full max-w-md px-4 py-12 sm:py-16">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)]">
-        Administration MACHE
+        MACHE Pilote
       </h1>
 
       <p className="mt-2 text-md text-[var(--mache-muted)]">
-        Réservé au personnel de la marketplace.
+        La gestion de la marketplace, réservée à l'équipe MACHE.
       </p>
 
       {query.reinitialise && (
@@ -139,7 +139,7 @@ export default async function AdminLoginPage({
       <p className="mt-6 text-sm leading-relaxed text-[var(--mache-muted)]">
         Vous vendez sur MACHE ?{" "}
         <Link href="/dashboard/seller/connexion" className="font-semibold text-[var(--mache-primary)] hover:underline">
-          Espace vendeur
+          MACHE Boutik
         </Link>
         . Vous êtes client ?{" "}
         <Link href="/compte/connexion" className="font-semibold text-[var(--mache-primary)] hover:underline">

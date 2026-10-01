@@ -311,7 +311,7 @@ export default function SellPage() {
             <h2 className="text-3xl font-black">Simulation dashboard vendeur</h2>
 
             <p className="mt-3 text-neutral-500">
-              Un aperçu rapide de l’espace vendeur : simple, clair et orienté action.
+              Un aperçu rapide de MACHE Boutik : simple, clair et orienté action.
             </p>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-2">

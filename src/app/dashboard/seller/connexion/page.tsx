@@ -24,9 +24,9 @@ import { vendorLoginAction } from "./actions";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
-  title: "Connexion vendeur",
+  title: "Connexion à MACHE Boutik",
   description:
-    "Connexion à l'espace vendeur MACHE.",
+    "Connexion à MACHE Boutik, l'espace des vendeurs.",
   path: "/dashboard/seller/connexion",
   noIndex: true,
 });
@@ -54,7 +54,7 @@ export default async function VendorLoginPage({
     return (
       <main className="mx-auto w-full max-w-lg px-4 py-14">
         <h1 className="text-2xl font-bold text-[var(--mache-text)]">
-          Connexion vendeur momentanément indisponible
+          Connexion à MACHE Boutik momentanément indisponible
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           Nous ne pouvons pas vous connecter pour le moment. Réessayez
@@ -73,7 +73,7 @@ export default async function VendorLoginPage({
   return (
     <main className="mx-auto w-full max-w-md px-4 py-12">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)]">
-        Connexion vendeur
+        Connexion à MACHE Boutik
       </h1>
 
       <p className="mt-2 text-md leading-relaxed text-[var(--mache-muted)]">
