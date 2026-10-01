@@ -258,6 +258,15 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   assert.match(route, /SUPPLIER_PROFILES = \["fournisseur", "marque"\]/);
 });
 
+check("panneau vendeur : les phrases que Mercur laisse en anglais sont traduites", () => {
+  const fr = JSON.parse(read("backend/apps/vendor/src/i18n/fr.json"));
+  assert.match(fr.promotions.list.noRecords.title, /Aucune promotion/);
+  assert.match(fr.priceLists.list.noRecords.message, /Créez/);
+  assert.match(fr.inventory.list.noRecordsTitle, /Aucun/);
+  assert.match(fr.app.menus.store.editStore, /Modifier la boutique/);
+  assert.match(read("backend/apps/vendor/src/i18n/index.ts"), /fr: \{\s+translation: fr/);
+});
+
 check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {
   const page = read("src/app/partenaires/[slug]/page.tsx");
   for (const field of ["partner.logo", "partner.banner", "partner.whatsapp", "partner.phone", "partner.facebook", "partner.instagram", "partner.location"]) {

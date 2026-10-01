@@ -1,0 +1,59 @@
+{
+  "promotions": {
+    "list": {
+      "noRecords": {
+        "title": "Aucune promotion pour l'instant",
+        "message": "Créez des promotions pour offrir des réductions sur vos produits"
+      }
+    }
+  },
+  "priceLists": {
+    "list": {
+      "noRecords": {
+        "title": "Aucune liste de prix pour l'instant",
+        "message": "Créez des listes de prix pour vos soldes et vos prix spéciaux"
+      }
+    },
+    "fields": {
+      "status": {
+        "descriptions": {
+          "draft": "Les clients ne pourront pas voir cette liste de prix",
+          "active": "Les clients pourront voir cette liste de prix"
+        },
+        "label": "Statut"
+      }
+    },
+    "create": {
+      "tabs": {
+        "details": "Détails"
+      }
+    }
+  },
+  "inventory": {
+    "list": {
+      "noRecordsTitle": "Aucun article en stock pour l'instant",
+      "noRecordsMessage": "Créez des articles de stock pour suivre vos quantités"
+    },
+    "create": {
+      "details": "Détails",
+      "attributesHint": "Ce sont les valeurs par défaut qui décrivent l'article. Elles ne sont pas définies par MACHE."
+    },
+    "attributes": {
+      "tip": "Ce sont les valeurs par défaut qui décrivent l'article. Elles ne sont pas définies par MACHE."
+    }
+  },
+  "products": {
+    "variant": {
+      "edit": {
+        "attributesTooltip": "Ce sont les valeurs par défaut qui décrivent l'article. Elles ne sont pas définies par MACHE."
+      }
+    }
+  },
+  "app": {
+    "menus": {
+      "store": {
+        "editStore": "Modifier la boutique"
+      }
+    }
+  }
+}
