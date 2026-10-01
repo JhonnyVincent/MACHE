@@ -100,6 +100,16 @@ Ce sont les chantiers qui conditionnent l'ouverture réelle. Tant qu'ils ne sont
 - [ ] **Colis pilote** : tester 5 à 10 envois réels (Haïti → USA/Canada/France) avant d'annoncer l'international au public.
 - [ ] Idée Katalog : **filtre des boutiques par département d'Haïti** et compteurs en direct sur l'accueil.
 
+## 🚚 Livraison à l'international — à faire APRÈS la déclaration de la société et le nom de domaine
+
+Décision du fondateur : on s'en occupe une fois la LLC déclarée et le domaine acheté.
+
+- [ ] Contacter 2 à 3 transitaires / transporteurs et comparer les devis sur le même colis type (2 kg, 10 kg, 50 kg vers États-Unis, Canada, France) : **Air Haiti Express**, **Amerijet**, **Haiti Cargo and Logistics**, **JECSLO**, et **DHL** pour les petits colis. Ce sont des pistes trouvées par recherche web, non contactées.
+- [ ] Questions à poser : fait-il l'export depuis Haïti ? prix et minimum de poids ? délai ? produits refusés ? qui fait la douane et paie les droits ? suivi, assurance, interlocuteur ? travaille-t-il avec une marketplace (ramassage multi-vendeurs) ?
+- [ ] Deux métiers à prévoir : express pour les petits colis, groupeur maritime pour les gros volumes (grossistes).
+- [ ] Garder 2 ou 3 transporteurs en concurrence plutôt qu'un seul ; demander des références.
+- [ ] Une fois choisi : brancher les tarifs réels dans MACHE, lancer les colis pilotes (5 à 10), puis ouvrir l'international.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
