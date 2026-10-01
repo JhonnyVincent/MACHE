@@ -30,7 +30,8 @@ import { getTradeAccess, isTradeOnlyProfile } from "@/lib/trade-access";
 import { wholesaleOnlyProductIds } from "@/lib/medusa/catalog";
 import { cache } from "react";
 import type { Metadata } from "next";
-import { productMetadata } from "@/lib/seo";
+import { productMetadata, siteUrl } from "@/lib/seo";
+import { readSellerWhatsapp, whatsappLink } from "@/lib/seller-whatsapp";
 
 /*
   Une seule lecture du produit par affichage : les métadonnées (titre,
@@ -508,6 +509,25 @@ export default async function ProductPage({
                           Acheter ici
                         </button>
                       </form>
+
+                      {/*
+                        Le bouton n'existe que si le vendeur a choisi
+                        de publier son numéro. Le message est prérempli
+                        avec l'article et son adresse.
+                      */}
+                      {readSellerWhatsapp(offer.sellerMetadata) && (
+                        <a
+                          href={whatsappLink(
+                            readSellerWhatsapp(offer.sellerMetadata) as string,
+                            `Bonjour, je suis intéressé par « ${product.title} » vu sur MACHE : ${siteUrl()}/product/${product.handle}`
+                          )}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-[4px] bg-[#25d366] px-2.5 py-1 text-sm font-semibold text-[#06361a] hover:bg-[#1fbd5b]"
+                        >
+                          Commander sur WhatsApp
+                        </a>
+                      )}
 
                         {/*
                           Acheter au prix affiché convient pour une

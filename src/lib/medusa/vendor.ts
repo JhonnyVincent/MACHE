@@ -666,6 +666,13 @@ export async function saveSellerTheme(
   return saveSellerMetadata("theme", themeId);
 }
 
+/* Numéro WhatsApp public de la boutique ; chaîne vide pour le retirer. */
+export async function saveSellerWhatsapp(
+  number: string
+): Promise<Result<VendorSeller>> {
+  return saveSellerMetadata("whatsapp", number);
+}
+
 export async function saveStorefrontLayout(
   layout: unknown
 ): Promise<Result<VendorSeller>> {

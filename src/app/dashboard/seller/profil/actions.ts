@@ -22,7 +22,8 @@ import { saveSellerProfile } from "@/lib/medusa/vendor";
 import { isSellerProfile, profileInfo } from "@/lib/seller-profile";
 import { sanitizeMinimum } from "@/lib/seller-minimum";
 import { isThemeId, themeById } from "@/lib/storefront/themes";
-import { saveSellerMinimum, saveSellerTheme } from "@/lib/medusa/vendor";
+import { saveSellerMinimum, saveSellerTheme, saveSellerWhatsapp } from "@/lib/medusa/vendor";
+import { normalizeWhatsapp } from "@/lib/seller-whatsapp";
 
 const BASE = "/dashboard/seller/profil";
 
@@ -106,6 +107,39 @@ export async function saveThemeAction(formData: FormData) {
   redirect(
     `${BASE}?success=${encodeURIComponent(
       `Thème enregistré : ${themeById(choice).label}.`
+    )}`
+  );
+}
+
+/*
+  ACTION : le numéro WhatsApp de la boutique.
+
+  Un champ vide retire le bouton. Un numéro qu'on ne peut pas lire est
+  refusé : enregistrer n'importe quoi ferait afficher un bouton mort.
+*/
+export async function saveWhatsappAction(formData: FormData) {
+  const raw = String(formData.get("whatsapp") || "").trim();
+  const number = raw ? normalizeWhatsapp(raw) : "";
+
+  if (number === null) {
+    redirect(
+      `${BASE}?error=${encodeURIComponent("Ce numéro n'est pas valable. Exemple : 3712 3456 ou +509 3712 3456.")}`
+    );
+  }
+
+  const saved = await saveSellerWhatsapp(number);
+
+  if (!saved.ok) {
+    redirect(`${BASE}?error=${encodeURIComponent(saved.reason)}`);
+  }
+
+  revalidatePath(BASE);
+  revalidatePath("/product/[slug]", "page");
+  revalidatePath("/store/[slug]", "page");
+
+  redirect(
+    `${BASE}?success=${encodeURIComponent(
+      number ? "Numéro WhatsApp enregistré : le bouton « Commander sur WhatsApp » apparaît sur vos produits." : "Numéro WhatsApp retiré : le bouton n'apparaît plus."
     )}`
   );
 }

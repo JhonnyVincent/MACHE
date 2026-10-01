@@ -24,7 +24,8 @@ import { getVendorSeller } from "@/lib/medusa/vendor";
 import { SELLER_PROFILES, readSellerProfile } from "@/lib/seller-profile";
 import { readSellerMinimum } from "@/lib/seller-minimum";
 import { STOREFRONT_THEMES, readSellerTheme } from "@/lib/storefront/themes";
-import { saveProfileAction, saveMinimumAction, saveThemeAction } from "./actions";
+import { saveProfileAction, saveMinimumAction, saveThemeAction, saveWhatsappAction } from "./actions";
+import { readSellerWhatsapp } from "@/lib/seller-whatsapp";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ export default async function SellerProfilePage({
   const current = readSellerProfile(seller.metadata);
   const minimum = readSellerMinimum(seller.metadata);
   const theme = readSellerTheme(seller.metadata);
+  const whatsapp = readSellerWhatsapp(seller.metadata);
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-8">
@@ -197,6 +199,33 @@ export default async function SellerProfilePage({
             className="mt-3 rounded-[6px] bg-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-black"
           >
             Enregistrer les couleurs
+          </button>
+        </form>
+      </section>
+
+      <section className="mt-10 border-t border-[var(--mache-line)] pt-6">
+        <h2 className="text-lg font-bold text-[var(--mache-text)]">Commander sur WhatsApp</h2>
+        <p className="mt-1 text-md leading-relaxed text-[var(--mache-muted)]">
+          Ajoutez votre numéro : un bouton « Commander sur WhatsApp » apparaît sur vos produits. Attention, ce
+          numéro sera <strong>visible de tous</strong>. Laissez vide pour ne pas afficher de bouton.
+        </p>
+
+        <form action={saveWhatsappAction} className="mt-4 flex flex-wrap items-end gap-3">
+          <label className="block">
+            <span className="text-base font-semibold text-[var(--mache-text)]">Numéro WhatsApp</span>
+            <input
+              name="whatsapp"
+              inputMode="tel"
+              defaultValue={whatsapp ? `+${whatsapp}` : ""}
+              placeholder="+509 3712 3456"
+              className="mt-1 w-56 rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-md outline-none focus:border-[var(--mache-primary)]"
+            />
+          </label>
+          <button
+            type="submit"
+            className="rounded-[6px] bg-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-black"
+          >
+            Enregistrer
           </button>
         </form>
       </section>

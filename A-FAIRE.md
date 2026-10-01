@@ -83,6 +83,13 @@ Ce sont les chantiers qui conditionnent l'ouverture réelle. Tant qu'ils ne sont
 
 - [x] Page publique `/rejoindre` : vendeur, grossiste ou marque laisse ses coordonnées ; la demande arrive dans la messagerie admin (catégorie « Ma boutique ») et l'équipe est prévenue par e-mail. Pas de réseaux sociaux pour l'instant.
 
+## 💡 Idées tirées de l'analyse des concurrents (Bemane, Katalog) — à étudier
+
+- [x] Bouton **« Commander sur WhatsApp »** sur les produits (le vendeur publie son numéro depuis « Profil de ma boutique »). Fait.
+- [ ] **Lien de catalogue à partager** : faciliter l'envoi de la vitrine d'une boutique par WhatsApp.
+- [ ] **Revendeurs affiliés** (revendre sans stock contre commission) — proche de l'idée vendeurs ↔ grossistes ↔ marques.
+- [ ] **Services / agences** en plus des produits (Katalog les propose) : à décider.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
