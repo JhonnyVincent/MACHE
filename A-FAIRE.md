@@ -113,7 +113,7 @@ Décision du fondateur : on s'en occupe une fois la LLC déclarée et le domaine
 ## 💱 Devises
 
 - [x] **Conversion indicative en direct** : le visiteur choisit « ≈ USD / EUR / CAD » dans l'en-tête ; l'équivalent s'affiche sous les prix (fiche produit, panier, paiement), au taux du jour (service public de taux, relu toutes les 6 h). Sans taux disponible, rien n'est affiché.
-- [ ] **Vendeur qui fixe ses prix en dollars (USD)** : très utilisé en Haïti. Aujourd'hui la facturation est en gourdes (HTG) ; facturer en USD demande une région et des prix USD, et un panier ne mélange pas deux devises. À décider avec le paiement (Pay'm = HTG, Stripe = USD).
+- [ ] 🔴 **URGENT — Prix en USD et paiement des vendeurs à l'international.** Un acheteur haïtien qui achète un produit venu de l'étranger : comment le vendeur est-il payé, dans quelle devise, par quel moyen ? À trancher avec le paiement (Pay'm / Stripe) et un juriste (MACHE ne doit pas détenir l'argent d'autrui sans cadre légal : passer par un prestataire de paiement agréé). Proposition : deux devises (HTG et USD), un panier par devise ; versements aux vendeurs d'abord à la main (virement, MonCash, Wise) puis automatisés. **Vendeur qui fixe ses prix en dollars (USD)** : très utilisé en Haïti. Aujourd'hui la facturation est en gourdes (HTG) ; facturer en USD demande une région et des prix USD, et un panier ne mélange pas deux devises. À décider avec le paiement (Pay'm = HTG, Stripe = USD).
 
 ## ⏸️ Proposé, en attente de votre feu vert
 
