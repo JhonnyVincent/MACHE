@@ -36,7 +36,31 @@ export type Partner = {
   href: string;
   /* Le service passe-t-il par MACHE, ou se traite-t-il en direct ? */
   mediated: boolean;
+  /*
+    PROFIL (facultatif). Une page `/partenaires/<slug>` n'existe que si le
+    partenaire a un `slug`. Chaque champ est affiché seulement s'il est
+    renseigné — et ne l'est qu'avec l'accord du partenaire : pas de logo,
+    de numéro ou de réseau écrit à sa place.
+  */
+  slug?: string;
+  /* « Financement », « Photographie »… */
+  category?: string;
+  /* Description plus longue que `does`, écrite avec le partenaire. */
+  description?: string;
+  location?: string;
+  /* Chemins d'images (dans /public) fournis par le partenaire. */
+  logo?: string;
+  banner?: string;
+  /* Contacts : numéro WhatsApp en chiffres avec indicatif (50937123456), téléphone libre. */
+  whatsapp?: string;
+  phone?: string;
+  facebook?: string;
+  instagram?: string;
 };
+
+export function partnerBySlug(slug: string): Partner | undefined {
+  return PARTNERS.find((partner) => partner.slug === slug);
+}
 
 export const PARTNERS: Partner[] = [
   {
@@ -50,5 +74,7 @@ export const PARTNERS: Partner[] = [
       "Accompagne les marchands pour obtenir un financement et acheter leur marchandise.",
     href: "https://bawon-plus-site.vercel.app/",
     mediated: false,
+    slug: "bawon",
+    category: "Financement",
   },
 ];

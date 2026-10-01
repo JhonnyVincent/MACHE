@@ -268,4 +268,15 @@ check("page de pré-inscription : vendeur, grossiste, marque ; arrive dans la me
   assert.match(read("src/app/sitemap.ts"), /"\/rejoindre"/);
 });
 
+check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {
+  const page = read("src/app/partenaires/[slug]/page.tsx");
+  for (const field of ["partner.logo", "partner.banner", "partner.whatsapp", "partner.phone", "partner.facebook", "partner.instagram", "partner.location"]) {
+    assert.match(page, new RegExp(`${field.replace(".", "\\.")} &&|${field.replace(".", "\\.")} \\?`), field);
+  }
+  assert.match(page, /entreprise indépendante/);
+  assert.match(page, /ne garantit rien/);
+  assert.match(read("src/lib/partners.ts"), /slug: "bawon"/);
+  assert.match(read("src/app/partenaires/page.tsx"), /Voir le profil/);
+});
+
 console.log(`\n${passed} vérifications réussies.`);

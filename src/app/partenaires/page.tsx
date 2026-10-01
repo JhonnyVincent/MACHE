@@ -154,6 +154,15 @@ export default function PartenairesPage() {
                       {partner.does}
                     </p>
 
+                    {partner.slug && (
+                      <Link
+                        href={`/partenaires/${partner.slug}`}
+                        className="mt-1 inline-block text-sm font-semibold text-[var(--mache-primary)] hover:underline"
+                      >
+                        Voir le profil →
+                      </Link>
+                    )}
+
                     {/*
                       LA PHRASE QUI ÉVITE DEUX MALENTENDUS D'UN COUP.
 
