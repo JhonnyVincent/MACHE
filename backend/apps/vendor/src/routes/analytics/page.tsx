@@ -32,6 +32,7 @@ declare const __BACKEND_URL__: string;
 
 export const config = {
   label: "Chiffres",
+  rank: 9,
 };
 
 type Currency = {

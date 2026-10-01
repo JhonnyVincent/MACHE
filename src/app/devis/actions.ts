@@ -13,6 +13,7 @@
 import { redirect } from "next/navigation";
 import { requestQuote, answerQuote } from "@/lib/medusa/quotes";
 import { spamCheck } from "@/lib/anti-spam";
+import { getTradeAccess } from "@/lib/trade-access";
 
 function fail(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
@@ -39,6 +40,11 @@ export async function requestQuoteAction(formData: FormData) {
     ...(productId ? { produit: productId } : {}),
     ...(variantId ? { variante: variantId } : {}),
   }).toString()}`;
+
+  /* Réservé aux vendeurs et aux comptes professionnels (voir src/lib/trade-access.ts). */
+  if (!(await getTradeAccess()).allowed) {
+    fail(back, "Les devis sont réservés aux vendeurs MACHE et aux comptes professionnels.");
+  }
 
   const blocked = await spamCheck("devis", formData);
 

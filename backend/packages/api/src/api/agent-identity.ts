@@ -65,3 +65,15 @@ export const SUSPENDED_MARKER = "mache_agent_suspended";
   écrit sur l'écran qui bloque, pas seulement ici.
 */
 export const BLOCKED_MARKER = "mache_customer_blocked";
+
+/*
+  L'étiquette du groupe « acheteurs professionnels ».
+
+  Un hôtel, une école, une entreprise qui achète en gros sans vendre sur
+  MACHE. Comme pour les agents : c'est une appartenance à un groupe, que
+  seule l'administration modifie. Le client DEMANDE (son champ libre
+  garde la demande) ; MACHE ACCORDE (le groupe fait foi). Un client qui
+  écrirait « approuvé » dans son propre champ libre n'obtiendrait rien.
+*/
+export const PRO_MARKER = "mache_pro_buyer";
+

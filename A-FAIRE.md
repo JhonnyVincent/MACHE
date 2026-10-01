@@ -58,6 +58,15 @@ Cochez au fur et à mesure.
   - [ ] bouton « J'ai bien reçu » pour l'acheteur, sur toutes les livraisons ;
   - [ ] tâche planifiée qui libère les versements échus.
 
+## ✅ Fait : grossistes, marques, comptes professionnels, panneau vendeur en français
+
+- [x] Panneau vendeur et administration **en français d'office** (la langue reste modifiable dans Paramètres → Profil), menu vendeur simplifié, page **« Bien démarrer »** (arrivée après le passage en vendeur).
+- [x] **Grossistes invisibles du public** : ni catalogue, ni accueil, ni carte, ni plan du site ; leurs fiches produit sont sans prix et hors Google.
+- [x] **Devis retirés des fiches publiques** : réservés aux vendeurs connectés et aux comptes professionnels validés.
+- [x] **Annuaire « Trouver un fournisseur »** (grossistes + marques) sur le site (`/gros`) et dans le panneau vendeur (« Fournisseurs »).
+- [x] **Comptes professionnels** (hôtels, écoles…) : demande sur `/compte/pro`, décision par l'équipe sur `/dashboard/admin/pros` (accorder, refuser avec motif, retirer), e-mails automatiques.
+- [ ] **Après le déploiement** : rien à configurer — le groupe « MACHE — Acheteurs professionnels » est créé au redémarrage du backend. Prévoir de traiter les demandes dans « Comptes professionnels » (menu admin).
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.

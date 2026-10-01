@@ -22,6 +22,13 @@ import { readPass, consumePass } from "../../../lib/vendor-pass";
 
 const PANEL = "/seller";
 
+/*
+  Une fois la session ouverte, le vendeur arrive sur « Bien démarrer » :
+  la page qui lui dit, dans l'ordre, quoi faire et ce qui est déjà fait.
+  Une adresse fixe, interne au panneau : jamais une valeur de la requête.
+*/
+const WELCOME = "/seller/bien-demarrer";
+
 type Session = {
   regenerate: (cb: (err?: unknown) => void) => void;
   save: (cb: (err?: unknown) => void) => void;
@@ -66,5 +73,5 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     );
   }
 
-  res.redirect(303, PANEL);
+  res.redirect(303, WELCOME);
 };

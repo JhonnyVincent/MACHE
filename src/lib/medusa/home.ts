@@ -24,7 +24,7 @@
 */
 
 import {
-  fetchProducts, fetchSellers, fetchCategories, fetchProductSellerMap,
+  fetchProducts, fetchPublicSellers, fetchCategories, fetchProductSellerMap,
   type StoreProduct, type StoreSeller, type StoreCategory,
 } from "./catalog";
 import { fetchSitePromotions } from "./promotions";
@@ -135,7 +135,7 @@ export async function fetchHomeData({
         prix d'origine.
       */
       fetchProducts({ limit: 50, order: "-created_at" }),
-      fetchSellers(24),
+      fetchPublicSellers(24),
       fetchCategories(300),
       fetchProducts({ handles: favoriteHandles.slice(0, 20), limit: 20, withCategories: true }),
       fetchProductSellerMap(),

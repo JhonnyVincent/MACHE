@@ -16,6 +16,7 @@
 
 import { medusaFetch, type MedusaResult } from "./client";
 import { medusaRegionId } from "./config";
+import { readSellerProfile } from "../seller-profile";
 
 /*
   Vocabulaire des étiquettes de cache.
@@ -390,6 +391,13 @@ export type ProductQuery = {
   handles?: string[];
   /* Joindre les rayons de chaque produit. */
   withCategories?: boolean;
+  /*
+    Montrer aussi les produits vendus UNIQUEMENT par des grossistes.
+    Faux par défaut : ils sont réservés aux vendeurs et aux comptes
+    professionnels (voir src/lib/trade-access.ts). Seules les pages qui
+    ont vérifié cet accès passent vrai.
+  */
+  includeWholesale?: boolean;
 };
 
 /*
@@ -487,13 +495,60 @@ export async function fetchProducts(
 
   if (!result.ok) return result;
 
-  return {
-    ok: true,
-    data: {
-      products: (result.data.products ?? []).map(mapProduct),
-      count: Number(result.data.count) || 0,
-    },
-  };
+  let products = (result.data.products ?? []).map(mapProduct);
+  let count = Number(result.data.count) || 0;
+
+  if (!query.includeWholesale) {
+    const hidden = await wholesaleOnlyProductIds();
+
+    if (hidden.size > 0) {
+      const before = products.length;
+      products = products.filter((product) => !hidden.has(product.id));
+      /* Le compte est corrigé de ce qui est retiré de CETTE page ; approché, pas exact. */
+      count = Math.max(products.length, count - (before - products.length));
+    }
+  }
+
+  return { ok: true, data: { products, count } };
+}
+
+/*
+  LES PRODUITS RÉSERVÉS AUX PROFESSIONNELS.
+
+  Un grossiste vend par quantité, à d'autres commerçants : ses produits
+  n'ont pas à s'afficher à l'acheteur qui cherche un seul article. Sont
+  réservés les produits proposés PAR DES GROSSISTES SEULEMENT ; un
+  produit qu'une boutique propose aussi reste public (la boutique le
+  vend au détail).
+
+  Le profil vient du champ libre de la boutique (voir seller-profile.ts).
+  En cas de panne de lecture, rien n'est masqué : mieux vaut montrer un
+  produit de gros que vider le catalogue.
+*/
+export async function wholesaleOnlyProductIds(): Promise<Set<string>> {
+  const sellers = await fetchSellers(500);
+
+  if (!sellers.ok) return new Set();
+
+  const wholesale: string[] = [];
+  const others: string[] = [];
+
+  for (const seller of sellers.data.sellers) {
+    (readSellerProfile(seller.metadata) === "fournisseur" ? wholesale : others).push(seller.id);
+  }
+
+  if (wholesale.length === 0) return new Set();
+
+  const [fromWholesale, fromOthers] = await Promise.all([
+    productIdsForSellers(wholesale),
+    productIdsForSellers(others),
+  ]);
+
+  if (!fromWholesale.ok || !fromOthers.ok) return new Set();
+
+  const retail = new Set(fromOthers.data);
+
+  return new Set(fromWholesale.data.filter((id) => !retail.has(id)));
 }
 
 export async function fetchProductByHandle(
@@ -571,6 +626,34 @@ export async function fetchSellers(
     data: {
       sellers: (result.data.sellers ?? []).map(mapSeller),
       count: Number(result.data.count) || 0,
+    },
+  };
+}
+
+/*
+  Les boutiques que le PUBLIC voit : tout sauf les grossistes.
+
+  Un grossiste n'a pas à s'afficher sur l'accueil, la carte ou le plan du
+  site : il vend par quantité à des professionnels, et sa vitrine leur
+  est réservée (voir src/lib/trade-access.ts). Les marques restent
+  visibles. L'administration et l'annuaire des fournisseurs, eux, lisent
+  la liste complète avec `fetchSellers`.
+*/
+export async function fetchPublicSellers(
+  limit = 12
+): Promise<MedusaResult<{ sellers: StoreSeller[]; count: number }>> {
+  /* On lit plus large que demandé : des grossistes retirés ne doivent pas raccourcir la liste. */
+  const result = await fetchSellers(Math.max(limit * 2, limit + 20));
+
+  if (!result.ok) return result;
+
+  const sellers = result.data.sellers.filter((seller) => readSellerProfile(seller.metadata) !== "fournisseur");
+
+  return {
+    ok: true,
+    data: {
+      sellers: sellers.slice(0, limit),
+      count: Math.max(0, result.data.count - (result.data.sellers.length - sellers.length)),
     },
   };
 }

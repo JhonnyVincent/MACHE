@@ -28,6 +28,7 @@ declare const __BACKEND_URL__: string;
 
 export const config = {
   label: "Devis",
+  rank: 4,
 };
 
 type Quote = {

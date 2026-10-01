@@ -60,6 +60,7 @@ export default async function BuyerLayout({ children }: { children: React.ReactN
         { label: "Mes messages", href: "/dashboard/buyer/messages" },
         { label: "Adresses", href: "/dashboard/buyer/addresses" },
         { label: "Profil", href: "/dashboard/buyer/profile" },
+        { label: "Compte professionnel", href: "/compte/pro" },
       ],
     },
   ];

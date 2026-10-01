@@ -281,6 +281,12 @@ export default async function SellerEntryPage({
           Contrats de MACHE
         </Link>
         <Link
+          href="/gros"
+          className="font-semibold text-[var(--mache-primary)] hover:underline"
+        >
+          Trouver un fournisseur
+        </Link>
+        <Link
           href="/dashboard/seller/livraisons"
           className="font-semibold text-[var(--mache-primary)] hover:underline"
         >

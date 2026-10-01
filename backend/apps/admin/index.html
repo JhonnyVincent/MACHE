@@ -1,10 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/public/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mercur Admin</title>
+    <title>MACHE — Administration</title>
+    <!--
+      Le panneau démarre en français. La langue est lue dans le cookie ou
+      le stockage « lng » (i18next) ; sans rien, il retombait sur l'anglais,
+      quel que soit le navigateur. On pose « fr » seulement si rien n'est
+      choisi : un changement fait dans Profil → Langue reste respecté.
+    -->
+    <script>
+      try {
+        if (!/(^|;\s*)lng=/.test(document.cookie) && !window.localStorage.getItem("lng")) {
+          window.localStorage.setItem("lng", "fr");
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

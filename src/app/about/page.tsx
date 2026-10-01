@@ -28,7 +28,7 @@
 */
 
 import { Link } from "next-view-transitions";
-import { fetchSellers, fetchProducts } from "@/lib/medusa/catalog";
+import { fetchPublicSellers, fetchProducts } from "@/lib/medusa/catalog";
 import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
@@ -78,7 +78,7 @@ export default async function AboutPage() {
     page avec des chiffres faux.
   */
   const [sellers, products] = await Promise.all([
-    fetchSellers(200),
+    fetchPublicSellers(200),
     fetchProducts({ limit: 1 }),
   ]);
 

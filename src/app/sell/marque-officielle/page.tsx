@@ -33,7 +33,7 @@ import { TARIFS, billingLine, htgFromEur, formatHtg, EUR_TO_HTG_DATE, COMMISSION
 export const metadata = {
   title: "Vendre comme marque officielle",
   description:
-    "Le profil vendeur destiné aux marques : boutique identifiée, commission réduite, abonnement mensuel.",
+    "Le profil vendeur destiné aux marques : vos produits vendus au public et proposés aux revendeurs, boutique identifiée, commission réduite, abonnement mensuel.",
 };
 
 const tarif = TARIFS.find((item) => item.profile === "marque")!;
@@ -43,6 +43,10 @@ const tarif = TARIFS.find((item) => item.profile === "marque")!;
   qui existe dans le produit ; aucune ne décrit une intention.
 */
 const REEL: [string, string][] = [
+  [
+    "Visible des revendeurs",
+    "Votre marque figure dans l'annuaire « Trouver un fournisseur » : les vendeurs et les professionnels vous demandent un devis pour revendre vos produits. Vous pouvez aussi vendre vous-même au public.",
+  ],
   [
     "Boutique identifiée comme marque officielle",
     "Votre profil vendeur porte la mention marque, visible sur votre boutique et dans le catalogue.",

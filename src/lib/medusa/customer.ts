@@ -422,3 +422,57 @@ export async function submitProductReview(input: {
 
   return { ok: true, data: { pending: true } };
 }
+
+/* ------------------------------------------------------------------ */
+/* Compte professionnel (voir backend lib/pro-buyers.ts)               */
+/* ------------------------------------------------------------------ */
+
+export type ProStatus = "approved" | "pending" | "refused" | "none";
+
+export type ProInfo = {
+  status: ProStatus;
+  organisation: string | null;
+  type: string | null;
+  city: string | null;
+  phone: string | null;
+};
+
+/* null : pas connecté, ou le backend ne répond pas. */
+export async function getProInfo(): Promise<ProInfo | null> {
+  const token = await readToken();
+
+  if (!token) return null;
+
+  const result = await request<{ pro?: { status?: string; request?: Raw | null } }>("/store/pro", { token });
+
+  if (!result.ok || !result.data.pro) return null;
+
+  const status = String(result.data.pro.status ?? "none") as ProStatus;
+  const request_ = result.data.pro.request ?? null;
+
+  return {
+    status: ["approved", "pending", "refused", "none"].includes(status) ? status : "none",
+    organisation: str(request_?.organisation),
+    type: str(request_?.type),
+    city: str(request_?.city),
+    phone: str(request_?.phone),
+  };
+}
+
+export async function requestProAccount(input: {
+  organisation: string;
+  type: string;
+  city: string;
+  phone: string;
+  note: string;
+}): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Connectez-vous d'abord à votre compte client." };
+
+  const result = await request<Raw>("/store/pro", { method: "POST", body: input, token });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}

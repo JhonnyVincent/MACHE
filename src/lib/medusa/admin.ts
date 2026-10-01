@@ -2114,3 +2114,75 @@ export async function setPayoutFreeze(input: {
 
   return { ok: true, data: { pulledBack: Number(result.data.pulled_back) || 0 } };
 }
+
+/* ------------------------------------------------------------------ */
+/* Comptes professionnels                                             */
+/* ------------------------------------------------------------------ */
+
+export type AdminPro = {
+  id: string;
+  email: string;
+  name: string;
+  status: "approved" | "pending" | "refused";
+  organisation: string | null;
+  type: string | null;
+  city: string | null;
+  phone: string | null;
+  note: string | null;
+  requestedAt: string | null;
+  refusedReason: string | null;
+};
+
+export async function fetchPros(): Promise<Result<{ pros: AdminPro[]; groupReady: boolean }>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ pros?: Raw[]; group_ready?: boolean }>("/admin/mache/pros", { token });
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: {
+      groupReady: result.data.group_ready !== false,
+      pros: (result.data.pros ?? []).map((row) => {
+        const req = (row.request as Raw | null) ?? null;
+
+        return {
+          id: String(row.id),
+          email: str(row.email) ?? "",
+          name: str(row.name) ?? "",
+          status: (["approved", "pending", "refused"].includes(String(row.status)) ? row.status : "pending") as AdminPro["status"],
+          organisation: str(req?.organisation),
+          type: str(req?.type),
+          city: str(req?.city),
+          phone: str(req?.phone),
+          note: str(req?.note),
+          requestedAt: str(req?.requested_at),
+          refusedReason: str(row.refused_reason),
+        };
+      }),
+    },
+  };
+}
+
+export async function actOnPro(
+  customerId: string,
+  action: "approve" | "refuse" | "revoke",
+  reason?: string
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(`/admin/mache/pros/${encodeURIComponent(customerId)}`, {
+    method: "POST",
+    body: { action, reason },
+    token,
+  });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: true };
+}

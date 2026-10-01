@@ -27,7 +27,7 @@
 
 import { ExecArgs } from "@medusajs/framework/types";
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
-import { SUSPENDED_MARKER, BLOCKED_MARKER } from "../api/agent-identity";
+import { SUSPENDED_MARKER, BLOCKED_MARKER, PRO_MARKER } from "../api/agent-identity";
 
 const GROUPS = [
   { slug: "mache-point-relais", name: "MACHE — Points de relais" },
@@ -101,7 +101,9 @@ export default async function agentGroups({ container }: ExecArgs) {
     (group) => group.metadata?.[BLOCKED_MARKER] === true
   );
 
-  if (missing.length === 0 && hasSuspended && hasBlocked) {
+  const hasPro = rows.some((group) => group.metadata?.[PRO_MARKER] === true);
+
+  if (missing.length === 0 && hasSuspended && hasBlocked && hasPro) {
     logger.info("Groupes d'agents MACHE déjà en place. Inchangés.");
     return;
   }
@@ -131,6 +133,14 @@ export default async function agentGroups({ container }: ExecArgs) {
     toCreate.push({
       name: BLOCKED_GROUP.name,
       metadata: { [BLOCKED_MARKER]: true },
+    });
+  }
+
+  /* Les acheteurs professionnels (voir PRO_MARKER). */
+  if (!hasPro) {
+    toCreate.push({
+      name: "MACHE — Acheteurs professionnels",
+      metadata: { [PRO_MARKER]: true },
     });
   }
 

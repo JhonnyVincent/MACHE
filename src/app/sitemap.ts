@@ -14,7 +14,7 @@
 */
 
 import type { MetadataRoute } from "next";
-import { fetchCategories, fetchProducts, fetchSellers } from "@/lib/medusa/catalog";
+import { fetchCategories, fetchProducts, fetchPublicSellers } from "@/lib/medusa/catalog";
 import { siteUrl } from "@/lib/seo";
 
 export const revalidate = 3600;
@@ -79,7 +79,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const [categories, sellers, products] = await Promise.all([
     fetchCategories(300),
-    fetchSellers(500),
+    fetchPublicSellers(500),
     allProducts(),
   ]);
 

@@ -117,8 +117,9 @@ check("la route d'entrée ne redirige que vers le panneau (pas de redirection ou
   const code = entry.replace(/\/\*[\s\S]*?\*\//g, "");
   const targets = [...code.matchAll(/res\.redirect\(([^)]*)\)/g)].map((m) => m[1]);
   assert.ok(targets.length >= 2);
-  for (const target of targets) assert.equal(target.trim(), "303, PANEL");
+  for (const target of targets) assert.ok(["303, PANEL", "303, WELCOME"].includes(target.trim()), target);
   assert.match(code, /const PANEL = "\/seller";/);
+  assert.match(code, /const WELCOME = "\/seller\/bien-demarrer";/);
 });
 
 /* La route d'entrée, exécutée pour de vrai avec une session simulée. */
@@ -153,7 +154,7 @@ await acheck("la route ouvre une session NEUVE, avec le membre et sa boutique, p
   resetUsedPasses();
   const { req, res, log } = fakeRequest(issuePass(ctx, "sel_1", SECRET));
   await GET(req, res);
-  assert.deepEqual(res.redirected, [303, "/seller"]);
+  assert.deepEqual(res.redirected, [303, "/seller/bien-demarrer"]);
   assert.deepEqual(log, ["regenerate:ancienne", "save:neuve"]);
   assert.equal(req.session.label, "neuve");
   assert.equal(req.session.auth_context.actor_id, "mem_1");

@@ -15,6 +15,7 @@ import { fetchProducts, fetchCategories, fetchSellers } from "@/lib/medusa/catal
 import { ProductCard } from "@/components/home/rails";
 import { StaggerIn } from "@/components/anim/stagger-in";
 import type { Metadata } from "next";
+import { getTradeAccess, isTradeOnlyProfile } from "@/lib/trade-access";
 import { pageMetadata } from "@/lib/seo";
 
 /*
@@ -111,7 +112,14 @@ export default async function ShopPage({
     que l'API ne sait pas filtrer. On lit donc les boutiques, on retient
     celles qui correspondent, et on demande les produits de celles-là.
   */
-  const profil = isSellerProfile(query.profil) ? query.profil : null;
+  /*
+    Les grossistes ne se montrent qu'aux vendeurs et aux comptes
+    professionnels (voir src/lib/trade-access.ts) : pour les autres, le
+    filtre « Grossiste » n'existe pas, et ses produits non plus.
+  */
+  const access = await getTradeAccess();
+  const requested = isSellerProfile(query.profil) ? query.profil : null;
+  const profil = requested && (access.allowed || !isTradeOnlyProfile(requested)) ? requested : null;
 
   let sellerIds: string[] | undefined;
   let profileHasNoShop = false;
@@ -148,6 +156,7 @@ export default async function ShopPage({
         categoryId: category?.id,
         order: sort.order,
         sellerIds,
+        includeWholesale: access.allowed,
       });
 
   /*
@@ -252,7 +261,7 @@ export default async function ShopPage({
             Tous
           </Link>
 
-          {SELLER_PROFILES.map((entry) => (
+          {SELLER_PROFILES.filter((entry) => access.allowed || !isTradeOnlyProfile(entry.id)).map((entry) => (
             <Link
               key={entry.id}
               href={linkWith({ profil: entry.id, page: undefined })}

@@ -75,7 +75,7 @@ export const SELLER_PROFILES: SellerProfileInfo[] = [
     label: "Fournisseur / Grossiste",
     badge: "Grossiste",
     meaning:
-      "Vend en gros, avec des prix qui baissent selon la quantité commandée.",
+      "Vend en gros, par quantité, à des professionnels : ses produits et ses prix leur sont réservés.",
     sellPage: "/sell/fournisseur",
     wholesale: true,
   },
@@ -84,7 +84,7 @@ export const SELLER_PROFILES: SellerProfileInfo[] = [
     label: "Marque officielle",
     badge: "Marque",
     meaning:
-      "La marque vend elle-même ses produits, sans intermédiaire.",
+      "Crée un produit et le confie à des revendeurs ; elle peut aussi le vendre elle-même.",
     sellPage: "/sell/marque-officielle",
     wholesale: false,
   },

@@ -28,6 +28,7 @@ import { ProductCard } from "@/components/home/rails";
 import { parseLayout } from "@/lib/storefront/blocks";
 import { RenderBlock } from "@/components/storefront/blocks";
 import { readSellerProfile } from "@/lib/seller-profile";
+import { getTradeAccess, isTradeOnlyProfile } from "@/lib/trade-access";
 import { readSellerTheme, themeStyle } from "@/lib/storefront/themes";
 import { SellerProfileBadge } from "@/components/seller-profile-badge";
 import { VerifiedBadge } from "@/components/verified-badge";
@@ -85,8 +86,37 @@ export default async function StorePage({
 
   if (!seller) notFound();
 
+  /*
+    La vitrine d'un grossiste est réservée aux vendeurs et aux comptes
+    professionnels (voir src/lib/trade-access.ts). Pour les autres, une
+    page qui explique comment y accéder plutôt qu'une erreur.
+  */
+  const access = await getTradeAccess();
+
+  if (!access.allowed && isTradeOnlyProfile(readSellerProfile(seller.metadata))) {
+    return (
+      <main className="mx-auto w-full max-w-2xl px-4 py-16">
+        <p className="text-sm font-bold uppercase tracking-widest text-[var(--mache-primary)]">Grossiste</p>
+        <h1 className="mt-2 text-2xl font-black text-[var(--mache-text)]">{seller.name}</h1>
+        <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
+          Cette boutique vend en gros, à d&apos;autres commerçants. Sa vitrine et ses prix sont réservés aux vendeurs
+          MACHE et aux comptes professionnels (hôtels, écoles, restaurants, entreprises…).
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/dashboard/seller/connexion" className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white">
+            Je vends sur MACHE
+          </Link>
+          <Link href="/compte/pro" className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)]">
+            Ouvrir un compte professionnel
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const productsResult = await fetchProducts({
     sellerId: seller.id,
+    includeWholesale: access.allowed,
     limit: 48,
     order: "-created_at",
   });

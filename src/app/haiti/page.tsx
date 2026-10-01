@@ -24,7 +24,7 @@
 import { Link } from "next-view-transitions";
 import { HaitiMap, type DepartmentShops } from "@/components/haiti-map";
 import { DEPARTMENTS } from "@/lib/haiti";
-import { fetchSellers } from "@/lib/medusa/catalog";
+import { fetchPublicSellers } from "@/lib/medusa/catalog";
 import { reportOutage } from "@/lib/medusa/outage";
 
 export const dynamic = "force-dynamic";
@@ -73,7 +73,7 @@ function departmentSlugFor(province: string | null, city: string | null): string
 }
 
 export default async function HaitiPage() {
-  const result = await fetchSellers(200);
+  const result = await fetchPublicSellers(200);
 
   if (!result.ok) reportOutage("carte des départements", result.reason);
 

@@ -26,6 +26,8 @@ import {
 } from "@/lib/medusa/catalog";
 import { ProductRailSection } from "@/components/home/rails";
 import { addToCartAction } from "@/app/cart/actions";
+import { getTradeAccess, isTradeOnlyProfile } from "@/lib/trade-access";
+import { wholesaleOnlyProductIds } from "@/lib/medusa/catalog";
 import { cache } from "react";
 import type { Metadata } from "next";
 import { productMetadata } from "@/lib/seo";
@@ -45,6 +47,15 @@ export async function generateMetadata({
   const result = await loadProduct(slug);
 
   if (!result.ok || !result.data) return { title: "Produit introuvable", robots: { index: false } };
+
+  /*
+    Un produit vendu uniquement par des grossistes ne s'annonce pas au
+    public : ni prix dans le titre, ni description, ni photo dans l'aperçu
+    de partage, et pas dans Google.
+  */
+  if ((await wholesaleOnlyProductIds()).has(result.data.id)) {
+    return { title: result.data.title, robots: { index: false, follow: false } };
+  }
 
   return productMetadata(result.data);
 }
@@ -121,7 +132,39 @@ export default async function ProductPage({
     ? await fetchOffersForVariant(selected.id)
     : null;
 
-  const offers = offersResult?.ok ? offersResult.data : [];
+  const allOffers = offersResult?.ok ? offersResult.data : [];
+
+  /*
+    Qui voit quoi (voir src/lib/trade-access.ts) : les offres des
+    grossistes ne s'affichent qu'aux vendeurs et aux comptes
+    professionnels, et la demande de devis leur est réservée.
+
+    Une boutique n'apparaît qu'une fois : Mercur peut rendre deux offres
+    de la même boutique pour une même déclinaison, et la liste montrait
+    alors deux fois le même nom.
+  */
+  const access = await getTradeAccess();
+  const seenSellers = new Set<string>();
+  const offers = allOffers.filter((offer) => {
+    if (!access.allowed && isTradeOnlyProfile(readSellerProfile(offer.sellerMetadata))) return false;
+    if (seenSellers.has(offer.sellerId)) return false;
+    seenSellers.add(offer.sellerId);
+    return true;
+  });
+
+  /* Tout ce qui est proposé l'est par des grossistes, et le visiteur n'y a pas accès. */
+  const tradeOnly = !access.allowed && allOffers.length > 0 && offers.length === 0;
+
+  /*
+    L'offre du bouton principal : celle de la déclinaison, sauf si c'est
+    une offre de grossiste masquée — on prend alors la première offre
+    visible.
+  */
+  const hiddenIds = new Set(allOffers.filter((offer) => !offers.includes(offer)).map((offer) => offer.id));
+  const mainOfferId =
+    selected?.offerId && !(hiddenIds.has(selected.offerId) && !offers.some((offer) => offer.id === selected.offerId))
+      ? selected.offerId
+      : offers[0]?.id ?? null;
 
   const related = await fetchProducts({ limit: 6 });
 
@@ -206,16 +249,19 @@ export default async function ProductPage({
               </p>
             )}
 
-            <div className="mt-4 flex flex-wrap items-baseline gap-x-3">
-              <span className="text-4xl font-black leading-none tracking-tighter text-[var(--mache-text)]">
-                {formatAmount(price, currency)}
-              </span>
-              {hasDiscount && (
-                <span className="text-lg text-[var(--mache-light)] line-through">
-                  {formatAmount(originalPrice, currency)}
+            {/* Le prix d'un produit de gros est réservé aux professionnels. */}
+            {!tradeOnly && (
+              <div className="mt-4 flex flex-wrap items-baseline gap-x-3">
+                <span className="text-4xl font-black leading-none tracking-tighter text-[var(--mache-text)]">
+                  {formatAmount(price, currency)}
                 </span>
-              )}
-            </div>
+                {hasDiscount && (
+                  <span className="text-lg text-[var(--mache-light)] line-through">
+                    {formatAmount(originalPrice, currency)}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Variantes */}
             {product.variants.length > 1 && (
@@ -251,7 +297,7 @@ export default async function ProductPage({
               CETTE offre — ceux d'un autre vendeur sur la même
               déclinaison ne le concernent pas.
             */}
-            {selected && selected.tiers.length > 0 && (
+            {!tradeOnly && selected && selected.tiers.length > 0 && (
               <div className="mt-5 overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
                 <p className="border-b border-[var(--mache-line)] bg-[var(--mache-bg)] px-3.5 py-2 text-sm font-bold text-[var(--mache-text)]">
                   Tarifs par quantité
@@ -300,9 +346,25 @@ export default async function ProductPage({
 
             {/* Ajout au panier */}
             <div className="mt-6">
-              {selected?.offerId ? (
+              {tradeOnly ? (
+                <div className="rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] px-4 py-3 text-base text-[#1e3a5f]">
+                  <p className="font-bold">Article vendu en gros, aux professionnels</p>
+                  <p className="mt-1 text-sm leading-relaxed">
+                    Ce produit est proposé par un grossiste. Il est réservé aux vendeurs MACHE et aux comptes
+                    professionnels (hôtels, écoles, entreprises…), qui peuvent demander un prix pour une quantité.
+                  </p>
+                  <p className="mt-2 flex flex-wrap gap-3 text-sm font-semibold">
+                    <Link href="/dashboard/seller/connexion" className="text-[var(--mache-primary)] hover:underline">
+                      Je vends sur MACHE
+                    </Link>
+                    <Link href="/compte/pro" className="text-[var(--mache-primary)] hover:underline">
+                      Ouvrir un compte professionnel
+                    </Link>
+                  </p>
+                </div>
+              ) : mainOfferId && selected ? (
                 <form action={addToCartAction} className="flex flex-wrap gap-2">
-                  <input type="hidden" name="offer_id" value={selected.offerId} />
+                  <input type="hidden" name="offer_id" value={mainOfferId} />
                   <input
                     type="hidden"
                     name="return_to"
@@ -455,6 +517,7 @@ export default async function ProductPage({
                           jusqu'ici sur WhatsApp, où ni l'acheteur ni le
                           vendeur ne la retrouvent.
                         */}
+                        {access.allowed && (
                         <Link
                           href={`/devis/nouveau?${new URLSearchParams({
                             boutique: offer.sellerId,
@@ -468,6 +531,7 @@ export default async function ProductPage({
                         >
                           Demander un devis
                         </Link>
+                        )}
                       </span>
                     </li>
                   ))}

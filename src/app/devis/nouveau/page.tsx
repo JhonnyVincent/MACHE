@@ -17,6 +17,7 @@ import { requestQuoteAction } from "../actions";
 import { getCustomer } from "@/lib/medusa/customer";
 import { pageMetadata } from "@/lib/seo";
 import { AntiSpamFields } from "@/components/anti-spam-fields";
+import { getTradeAccess } from "@/lib/trade-access";
 
 export const metadata = pageMetadata({
   title: "Demander un devis",
@@ -73,6 +74,34 @@ export default async function NewQuotePage({
         >
           Parcourir le catalogue
         </Link>
+      </main>
+    );
+  }
+
+  /*
+    Les devis sont réservés aux vendeurs et aux comptes professionnels :
+    c'est de l'achat en quantité, entre professionnels (voir
+    src/lib/trade-access.ts). Les autres voient comment y accéder.
+  */
+  const access = await getTradeAccess();
+
+  if (!access.allowed) {
+    return (
+      <main className="mx-auto w-full max-w-md px-4 py-16">
+        <h1 className="text-2xl font-bold text-[var(--mache-text)]">Devis réservés aux professionnels</h1>
+        <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
+          Un devis sert à acheter en quantité, pour revendre ou pour une organisation. Il est réservé aux vendeurs
+          MACHE et aux comptes professionnels (hôtels, écoles, restaurants, entreprises…). Pour un achat à
+          l&apos;unité, ajoutez simplement l&apos;article au panier.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/dashboard/seller/connexion" className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white">
+            Je vends sur MACHE
+          </Link>
+          <Link href="/compte/pro" className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)]">
+            Ouvrir un compte professionnel
+          </Link>
+        </div>
       </main>
     );
   }
@@ -192,6 +221,7 @@ export default async function NewQuotePage({
               id="buyer_company"
               name="buyer_company"
               autoComplete="organization"
+              defaultValue={access.name ?? ""}
               className={inputClass}
             />
           </div>
