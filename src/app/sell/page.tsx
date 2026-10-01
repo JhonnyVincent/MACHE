@@ -124,6 +124,10 @@ export default function SellPage() {
                 endroit oblige à s'inscrire pour le savoir, ce qui se
                 lit comme un prix qu'on préfère ne pas montrer.
               */}
+              <Link href="/rejoindre" className="btn-secondary border-white/30 text-white">
+                Rejoindre la liste de départ
+              </Link>
+
               <Link href="/sell/tarifs" className="btn-secondary border-white/30 text-white">
                 Voir les tarifs
               </Link>

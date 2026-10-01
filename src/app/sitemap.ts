@@ -25,6 +25,7 @@ const STATIC_PAGES: Array<[string, number]> = [
   ["/gros", 0.7],
   ["/haiti", 0.6],
   ["/sell", 0.8],
+  ["/rejoindre", 0.7],
   ["/sell/vendeur", 0.6],
   ["/sell/fournisseur", 0.6],
   ["/sell/marque-officielle", 0.6],

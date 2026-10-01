@@ -67,6 +67,19 @@ Cochez au fur et à mesure.
 - [x] **Comptes professionnels** (hôtels, écoles…) : demande sur `/compte/pro`, décision par l'équipe sur `/dashboard/admin/pros` (accorder, refuser avec motif, retirer), e-mails automatiques.
 - [ ] **Après le déploiement** : rien à configurer — le groupe « MACHE — Acheteurs professionnels » est créé au redémarrage du backend. Prévoir de traiter les demandes dans « Comptes professionnels » (menu admin).
 
+## ⚠️ Points vigilants — à ressortir à chaque analyse
+
+Ce sont les chantiers qui conditionnent l'ouverture réelle. Tant qu'ils ne sont pas faits, les remonter à chaque analyse.
+
+- [ ] **Relier réellement les applications** (page « Applications » du panneau vendeur). Aujourd'hui seul l'intérêt des vendeurs est noté ; rien n'est relié. Ordre prévu : **Shopify et WooCommerce** (import des produits, sans autorisation de leur part), puis **Alibaba.com et AliExpress** (clés à demander par le fondateur sur leurs portails développeurs), puis CJ Dropshipping, Syncee, Spocket, Printful. Décider d'après « Applications demandées » (administration).
+- [ ] **Brancher le paiement : Pay'm (Haïti) + Stripe (reste du monde).** Bloqué par la LLC (Stripe exige une société dans un pays supporté). Sans paiement réel, aucune vente n'est encaissée.
+- [ ] **Brancher la livraison** : tarifs réels et transporteur (Haïti → étranger = chemin critique). Aujourd'hui les frais internationaux sont confirmés à la main.
+- [ ] Avant toute publicité payante : nom de domaine propre, vrais produits (catalogue de démonstration retiré), pages légales complétées (nom de la LLC), paiement et livraison branchés.
+
+## ✅ Fait : liste de départ des vendeurs et grossistes
+
+- [x] Page publique `/rejoindre` : vendeur, grossiste ou marque laisse ses coordonnées ; la demande arrive dans la messagerie admin (catégorie « Ma boutique ») et l'équipe est prévenue par e-mail. Pas de réseaux sociaux pour l'instant.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
