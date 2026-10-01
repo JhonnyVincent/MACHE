@@ -190,7 +190,7 @@ export async function loginAdmin(
     return {
       ok: false,
       reason:
-        "Ce compte n'est pas un compte du personnel MACHE. Pour acheter ou vendre, utilisez votre compte client ou MACHE Boutik.",
+        "Ce compte n'est pas un compte du personnel MACHE. Pour acheter ou vendre, utilisez l'espace client ou l'espace vendeur.",
     };
   }
 

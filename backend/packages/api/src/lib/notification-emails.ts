@@ -193,7 +193,7 @@ export function orderForSellerEmail(input: {
       },
       { kind: "small", text: "Les détails, l'expédition et le suivi se gèrent depuis votre panneau vendeur." },
     ],
-    { label: "Ouvrir MACHE Boutik", url: siteLink("/dashboard/seller") }
+    { label: "Ouvrir mon espace vendeur", url: siteLink("/dashboard/seller") }
   );
 }
 
@@ -336,7 +336,7 @@ export function sellerApprovedEmail(input: { sellerName: string; handle: string 
       { kind: "p", text: "Bonne nouvelle : MACHE a approuvé votre boutique. Elle est maintenant visible dans le catalogue, avec les produits que vous y avez mis en vente." },
       { kind: "small", text: input.handle ? `Adresse de votre vitrine : ${siteLink(`/store/${input.handle}`) ?? ""}` : "Ajoutez vos produits depuis votre espace vendeur." },
     ],
-    { label: "Ouvrir MACHE Boutik", url: siteLink("/dashboard/seller") }
+    { label: "Ouvrir mon espace vendeur", url: siteLink("/dashboard/seller") }
   );
 }
 

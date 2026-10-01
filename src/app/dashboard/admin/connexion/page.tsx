@@ -139,7 +139,7 @@ export default async function AdminLoginPage({
       <p className="mt-6 text-sm leading-relaxed text-[var(--mache-muted)]">
         Vous vendez sur MACHE ?{" "}
         <Link href="/dashboard/seller/connexion" className="font-semibold text-[var(--mache-primary)] hover:underline">
-          MACHE Boutik
+          Espace vendeur
         </Link>
         . Vous êtes client ?{" "}
         <Link href="/compte/connexion" className="font-semibold text-[var(--mache-primary)] hover:underline">

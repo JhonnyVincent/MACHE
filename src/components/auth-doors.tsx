@@ -35,7 +35,7 @@ const DOORS = [
     title: "Vous vendez sur MACHE",
     text: "Votre boutique, vos produits, vos commandes et vos versements.",
     href: "/dashboard/seller/connexion",
-    action: "MACHE Boutik",
+    action: "Espace vendeur",
   },
   {
     title: "Vous êtes de l'équipe MACHE",

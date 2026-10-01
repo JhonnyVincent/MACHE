@@ -113,7 +113,7 @@ export default async function SupplierPage({
             <h2 className="text-lg font-bold text-[var(--mache-text)]">Vous vendez sur MACHE</h2>
             <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
               Particulier, boutique, marque ou grossiste : un vendeur est aussi un acheteur. Connectez-vous à votre
-              MACHE Boutik pour trouver des fournisseurs et leur demander un prix.
+              espace vendeur pour trouver des fournisseurs et leur demander un prix.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link

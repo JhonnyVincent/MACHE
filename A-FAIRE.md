@@ -150,9 +150,9 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 
 ## 🏷️ Noms des espaces (décidés le 1er octobre 2026)
 
-- **MACHE Pilote** : la gestion de la marketplace (le propriétaire et son équipe déléguée).
-- **MACHE Boutik** : l'espace de chaque vendeur, grossiste ou marque. Chacun invite son équipe dans Paramètres → Utilisateurs, avec cinq rôles (administration, stocks, commandes, comptabilité, support).
-- Appliqués dans les titres, menus, pages de connexion et e-mails. Si un texte ancien (« Espace vendeur », « Administration ») apparaît encore quelque part, le remplacer.
+- **MACHE Pilote** : la gestion de la marketplace (le propriétaire et son équipe déléguée). Nom **affiché** (titres, connexion, e-mails de l'équipe).
+- **MACHE Boutik** : l'espace des vendeurs, grossistes et marques. Nom **interne** pour distinguer dans le code et entre nous : **jamais affiché**. Les vendeurs voient « Espace vendeur ». Chacun invite son équipe dans Paramètres → Utilisateurs, avec cinq rôles (administration, stocks, commandes, comptabilité, support).
+- Voir `src/lib/spaces.ts`.
 
 ## ⏸️ Proposé, en attente de votre feu vert
 

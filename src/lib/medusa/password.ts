@@ -38,7 +38,7 @@ export const LOGIN_PAGE: Record<ResetActor, string> = {
 
 export const SPACE_LABEL: Record<ResetActor, string> = {
   customer: "votre compte client",
-  member: "MACHE Boutik (le même compte sert au panneau vendeur)",
+  member: "votre espace vendeur (le même compte sert au panneau vendeur)",
   user: "MACHE Pilote",
 };
 

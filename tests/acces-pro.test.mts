@@ -19,6 +19,8 @@
 */
 
 import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+const require_ = createRequire(import.meta.url);
 import { readFileSync } from "node:fs";
 import {
   PRO_TYPES, parseProRequest, proStatus, readProRequest,
@@ -265,6 +267,13 @@ check("panneau vendeur : les phrases que Mercur laisse en anglais sont traduites
   assert.match(fr.inventory.list.noRecordsTitle, /Aucun/);
   assert.match(fr.app.menus.store.editStore, /Modifier la boutique/);
   assert.match(read("backend/apps/vendor/src/i18n/index.ts"), /fr: \{\s+translation: fr/);
+});
+
+check("« MACHE Boutik » est un nom interne : il n'apparaît jamais dans un texte affiché", () => {
+  const { execSync } = require_("node:child_process");
+  const found = execSync(`grep -rln "Boutik" src backend/packages/api/src backend/apps/vendor/src backend/apps/vendor/index.html backend/apps/admin/index.html || true`, { encoding: "utf8" })
+    .split("\n").filter(Boolean).filter((file) => !file.endsWith("src/lib/spaces.ts"));
+  assert.deepEqual(found, []);
 });
 
 check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {

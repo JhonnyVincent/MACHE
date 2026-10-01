@@ -72,7 +72,7 @@ export default async function SellerEntryPage({
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-14">
         <h1 className="text-2xl font-bold text-[var(--mache-text)]">
-          MACHE Boutik momentanément indisponible
+          Espace vendeur momentanément indisponible
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           Le panneau vendeur ne peut pas être joint pour le moment.
@@ -92,7 +92,7 @@ export default async function SellerEntryPage({
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-14">
       <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)] sm:text-4xl">
-        {vendor ? vendor.name : "MACHE Boutik"}
+        {vendor ? vendor.name : "Espace vendeur"}
       </h1>
 
       {/*
@@ -102,7 +102,7 @@ export default async function SellerEntryPage({
       */}
       {vendor && (
         <p className="mt-1 text-md text-[var(--mache-muted)]">
-          MACHE Boutik ·{" "}
+          Espace vendeur ·{" "}
           <Link
             href={`/store/${vendor.handle}`}
             className="text-[var(--mache-primary)] hover:underline"
