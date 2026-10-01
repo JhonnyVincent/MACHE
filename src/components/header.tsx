@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Link } from "next-view-transitions";
 import { SocialLinks } from "@/components/social-links";
+import { CurrencyPicker } from "@/components/currency-picker";
 import type { SitePromotion } from "@/lib/medusa/promotions";
 
 /*
@@ -203,6 +204,10 @@ export function Header({ cartCount = 0,
             où la bande n'a pas la place : ils sont dans le pied de page.
           */}
           <SocialLinks className="hidden shrink-0 border-l border-white/20 pl-4 sm:flex" size={17} />
+
+          <div className="shrink-0 pl-4">
+            <CurrencyPicker />
+          </div>
 
           <div className="shrink-0 px-4">
             <select

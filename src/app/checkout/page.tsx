@@ -16,6 +16,7 @@ import { reportOutage } from "@/lib/medusa/outage";
 import { redirect } from "next/navigation";
 import { getCart } from "@/lib/medusa/cart";
 import { getCheckoutState } from "@/lib/medusa/checkout";
+import { ApproxPrice } from "@/components/approx-price";
 import { formatAmount } from "@/lib/medusa/catalog";
 import { saveAddressAction, chooseShippingAction, placeOrderAction } from "./actions";
 import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
@@ -410,7 +411,7 @@ export default async function CheckoutPage({
 
               <div className="flex justify-between border-t border-[var(--mache-line)] pt-2 text-lg">
                 <dt className="font-bold">{state.international ? "Total (hors expédition)" : "Total"}</dt>
-                <dd className="font-black">{formatAmount(cart.total, cart.currency)}</dd>
+                <dd className="font-black">{formatAmount(cart.total, cart.currency)}{" "}<ApproxPrice amount={cart.total} currency={cart.currency} /></dd>
               </div>
             </dl>
 

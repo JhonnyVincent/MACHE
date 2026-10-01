@@ -110,6 +110,11 @@ Décision du fondateur : on s'en occupe une fois la LLC déclarée et le domaine
 - [ ] Garder 2 ou 3 transporteurs en concurrence plutôt qu'un seul ; demander des références.
 - [ ] Une fois choisi : brancher les tarifs réels dans MACHE, lancer les colis pilotes (5 à 10), puis ouvrir l'international.
 
+## 💱 Devises
+
+- [x] **Conversion indicative en direct** : le visiteur choisit « ≈ USD / EUR / CAD » dans l'en-tête ; l'équivalent s'affiche sous les prix (fiche produit, panier, paiement), au taux du jour (service public de taux, relu toutes les 6 h). Sans taux disponible, rien n'est affiché.
+- [ ] **Vendeur qui fixe ses prix en dollars (USD)** : très utilisé en Haïti. Aujourd'hui la facturation est en gourdes (HTG) ; facturer en USD demande une région et des prix USD, et un panier ne mélange pas deux devises. À décider avec le paiement (Pay'm = HTG, Stripe = USD).
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.

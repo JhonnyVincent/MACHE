@@ -14,6 +14,7 @@
 import { Link } from "next-view-transitions";
 import { AnimatedList } from "@/components/anim/animated-list";
 import { getCart } from "@/lib/medusa/cart";
+import { ApproxPrice } from "@/components/approx-price";
 import { formatAmount } from "@/lib/medusa/catalog";
 import { sellerGroupsOf } from "@/lib/medusa/cart-minimums";
 import { blockingGroups } from "@/lib/seller-minimum";
@@ -192,7 +193,7 @@ export default async function CartPage({
 
                 <div className="flex justify-between border-t border-[var(--mache-line)] pt-2 text-lg">
                   <dt className="font-bold">Total</dt>
-                  <dd className="font-black">{formatAmount(cart.total, cart.currency)}</dd>
+                  <dd className="font-black">{formatAmount(cart.total, cart.currency)}{" "}<ApproxPrice amount={cart.total} currency={cart.currency} /></dd>
                 </div>
               </dl>
 

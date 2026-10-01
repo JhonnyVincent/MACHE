@@ -31,6 +31,7 @@ import { wholesaleOnlyProductIds } from "@/lib/medusa/catalog";
 import { cache } from "react";
 import type { Metadata } from "next";
 import { productMetadata, siteUrl } from "@/lib/seo";
+import { ApproxPrice } from "@/components/approx-price";
 import { readSellerWhatsapp, whatsappLink } from "@/lib/seller-whatsapp";
 
 /*
@@ -256,6 +257,7 @@ export default async function ProductPage({
                 <span className="text-4xl font-black leading-none tracking-tighter text-[var(--mache-text)]">
                   {formatAmount(price, currency)}
                 </span>
+                <ApproxPrice amount={price} currency={currency} />
                 {hasDiscount && (
                   <span className="text-lg text-[var(--mache-light)] line-through">
                     {formatAmount(originalPrice, currency)}
