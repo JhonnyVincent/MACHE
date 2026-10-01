@@ -158,8 +158,9 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 
 - [x] Page **Revendeurs** dans le panneau vendeur (réservée aux boutiques déclarées « marque ») : autoriser une boutique sur un ou plusieurs produits, retirer l'autorisation. Règles appliquées côté serveur : seule la marque du produit peut autoriser, la marque ne peut pas se retirer, le revendeur doit être une boutique ouverte.
 - Fonctionnement (Mercur) : un produit qui a au moins une boutique autorisée est **réservé** à celles-ci ; une boutique non autorisée ne peut pas le proposer. Un produit sans aucune autorisation reste **ouvert à tous** : la marque ne peut alors pas le réclamer.
-- [ ] **À vérifier avec de vrais comptes** : qu'un revendeur autorisé voit bien le produit de la marque dans son panneau pour créer son offre (non testé), et qu'un revendeur non autorisé ne peut pas le proposer.
-- [ ] Demande d'autorisation **par le revendeur** (aujourd'hui seule la marque autorise ; le revendeur passe par un devis).
+- [x] **Vérifié** (comptes d'essai) : un revendeur non autorisé ne voit pas un produit réservé à une marque ; une fois autorisé, il le voit dans son panneau.
+- [x] **Demande d'autorisation par le revendeur** : page Revendeurs → « Produits de marque à revendre » → « Demander l'autorisation ». La marque est prévenue par e-mail, accepte ou refuse dans « Demandes reçues », et le revendeur est prévenu de la décision.
+- [ ] Reste à vérifier en conditions réelles : que le revendeur peut créer son offre sur le produit autorisé depuis le panneau (la visibilité est vérifiée, pas la création de l'offre elle-même).
 
 ## ⏸️ Proposé, en attente de votre feu vert
 

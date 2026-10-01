@@ -23,6 +23,8 @@ export const config = {
 type Product = { id: string; title: string; authorized: Array<{ id: string; name: string }> };
 type Candidate = { id: string; name: string };
 type Data = { brand: boolean; products: Product[]; candidates: Candidate[] };
+type Incoming = { id: string; reseller_name: string; product_title: string; message: string | null };
+type Catalog = { id: string; title: string; brand_name: string; authorized: boolean; request: string | null };
 
 async function call(path: string, init?: RequestInit) {
   const base = typeof __BACKEND_URL__ === "string" ? __BACKEND_URL__ : "";
@@ -47,11 +49,19 @@ const RevendeursPage = () => {
   const [seller, setSeller] = useState("");
   const [picked, setPicked] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
+  const [incoming, setIncoming] = useState<Incoming[]>([]);
+  const [catalog, setCatalog] = useState<Catalog[]>([]);
 
   const load = useCallback(() => {
     call("/vendor/brand/products")
       .then((next) => setData(next as Data))
       .catch((e) => setError(e.message));
+    call("/vendor/brand/requests")
+      .then((next) => setIncoming((next as { requests?: Incoming[] }).requests ?? []))
+      .catch(() => setIncoming([]));
+    call("/vendor/brand/catalog")
+      .then((next) => setCatalog((next as { products?: Catalog[] }).products ?? []))
+      .catch(() => setCatalog([]));
   }, []);
 
   useEffect(load, [load]);
@@ -76,6 +86,38 @@ const RevendeursPage = () => {
     }
   };
 
+  const decide = async (id: string, action: "approve" | "decline") => {
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+
+    try {
+      await call(`/vendor/brand/requests/${id}`, { method: "POST", body: JSON.stringify({ action }) });
+      setNotice(action === "approve" ? "Demande acceptée : le revendeur est autorisé." : "Demande refusée.");
+      load();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const ask = async (productId: string) => {
+    setBusy(true);
+    setError(null);
+    setNotice(null);
+
+    try {
+      await call("/vendor/brand/requests", { method: "POST", body: JSON.stringify({ product_id: productId }) });
+      setNotice("Demande envoyée à la marque. Vous serez prévenu par e-mail de sa réponse.");
+      load();
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div style={{ background: "#f9f7f4", minHeight: "100vh", color: "#111827" }}>
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 16px 48px" }}>
@@ -86,9 +128,31 @@ const RevendeursPage = () => {
 
         {data && !data.brand && (
           <p style={{ marginTop: 12, fontSize: 15, color: "#4b5563" }}>
-            Cette page est réservée aux marques : une marque choisit ici qui peut revendre ses produits. Pour devenir
-            une marque, changez votre profil depuis votre profil de boutique sur le site.
+            Une marque choisit ici qui peut revendre ses produits. Vous pouvez demander l&apos;autorisation de revendre
+            les produits d&apos;une marque ci-dessous.
           </p>
+        )}
+
+        {data?.brand && incoming.length > 0 && (
+          <div style={{ ...box, marginTop: 16 }}>
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 800 }}>Demandes reçues ({incoming.length})</h2>
+            {incoming.map((request) => (
+              <div key={request.id} style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid #f3f4f6" }}>
+                <p style={{ margin: 0, fontSize: 14 }}>
+                  <strong>{request.reseller_name}</strong> veut revendre <strong>{request.product_title}</strong>
+                </p>
+                {request.message && <p style={{ margin: "2px 0 0", fontSize: 13, color: "#6b7280" }}>{request.message}</p>}
+                <div style={{ marginTop: 6, display: "flex", gap: 8 }}>
+                  <button type="button" disabled={busy} onClick={() => decide(request.id, "approve")} style={{ padding: "7px 14px", borderRadius: 8, background: "#15803d", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer" }}>
+                    Accepter
+                  </button>
+                  <button type="button" disabled={busy} onClick={() => decide(request.id, "decline")} style={{ padding: "7px 14px", borderRadius: 8, background: "#fff", color: "#111827", fontWeight: 700, border: "1px solid #d1d5db", cursor: "pointer" }}>
+                    Refuser
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         {data?.brand && (
@@ -172,6 +236,34 @@ const RevendeursPage = () => {
                 </div>
               </>
             )}
+          </>
+        )}
+
+        {catalog.length > 0 && (
+          <>
+            <h2 style={{ fontSize: 18, fontWeight: 800, margin: "28px 0 8px" }}>Produits de marque à revendre</h2>
+            <p style={{ margin: "0 0 10px", fontSize: 14, color: "#4b5563" }}>
+              Demandez à la marque l&apos;autorisation de proposer ses produits dans votre boutique.
+            </p>
+            <div style={{ display: "grid", gap: 10 }}>
+              {catalog.map((product) => (
+                <div key={product.id} style={{ ...box, display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 800 }}>{product.title}</p>
+                    <p style={{ margin: "2px 0 0", fontSize: 13, color: "#6b7280" }}>Marque : {product.brand_name}</p>
+                  </div>
+                  {product.authorized ? (
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#15803d" }}>✓ Autorisé : créez votre offre</span>
+                  ) : product.request === "pending" ? (
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#6b7280" }}>Demande en attente</span>
+                  ) : (
+                    <button type="button" disabled={busy} onClick={() => ask(product.id)} style={{ padding: "8px 14px", borderRadius: 8, background: "#d41834", color: "#fff", fontWeight: 700, border: "none", cursor: "pointer" }}>
+                      {product.request === "declined" ? "Redemander" : "Demander l'autorisation"}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
           </>
         )}
       </div>

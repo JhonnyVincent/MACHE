@@ -302,13 +302,26 @@ check("marque : ses revendeurs sont lus dans les offres, et portent le tag « Re
 check("la marque autorise ses revendeurs : seulement sa marque, seulement ses produits, rien d'inventé", () => {
   const lib = read("backend/packages/api/src/lib/brand-authorization.ts");
   assert.match(lib, /brand_seller_id/);
-  const route = read("backend/packages/api/src/api/vendor/brand/authorize/route.ts");
-  assert.match(route, /profile !== "marque"/);
-  assert.match(route, /brandStatus\(product, me\) === "no"/);
-  assert.match(route, /linkSellersToProductWorkflow/);
-  assert.match(route, /sellerId === me/);
-  assert.match(route, /target\.status !== "open"/);
+  const rules = read("backend/packages/api/src/lib/brand-actions.ts");
+  assert.match(rules, /profile !== "marque"/);
+  assert.match(rules, /brandStatus\(product, me\) === "no"/);
+  assert.match(rules, /linkSellersToProductWorkflow/);
+  assert.match(rules, /sellerId === me/);
+  assert.match(rules, /target\.status !== "open"/);
   assert.match(read("backend/apps/vendor/src/routes/revendeurs/page.tsx"), /\/vendor\/brand\/authorize/);
+});
+
+check("demande d'autorisation : le revendeur demande, la marque accepte ou refuse, chacun est prévenu", () => {
+  const requests = read("backend/packages/api/src/api/vendor/brand/requests/route.ts");
+  assert.match(requests, /Ce produit n'est pas un produit de marque que vous pouvez demander/);
+  assert.match(requests, /Votre demande est déjà en attente/);
+  assert.match(requests, /void notify/);
+  const decide = read("backend/packages/api/src/api/vendor/brand/requests/[id]/route.ts");
+  assert.match(decide, /brand_seller_id: me, status: "pending"/);
+  assert.match(decide, /grantResellerAccess/);
+  /* Une seule version des règles : la page Revendeurs et l'acceptation passent par la même fonction. */
+  assert.match(read("backend/packages/api/src/api/vendor/brand/authorize/route.ts"), /grantResellerAccess/);
+  assert.match(read("backend/apps/vendor/src/routes/revendeurs/page.tsx"), /Demander l'autorisation/);
 });
 
 check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {

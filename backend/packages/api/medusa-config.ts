@@ -147,6 +147,13 @@ module.exports = withMercur({
       resolve: './src/modules/partner',
     },
     /*
+      Les demandes d'autorisation : un revendeur demande à une marque le
+      droit de proposer un de ses produits.
+    */
+    {
+      resolve: './src/modules/brand_request',
+    },
+    /*
       Les livraisons. Mercur suit l'expédition d'une commande, mais ne
       sait pas dire QUI l'a portée ni prouver qu'elle est arrivée. En
       Haïti, où l'acheteur règle en main propre à la remise, c'est
