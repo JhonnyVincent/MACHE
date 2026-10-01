@@ -73,6 +73,9 @@ Ce sont les chantiers qui conditionnent l'ouverture réelle. Tant qu'ils ne sont
 
 - [ ] **Relier réellement les applications** (page « Applications » du panneau vendeur). Aujourd'hui seul l'intérêt des vendeurs est noté ; rien n'est relié. Ordre prévu : **Shopify et WooCommerce** (import des produits, sans autorisation de leur part), puis **Alibaba.com et AliExpress** (clés à demander par le fondateur sur leurs portails développeurs), puis CJ Dropshipping, Syncee, Spocket, Printful. Décider d'après « Applications demandées » (administration).
 - [ ] **Brancher le paiement : Pay'm (Haïti) + Stripe (reste du monde).** Bloqué par la LLC (Stripe exige une société dans un pays supporté). Sans paiement réel, aucune vente n'est encaissée.
+- [ ] **Ajouter MonCash et NatCash** (paiements mobiles en Haïti) en plus de Pay'm : le concurrent Bemane les affiche dès sa page d'accueil. À étudier avec Digicel (MonCash) et Natcom (NatCash).
+- [ ] **Afficher les zones de livraison dès l'accueil** (comme Bemane : Pétion-Ville, Delmas, Tabarre, Carrefour…) et rendre le bouton « Vendre » plus visible.
+- [ ] **Nom de domaine** : mache.fr est pris ; un autre site « machehaiti.com » existe (voir l'analyse). Vérifier la marque avant de choisir le domaine.
 - [ ] **Brancher la livraison** : tarifs réels et transporteur (Haïti → étranger = chemin critique). Aujourd'hui les frais internationaux sont confirmés à la main.
 - [ ] Avant toute publicité payante : nom de domaine propre, vrais produits (catalogue de démonstration retiré), pages légales complétées (nom de la LLC), paiement et livraison branchés.
 
