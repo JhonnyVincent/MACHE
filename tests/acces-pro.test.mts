@@ -244,10 +244,14 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   assert.match(home, /Visite guidée/);
   /* La publicité n'existe pas encore : le bloc ne promet rien. */
   assert.match(home, /ne sont pas encore ouverts/);
+  /* Applications : par vendeur, honnêtes (« intéressé » tant que l'outil n'est pas là). */
   const apps = read("backend/apps/vendor/src/routes/applications/page.tsx");
   assert.match(apps, /label: "Applications"/);
-  assert.match(apps, /status: "soon"/);
-  assert.doesNotMatch(apps, /status: "available"[^}]*name/);
+  for (const id of ["shopify", "woocommerce", "alibaba", "aliexpress"]) assert.match(apps, new RegExp(`id: "${id}"`), id);
+  assert.doesNotMatch(apps, /live: true,/);
+  assert.match(apps, /Je suis intéressé/);
+  assert.match(apps, /metadata: \{ \.\.\.metadata, apps: next \}/);
+  assert.match(read("backend/packages/api/src/api/admin/mache/apps/route.ts"), /\.sort\(\(a, b\) => b\.count - a\.count\)/);
   assert.match(read("backend/apps/vendor/src/routes/fournisseurs/page.tsx"), /\/vendor\/suppliers/);
   const route = read("backend/packages/api/src/api/vendor/suppliers/route.ts");
   assert.match(route, /seller\.id !== me && seller\.status === "open"/);

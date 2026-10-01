@@ -2186,3 +2186,18 @@ export async function actOnPro(
 
   return { ok: true, data: true };
 }
+
+/* Les applications que les vendeurs disent vouloir, de la plus demandée à la moins demandée. */
+export type AppInterest = { app: string; count: number; sellers: { id: string; name: string }[] };
+
+export async function fetchAppInterest(): Promise<Result<AppInterest[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ apps?: AppInterest[] }>("/admin/mache/apps", { token });
+
+  if (!result.ok) return result;
+
+  return { ok: true, data: result.data.apps ?? [] };
+}

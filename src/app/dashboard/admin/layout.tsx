@@ -67,6 +67,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         { label: "Modération", href: "/dashboard/admin/moderation" },
         { label: "Gel des versements", href: "/dashboard/admin/gel-des-versements" },
         { label: "Comptes professionnels", href: "/dashboard/admin/pros" },
+        { label: "Applications demandées", href: "/dashboard/admin/applications" },
         { label: "Agents", href: "/dashboard/admin/agents" },
         { label: "Points de retrait", href: "/dashboard/admin/points-de-retrait" },
         { label: "Utilisateurs", href: "/dashboard/admin/users" },
