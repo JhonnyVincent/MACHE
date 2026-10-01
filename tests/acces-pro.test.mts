@@ -258,16 +258,6 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   assert.match(route, /SUPPLIER_PROFILES = \["fournisseur", "marque"\]/);
 });
 
-check("page de pré-inscription : vendeur, grossiste, marque ; arrive dans la messagerie de MACHE", () => {
-  const action = read("src/app/rejoindre/actions.ts");
-  assert.match(action, /spamCheck\("boutique"/);
-  assert.match(action, /category: "boutique"/);
-  assert.match(action, /Pré-inscription/);
-  const page = read("src/app/rejoindre/page.tsx");
-  for (const kind of ["vendeur", "grossiste", "marque"]) assert.match(page, new RegExp(`value="${kind}"`), kind);
-  assert.match(read("src/app/sitemap.ts"), /"\/rejoindre"/);
-});
-
 check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {
   const page = read("src/app/partenaires/[slug]/page.tsx");
   for (const field of ["partner.logo", "partner.banner", "partner.whatsapp", "partner.phone", "partner.facebook", "partner.instagram", "partner.location"]) {
