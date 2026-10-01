@@ -28,6 +28,7 @@
 
 import { Link } from "next-view-transitions";
 import { PARTNERS } from "@/lib/partners";
+import { fetchDbPartners } from "@/lib/medusa/partners-db";
 
 export const metadata = {
   title: "Partenaires et sponsors",
@@ -81,7 +82,11 @@ const PARTNERSHIPS: Partnership[] = [
   },
 ];
 
-export default function PartenairesPage() {
+export const revalidate = 60;
+
+export default async function PartenairesPage() {
+  const services = await fetchDbPartners();
+
   return (
     <main className="bg-[var(--mache-bg)] pb-12">
       {/* ---------------------------------------------------------------- */}
@@ -137,18 +142,22 @@ export default function PartenairesPage() {
               <ul className="mt-4 space-y-4">
                 {PARTNERS.map((partner) => (
                   <li key={partner.name}>
-                    <a
-                      href={partner.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-md font-bold text-[var(--mache-text)] underline-offset-4 hover:underline"
-                    >
-                      {partner.name}
-                      <span className="ml-1 text-xs text-[var(--mache-muted)]" aria-hidden="true">
-                        ↗
-                      </span>
-                      <span className="sr-only"> (site externe)</span>
-                    </a>
+                    {partner.href ? (
+                      <a
+                        href={partner.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-md font-bold text-[var(--mache-text)] underline-offset-4 hover:underline"
+                      >
+                        {partner.name}
+                        <span className="ml-1 text-xs text-[var(--mache-muted)]" aria-hidden="true">
+                          ↗
+                        </span>
+                        <span className="sr-only"> (site externe)</span>
+                      </a>
+                    ) : (
+                      <span className="text-md font-bold text-[var(--mache-text)]">{partner.name}</span>
+                    )}
 
                     <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
                       {partner.does}
@@ -182,6 +191,36 @@ export default function PartenairesPage() {
               </ul>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- */}
+      <section className="mache-reveal container-page py-10">
+        <div className="max-w-3xl">
+          <h2 className="text-2xl font-bold tracking-tight text-[var(--mache-text)]">Services pour les vendeurs</h2>
+          <p className="mt-2 text-md leading-relaxed text-[var(--mache-muted)]">
+            Photographes, financement, graphisme, transport… Des entreprises indépendantes qui proposent leurs services
+            aux vendeurs et aux acheteurs de MACHE. Le service se traite directement avec elles ; MACHE met en relation
+            et ne garantit rien.
+          </p>
+
+          {services.length > 0 && (
+            <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+              {services.map((partner) => (
+                <li key={partner.slug} className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+                  <Link href={`/partenaires/${partner.slug}`} className="text-md font-bold text-[var(--mache-text)] hover:underline">
+                    {partner.name}
+                  </Link>
+                  {partner.category && <p className="mt-0.5 text-sm font-semibold text-[var(--mache-primary)]">{partner.category}</p>}
+                  {partner.location && <p className="mt-0.5 text-sm text-[var(--mache-muted)]">📍 {partner.location}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <Link href="/partenaires/inscription" className="btn-primary mt-5 inline-block">
+            Proposer mes services
+          </Link>
         </div>
       </section>
 

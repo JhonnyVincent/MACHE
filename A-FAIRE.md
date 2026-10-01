@@ -133,6 +133,14 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 5. [ ] **Branchement technique** (par Claude) : prestataire de versement de Mercur (interface prévue pour d'autres prestataires que Stripe) + tâches planifiées de capture et de versement + deux devises (HTG, USD).
 6. [ ] **Tests avec de petites vraies sommes**, puis ouverture.
 
+## ✅ Fait (octobre 2026) : partenaires, panneau vendeur
+
+- [x] **Partenaires de services** : inscription publique (`/partenaires/inscription`), examen et gestion par l'équipe (`/dashboard/admin/partenaires` : ajouter, corriger, approuver, suspendre, exclure, supprimer), profils publics. Rien n'est public avant approbation.
+- [x] **Panneau vendeur contrôlé de bout en bout** : états vides et libellés restés en anglais traduits (fichier `backend/apps/vendor/src/i18n/fr.json`, à compléter si une autre phrase apparaît).
+- [x] **Droits de l'équipe** : le panneau propose déjà 5 rôles à l'invitation d'un membre (Administration, Gestion des stocks, Gestion des commandes, Comptabilité, Support). **À vérifier avec un second compte** que « Gestion des commandes » peut expédier sans pouvoir rembourser (non testé).
+- [ ] **Boutiques côté administration** : suspendre et résilier (= bannir) existent déjà. **Ajouter une boutique à la main** et **supprimer** ne sont pas faits : une boutique a besoin d'un compte propriétaire (e-mail + mot de passe) et supprimer effacerait ses commandes et ses commissions. Proposition : bouton « inviter un vendeur » (lien d'inscription envoyé par e-mail) et « résilier » à la place de supprimer.
+- [ ] **Alternative à Tally pour une page d'atterrissage sponsorisable** : Brevo (déjà utilisé pour les e-mails) propose des pages d'atterrissage et des formulaires ; Carrd ou Systeme.io permettent d'installer le pixel publicitaire (Meta/Google). À décider.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.

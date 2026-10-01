@@ -14,15 +14,21 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Link } from "next-view-transitions";
 import { PARTNERS, partnerBySlug } from "@/lib/partners";
+import { fetchDbPartner } from "@/lib/medusa/partners-db";
 import { pageMetadata } from "@/lib/seo";
 import { whatsappLink } from "@/lib/seller-whatsapp";
+
+/* Les partenaires enregistrés dans MACHE s'ajoutent sans redéploiement. */
+export const dynamicParams = true;
+export const revalidate = 60;
 
 export function generateStaticParams() {
   return PARTNERS.filter((partner) => partner.slug).map((partner) => ({ slug: String(partner.slug) }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const partner = partnerBySlug((await params).slug);
+  const slug = (await params).slug;
+  const partner = partnerBySlug(slug) ?? (await fetchDbPartner(slug));
 
   if (!partner) return {};
 
@@ -37,7 +43,8 @@ const button =
   "inline-flex items-center rounded-[8px] border border-[var(--mache-line)] bg-white px-4 py-2.5 text-md font-semibold text-[var(--mache-text)] hover:border-[var(--mache-primary)]";
 
 export default async function PartnerProfilePage({ params }: { params: Promise<{ slug: string }> }) {
-  const partner = partnerBySlug((await params).slug);
+  const slug = (await params).slug;
+  const partner = partnerBySlug(slug) ?? (await fetchDbPartner(slug));
 
   if (!partner) notFound();
 
@@ -95,9 +102,11 @@ export default async function PartnerProfilePage({ params }: { params: Promise<{
                 Appeler
               </a>
             )}
-            <a href={partner.href} target="_blank" rel="noopener noreferrer" className={button}>
-              Site web ↗<span className="sr-only"> (site externe)</span>
-            </a>
+            {partner.href && (
+              <a href={partner.href} target="_blank" rel="noopener noreferrer" className={button}>
+                Site web ↗<span className="sr-only"> (site externe)</span>
+              </a>
+            )}
             {partner.facebook && (
               <a href={partner.facebook} target="_blank" rel="noopener noreferrer" className={button}>
                 Facebook ↗

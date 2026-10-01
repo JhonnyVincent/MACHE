@@ -138,6 +138,15 @@ module.exports = withMercur({
       resolve: './src/modules/quote',
     },
     /*
+      Les partenaires de services (photographe, financement, transport…).
+      Ils ne vendent pas par le panier : on les contacte directement. Ils
+      s'inscrivent seuls ou sont ajoutés par l'équipe, et ne sont publics
+      qu'une fois approuvés.
+    */
+    {
+      resolve: './src/modules/partner',
+    },
+    /*
       Les livraisons. Mercur suit l'expédition d'une commande, mais ne
       sait pas dire QUI l'a portée ni prouver qu'elle est arrivée. En
       Haïti, où l'acheteur règle en main propre à la remise, c'est

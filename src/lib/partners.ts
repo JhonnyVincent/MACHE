@@ -32,8 +32,8 @@ export type Partner = {
   name: string;
   /* Ce qu'il fait, à la troisième personne, en une phrase. */
   does: string;
-  /* Son adresse. Rien n'est affiché sans elle. */
-  href: string;
+  /* Son site. Rien n'est lié sans lui. */
+  href?: string;
   /* Le service passe-t-il par MACHE, ou se traite-t-il en direct ? */
   mediated: boolean;
   /*

@@ -2201,3 +2201,87 @@ export async function fetchAppInterest(): Promise<Result<AppInterest[]>> {
 
   return { ok: true, data: result.data.apps ?? [] };
 }
+
+/* Les partenaires de services, côté administration. */
+export type AdminPartner = {
+  id: string;
+  slug: string;
+  name: string;
+  category: string;
+  description: string | null;
+  location: string | null;
+  logo: string | null;
+  banner: string | null;
+  website: string | null;
+  whatsapp: string | null;
+  phone: string | null;
+  facebook: string | null;
+  instagram: string | null;
+  contactName: string | null;
+  contactEmail: string;
+  status: "pending" | "approved" | "suspended" | "banned";
+  statusReason: string | null;
+  source: "self" | "admin";
+};
+
+export async function fetchAdminPartners(): Promise<Result<AdminPartner[]>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<{ partners?: Raw[] }>("/admin/mache/partners", { token });
+
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    data: (result.data.partners ?? []).map((row) => ({
+      id: String(row.id),
+      slug: str(row.slug) ?? "",
+      name: str(row.name) ?? "",
+      category: str(row.category) ?? "",
+      description: str(row.description),
+      location: str(row.location),
+      logo: str(row.logo),
+      banner: str(row.banner),
+      website: str(row.website),
+      whatsapp: str(row.whatsapp),
+      phone: str(row.phone),
+      facebook: str(row.facebook),
+      instagram: str(row.instagram),
+      contactName: str(row.contact_name),
+      contactEmail: str(row.contact_email) ?? "",
+      status: (["pending", "approved", "suspended", "banned"].includes(String(row.status)) ? row.status : "pending") as AdminPartner["status"],
+      statusReason: str(row.status_reason),
+      source: row.source === "admin" ? "admin" : "self",
+    })),
+  };
+}
+
+export async function createAdminPartner(body: Record<string, string>): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>("/admin/mache/partners", { method: "POST", body, token });
+
+  return result.ok ? { ok: true, data: true } : result;
+}
+
+export async function actOnPartner(
+  id: string,
+  action: "approve" | "suspend" | "ban" | "delete" | "update",
+  extra: Record<string, string> = {}
+): Promise<Result<true>> {
+  const token = await readToken();
+
+  if (!token) return { ok: false, reason: "Session expirée." };
+
+  const result = await request<Raw>(`/admin/mache/partners/${encodeURIComponent(id)}`, {
+    method: "POST",
+    body: { action, ...extra },
+    token,
+  });
+
+  return result.ok ? { ok: true, data: true } : result;
+}

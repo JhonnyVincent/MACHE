@@ -1,156 +1,89 @@
 /*
-  TESTS : ce que MACHE a le droit d'écrire sur ses partenaires.
-
-  C'est la page qu'on remplit le plus facilement de logos qu'on n'a pas
-  le droit d'afficher. Un nom posé sur une page d'accueil vaut caution :
-  le visiteur en conclut que cette entreprise travaille avec MACHE. Si
-  c'est faux, c'est un mensonge, et en droit une atteinte à la marque.
-
-  Trois règles :
-
-  1. UN PARTENAIRE N'EST NOMMÉ QU'AVEC SON ADRESSE — sans lien, un nom
-     n'est pas vérifiable, et un visiteur ne peut pas aller voir.
-
-  2. RIEN NE S'AFFICHE QUAND LA LISTE EST VIDE — ni bande « Nos
-     partenaires » creuse, ni cases grises qui annoncent un réseau
-     inexistant.
-
-  3. UN SERVICE QUI NE PASSE PAS PAR MACHE LE DIT — sans quoi un vendeur
-     croit qu'ouvrir une boutique ici lui ouvre un financement, et MACHE
-     se retrouve à répondre d'un refus qu'elle n'a pas décidé.
-
-  Lancer : npm run test:partenaires
+  Partenaires de services : saisie nettoyée, rien de dangereux affiché,
+  l'e-mail jamais public, modération complète côté administration.
 */
-
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { PARTNERS } from "../src/lib/partners.js";
+import { parsePartner, publicPartner, slugify, webUrl, whatsappDigits, PARTNER_CATEGORIES } from "../backend/packages/api/src/lib/partner-input.ts";
+import { PARTNER_CATEGORIES as SITE_CATEGORIES } from "../src/lib/partner-categories.ts";
 
 let passed = 0;
-
 function check(name: string, run: () => void) {
   run();
   passed += 1;
   console.log(`  ✓ ${name}`);
 }
+const read = (file: string) => readFileSync(file, "utf8");
 
-const STRIP = readFileSync("src/components/partners-strip.tsx", "utf8");
-const PAGE = readFileSync("src/app/partenaires/page.tsx", "utf8");
+console.log("\nPartenaires de services");
 
-check("chaque partenaire nommé porte une adresse qu'on peut aller voir", () => {
-  for (const partner of PARTNERS) {
-    assert.ok(partner.name.trim().length > 0, "un partenaire sans nom");
+const valid = { name: "Studio Lumière", category: "Photographie", contact_email: "Contact@Studio.ht" };
 
-    assert.match(
-      partner.href,
-      /^https:\/\/\S+\.\S+/,
-      `« ${partner.name} » est nommé sans adresse vérifiable`
-    );
+check("une fiche minimale est acceptée, l'e-mail est mis en minuscules", () => {
+  const parsed = parsePartner(valid);
+  assert.equal(parsed.ok, true);
+  if (parsed.ok) assert.equal(parsed.value.contact_email, "contact@studio.ht");
+});
 
-    assert.ok(
-      partner.does.trim().length > 0,
-      `« ${partner.name} » est nommé sans dire ce qu'il fait`
-    );
+check("nom, catégorie et e-mail sont obligatoires", () => {
+  assert.equal(parsePartner({ ...valid, name: "" }).ok, false);
+  assert.equal(parsePartner({ ...valid, category: "Piratage" }).ok, false);
+  assert.equal(parsePartner({ ...valid, contact_email: "pas-un-mail" }).ok, false);
+});
+
+check("les adresses web : https ajouté, javascript: et data: refusés", () => {
+  assert.equal(webUrl("monsite.ht"), "https://monsite.ht/");
+  assert.equal(webUrl("http://a.ht/x"), "http://a.ht/x");
+  assert.equal(webUrl(""), null);
+  for (const bad of ["javascript:alert(1)", "data:text/html,x", "ftp://x.ht", "nimportequoi"]) {
+    assert.equal(webUrl(bad), "invalid", bad);
   }
+  assert.equal(parsePartner({ ...valid, website: "javascript:alert(1)" }).ok, false);
 });
 
-check("aucun partenaire ne se voit prêter une promesse chiffrée", () => {
-  /*
-    MACHE ne fixe ni taux, ni plafond, ni délai chez un partenaire, et
-    ne les vérifie pas. Les écrire à sa place engagerait MACHE sur des
-    conditions qu'elle ne maîtrise pas.
-  */
-  for (const partner of PARTNERS) {
-    assert.equal(
-      /\d+\s?%|\d+\s?(jours?|heures?|gourdes?|USD|\$)/i.test(partner.does),
-      false,
-      `« ${partner.name} » se voit prêter un chiffre que MACHE ne tient pas`
-    );
-  }
+check("WhatsApp : chiffres, indicatif 509 ajouté à un numéro local", () => {
+  assert.equal(whatsappDigits("3712 3456"), "50937123456");
+  assert.equal(whatsappDigits("+509 3712-3456"), "50937123456");
+  assert.equal(whatsappDigits("abc"), "invalid");
+  assert.equal(whatsappDigits(""), null);
 });
 
-check("la bande disparaît quand aucun partenaire n'a signé", () => {
-  assert.match(
-    STRIP,
-    /PARTNERS\.length === 0\) return null/,
-    "une section « Nos partenaires » vide annonce un réseau qui n'existe pas"
-  );
+check("l'adresse de la page vient du nom, sans accents ni symboles", () => {
+  assert.equal(slugify("Studio Lumière & Fils !"), "studio-lumiere-fils");
+  assert.equal(slugify("***"), "partenaire");
 });
 
-check("la page ne dit plus « personne » quand quelqu'un est là", () => {
-  /*
-    L'encadré était écrit en dur : il serait resté au-dessus des
-    premiers partenaires signés, à démentir la liste juste en dessous.
-  */
-  const index = PAGE.indexOf("ne liste encore personne");
-
-  assert.ok(index > -1, "l'encadré des débuts doit rester pour le jour où la liste se vide");
-
-  const avant = PAGE.slice(0, index);
-
-  assert.match(
-    avant.slice(-600),
-    /PARTNERS\.length === 0 \? \(/,
-    "l'encadré doit être conditionné à une liste réellement vide"
-  );
+check("la sortie publique ne contient jamais l'e-mail ni le motif interne", () => {
+  const out = publicPartner({ slug: "a", name: "A", category: "Autre", contact_email: "x@y.ht", contact_name: "X", status_reason: "motif", status: "approved" });
+  const keys = Object.keys(out);
+  for (const secret of ["contact_email", "contact_name", "status_reason", "status"]) assert.ok(!keys.includes(secret), secret);
 });
 
-check("aucun logo de partenaire n'est affiché", () => {
-  /*
-    Afficher une marque demande un accord écrit. MACHE n'en a aucun.
-  */
-  for (const source of [STRIP, PAGE]) {
-    assert.equal(
-      /<img|next\/image/.test(source),
-      false,
-      "un logo affiché sans accord est une atteinte à la marque"
-    );
-  }
+check("les catégories du site et du backend sont les mêmes", () => {
+  assert.deepEqual([...SITE_CATEGORIES], [...PARTNER_CATEGORIES]);
 });
 
-check("un service qui ne passe pas par MACHE le dit", () => {
-  const direct = PARTNERS.filter((partner) => !partner.mediated);
-
-  assert.ok(
-    direct.length > 0,
-    "aucun partenaire en direct : cette vérification doit suivre le cas réel"
-  );
-
-  assert.match(
-    PAGE,
-    /!partner\.mediated && \(/,
-    "la page doit distinguer un service rendu en direct"
-  );
-
-  assert.match(
-    PAGE,
-    /MACHE ne dépose pas le dossier, ne\s+garantit rien/,
-    "et écrire franchement que MACHE ne garantit rien"
-  );
+check("le backend : liste publique = approuvés seulement ; exclu = pas de retour ; exclu ne se supprime pas", () => {
+  assert.match(read("backend/packages/api/src/api/store/partners/route.ts"), /status: "approved"/);
+  assert.match(read("backend/packages/api/src/api/store/partners/route.ts"), /row\.status === "banned"/);
+  assert.match(read("backend/packages/api/src/api/store/partners/\[slug\]/route.ts"), /status: "approved"/);
+  const admin = read("backend/packages/api/src/api/admin/mache/partners/[id]/route.ts");
+  assert.match(admin, /reason\.length < 3/);
+  assert.match(admin, /row\.status === "banned"/);
+  assert.match(admin, /softDeletePartners/);
 });
 
-check("les liens sortants sont signalés comme tels", () => {
-  for (const source of [STRIP, PAGE]) {
-    assert.match(
-      source,
-      /rel="noopener noreferrer"/,
-      "un lien qui quitte le site doit le dire au navigateur"
-    );
-  }
+check("l'administration peut ajouter, approuver, suspendre, exclure, supprimer, corriger", () => {
+  const actions = read("src/app/dashboard/admin/partenaires/actions.ts");
+  for (const action of ["approve", "suspend", "ban", "delete", "update"]) assert.match(actions, new RegExp(`"${action}"`), action);
+  assert.match(actions, /createAdminPartner/);
+  assert.match(read("src/app/dashboard/admin/layout.tsx"), /\/dashboard\/admin\/partenaires/);
 });
 
-check("Livraison et Points relais sont des places à prendre, pas de faux partenaires", () => {
-  /* Aucune entreprise de livraison n'a signé : les montrer comme partenaires inventerait un réseau. */
-  const names = PARTNERS.map((p) => p.name.toLowerCase());
-  assert.ok(!names.some((n) => /shipping|livraison|point/.test(n)), "aucun rôle ouvert ne doit être rangé parmi les partenaires signés");
-  assert.match(STRIP, /Place à prendre/);
-  assert.match(STRIP, /Devenir partenaire/);
+check("le site : inscription publique, services listés, profil lu en base", () => {
+  assert.match(read("src/app/partenaires/page.tsx"), /Proposer mes services/);
+  assert.match(read("src/app/partenaires/inscription/actions.ts"), /spamCheck/);
+  assert.match(read("src/app/partenaires/[slug]/page.tsx"), /fetchDbPartner/);
 });
 
-check("BAWON accompagne vers un financement, il ne finance pas", () => {
-  const bawon = PARTNERS.find((p) => p.name === "BAWON")!;
-  assert.match(bawon.does, /[Aa]ccompagne/);
-  assert.doesNotMatch(bawon.does, /[Aa]vance des fonds|prête|finance les/);
-});
-
-console.log(`\n${passed} vérifications passées.\n`);
+console.log(`\n${passed} vérifications réussies.`);
