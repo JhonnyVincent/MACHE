@@ -90,6 +90,16 @@ Ce sont les chantiers qui conditionnent l'ouverture réelle. Tant qu'ils ne sont
 - [ ] **Revendeurs affiliés** (revendre sans stock contre commission) — proche de l'idée vendeurs ↔ grossistes ↔ marques.
 - [ ] **Services / agences** en plus des produits (Katalog les propose) : à décider.
 
+## 🌍 International : conformité (à traiter avant les premiers colis réels)
+
+- [ ] **Commencer par 3 corridors seulement** : Haïti → États-Unis, → Canada, → France. Ne pas « ouvrir le monde » avant de les maîtriser.
+- [ ] **Liste des produits interdits ou encadrés à l'export** (alimentaire, cosmétiques, médicaments, plantes et produits animaux, alcool/rhum, contrefaçons) : à valider avec un transitaire et un juriste ; puis l'afficher dans les conditions vendeurs et bloquer ces catégories à l'international dans le catalogue.
+- [ ] **Choisir un transitaire / groupeur** (expédition Haïti → étranger, dédouanement) : c'est lui qui connaît les règles par pays. Condition pour que « commande sur confirmation » devienne réelle.
+- [ ] **Droits de douane et taxes à l'arrivée** : décider qui paie (l'acheteur à la réception, ou MACHE d'avance) et l'écrire clairement au paiement.
+- [ ] **Pages légales** : conditions internationales, retours, protection des données (RGPD pour l'Europe), après identification de la LLC.
+- [ ] **Colis pilote** : tester 5 à 10 envois réels (Haïti → USA/Canada/France) avant d'annoncer l'international au public.
+- [ ] Idée Katalog : **filtre des boutiques par département d'Haïti** et compteurs en direct sur l'accueil.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
