@@ -226,12 +226,21 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   assert.match(html, /window\.localStorage\.setItem\("lng", "fr"\)/);
   /* Un choix déjà fait (cookie ou stockage) n'est jamais écrasé. */
   assert.match(html, /!\/\(\^\|;\\s\*\)lng=\/\.test\(document\.cookie\) && !window\.localStorage\.getItem\("lng"\)/);
+  /* Bascule unique vers le français, même si l'anglais était déjà retenu ; ensuite le choix de l'utilisateur prime. */
+  assert.match(html, /mache\.lng\.fr/);
   const nav = read("backend/apps/vendor/src/_navigation.ts");
   for (const hidden of ["price-lists", "collections", "categories", "customer-groups", "campaigns", "reservations"]) {
     assert.match(nav, new RegExp(`id: "${hidden}", hidden: true`), hidden);
   }
   assert.match(nav, /label: "Avis"/);
   assert.match(read("backend/apps/vendor/src/routes/bien-demarrer/page.tsx"), /rank: 0,/);
+  /* L'accueil vendeur est composé de blocs que le vendeur affiche, masque et range. */
+  const home = read("backend/apps/vendor/src/routes/bien-demarrer/page.tsx");
+  for (const block of ["premiers-pas", "demandes", "ventes", "grossiste", "boutique", "pub", "avis"]) assert.match(home, new RegExp(`id: "${block}"`), block);
+  assert.match(home, /Personnaliser mon accueil/);
+  assert.match(home, /localStorage\.setItem\(STORAGE_KEY/);
+  /* La publicité n'existe pas encore : le bloc ne promet rien. */
+  assert.match(home, /ne sont pas encore ouverts/);
   assert.match(read("backend/apps/vendor/src/routes/fournisseurs/page.tsx"), /\/vendor\/suppliers/);
   const route = read("backend/packages/api/src/api/vendor/suppliers/route.ts");
   assert.match(route, /seller\.id !== me && seller\.status === "open"/);

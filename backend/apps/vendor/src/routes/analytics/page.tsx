@@ -157,7 +157,7 @@ export default function VendorAnalyticsPage() {
   const nothing = data && data.orders === 0;
 
   return (
-    <div style={{ padding: 24, maxWidth: 900 }}>
+    <div style={{ background: "#f9fafb", color: "#111827", minHeight: "100vh" }}><div style={{ padding: 24, maxWidth: 900 }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>Chiffres</h1>
 
       <p style={{ color: "#52525b", fontSize: 14, marginTop: 6 }}>
@@ -320,6 +320,7 @@ export default function VendorAnalyticsPage() {
           )}
         </>
       )}
+    </div>
     </div>
   );
 }

@@ -4,7 +4,7 @@
   Le panneau Mercur montre tout ce qu'une grande boutique en ligne
   utilise. Pour un vendeur MACHE qui débute, la moitié de ces rubriques
   ne sert à rien et fait peur. On garde, dans l'ordre d'usage :
-  Bien démarrer, Commandes, Produits (avec Offres et Stock),
+  Accueil, Commandes, Produits (avec Offres et Stock),
   Fournisseurs, Devis,
   Clients, Promotions, Versements, Avis, Chiffres.
 

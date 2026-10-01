@@ -13,7 +13,12 @@
     -->
     <script>
       try {
-        if (!/(^|;\s*)lng=/.test(document.cookie) && !window.localStorage.getItem("lng")) {
+        var done = window.localStorage.getItem("mache.lng.fr");
+        if (!done) {
+          window.localStorage.setItem("mache.lng.fr", "1");
+          window.localStorage.setItem("lng", "fr");
+          document.cookie = "lng=; Max-Age=0; path=/";
+        } else if (!/(^|;\s*)lng=/.test(document.cookie) && !window.localStorage.getItem("lng")) {
           window.localStorage.setItem("lng", "fr");
         }
       } catch (e) {}

@@ -15,6 +15,7 @@ const benefits = [
   "Dashboard simple",
   "Boutique publique",
   "SaaS stock optionnel",
+  "Trouver un grossiste ou une marque, demander un devis et revendre",
 ];
 
 const steps = [

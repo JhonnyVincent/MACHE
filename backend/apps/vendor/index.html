@@ -8,12 +8,18 @@
     <!--
       Le panneau démarre en français. La langue est lue dans le cookie ou
       le stockage « lng » (i18next) ; sans rien, il retombait sur l'anglais,
-      quel que soit le navigateur. On pose « fr » seulement si rien n'est
-      choisi : un changement fait dans Profil → Langue reste respecté.
+      quel que soit le navigateur. On passe en « fr » UNE fois (même si le navigateur
+      avait retenu l'anglais par défaut) ; ensuite un changement fait
+      dans Profil → Langue reste respecté.
     -->
     <script>
       try {
-        if (!/(^|;\s*)lng=/.test(document.cookie) && !window.localStorage.getItem("lng")) {
+        var done = window.localStorage.getItem("mache.lng.fr");
+        if (!done) {
+          window.localStorage.setItem("mache.lng.fr", "1");
+          window.localStorage.setItem("lng", "fr");
+          document.cookie = "lng=; Max-Age=0; path=/";
+        } else if (!/(^|;\s*)lng=/.test(document.cookie) && !window.localStorage.getItem("lng")) {
           window.localStorage.setItem("lng", "fr");
         }
       } catch (e) {}

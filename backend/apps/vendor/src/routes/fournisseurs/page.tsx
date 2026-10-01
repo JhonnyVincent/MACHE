@@ -95,6 +95,7 @@ const FournisseursPage = () => {
   }, [suppliers, filter, search]);
 
   return (
+    <div style={{ background: "#f9fafb", minHeight: "100vh" }}>
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 16px 48px", color: "#111827" }}>
       <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0 }}>Fournisseurs</h1>
 
@@ -188,6 +189,7 @@ const FournisseursPage = () => {
           </li>
         ))}
       </ul>
+    </div>
     </div>
   );
 };
