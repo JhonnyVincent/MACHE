@@ -276,6 +276,16 @@ check("« MACHE Boutik » est un nom interne : il n'apparaît jamais dans un tex
   assert.deepEqual(found, []);
 });
 
+check("accueil vendeur : vendeur, grossiste et marque ne voient pas la même chose", () => {
+  const home = read("backend/apps/vendor/src/routes/bien-demarrer/page.tsx");
+  for (const text of ["Vous êtes vendeur", "Vous êtes grossiste", "Vous êtes une marque"]) assert.match(home, new RegExp(text), text);
+  assert.match(home, /gros: "fournisseur", marque: "marque"/);
+  assert.match(home, /\["demandes", "gros"\]/);
+  assert.match(home, /particulier" \|\| raw === "business"/);
+  /* La fonction « suivi des revendeurs » n'existe pas : le bloc le dit au lieu de la promettre. */
+  assert.match(home, /n&apos;est pas encore disponible/);
+});
+
 check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {
   const page = read("src/app/partenaires/[slug]/page.tsx");
   for (const field of ["partner.logo", "partner.banner", "partner.whatsapp", "partner.phone", "partner.facebook", "partner.instagram", "partner.location"]) {

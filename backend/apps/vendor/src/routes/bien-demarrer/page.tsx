@@ -47,6 +47,8 @@ type Status = {
   awaiting: number | null;
   weekOrders: number | null;
   weekRevenue: string | null;
+  profile: Profile | null;
+  minOrder: number;
 };
 
 const EMPTY: Status = {
@@ -58,6 +60,8 @@ const EMPTY: Status = {
   orders: null,
   pendingQuotes: null,
   status: null,
+  profile: null,
+  minOrder: 0,
   awaiting: null,
   weekOrders: null,
   weekRevenue: null,
@@ -78,6 +82,37 @@ async function read<T>(path: string): Promise<T | null> {
 }
 
 type Count = { count?: number };
+
+/*
+  Le profil déclaré par le vendeur : vendeur, grossiste (« fournisseur »)
+  ou marque. Les anciens profils « particulier » et « business » sont des
+  vendeurs. Sans profil déclaré, rien n'est supposé.
+*/
+type Profile = "vendeur" | "fournisseur" | "marque";
+
+function readProfile(metadata: unknown): Profile | null {
+  const raw = (metadata as Record<string, unknown> | undefined)?.profile;
+
+  if (raw === "fournisseur" || raw === "marque") return raw;
+  if (raw === "vendeur" || raw === "particulier" || raw === "business") return "vendeur";
+
+  return null;
+}
+
+const PROFILE_TEXT: Record<Profile, { title: string; text: string }> = {
+  vendeur: {
+    title: "Vous êtes vendeur",
+    text: "Vos produits sont visibles de tous les acheteurs. Vous pouvez aussi acheter auprès des grossistes et des marques.",
+  },
+  fournisseur: {
+    title: "Vous êtes grossiste",
+    text: "Vous vendez par quantité. Vos produits et vos prix sont réservés aux vendeurs et aux comptes professionnels : le public ne vous voit pas.",
+  },
+  marque: {
+    title: "Vous êtes une marque",
+    text: "Vous créez un produit et le confiez à des revendeurs. Votre marque est visible du public et des vendeurs, et vous pouvez aussi vendre vous-même.",
+  },
+};
 
 async function loadStatus(): Promise<Status> {
   const [me, offers, shipping, orders, quotes, week] = await Promise.all([
@@ -101,6 +136,8 @@ async function loadStatus(): Promise<Status> {
     orders: typeof orders?.count === "number" ? orders.count : null,
     pendingQuotes: quotes?.quotes ? quotes.quotes.filter((quote) => quote.status === "pending").length : null,
     status: typeof seller?.status === "string" ? seller.status : null,
+    profile: readProfile(seller?.metadata),
+    minOrder: Math.max(0, Math.floor(Number((seller?.metadata as Record<string, unknown> | undefined)?.min_order)) || 0),
     awaiting: typeof week?.awaiting === "number" ? week.awaiting : null,
     weekOrders: typeof week?.orders === "number" ? week.orders : null,
     weekRevenue: week?.currencies
@@ -138,7 +175,7 @@ function Check({ done }: { done: boolean | null }) {
   return <span style={style} aria-label={done ? "Fait" : "À faire"}>{done ? "✓" : "•"}</span>;
 }
 
-type WidgetId = "premiers-pas" | "demandes" | "ventes" | "grossiste" | "boutique" | "pub" | "avis";
+type WidgetId = "premiers-pas" | "demandes" | "ventes" | "grossiste" | "boutique" | "pub" | "avis" | "gros" | "marque";
 
 const ALL_WIDGETS: Array<{ id: WidgetId; label: string }> = [
   { id: "premiers-pas", label: "Premiers pas" },
@@ -148,7 +185,20 @@ const ALL_WIDGETS: Array<{ id: WidgetId; label: string }> = [
   { id: "boutique", label: "Ma boutique" },
   { id: "pub", label: "Mettre un produit en avant" },
   { id: "avis", label: "Avis clients" },
+  { id: "gros", label: "Vendre en gros" },
+  { id: "marque", label: "Ma marque et mes revendeurs" },
 ];
+
+/* Les blocs propres à un profil n'apparaissent que pour ce profil. */
+const ONLY_FOR: Partial<Record<WidgetId, Profile>> = { gros: "fournisseur", marque: "marque" };
+
+/* L'ordre de départ change avec le profil : un grossiste commence par ses demandes de devis. */
+function defaultOrder(profile: Profile | null): WidgetId[] {
+  const all = ALL_WIDGETS.map((w) => w.id);
+  const first: WidgetId[] = profile === "fournisseur" ? ["demandes", "gros"] : profile === "marque" ? ["marque", "demandes"] : [];
+
+  return [...first, ...all.filter((id) => !first.includes(id))];
+}
 
 type Layout = { order: WidgetId[]; hidden: WidgetId[] };
 
@@ -156,13 +206,15 @@ const DEFAULT_LAYOUT: Layout = { order: ALL_WIDGETS.map((w) => w.id), hidden: []
 const STORAGE_KEY = "mache.accueil.v1";
 
 /* Le stockage du navigateur peut être absent ou vide : l'accueil s'affiche alors par défaut. */
-function readLayout(): Layout {
+function readLayout(profile: Profile | null): Layout {
   try {
     const raw = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "null");
     const known = ALL_WIDGETS.map((w) => w.id);
     const order = Array.isArray(raw?.order) ? raw.order.filter((id: WidgetId) => known.includes(id)) : [];
+    const saved = order.length > 0;
     const hidden = Array.isArray(raw?.hidden) ? raw.hidden.filter((id: WidgetId) => known.includes(id)) : [];
     /* Un bloc ajouté plus tard à la liste apparaît en fin d'accueil. */
+    if (!saved) return { order: defaultOrder(profile), hidden };
     for (const id of known) if (!order.includes(id)) order.push(id);
     return { order, hidden };
   } catch {
@@ -265,7 +317,6 @@ const BienDemarrerPage = () => {
   useEffect(() => {
     let alive = true;
 
-    setLayout(readLayout());
 
     /* La visite s'ouvre une seule fois ; sans stockage, elle ne s'impose pas. */
     try {
@@ -277,6 +328,7 @@ const BienDemarrerPage = () => {
     loadStatus().then((next) => {
       if (alive) {
         setStatus(next);
+        setLayout(readLayout(next.profile));
         setLoaded(true);
       }
     });
@@ -423,9 +475,37 @@ const BienDemarrerPage = () => {
         <a href="/seller/reviews" style={linkStyle}>Voir les avis →</a>
       </Widget>
     ),
+    gros: (
+      <Widget title="Vendre en gros">
+        <p style={{ margin: "0 0 6px" }}>
+          {status.minOrder > 0
+            ? `Commande minimum : ${status.minOrder.toLocaleString("fr-FR")} HTG.`
+            : "Vous n'avez pas fixé de commande minimum : vous pouvez le faire depuis votre profil sur le site."}{" "}
+          Dans chaque produit, ajoutez des prix selon la quantité.
+        </p>
+        <p style={{ margin: "0 0 6px" }}>Les vendeurs et les comptes professionnels vous demandent des devis : répondez avec un prix pour la quantité demandée.</p>
+        <a href="/seller/devis" style={linkStyle}>Ouvrir les devis →</a>
+        <br />
+        <a href="/seller/products" style={linkStyle}>Mes produits et leurs prix →</a>
+      </Widget>
+    ),
+    marque: (
+      <Widget title="Ma marque et mes revendeurs">
+        <p style={{ margin: "0 0 6px" }}>
+          Les vendeurs vous trouvent dans l&apos;annuaire « Fournisseurs » et vous demandent des devis pour revendre vos
+          produits.
+        </p>
+        <a href="/seller/devis" style={linkStyle}>Voir les demandes des revendeurs →</a>
+        <p style={{ margin: "8px 0 0", fontSize: 13, color: "#6b7280" }}>
+          Le suivi de vos revendeurs (qui vend quoi) n&apos;est pas encore disponible.
+        </p>
+      </Widget>
+    ),
   };
 
-  const visible = layout.order.filter((id) => !layout.hidden.includes(id));
+  const visible = layout.order.filter(
+    (id) => !layout.hidden.includes(id) && (!ONLY_FOR[id] || ONLY_FOR[id] === status.profile)
+  );
 
   return (
     <div style={{ background: "#f9f7f4", minHeight: "100vh" }}>
@@ -449,6 +529,12 @@ const BienDemarrerPage = () => {
           {editing ? "Terminer" : "Personnaliser mon accueil"}
         </button>
       </div>
+
+      {status.profile && (
+        <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 10, background: "#eef2ff", color: "#1e3a8a", fontSize: 14 }}>
+          <strong>{PROFILE_TEXT[status.profile].title}.</strong> {PROFILE_TEXT[status.profile].text}
+        </div>
+      )}
 
       {status.status && status.status !== "open" && (
         <p style={{ marginTop: 12, padding: "10px 14px", borderRadius: 10, background: "#fef3c7", color: "#78350f", fontSize: 14 }}>
@@ -494,14 +580,14 @@ const BienDemarrerPage = () => {
             Cochez les blocs à afficher et changez leur ordre avec les flèches.
           </p>
           <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 }}>
-            {layout.order.map((id, index) => (
+            {layout.order.filter((id) => !ONLY_FOR[id] || ONLY_FOR[id] === status.profile).map((id, index, applicable) => (
               <li key={id} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
                 <label style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
                   <input type="checkbox" checked={!layout.hidden.includes(id)} onChange={() => toggle(id)} />
                   {ALL_WIDGETS.find((w) => w.id === id)?.label}
                 </label>
                 <button type="button" aria-label="Monter" disabled={index === 0} onClick={() => move(id, -1)}>↑</button>
-                <button type="button" aria-label="Descendre" disabled={index === layout.order.length - 1} onClick={() => move(id, 1)}>↓</button>
+                <button type="button" aria-label="Descendre" disabled={index === applicable.length - 1} onClick={() => move(id, 1)}>↓</button>
               </li>
             ))}
           </ul>
