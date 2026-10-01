@@ -115,6 +115,13 @@ Décision du fondateur : on s'en occupe une fois la LLC déclarée et le domaine
 - [x] **Conversion indicative en direct** : le visiteur choisit « ≈ USD / EUR / CAD » dans l'en-tête ; l'équivalent s'affiche sous les prix (fiche produit, panier, paiement), au taux du jour (service public de taux, relu toutes les 6 h). Sans taux disponible, rien n'est affiché.
 - [ ] 🔴 **URGENT — Prix en USD et paiement des vendeurs à l'international.** Un acheteur haïtien qui achète un produit venu de l'étranger : comment le vendeur est-il payé, dans quelle devise, par quel moyen ? À trancher avec le paiement (Pay'm / Stripe) et un juriste (MACHE ne doit pas détenir l'argent d'autrui sans cadre légal : passer par un prestataire de paiement agréé). Proposition : deux devises (HTG et USD), un panier par devise ; versements aux vendeurs d'abord à la main (virement, MonCash, Wise) puis automatisés. **Vendeur qui fixe ses prix en dollars (USD)** : très utilisé en Haïti. Aujourd'hui la facturation est en gourdes (HTG) ; facturer en USD demande une région et des prix USD, et un panier ne mélange pas deux devises. À décider avec le paiement (Pay'm = HTG, Stripe = USD).
 
+## 🧭 Décisions du fondateur (octobre 2026)
+
+- **Frais de livraison** : ni MACHE ni BAWON ne les prennent en charge. Ils sont payés par l'acheteur (affichés avant paiement) ou inclus par le vendeur dans son prix.
+- **BAWON** n'est pas un prestataire de livraison : il accompagne les marchands vers un financement (déjà écrit ainsi sur la page Partenaires).
+- **Partenaires de MACHE** = toutes les entreprises qui proposent des **services en plus** sur la place de marché (photographe, financement, etc.).
+- [ ] **Espace Services / Partenaires** : permettre à ces entreprises de se présenter et d'être contactées (idée proche de « Agences & Business » chez Katalog). À concevoir : inscription, fiche, catégories de services, contact. Aucun service ne doit être présenté comme garanti par MACHE.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
