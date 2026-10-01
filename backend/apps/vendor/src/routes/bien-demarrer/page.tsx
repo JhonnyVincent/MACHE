@@ -531,6 +531,8 @@ const BienDemarrerPage = () => {
             </ul>
           </>
         )}
+        <a href="/seller/revendeurs" style={linkStyle}>Choisir mes revendeurs →</a>
+        <br />
         <a href="/seller/devis" style={linkStyle}>Voir les demandes des revendeurs →</a>
       </Widget>
     ),

@@ -299,6 +299,18 @@ check("marque : ses revendeurs sont lus dans les offres, et portent le tag « Re
   assert.match(page, /brandOffer\.sellerId !== offer\.sellerId/);
 });
 
+check("la marque autorise ses revendeurs : seulement sa marque, seulement ses produits, rien d'inventé", () => {
+  const lib = read("backend/packages/api/src/lib/brand-authorization.ts");
+  assert.match(lib, /brand_seller_id/);
+  const route = read("backend/packages/api/src/api/vendor/brand/authorize/route.ts");
+  assert.match(route, /profile !== "marque"/);
+  assert.match(route, /brandStatus\(product, me\) === "no"/);
+  assert.match(route, /linkSellersToProductWorkflow/);
+  assert.match(route, /sellerId === me/);
+  assert.match(route, /target\.status !== "open"/);
+  assert.match(read("backend/apps/vendor/src/routes/revendeurs/page.tsx"), /\/vendor\/brand\/authorize/);
+});
+
 check("profil de partenaire : champs facultatifs, jamais de promesse de MACHE", () => {
   const page = read("src/app/partenaires/[slug]/page.tsx");
   for (const field of ["partner.logo", "partner.banner", "partner.whatsapp", "partner.phone", "partner.facebook", "partner.instagram", "partner.location"]) {

@@ -154,6 +154,13 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 - **MACHE Boutik** : l'espace des vendeurs, grossistes et marques. Nom **interne** pour distinguer dans le code et entre nous : **jamais affiché**. Les vendeurs voient « Espace vendeur ». Chacun invite son équipe dans Paramètres → Utilisateurs, avec cinq rôles (administration, stocks, commandes, comptabilité, support).
 - Voir `src/lib/spaces.ts`.
 
+## ✅ Fait : la marque autorise ses revendeurs
+
+- [x] Page **Revendeurs** dans le panneau vendeur (réservée aux boutiques déclarées « marque ») : autoriser une boutique sur un ou plusieurs produits, retirer l'autorisation. Règles appliquées côté serveur : seule la marque du produit peut autoriser, la marque ne peut pas se retirer, le revendeur doit être une boutique ouverte.
+- Fonctionnement (Mercur) : un produit qui a au moins une boutique autorisée est **réservé** à celles-ci ; une boutique non autorisée ne peut pas le proposer. Un produit sans aucune autorisation reste **ouvert à tous** : la marque ne peut alors pas le réclamer.
+- [ ] **À vérifier avec de vrais comptes** : qu'un revendeur autorisé voit bien le produit de la marque dans son panneau pour créer son offre (non testé), et qu'un revendeur non autorisé ne peut pas le proposer.
+- [ ] Demande d'autorisation **par le revendeur** (aujourd'hui seule la marque autorise ; le revendeur passe par un devis).
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
