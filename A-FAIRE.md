@@ -200,6 +200,42 @@ Décisions et infos du 1er octobre 2026 :
 - [ ] **Protéger le panneau admin Medusa du backend** — jugé le chantier de sécurité le plus rentable restant.
 - [ ] **Transmettre au backend l'adresse IP réelle des internautes** — le site appelle le backend depuis son propre serveur : pour le backend, tous les clients du site ont la même adresse. Conséquence : les plafonds ne peuvent pas distinguer deux clients passés par le site.
 
+## 💳 Paiements : pistes étudiées (rien n'est signé ni contacté)
+
+**Le principe retenu pour y réfléchir** : MACHE ne garde pas l'argent des autres. Un prestataire licencié encaisse, garde, vérifie les vendeurs et verse. MACHE est la façade et perçoit sa commission. Le juriste confirme avant tout engagement.
+
+**Les flux voulus**
+| Qui | Comment | Intermédiaire |
+|---|---|---|
+| Acheteur européen / américain par carte | Stripe | Stripe |
+| Acheteur sans carte | virement bancaire (banques haïtiennes ↔ correspondants Bank of America / BNY Mellon d'après les instructions de Sogebank) | banque |
+| Vendeur américain | versement Stripe Connect | Stripe |
+| Vendeur en Haïti (banque, portefeuille MonCash / NatCash / Lajan Cash, espèces) | à confirmer | Nium ou HaitiPay |
+
+**Candidats, avec leur statut réel**
+- **Nium** — Haïti figure dans sa liste de pays ; propose aux marketplaces soit « payouts seulement » (vous encaissez ailleurs), soit « intégration complète » (KYC des vendeurs sous leurs licences, comptes de collecte virtuels, partage de commission, versements). 40+ licences. *Page « marketplaces » lue seulement par extraits.* **À confirmer : types de versement vers Haïti, conditions pour une LLC jeune, prix, et surtout qui reçoit l'argent de l'acheteur en premier.**
+- **HaitiPay** — opérateur haïtien (Lajan Cash), API, paiements marchands. *Cartes étrangères et répartition multi-vendeurs non confirmées ; licence non confirmée.*
+- **Payoneer** — 190+ pays, **Haïti non confirmé**.
+- **Stripe** — Haïti non supporté (pas de versement vers un compte haïtien) ; très bien pour les cartes étrangères et les vendeurs américains/européens.
+- **PayPal** — ne prend pas les entreprises haïtiennes ; Xoom envoie vers Haïti mais pour particuliers.
+- **Thunes** — pas d'Haïti dans la liste 2022 ; **TerraPay** — pas d'Haïti ; **Tranglo** — rien trouvé.
+- **Remitly, Ria, Western Union, CAM Transfer, Unitransfer, Wise** — transferts pour particuliers (utiles comme moyen de retrait pour un vendeur sans compte, pas pour payer en masse). Remitly a une offre « entreprises » (partenariat Etsy) : Haïti non confirmé.
+- **Licence Mercur Enterprise** — c'est une licence de logiciel + support, pas une autorisation financière. Utile plus tard ; elle ne remplace ni la LLC ni un prestataire licencié.
+
+**La question qui décide de tout (à poser à Nium)**
+> « Pour une marketplace dont les acheteurs paient par carte en Europe et aux États-Unis, comment l'argent arrive-t-il chez vous sans transiter par le compte de notre société ? Encaissez-vous les cartes vous-mêmes ? Sinon, comment se fait la jonction avec un processeur comme Stripe ? »
+- *Montage A* : Stripe → LLC → Nium → vendeurs (la LLC détient l'argent un instant → exemption « agent du bénéficiaire » + avis juridique).
+- *Montage B* : l'acheteur paie un prestataire qui répartit lui-même (la LLC ne touche rien) — plus propre, plus complexe.
+
+**Autres questions pour Nium** : types de versement Haïti (banque / portefeuilles / espèces, USD / HTG) ; LLC en lancement acceptée ? volume minimum ? prix (par versement, change, mensuel) ; KYC des vendeurs haïtiens (documents, délai) ; branchement à Mercur/Medusa (API, webhooks) ; qui porte la licence pour les fonds en transit.
+
+**Côté juridique (avocat / conformité / économiste — à valider)**
+- Exemption « agent du bénéficiaire » : 42 États selon une source, ~22 selon une autre ; **sans exemption explicite : Floride, New Jersey, Nouveau-Mexique, Oklahoma, Oregon, Rhode Island, Utah, Wyoming** ; Californie avec contrat écrit préalable ; Texas par règlement ; New York cas par cas → **choisir l'État de la LLC avec ça sous les yeux, avant de l'ouvrir.**
+- Le contrat vendeur de MACHE (menu MACHE › Contrats) peut devenir le contrat qui nomme MACHE agent de collecte.
+- Même avec un prestataire licencié (modèle « banque en marque blanche »), MACHE garde des obligations : suivi KYC, plaintes, publicité exacte, remboursements. À faire cadrer par le juriste.
+- Économie : le dernier kilomètre vers Haïti coûte (frais + écart de change HTG/USD) ; la commission doit le couvrir ; prévoir un délai de rétention avant versement (remboursements).
+- Europe : un service de paiement est une activité agréée dans l'UE — ne pas détenir d'argent côté européen sans avis.
+
 ## 🔒 Bloqué par une décision de votre côté
 
 - [ ] **Paiements : Pay'm (Haïti) + Stripe (le reste)** — décidé. **Bloqué par la LLC américaine** : Stripe exige une société dans un pays supporté.
