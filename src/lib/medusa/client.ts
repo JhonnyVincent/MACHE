@@ -99,7 +99,7 @@ export async function medusaFetch<T>(
 
       try {
         const body = (await response.json()) as { message?: string };
-        detail = body?.message ? ` — ${body.message}` : "";
+        detail = body?.message ? `: ${body.message}` : "";
       } catch {
         /* Corps non lisible : le code HTTP suffira. */
       }

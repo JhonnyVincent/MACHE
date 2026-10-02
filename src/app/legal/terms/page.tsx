@@ -59,7 +59,7 @@ function TermsPageEcrit() {
           <p className="mt-3">
             MACHE tient la place : le catalogue, le panier, le passage de
             commande, la mise en relation. Sur chaque fiche produit et
-            sur chaque commande, le nom de la boutique est indiqué — vous
+            sur chaque commande, le nom de la boutique est indiqué, vous
             savez toujours chez qui vous achetez.
           </p>
         </section>
@@ -77,7 +77,7 @@ function TermsPageEcrit() {
           </p>
 
           <p className="mt-3">
-            Certaines boutiques — les grossistes notamment — demandent un
+            Certaines boutiques, les grossistes notamment, demandent un
             montant minimum de commande. Le panier vous l&apos;indique
             avant de commander, avec ce qui manque.
           </p>
@@ -155,7 +155,7 @@ function TermsPageEcrit() {
             Seul un client qui a réellement commandé un article peut le
             noter : le système exige la commande correspondante. Les avis
             sont relus par MACHE avant publication, et un vendeur peut
-            répondre publiquement — sa réponse est signalée comme telle.
+            répondre publiquement, sa réponse est signalée comme telle.
           </p>
         </section>
 

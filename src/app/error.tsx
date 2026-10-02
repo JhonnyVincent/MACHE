@@ -61,7 +61,7 @@ export default function ErrorScreen({
 
       <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
         Si vous veniez d&apos;envoyer un formulaire, rien ne garantit
-        qu&apos;il soit passé. Réessayez — et si un compte existe déjà
+        qu&apos;il soit passé. Réessayez, et si un compte existe déjà
         avec votre adresse, connectez-vous plutôt que d&apos;en créer un
         second.
       </p>
@@ -102,7 +102,7 @@ export default function ErrorScreen({
 
           <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
             Elle permet de retrouver le détail exact dans le journal du
-            serveur. Seule, elle ne dit rien — c&apos;est la ligne
+            serveur. Seule, elle ne dit rien, c&apos;est la ligne
             « Error » qui l&apos;accompagne dans le journal qui contient la
             cause.
           </p>

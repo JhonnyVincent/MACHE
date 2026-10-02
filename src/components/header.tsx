@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Link } from "next-view-transitions";
 import { SocialLinks } from "@/components/social-links";
 import { CurrencyPicker } from "@/components/currency-picker";
+import { BagIcon, BoxIcon, GridIcon, HeartIcon, HelpIcon, MapIcon, SearchIcon, ShieldIcon, SparkIcon, StoreIcon, TruckIcon, UserIcon } from "@/components/icons";
 import type { SitePromotion } from "@/lib/medusa/promotions";
 
 /*
@@ -64,11 +65,11 @@ type Lang = keyof typeof translations;
 
 /* Les services de la bande défilante du haut. */
 const SERVICES = [
-  { key: "track", icon: "🚚", href: "/dashboard/buyer/orders" },
-  { key: "verifyAgent", icon: "✅", href: "/verify-agent" },
-  { key: "openShop", icon: "🏪", href: "/sell" },
+  { key: "track", Icon: TruckIcon, href: "/dashboard/buyer/orders" },
+  { key: "verifyAgent", Icon: ShieldIcon, href: "/verify-agent" },
+  { key: "openShop", Icon: StoreIcon, href: "/sell" },
   /* Les boutiques qui se déclarent fournisseur ou grossiste. */
-  { key: "findSupplier", icon: "📦", href: "/gros" },
+  { key: "findSupplier", Icon: BoxIcon, href: "/gros" },
 ] as const;
 
 /* La langue choisie, lue dans son cookie. */
@@ -152,7 +153,7 @@ export function Header({ cartCount = 0,
                 href="/shop"
                 className="hover:text-black hover:underline"
               >
-                ✦ {promotion.label}
+                {promotion.label}
               </Link>
             ))}
           </div>
@@ -190,9 +191,9 @@ export function Header({ cartCount = 0,
                     href={service.href}
                     aria-hidden={copy > 0 ? true : undefined}
                     tabIndex={copy > 0 ? -1 : undefined}
-                    className="px-8 hover:text-[var(--mache-primary-strong)] hover:underline"
+                    className="inline-flex items-center gap-2 px-8 hover:text-[var(--mache-primary-strong)] hover:underline"
                   >
-                    {service.icon} {t[service.key]}
+                    <service.Icon className="h-4 w-4" /> {t[service.key]}
                   </Link>
                 ))
               )}
@@ -269,7 +270,7 @@ export function Header({ cartCount = 0,
             className="rounded-r-xl bg-[var(--mache-primary)] px-6 py-4 font-bold text-white"
             aria-label="Rechercher"
           >
-            🔍
+            <SearchIcon className="mx-auto h-6 w-6" />
           </button>
         </form>
 
@@ -289,17 +290,18 @@ export function Header({ cartCount = 0,
             laquelle est la sienne.
           */}
           <Link href="/dashboard">
-            <div>👤</div>
+            <UserIcon className="mx-auto mb-0.5 h-6 w-6" />
             {t.account}
           </Link>
 
           <Link href="/favorites">
-            <div>♡</div>
+            <HeartIcon className="mx-auto mb-0.5 h-6 w-6" />
             {t.favorites}
           </Link>
 
           <Link href="/cart">
-            🛍️ {t.cart} ({count})
+            <BagIcon className="mx-auto mb-0.5 h-6 w-6" />
+            {t.cart} ({count})
           </Link>
         </div>
       </div>
@@ -324,32 +326,32 @@ export function MainNav() {
   return (
     <nav className="bg-black text-white">
         <div className="container-page flex h-16 items-center gap-6 overflow-x-auto whitespace-nowrap">
-          <Link href="/shop">
-            ▦ {t.catalog}
+          <Link href="/shop" className="inline-flex items-center gap-2">
+            <GridIcon className="h-5 w-5" /> {t.catalog}
           </Link>
 
-          <Link href="/shop?sort=recent">
-            🟢 {t.newArrivals}
+          <Link href="/shop?sort=recent" className="inline-flex items-center gap-2">
+            <SparkIcon className="h-5 w-5" /> {t.newArrivals}
           </Link>
 
-          <Link href="/gros">
-            📦 {t.wholesale}
+          <Link href="/gros" className="inline-flex items-center gap-2">
+            <BoxIcon className="h-5 w-5" /> {t.wholesale}
           </Link>
 
-          <Link href="/haiti">
-            🗺️ {t.regions}
+          <Link href="/haiti" className="inline-flex items-center gap-2">
+            <MapIcon className="h-5 w-5" /> {t.regions}
           </Link>
 
-          <Link href="/sell">
-            🏪 {t.sellers}
+          <Link href="/sell" className="inline-flex items-center gap-2">
+            <StoreIcon className="h-5 w-5" /> {t.sellers}
           </Link>
 
-          <Link href="/verify-agent">
-            ✅ {t.verifyAgent}
+          <Link href="/verify-agent" className="inline-flex items-center gap-2">
+            <ShieldIcon className="h-5 w-5" /> {t.verifyAgent}
           </Link>
 
-          <Link href="/contact">
-            🎧 {t.help}
+          <Link href="/contact" className="inline-flex items-center gap-2">
+            <HelpIcon className="h-5 w-5" /> {t.help}
           </Link>
         </div>
     </nav>

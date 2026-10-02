@@ -95,7 +95,7 @@ export default async function ContactPage({
             <Link href="/dashboard/buyer/messages" className="font-medium underline">
               vos messages
             </Link>
-            . MACHE n&apos;envoie pas d&apos;e-mail — vous ne serez pas prévenu,
+            . MACHE n&apos;envoie pas d&apos;e-mail, vous ne serez pas prévenu,
             il faudra revenir voir.
           </p>
         ) : (
@@ -127,7 +127,7 @@ export default async function ContactPage({
             {THREAD_CATEGORIES.map((item) => (
               <option key={item.value} value={item.value}>
                 {item.label}
-                {item.hint ? ` — ${item.hint}` : ""}
+                {item.hint ? ` (${item.hint})` : ""}
               </option>
             ))}
           </select>

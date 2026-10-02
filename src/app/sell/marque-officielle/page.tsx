@@ -85,7 +85,7 @@ const PAS_ENCORE: string[] = [
 ];
 
 const ETAPES: [string, string][] = [
-  ["Créer le compte", "Vous ouvrez une boutique comme n'importe quel vendeur — c'est gratuit."],
+  ["Créer le compte", "Vous ouvrez une boutique comme n'importe quel vendeur, c'est gratuit."],
   ["Envoyer les documents", "Pièces de l'entreprise et preuve que vous représentez la marque."],
   ["Vérification par MACHE", "Contrôle à la main. C'est ce contrôle qui donne le badge vérifié."],
   ["Convenir du montant", "Entre 120 et 300 € selon la taille du catalogue et l'accompagnement."],
@@ -128,7 +128,7 @@ export default function SellMarqueOfficiellePage() {
             <p className="mt-3 text-xs leading-relaxed text-white/45">
               Conversion indicative au taux retenu par MACHE le {EUR_TO_HTG_DATE}.
               Le montant dû est celui en euros. La fourchette se resserre selon
-              la taille de votre catalogue — c&apos;est le seul profil vendeur
+              la taille de votre catalogue, c&apos;est le seul profil vendeur
               avec un abonnement.
             </p>
           </div>
@@ -225,7 +225,7 @@ export default function SellMarqueOfficiellePage() {
               Vous représentez une marque ?
             </h2>
             <p className="mt-1.5 max-w-xl text-base leading-relaxed text-white/70">
-              Ouvrez la boutique d&apos;abord — c&apos;est gratuit et sans
+              Ouvrez la boutique d&apos;abord, c&apos;est gratuit et sans
               engagement. L&apos;abonnement ne commence qu&apos;une fois le
               montant convenu ensemble.
             </p>

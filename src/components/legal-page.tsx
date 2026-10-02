@@ -78,7 +78,7 @@ export async function LegalPage({
         <p>
           Version {policy.version}
           {policy.publishedAt
-            ? ` — en vigueur depuis le ${new Date(policy.publishedAt).toLocaleDateString(
+            ? `, en vigueur depuis le ${new Date(policy.publishedAt).toLocaleDateString(
                 "fr-FR",
                 { day: "numeric", month: "long", year: "numeric" }
               )}`

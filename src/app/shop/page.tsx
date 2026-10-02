@@ -47,7 +47,7 @@ export async function generateMetadata({
 
     if (category) {
       return pageMetadata({
-        title: `${category.name} — acheter en ligne en Haïti`,
+        title: `${category.name} | acheter en ligne en Haïti`,
         description:
           category.description ||
           `${category.name} : les produits des boutiques, artisans et fournisseurs haïtiens sur MACHE.`,

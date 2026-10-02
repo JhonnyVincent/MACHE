@@ -191,7 +191,7 @@ export default function TarifsPage() {
 
         <p className="mt-2 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
           Un abonnement mensuel se paie avant d&apos;avoir vendu. Pour un
-          commerçant qui démarre, c&apos;est un mur — et une marketplace
+          commerçant qui démarre, c&apos;est un mur, et une marketplace
           dont les vendeurs n&apos;entrent pas n&apos;a rien à vendre.
           Une marque établie, elle, a un budget de présence et attend
           autre chose qu&apos;une boutique parmi d&apos;autres.
@@ -200,7 +200,7 @@ export default function TarifsPage() {
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">
           Le montant dû est celui en euros. La valeur en gourdes est
           indicative, calculée à un taux retenu par MACHE et mis à jour
-          le {EUR_TO_HTG_DATE} — ce n&apos;est pas le taux du marché du
+          le {EUR_TO_HTG_DATE}, ce n&apos;est pas le taux du marché du
           jour.
         </p>
       </section>

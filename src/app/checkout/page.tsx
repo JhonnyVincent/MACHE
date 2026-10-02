@@ -181,7 +181,7 @@ export default async function CheckoutPage({
 
                 <div className="sm:col-span-2">
                   <label htmlFor="address_2" className="text-sm font-semibold text-[var(--mache-text)]">
-                    Complément — repère, étage
+                    Complément, repère, étage
                   </label>
                   <input id="address_2" name="address_2" defaultValue={prefill.address2} autoComplete="address-line2" className={`mt-1 ${inputClass}`} />
                 </div>
@@ -247,7 +247,7 @@ export default async function CheckoutPage({
               {state.international && (
                 <div className="mt-4 rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] p-3.5 text-sm leading-relaxed text-[#1e3a5f]">
                   <p className="font-bold">
-                    Livraison vers : {countryLabel(prefill.countryCode)} — commande sur confirmation
+                    Livraison vers : {countryLabel(prefill.countryCode)}, commande sur confirmation
                   </p>
                   <p className="mt-1">
                     Vous passez votre commande maintenant. MACHE vous écrit ensuite pour vous

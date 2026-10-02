@@ -74,7 +74,7 @@ export default async function ThreadPage({
         </h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           {result.reason} Si vous aviez un lien privé, vérifiez qu&apos;il est
-          complet — il se coupe souvent en le recopiant.
+          complet, il se coupe souvent en le recopiant.
         </p>
         <p className="mt-6">
           <Link href="/contact" className="font-medium text-[var(--mache-primary)] underline">

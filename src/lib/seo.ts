@@ -145,7 +145,7 @@ type ProductSeo = {
 */
 export function productMetadata(product: ProductSeo): Metadata {
   const price = product.price !== null ? formatAmount(product.price, product.currency) : null;
-  const title = price ? `${product.title} — ${price}` : product.title;
+  const title = price ? `${product.title} | ${price}` : product.title;
 
   const description =
     cleanDescription(product.description) ??
@@ -171,7 +171,7 @@ type StoreSeo = {
 
 export function storeMetadata(seller: StoreSeo): Metadata {
   return pageMetadata({
-    title: `${seller.name} — boutique`,
+    title: `${seller.name} | boutique`,
     description:
       cleanDescription(seller.description) ??
       `Les produits de ${seller.name}, boutique sur MACHE, la marketplace haïtienne.`,

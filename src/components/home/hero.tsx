@@ -229,7 +229,7 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
             Ils travaillent avec MACHE
           </h2>
           <p className="mt-3 max-w-lg text-md leading-relaxed text-white/75">
-            {first.name} — {first.does.charAt(0).toLowerCase() + first.does.slice(1)}
+            {first.name} : {first.does.charAt(0).toLowerCase() + first.does.slice(1)}
             {!first.mediated && " En direct, selon ses propres critères."}
           </p>
           <div className="mt-6 flex flex-wrap gap-2.5">

@@ -287,9 +287,9 @@ check("« pour vous » seulement d'après les favoris ; sinon « À découvrir �
   assert.match(HOME, /title: "À découvrir"/);
 });
 
-check("les catégories : cinq rayons, puis le ➕ vers le catalogue", () => {
+check("les catégories : cinq rayons, puis le « + » vers le catalogue", () => {
   assert.match(HOME, /const TILE_COUNT = 5;/);
-  assert.match(SECTIONS, /href="\/shop"[\s\S]{0,800}➕/);
+  assert.match(SECTIONS, /href="\/shop"[\s\S]{0,800}M12 5v14M5 12h14/);
   assert.match(HOME, /DEFAULT_TILES = \["maison", "mode", "electronique", "bio", "fait-a-la-main"\]/);
 });
 

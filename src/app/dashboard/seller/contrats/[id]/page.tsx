@@ -146,7 +146,7 @@ export default async function SellerContractPage({
                   <dd className="font-medium text-[#0f1111]">
                     {result.data.contract.signerName}
                     {result.data.contract.signerRole
-                      ? ` — ${result.data.contract.signerRole}`
+                      ? ` (${result.data.contract.signerRole})`
                       : ""}
                   </dd>
                 </div>

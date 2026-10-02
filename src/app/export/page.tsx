@@ -99,7 +99,7 @@ export default function ExportPage() {
           <p className="mt-2">
             Écrivez-nous en disant ce que vous vendez et vers où. Ce sont
             ces réponses qui décideront de l&apos;ordre dans lequel les
-            choses se feront — pas une intuition.
+            choses se feront, pas une intuition.
           </p>
 
           <div className="mt-4 flex flex-wrap gap-2.5">

@@ -73,7 +73,7 @@ export default async function DashboardRedirectPage() {
       </h1>
 
       <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
-        Vous n&apos;êtes connecté à aucun. Chacun a sa propre entrée — celle
+        Vous n&apos;êtes connecté à aucun. Chacun a sa propre entrée, celle
         que vous utilisez d&apos;habitude est la bonne.
       </p>
 

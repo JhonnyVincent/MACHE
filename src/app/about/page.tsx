@@ -65,7 +65,7 @@ const AMBITIONS = [
   },
   {
     title: "Savoir à qui on achète",
-    now: "Chaque boutique déclare son profil — artisan, commerce, grossiste, marque — et MACHE vérifie les documents de celles qui portent le badge. Un agent qui se présente chez vous a un code qui se vérifie sur le site.",
+    now: "Chaque boutique déclare son profil (artisan, commerce, grossiste, marque) et MACHE vérifie les documents de celles qui portent le badge. Un agent qui se présente chez vous a un code qui se vérifie sur le site.",
     missing:
       "La vérification se fait au cas par cas, à la main. Elle prend le temps qu'il faut.",
   },
@@ -138,7 +138,7 @@ export default async function AboutPage() {
 
         <p className="mt-2 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
           Un objectif qui ne se traduit par rien reste une affiche. Voici ce
-          qui fonctionne aujourd&apos;hui — et ce qui n&apos;est pas encore
+          qui fonctionne aujourd&apos;hui, et ce qui n&apos;est pas encore
           là.
         </p>
 
@@ -232,7 +232,7 @@ export default async function AboutPage() {
 
           <p className="mt-2 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
             C&apos;est de vous que MACHE a besoin en premier. Une place de
-            marché sans vendeurs n&apos;a rien à vendre — et plus tôt vous y
+            marché sans vendeurs n&apos;a rien à vendre, et plus tôt vous y
             êtes, plus votre boutique a le temps de se faire connaître.
           </p>
 

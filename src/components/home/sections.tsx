@@ -136,9 +136,6 @@ function TileGrid({ tile }: { tile: CategoryTile }) {
             </>
           ) : (
             <span className="flex w-full flex-col items-center justify-center gap-1 px-2 text-center transition-colors duration-300 group-hover/cell:bg-[var(--mache-primary-soft)]">
-              <span className="text-2xl transition-transform duration-300 group-hover/cell:scale-125 motion-reduce:transform-none" aria-hidden="true">
-                {tile.icon}
-              </span>
               <span className="hyphens-auto break-words text-xs font-semibold leading-tight text-[var(--mache-text)]">{cell.name}</span>
             </span>
           )}
@@ -184,9 +181,9 @@ export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[];
             href="/shop"
             className="group flex h-full min-h-[180px] flex-col items-center justify-center gap-2 rounded-[12px] border-2 border-dashed border-[var(--mache-line)] bg-[var(--mache-white)] text-center transition-colors hover:border-[var(--mache-primary)]"
           >
-            <span className="text-5xl text-[var(--mache-primary)] transition-transform duration-300 group-hover:rotate-90 motion-reduce:transform-none" aria-hidden="true">
-              ➕
-            </span>
+            <svg viewBox="0 0 24 24" className="h-10 w-10 text-[var(--mache-primary)] transition-transform duration-300 group-hover:rotate-90 motion-reduce:transform-none" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
             <span className="text-base font-bold text-[var(--mache-text)]">Tous les rayons</span>
             <span className="px-4 text-sm text-[var(--mache-muted)]">Filtrer, trier par nouveauté, changer de rayon</span>
           </Link>

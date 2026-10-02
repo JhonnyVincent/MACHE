@@ -53,7 +53,7 @@ const PATHS: Path[] = [
   },
   {
     title: "Le colis attend dans un point de retrait",
-    what: "Il est déposé dans un local du quartier — une boutique, une pharmacie, un dépôt — et vous passez le prendre quand vous voulez.",
+    what: "Il est déposé dans un local du quartier (une boutique, une pharmacie, un dépôt) et vous passez le prendre quand vous voulez.",
     who: "Un LIEU, pas une personne. Le commerçant qui le tient est un agent MACHE, mais le point continue d'exister s'il est absent ou remplacé.",
     recourse:
       "MACHE, comme pour un agent. C'est pour cela que le point a son propre code : votre colis ne se perd pas si le tenant change.",
@@ -63,7 +63,7 @@ const PATHS: Path[] = [
     what: "Le vendeur confie le colis à une société de transport qui n'a rien à voir avec MACHE.",
     who: "Le transporteur. MACHE ne le pilote pas et ne sait pas où en est le colis.",
     recourse:
-      "Le transporteur, avec le numéro de suivi, puis le vendeur qui l'a choisi. MACHE affiche le numéro mais ne peut rien vous dire de plus — prétendre le contraire vous ferait perdre du temps.",
+      "Le transporteur, avec le numéro de suivi, puis le vendeur qui l'a choisi. MACHE affiche le numéro mais ne peut rien vous dire de plus, prétendre le contraire vous ferait perdre du temps.",
   },
 ];
 
@@ -120,7 +120,7 @@ function ShippingPageEcrit() {
         <p className="mt-3 text-base leading-relaxed text-[var(--mache-muted)]">
           Ni le vendeur ni l&apos;agent ne le connaissent. C&apos;est tout
           l&apos;intérêt : pour marquer votre commande comme livrée, il faut
-          avoir obtenu ce code de vous — donc vous avoir rencontré. Sans lui, «
+          avoir obtenu ce code de vous, donc vous avoir rencontré. Sans lui, «
           livré » ne serait que la parole de celui qui réclame son dû.
         </p>
 
@@ -221,7 +221,7 @@ function ShippingPageEcrit() {
           Aucun transporteur n&apos;est raccordé à MACHE : le numéro de suivi
           d&apos;un transporteur extérieur est recopié à la main par le vendeur,
           et ne se met pas à jour tout seul. Il n&apos;y a ni délai garanti ni
-          grille de frais par zone — délais et frais se conviennent avec le
+          grille de frais par zone, délais et frais se conviennent avec le
           vendeur. Le réseau de points de retrait est en cours de constitution :{" "}
           <Link
             href="/partenaires"

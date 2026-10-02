@@ -94,7 +94,7 @@ export default async function SuiviPage({
             <Link href="/compte/connexion" className="underline">
               connectez-vous
             </Link>{" "}
-            — vos livraisons y sont accessibles sans lien.
+           , vos livraisons y sont accessibles sans lien.
           </p>
         </div>
       ) : (
@@ -160,7 +160,7 @@ export default async function SuiviPage({
               <p className="mt-3 text-sm leading-relaxed text-[#565959]">
                 Donnez-le <strong>seulement au moment où vous recevez le
                 colis</strong>, à la personne qui vous le remet. C&apos;est en
-                le saisissant qu&apos;elle prouve la livraison — et c&apos;est
+                le saisissant qu&apos;elle prouve la livraison, et c&apos;est
                 ce qui déclenche le paiement du vendeur.
               </p>
               <p className="mt-2 text-sm leading-relaxed text-[#b01124]">
@@ -215,7 +215,7 @@ export default async function SuiviPage({
                     </label>
                     <p className="mt-1 text-sm leading-relaxed text-[#565959]">
                       Votre constat sera enregistré comme une déclaration, pas
-                      comme une preuve — c&apos;est la seule information
+                      comme une preuve, c&apos;est la seule information
                       disponible pour un transport que MACHE ne contrôle pas.
                     </p>
 

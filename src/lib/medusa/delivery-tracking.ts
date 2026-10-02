@@ -174,7 +174,7 @@ export const TRACKING_STATUS_LABELS: Record<string, string> = {
   pending: "Le vendeur prépare votre colis",
   assigned: "Confié à la personne qui livre",
   in_transit: "En route",
-  ready_for_pickup: "Arrivé — à retirer",
+  ready_for_pickup: "Arrivé, à retirer",
   delivered: "Remis",
   failed: "La remise a échoué",
   cancelled: "Annulée",

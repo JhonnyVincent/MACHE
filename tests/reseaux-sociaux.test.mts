@@ -64,14 +64,14 @@ check("les logos sont en haut (masqués sur téléphone) et dans le pied de page
 
 check("« Trouver un fournisseur » mène aux grossistes, en français et en créole", () => {
   const header = readFileSync("src/components/header.tsx", "utf8");
-  assert.match(header, /\{ key: "findSupplier", icon: "📦", href: "\/gros" \}/);
+  assert.match(header, /\{ key: "findSupplier", Icon: BoxIcon, href: "\/gros" \}/);
   assert.match(header, /findSupplier: "Trouver un fournisseur"/);
   assert.match(header, /findSupplier: "Jwenn yon founisè"/);
 });
 
 check("la bande du haut garde sa longueur, donc sa vitesse", () => {
   const header = readFileSync("src/components/header.tsx", "utf8");
-  const services = (header.match(/\{ key: "\w+", icon: "[^"]+", href: "[^"]+" \}/g) ?? []).length;
+  const services = (header.match(/\{ key: "\w+", Icon: \w+, href: "[^"]+" \}/g) ?? []).length;
   const copies = Number((header.match(/Array\.from\(\{ length: (\d+) \}\)\.flatMap\(\(_, copy\) =>\s*SERVICES/) ?? [])[1]);
   assert.equal(services * copies, 24, "24 liens, comme avant (8 × 3)");
   assert.equal(copies % 2, 0, "un nombre pair de copies");

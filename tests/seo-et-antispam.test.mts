@@ -30,7 +30,7 @@ const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), "u
 
 check("fiche produit : prix dans le titre, photo et description dans l'aperçu", () => {
   const meta = productMetadata({ handle: "panier", title: "Panier en paille", description: "<p>Tressé   à la main à Jacmel.</p>", subtitle: null, price: 1500, currency: "htg", thumbnail: "https://cdn.exemple/p.jpg", images: [] });
-  assert.match(String(meta.title), /^Panier en paille — 1\s500\sHTG$/u);
+  assert.match(String(meta.title), /^Panier en paille | 1\s500\sHTG$/u);
   assert.equal(meta.description, "Tressé à la main à Jacmel.");
   const og = meta.openGraph as { images: Array<{ url: string }> };
   assert.equal(og.images[0].url, "https://cdn.exemple/p.jpg");

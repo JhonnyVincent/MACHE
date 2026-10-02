@@ -244,7 +244,7 @@ export default async function SellerEntryPage({
           <p className="mt-2 text-base leading-relaxed text-[var(--mache-muted)]">
             Si vous vendiez sur l&apos;ancienne version de MACHE, vos
             anciennes fiches produit ne sont pas reprises
-            automatiquement — le catalogue a changé de moteur. Écrivez à
+            automatiquement, le catalogue a changé de moteur. Écrivez à
             l&apos;équipe pour un transfert.
           </p>
         )}

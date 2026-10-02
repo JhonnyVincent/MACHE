@@ -78,8 +78,8 @@ function PrivacyPageEcrit() {
                 Pour ouvrir une boutique
               </strong>{" "}
               : le nom de la boutique, une adresse e-mail et un mot de
-              passe. Ce que vous ajoutez ensuite — description, logo,
-              produits — est public par nature.
+              passe. Ce que vous ajoutez ensuite (description, logo,
+              produits) est public par nature.
             </li>
           </ul>
 
@@ -129,11 +129,11 @@ function PrivacyPageEcrit() {
 
           <ul className="mt-3 space-y-1.5">
             <li>
-              <code className="text-sm">mache_cart_id</code> — retient
+              <code className="text-sm">mache_cart_id</code>, retient
               votre panier d&apos;une page à l&apos;autre.
             </li>
             <li>
-              <code className="text-sm">mache_customer_token</code> — vous
+              <code className="text-sm">mache_customer_token</code>, vous
               garde connecté à votre compte client.
             </li>
             <li>
@@ -142,11 +142,11 @@ function PrivacyPageEcrit() {
               gardent un vendeur connecté à sa boutique.
             </li>
             <li>
-              <code className="text-sm">mache_locale</code> — retient la
+              <code className="text-sm">mache_locale</code>, retient la
               langue que vous avez choisie.
             </li>
             <li>
-              <code className="text-sm">connect.sid</code> — garde un
+              <code className="text-sm">connect.sid</code>, garde un
               vendeur connecté à son panneau vendeur.
             </li>
           </ul>

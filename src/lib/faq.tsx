@@ -104,7 +104,7 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         a: (
           <>
             Toute personne ou entreprise. Vous déclarez un profil —
-            vendeur, grossiste ou marque — qui s&apos;affiche
+            vendeur, grossiste ou marque (le profil) qui s&apos;affiche
             sur votre vitrine.{" "}
             <Link href="/dashboard/seller/inscription" className="font-semibold text-[var(--mache-primary)] hover:underline">
               Ouvrir ma boutique
@@ -166,7 +166,7 @@ export const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         a: (
           <>
             Seul un client ayant réellement commandé un article peut le
-            noter — le système exige la commande correspondante. Les avis
+            noter, le système exige la commande correspondante. Les avis
             sont relus avant publication, et personne ne peut en acheter
             ni en supprimer.
           </>

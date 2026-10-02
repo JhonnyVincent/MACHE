@@ -48,8 +48,8 @@ function VendorsLegalPageEcrit() {
 
           <p className="mt-2">
             Les photos doivent être celles de l&apos;article, pas d&apos;un
-            article approchant. L&apos;état — neuf, d&apos;occasion,
-            reconditionné — doit être dit. Les dimensions, matières et
+            article approchant. L&apos;état (neuf, d&apos;occasion,
+            reconditionné) doit être dit. Les dimensions, matières et
             quantités annoncées doivent être exactes.
           </p>
 
@@ -98,15 +98,15 @@ function VendorsLegalPageEcrit() {
           </h2>
 
           <p className="mt-2">
-            Le profil que vous déclarez — vendeur,
-            grossiste, marque — s&apos;affiche sur votre vitrine. MACHE ne
+            Le profil que vous déclarez (vendeur,
+            grossiste, marque) s&apos;affiche sur votre vitrine. MACHE ne
             le vérifie pas, et vos clients en sont informés : c&apos;est
             une déclaration de votre part, pas un label.
           </p>
 
           <p className="mt-3">
             S&apos;en servir pour paraître ce qu&apos;on n&apos;est pas —
-            se déclarer « marque » quand on revend — est un motif de
+            se déclarer « marque » quand on revend, est un motif de
             suspension.
           </p>
         </section>
@@ -164,7 +164,7 @@ function VendorsLegalPageEcrit() {
             Trois points relèvent d&apos;une décision de MACHE et seront
             précisés avant l&apos;ouverture commerciale : la commission
             retenue sur les ventes, le délai de versement de votre
-            argent, et la gradation des sanctions — avertissement,
+            argent, et la gradation des sanctions : avertissement,
             suspension, exclusion.
           </p>
 

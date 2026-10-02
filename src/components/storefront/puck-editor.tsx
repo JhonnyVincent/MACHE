@@ -63,7 +63,7 @@ import type { StoreProduct, StoreSeller } from "@/lib/medusa/catalog";
   son format rappelé dans l'intitulé plutôt que laissé à deviner.
 */
 function puckField(field: BlockField) {
-  const label = field.hint ? `${field.label} — ${field.hint}` : field.label;
+  const label = field.hint ? `${field.label} (${field.hint})` : field.label;
 
   switch (field.kind) {
     case "textarea":
@@ -123,7 +123,7 @@ const CAN_RENDER_EMPTY: Partial<Record<BlockType, string>> = {
     "Aucun produit ne correspond à cette sélection pour l'instant. Le bloc restera masqué tant que ce sera le cas.",
   categories:
     "Vos produits ne sont rattachés à aucun rayon : le bloc restera masqué.",
-  faq: "Ajoutez au moins une question complète — question et réponse — pour que le bloc apparaisse.",
+  faq: "Ajoutez au moins une question complète (question et réponse) pour que le bloc apparaisse.",
   banner: "Saisissez un message pour que le bandeau apparaisse.",
   image: "Renseignez l'adresse d'une image en http:// ou https://.",
   text: "Saisissez un titre ou un texte.",

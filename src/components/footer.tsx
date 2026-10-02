@@ -181,7 +181,7 @@ export function Footer({
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/60">
           <div>
-            © 2026 Mache — Tous droits réservés.
+            © 2026 Mache. Tous droits réservés.
           </div>
 
           <div>

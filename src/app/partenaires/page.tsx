@@ -49,7 +49,7 @@ type Partnership = {
 const PARTNERSHIPS: Partnership[] = [
   {
     title: "Tenir un point de retrait",
-    who: "Une boutique, une pharmacie, un dépôt, un cybercafé — un local ouvert à heures régulières, dans un quartier.",
+    who: "Une boutique, une pharmacie, un dépôt, un cybercafé, un local ouvert à heures régulières, dans un quartier.",
     what: "Les colis destinés au quartier y attendent leur destinataire. Vous les remettez contre le code que l'acheteur vous donne.",
     gives:
       "Du passage : chaque retrait amène quelqu'un chez vous. Votre point est affiché avec son adresse et ses horaires sur MACHE. Vous êtes rémunéré en fonction des colis livrés ; les montants et les conditions se fixent avec MACHE avant le premier colis.",
@@ -60,7 +60,7 @@ const PARTNERSHIPS: Partnership[] = [
     who: "Un transporteur, une coopérative de motos-taxis, une société de fret entre départements.",
     what: "Acheminer les colis d'un département à l'autre, ou d'un vendeur à un point de retrait.",
     gives:
-      "Un volume groupé au lieu de courses isolées, et une adresse de destination fiable — le point de retrait plutôt qu'un domicile difficile à trouver.",
+      "Un volume groupé au lieu de courses isolées, et une adresse de destination fiable, le point de retrait plutôt qu'un domicile difficile à trouver.",
     ready: false,
   },
   {
@@ -76,7 +76,7 @@ const PARTNERSHIPS: Partnership[] = [
     title: "Faire connaître",
     who: "Un média, une association de la diaspora, une organisation d'événements.",
     what:
-      "Faire savoir que les producteurs haïtiens sont joignables en ligne — c'est aujourd'hui le premier obstacle, bien avant la technique.",
+      "Faire savoir que les producteurs haïtiens sont joignables en ligne, c'est aujourd'hui le premier obstacle, bien avant la technique.",
     gives: "Ce qui est à discuter, et honnêtement : MACHE n'a pas encore de budget de communication.",
     ready: false,
   },
@@ -212,7 +212,7 @@ export default async function PartenairesPage() {
                     {partner.name}
                   </Link>
                   {partner.category && <p className="mt-0.5 text-sm font-semibold text-[var(--mache-primary)]">{partner.category}</p>}
-                  {partner.location && <p className="mt-0.5 text-sm text-[var(--mache-muted)]">📍 {partner.location}</p>}
+                  {partner.location && <p className="mt-0.5 text-sm text-[var(--mache-muted)]">{partner.location}</p>}
                 </li>
               ))}
             </ul>

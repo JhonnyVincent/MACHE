@@ -84,7 +84,7 @@ export default async function PartnerProfilePage({ params }: { params: Promise<{
 
           <p className="mt-4 text-md leading-relaxed text-[var(--mache-text)]">{partner.description || partner.does}</p>
 
-          {partner.location && <p className="mt-3 text-md text-[var(--mache-muted)]">📍 {partner.location}</p>}
+          {partner.location && <p className="mt-3 text-md text-[var(--mache-muted)]">{partner.location}</p>}
 
           <div className="mt-5 flex flex-wrap gap-2.5">
             {partner.whatsapp && (

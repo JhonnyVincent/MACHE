@@ -90,7 +90,7 @@ function DeliveryCard({ delivery }: { delivery: AgentDelivery }) {
             <dt className="shrink-0 text-[var(--mache-muted)]">Adresse</dt>
             <dd className="text-[var(--mache-text)]">
               {delivery.recipientAddress}
-              {delivery.recipientDepartment ? ` — ${delivery.recipientDepartment}` : ""}
+              {delivery.recipientDepartment ? `, ${delivery.recipientDepartment}` : ""}
             </dd>
           </div>
         )}
@@ -221,7 +221,7 @@ export default async function AgentHomePage({
           {result.data.card.suspended && (
             <Notice tone="danger" title="Habilitation suspendue">
               Votre habilitation d&apos;agent est suspendue. Vous voyez encore vos
-              colis — il faut bien pouvoir dire où ils sont — mais vous ne pouvez
+              colis, il faut bien pouvoir dire où ils sont, mais vous ne pouvez
               plus les faire avancer. Contactez MACHE.
             </Notice>
           )}

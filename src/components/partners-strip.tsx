@@ -29,20 +29,21 @@
 */
 
 import { Link } from "next-view-transitions";
+import { PinIcon, TruckIcon } from "@/components/icons";
 import { PARTNERS } from "@/lib/partners";
 
 /* Les places à prendre — des rôles, pas des entreprises. */
 const OPEN_ROLES = [
   {
     key: "livraison",
-    icon: "🚚",
+    Icon: TruckIcon,
     title: "Livraison",
     text: "Transporteurs et coursiers qui acheminent les colis entre vendeurs et acheteurs.",
     tone: "border-dashed border-[var(--mache-line)] bg-[var(--mache-white)]",
   },
   {
     key: "points-relais",
-    icon: "📍",
+    Icon: PinIcon,
     title: "Points relais",
     text: "Des commerces de quartier qui gardent les colis jusqu'à ce que l'acheteur vienne les chercher.",
     /* Vert léger, nuancé de blanc, voulu par MACHE pour les points relais. */
@@ -103,7 +104,7 @@ export function PartnersStrip() {
                     Place à prendre
                   </span>
                   <span className="mt-2 text-2xl font-black text-[var(--mache-text)]">
-                    <span aria-hidden="true">{role.icon} </span>
+                    <role.Icon className="mr-2 inline h-6 w-6 align-[-4px]" />
                     {role.title}
                   </span>
                   <span className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">{role.text}</span>

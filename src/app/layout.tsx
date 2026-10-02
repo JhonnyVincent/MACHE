@@ -25,7 +25,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "MACHE — La marketplace haïtienne : acheter et vendre en Haïti",
+    default: "MACHE | La marketplace haïtienne : acheter et vendre en Haïti",
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: SITE_NAME,
     locale: "fr_FR",
-    title: "MACHE — La marketplace haïtienne",
+    title: "MACHE | La marketplace haïtienne",
     description: SITE_DESCRIPTION,
     url: "/",
     images: [{ url: DEFAULT_SHARE_IMAGE, width: 1200, height: 630, alt: "MACHE, la marketplace haïtienne" }],

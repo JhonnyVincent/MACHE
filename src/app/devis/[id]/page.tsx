@@ -108,7 +108,7 @@ export default async function QuotePage({
 
       <p className="mt-2 text-md text-[var(--mache-muted)]">
         {quote.quantity} unité{quote.quantity > 1 ? "s" : ""} demandée
-        {quote.quantity > 1 ? "s" : ""} — {QUOTE_LABELS[quote.status]}.
+        {quote.quantity > 1 ? "s" : ""}, {QUOTE_LABELS[quote.status]}.
       </p>
 
       {quote.message && (
@@ -154,7 +154,7 @@ export default async function QuotePage({
           {quote.validUntil && dateFr(quote.validUntil) && (
             <p className="mt-3 text-sm text-[var(--mache-muted)]">
               {quote.status === "expired"
-                ? `Proposition valable jusqu'au ${dateFr(quote.validUntil)} — ce délai est passé.`
+                ? `Proposition valable jusqu'au ${dateFr(quote.validUntil)}, ce délai est passé.`
                 : `Valable jusqu'au ${dateFr(quote.validUntil)}.`}
             </p>
           )}
@@ -200,7 +200,7 @@ export default async function QuotePage({
       {quote.status === "accepted" && (
         <p className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
           Le vendeur sait que vous acceptez sa proposition. La suite —
-          livraison et règlement — se convient directement avec lui.
+          livraison et règlement, se convient directement avec lui.
         </p>
       )}
 

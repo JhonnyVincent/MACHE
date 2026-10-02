@@ -144,7 +144,7 @@ function Delivery({ delivery }: { delivery: VendorDelivery }) {
           <Notice tone="warning" title="Remise non prouvée par code">
             Ce colis est confié à un transporteur que MACHE ne contrôle pas. Le
             suivi vient de lui, et la remise n&apos;est pas prouvée par un code
-            — le versement suit donc vos accords habituels, pas ce dispositif.
+           , le versement suit donc vos accords habituels, pas ce dispositif.
           </Notice>
         </div>
       )}
@@ -249,7 +249,7 @@ export default async function SellerDeliveriesPage({
       {query.fait && <Notice tone="info" title="Enregistré">{query.fait}</Notice>}
 
       {query.jeton && query.livraison && (
-        <Notice tone="warning" title="Transmettez ce lien à l'acheteur — il ne sera plus affiché">
+        <Notice tone="warning" title="Transmettez ce lien à l'acheteur, il ne sera plus affiché">
           <p>
             C&apos;est par là qu&apos;un acheteur sans compte suit son colis et
             lit son code de remise. MACHE n&apos;envoie pas d&apos;e-mail :
@@ -276,7 +276,7 @@ export default async function SellerDeliveriesPage({
               label="Comment part le colis"
               htmlFor="method"
               required
-              hint="Ce choix décide de la suite du suivi — et, pour le transporteur, du fait qu'il n'y aura pas de preuve par code."
+              hint="Ce choix décide de la suite du suivi, et, pour le transporteur, du fait qu'il n'y aura pas de preuve par code."
             >
               <Select id="method" name="method" required defaultValue="seller">
                 <option value="seller">Je le livre moi-même</option>

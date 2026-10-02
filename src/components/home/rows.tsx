@@ -13,6 +13,7 @@
 */
 
 import type { ReactNode } from "react";
+import { PinIcon, TruckIcon } from "@/components/icons";
 import { Link } from "next-view-transitions";
 import { VerifiedBadge } from "@/components/verified-badge";
 import { ProductCard } from "@/components/home/rails";
@@ -264,7 +265,7 @@ export function SuggestionsMarquee({
 const EARN_ROLES = [
   {
     key: "relais",
-    icon: "📍",
+    Icon: PinIcon,
     title: "Devenir point relais",
     who: "Boutique, pharmacie, cybercafé, dépôt…",
     points: [
@@ -279,7 +280,7 @@ const EARN_ROLES = [
   },
   {
     key: "agent",
-    icon: "🛵",
+    Icon: TruckIcon,
     title: "Devenir agent vérifié",
     who: "Livreur, coursier, moto-taxi…",
     points: [
@@ -324,7 +325,7 @@ export function EarnWithMache() {
                   aria-hidden="true"
                   className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-sm transition-transform duration-300 group-hover:scale-110 motion-reduce:transform-none"
                 >
-                  {role.icon}
+                  <role.Icon className="h-6 w-6" />
                 </span>
                 <span>
                   <span className="block text-xl font-black">{role.title}</span>

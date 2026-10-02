@@ -44,12 +44,12 @@ import { pageMetadata, SITE_DESCRIPTION } from "@/lib/seo";
 
 export const metadata = {
   ...pageMetadata({
-  title: "MACHE — La marketplace haïtienne : acheter et vendre en Haïti",
+  title: "MACHE | La marketplace haïtienne : acheter et vendre en Haïti",
   description: SITE_DESCRIPTION,
   path: "/",
   }),
   /* L'accueil garde le titre complet, sans « | MACHE » en double. */
-  title: { absolute: "MACHE — La marketplace haïtienne : acheter et vendre en Haïti" },
+  title: { absolute: "MACHE | La marketplace haïtienne : acheter et vendre en Haïti" },
 };
 
 export const dynamic = "force-dynamic";

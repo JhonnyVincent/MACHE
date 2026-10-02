@@ -242,7 +242,7 @@ export default async function SellerProfilePage({
 
         <p className="mt-1.5 text-md leading-relaxed text-[var(--mache-muted)]">
           Le montant en dessous duquel vous ne servez pas une commande.
-          Laissez vide si vous vendez sans minimum — c&apos;est le cas de
+          Laissez vide si vous vendez sans minimum, c&apos;est le cas de
           la plupart des boutiques.
         </p>
 
