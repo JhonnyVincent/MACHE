@@ -174,6 +174,12 @@ Décisions et infos du 1er octobre 2026 :
 - [ ] Rédiger les textes des 2 ou 3 premières publicités (accroche + message court) : à faire quand le fondateur le demande.
 - [ ] Ajouter le slogan sur le site (sous le logo ou page À propos) : en attente de décision.
 
+## 🎨 Habillages saisonniers (page « Apparence du site » de MACHE Pilote)
+
+- [x] Disponibles : MACHE (habituel), Noël, Octobre rose, Saint-Valentin, Fête du Drapeau, **Bonne année, Indépendance d'Haïti (1er janvier), Carnaval, Pâques, Été, Rentrée des classes, Halloween, Toussaint et Fèt Gede**. Aucun ne s'active seul : l'équipe active et désactive. Contrastes vérifiés par un test.
+- [ ] Idées pas encore faites : Fête des mères et des pères, Journée du créole (28 octobre), Vertières (18 novembre), Pâques/Semaine sainte plus sobre, Black Friday (seulement si de vraies offres existent : jamais de bandeau qui promet une promotion fausse).
+- Note : Fèt Gede a un sens religieux pour certains Haïtiens. Le bandeau reste sobre (« Toussaint et Fèt Gede »).
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
