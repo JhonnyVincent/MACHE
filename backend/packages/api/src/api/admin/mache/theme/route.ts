@@ -20,7 +20,8 @@
 
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils";
-import { THEMES, THEME_KEYS, themeOf } from "../../../mache-themes";
+import { AUTO, THEMES, THEME_KEYS, resolveTheme } from "../../../mache-themes";
+import { portAuPrinceDate, seasonWindows } from "../../../../lib/season-calendar";
 import { THEME_FIELD } from "../../../store/site-theme/route";
 
 type StoreService = {
@@ -43,10 +44,19 @@ async function currentStore(req: MedusaRequest) {
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
   const store = await currentStore(req);
 
-  const active = themeOf(store?.metadata?.[THEME_FIELD]);
+  const stored = store?.metadata?.[THEME_FIELD];
+  const today = portAuPrinceDate();
+  const active = resolveTheme(stored, today);
+  const year = Number(today.slice(0, 4));
 
   return res.json({
+    mode: stored === AUTO ? "auto" : "manual",
+    today,
     active: active.key,
+    calendar: seasonWindows(year).map((w) => ({
+      ...w,
+      label: THEMES[w.key].label,
+    })),
     themes: THEME_KEYS.map((key) => ({
       key,
       label: THEMES[key].label,
@@ -68,9 +78,9 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     l'apprendre — sinon il croira avoir activé Noël et verra le site
     inchangé sans comprendre.
   */
-  if (!key || !(THEME_KEYS as string[]).includes(key)) {
+  if (!key || (key !== AUTO && !(THEME_KEYS as string[]).includes(key))) {
     return res.status(400).json({
-      message: `Habillage inconnu. Les choix possibles sont : ${THEME_KEYS.join(", ")}.`,
+      message: `Habillage inconnu. Les choix possibles sont : ${AUTO}, ${THEME_KEYS.join(", ")}.`,
     });
   }
 
@@ -91,5 +101,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     metadata: { ...(store.metadata ?? {}), [THEME_FIELD]: key },
   });
 
-  return res.json({ active: key, theme: THEMES[key as keyof typeof THEMES] });
+  const active = resolveTheme(key, portAuPrinceDate());
+
+  return res.json({ active: active.key, mode: key === AUTO ? "auto" : "manual" });
 }

@@ -176,8 +176,11 @@ Décisions et infos du 1er octobre 2026 :
 
 ## 🎨 Habillages saisonniers (page « Apparence du site » de MACHE Pilote)
 
-- [x] Disponibles : MACHE (habituel), Noël, Octobre rose, Saint-Valentin, Fête du Drapeau, **Bonne année, Indépendance d'Haïti (1er janvier), Carnaval, Pâques, Été, Rentrée des classes, Halloween, Toussaint et Fèt Gede**. Aucun ne s'active seul : l'équipe active et désactive. Contrastes vérifiés par un test.
-- [ ] Idées pas encore faites : Fête des mères et des pères, Journée du créole (28 octobre), Vertières (18 novembre), Pâques/Semaine sainte plus sobre, Black Friday (seulement si de vraies offres existent : jamais de bandeau qui promet une promotion fausse).
+- [x] Disponibles (24) : MACHE, Noël, Octobre rose, Saint-Valentin, Fête du Drapeau, Bonne année, Indépendance (1er janvier), Carnaval, Pâques, **Semaine sainte, Fête des mères, Fête des pères, Été, Rentrée, Halloween, Journée du créole (28 oct.), Toussaint et Fèt Gede, Vertières (18 nov.), Black Friday**. Contrastes vérifiés par un test.
+- [x] **Mode automatique** (bouton sur la page « Apparence du site ») : le calendrier choisit la fête du jour (date d'Haïti). Pâques, Carnaval, Semaine sainte et Black Friday sont calculés chaque année. Entre deux fêtes : couleurs MACHE. Si vous choisissez un habillage à la main, on repasse en manuel.
+- [x] **Une rangée sur l'accueil par fête active** (Noël : idées cadeaux, Fête des mères/pères, Été : maillots de bain…, Black Friday : uniquement les articles réellement en promotion). Elle n'apparaît que s'il existe de vrais produits correspondants : jamais de rayon vide ou inventé.
+- [ ] **Vérifier pour Haïti** : date de la fête des mères (réglée sur le dernier dimanche de mai) et des pères (3e dimanche de juin) — à confirmer avant le lancement.
+- [ ] Les rangées cherchent des mots (« cadeau », « maillot »…) dans le titre/la description : plus vos vendeurs les utilisent, plus la rangée se remplit. Une case « Idée cadeau Noël » à cocher par le vendeur serait plus fiable : à décider.
 - Note : Fèt Gede a un sens religieux pour certains Haïtiens. Le bandeau reste sobre (« Toussaint et Fèt Gede »).
 
 ## ⏸️ Proposé, en attente de votre feu vert

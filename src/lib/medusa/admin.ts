@@ -646,14 +646,28 @@ export type AdminTheme = {
   variables: Record<string, string>;
 };
 
+export type AdminSeasonWindow = { key: string; label: string; from: string; to: string };
+
 export async function fetchThemes(): Promise<
-  Result<{ active: string; themes: AdminTheme[] }>
+  Result<{
+    active: string;
+    mode: "auto" | "manual";
+    today: string;
+    calendar: AdminSeasonWindow[];
+    themes: AdminTheme[];
+  }>
 > {
   const token = await readToken();
 
   if (!token) return { ok: false, reason: "Session expirée." };
 
-  const result = await request<{ active?: string; themes?: Raw[] }>(
+  const result = await request<{
+    active?: string;
+    mode?: string;
+    today?: string;
+    calendar?: Raw[];
+    themes?: Raw[];
+  }>(
     "/admin/mache/theme",
     { token }
   );
@@ -664,6 +678,14 @@ export async function fetchThemes(): Promise<
     ok: true,
     data: {
       active: str(result.data.active) ?? "default",
+      mode: result.data.mode === "auto" ? "auto" : "manual",
+      today: str(result.data.today) ?? "",
+      calendar: (result.data.calendar ?? []).map((w) => ({
+        key: str(w.key) ?? "",
+        label: str(w.label) ?? "",
+        from: str(w.from) ?? "",
+        to: str(w.to) ?? "",
+      })),
       themes: (result.data.themes ?? []).map((raw) => ({
         key: str(raw.key) ?? "default",
         label: str(raw.label) ?? "",

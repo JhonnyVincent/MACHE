@@ -23,11 +23,11 @@
   celles-ci ne le peuvent pas, puisqu'elles viennent de la même source
   que ce qui sera servi.
 
-  Aucun thème ne s'active tout seul
+  Le mode Automatique
 
-  Il n'y a pas de calendrier. Un site qui change d'apparence sans que
-  personne ne l'ait décidé est un site dont on ne sait plus qui l'a
-  changé.
+  Il est choisi par l'administrateur, jamais imposé : tant qu'il n'a pas
+  cliqué « Automatique », rien ne change tout seul. Une fois choisi, le
+  calendrier ci-dessous (affiché en entier, dates comprises) décide.
 */
 
 import { redirect } from "next/navigation";
@@ -85,9 +85,51 @@ export default async function AdminAppearancePage({
         </Notice>
       ) : (
         <>
+          <Panel
+            title="Calendrier automatique"
+            description={
+              result.data.mode === "auto"
+                ? "Mode automatique actif : le site se met aux couleurs de la fête en cours, et revient à MACHE entre deux fêtes."
+                : "Mode manuel : l'habillage ne change que si vous le changez. Activez l'automatique pour suivre ce calendrier."
+            }
+          >
+            {result.data.mode !== "auto" && (
+              <form action={setThemeAction} className="mb-4">
+                <input type="hidden" name="theme" value="auto" />
+                <SubmitButton pendingLabel="Application…">
+                  Activer le mode automatique
+                </SubmitButton>
+              </form>
+            )}
+            {result.data.mode === "auto" && (
+              <form action={setThemeAction} className="mb-4">
+                <input type="hidden" name="theme" value="default" />
+                <SubmitButton pendingLabel="Application…">
+                  Revenir au manuel (couleurs MACHE)
+                </SubmitButton>
+              </form>
+            )}
+            <ul className="grid gap-1.5 text-sm text-[#565959] md:grid-cols-2">
+              {result.data.calendar.map((w) => (
+                <li key={w.key} className="flex justify-between gap-3 border-b border-[#eee] py-1">
+                  <span className="font-semibold text-[#0f1111]">{w.label}</span>
+                  <span>
+                    {w.from === w.to ? w.from : `${w.from} → ${w.to}`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs text-[#767676]">
+              Dates de la fête des mères et des pères : à vérifier pour Haïti
+              avant le lancement (la règle utilisée est le dernier dimanche de
+              mai et le troisième dimanche de juin).
+            </p>
+          </Panel>
+
           <div className="grid gap-3 md:grid-cols-2">
             {result.data.themes.map((theme) => {
-              const active = theme.key === result.data.active;
+              const active =
+                result.data.mode === "manual" && theme.key === result.data.active;
 
               const swatches = SWATCH_ORDER.filter(
                 (name) => theme.variables[name]
@@ -175,10 +217,9 @@ export default async function AdminAppearancePage({
           >
             <ul className="space-y-2 text-sm leading-relaxed text-[#565959]">
               <li>
-                <strong className="text-[#0f1111]">Rien ne s&apos;active tout seul.</strong>{" "}
-                Il n&apos;y a pas de calendrier : Noël ne s&apos;allumera pas le
-                1<sup>er</sup> décembre, et Octobre rose ne s&apos;éteindra pas le
-                31 octobre. C&apos;est à vous d&apos;activer et de désactiver.
+                <strong className="text-[#0f1111]">Rien ne s&apos;active tout seul tant que vous n&apos;avez pas choisi le mode automatique.</strong>{" "}
+                En manuel, c&apos;est à vous d&apos;activer et de désactiver chaque
+                habillage. Choisir un habillage ici repasse en manuel.
               </li>
               <li>
                 <strong className="text-[#0f1111]">Aucune couleur libre.</strong>{" "}

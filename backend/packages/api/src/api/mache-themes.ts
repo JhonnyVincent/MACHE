@@ -29,6 +29,8 @@
   désactive.
 */
 
+import { seasonOn } from "../lib/season-calendar";
+
 export type ThemeKey =
   | "default"
   | "noel"
@@ -42,7 +44,13 @@ export type ThemeKey =
   | "ete"
   | "rentree"
   | "halloween"
-  | "toussaint-gede";
+  | "toussaint-gede"
+  | "fete-des-meres"
+  | "fete-des-peres"
+  | "journee-creole"
+  | "vertieres"
+  | "semaine-sainte"
+  | "black-friday";
 
 export type Theme = {
   key: ThemeKey;
@@ -249,6 +257,96 @@ export const THEMES: Record<ThemeKey, Theme> = {
       "--mache-line": "#d9c9ec",
     },
   },
+
+  "fete-des-meres": {
+    key: "fete-des-meres",
+    label: "Fête des mères",
+    description: "Rose profond et pêche tendre.",
+    banner: "Bonne fête à toutes les mamans",
+    variables: {
+      "--mache-primary": "#a5324a",
+      "--mache-primary-soft": "#fbe6ea",
+      "--mache-primary-strong": "#c4465f",
+      "--mache-primary-dark": "#6e1a2c",
+      "--mache-bg-2": "#fdf0ea",
+      "--mache-line": "#f0d0c4",
+    },
+  },
+
+  "fete-des-peres": {
+    key: "fete-des-peres",
+    label: "Fête des pères",
+    description: "Bleu acier et gris clair.",
+    banner: "Bonne fête à tous les papas",
+    variables: {
+      "--mache-primary": "#1f4e79",
+      "--mache-primary-soft": "#e4edf6",
+      "--mache-primary-strong": "#2f6aa3",
+      "--mache-primary-dark": "#12304d",
+      "--mache-bg-2": "#eef1f4",
+      "--mache-line": "#cbd5df",
+    },
+  },
+
+  "journee-creole": {
+    key: "journee-creole",
+    label: "Journée du créole",
+    description: "Ocre et crème, pour le 28 octobre.",
+    banner: "28 octobre — Journée internationale du créole",
+    variables: {
+      "--mache-primary": "#8a4b08",
+      "--mache-primary-soft": "#f8ead7",
+      "--mache-primary-strong": "#b0620f",
+      "--mache-primary-dark": "#5a3005",
+      "--mache-bg-2": "#fbf4e8",
+      "--mache-line": "#e8d4b4",
+    },
+  },
+
+  vertieres: {
+    key: "vertieres",
+    label: "Vertières",
+    description: "Rouge sombre et gris-bleu, pour le 18 novembre.",
+    banner: "18 novembre — Bataille de Vertières",
+    variables: {
+      "--mache-primary": "#7a1f2b",
+      "--mache-primary-soft": "#f6e4e7",
+      "--mache-primary-strong": "#a12d3d",
+      "--mache-primary-dark": "#4f121b",
+      "--mache-bg-2": "#edf0f5",
+      "--mache-line": "#cdd4e0",
+    },
+  },
+
+  "semaine-sainte": {
+    key: "semaine-sainte",
+    label: "Semaine sainte",
+    description: "Violet sobre et gris, sans fête.",
+    banner: "Semaine sainte",
+    variables: {
+      "--mache-primary": "#4a3a5e",
+      "--mache-primary-soft": "#ece8f1",
+      "--mache-primary-strong": "#66527f",
+      "--mache-primary-dark": "#2e2340",
+      "--mache-bg-2": "#f2f0f4",
+      "--mache-line": "#d6d0de",
+    },
+  },
+
+  "black-friday": {
+    key: "black-friday",
+    label: "Black Friday",
+    description: "Noir et gris clair. La page d'accueil met en avant les produits réellement en promotion.",
+    banner: "Black Friday",
+    variables: {
+      "--mache-primary": "#1a1a1a",
+      "--mache-primary-soft": "#ececec",
+      "--mache-primary-strong": "#3a3a3a",
+      "--mache-primary-dark": "#000000",
+      "--mache-bg-2": "#f4f4f4",
+      "--mache-line": "#d9d9d9",
+    },
+  },
 };
 
 export const THEME_KEYS = Object.keys(THEMES) as ThemeKey[];
@@ -267,4 +365,21 @@ export function themeOf(value: unknown): Theme {
   }
 
   return THEMES.default;
+}
+
+/*
+  L'habillage à servir : la clé enregistrée par le propriétaire, ou, si
+  elle vaut « auto », la fête en cours selon le calendrier (voir
+  lib/season-calendar.ts). Hors fête, l'habillage habituel.
+*/
+export const AUTO = "auto";
+
+export function resolveTheme(stored: unknown, today: string): Theme {
+  if (stored === AUTO) {
+    const season = seasonOn(today);
+
+    return season ? THEMES[season] : THEMES.default;
+  }
+
+  return themeOf(stored);
 }

@@ -36,6 +36,10 @@ import { HeroCarousel } from "@/components/home/hero";
 import { NewsletterCta } from "@/components/home/newsletter";
 import { BrandsMarquee, CategoryTiles, SellCta, Spotlight } from "@/components/home/sections";
 import { EarnWithMache, HomeFaq, NewArrivals, NewShopsMarquee, SuggestionsMarquee } from "@/components/home/rows";
+import { fetchSiteTheme } from "@/lib/medusa/theme";
+import { fetchProducts } from "@/lib/medusa/catalog";
+import { SEASON_RAILS, seasonProducts } from "@/lib/seasons";
+import { ProductRailSection } from "@/components/home/rails";
 import { pageMetadata, SITE_DESCRIPTION } from "@/lib/seo";
 
 export const metadata = {
@@ -66,6 +70,17 @@ export default async function HomePage() {
     );
   }
 
+  /* La rangée de la fête en cours : seulement s'il y a de vrais produits. */
+  const theme = await fetchSiteTheme();
+  const seasonRail = SEASON_RAILS[theme.key];
+  let seasonItems: Awaited<ReturnType<typeof seasonProducts>> = [];
+
+  if (seasonRail) {
+    const pool = await fetchProducts({ limit: 100, order: "-created_at" });
+
+    if (pool.ok) seasonItems = seasonProducts(theme.key, pool.data.products);
+  }
+
   const counts = [
     { label: "Boutiques", value: home.newSellers.length },
     { label: "Rayons", value: home.mainRayons.length },
@@ -77,6 +92,16 @@ export default async function HomePage() {
       <HeroCarousel slides={home.slides} counts={counts} />
 
       <MainNav />
+
+      {seasonRail && (
+        <div data-season-rail={theme.key}>
+          <ProductRailSection
+            title={seasonRail.title}
+            subtitle={seasonRail.subtitle}
+            products={seasonItems}
+          />
+        </div>
+      )}
 
       <Spotlight products={home.spotlight} />
 

@@ -3,7 +3,7 @@
   rester lisible avec du texte blanc, et les liens colorés sur fond blanc.
 */
 import assert from "node:assert/strict";
-import { THEMES, THEME_KEYS, themeOf } from "../backend/packages/api/src/api/mache-themes.ts";
+import { THEMES, THEME_KEYS, themeOf, resolveTheme } from "../backend/packages/api/src/api/mache-themes.ts";
 
 let passed = 0;
 function check(name: string, run: () => void) {
@@ -22,6 +22,9 @@ function contrast(a: string, b: string): number {
   const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
 }
+
+import { easterSunday, seasonOn, seasonWindows } from "../backend/packages/api/src/lib/season-calendar.ts";
+import { SEASON_RAILS, seasonProducts } from "../src/lib/seasons.ts";
 
 console.log("\nHabillages saisonniers");
 
@@ -65,6 +68,61 @@ check("pas de promesse commerciale dans les bandeaux", () => {
 check("une clé inconnue retombe sur l'habillage habituel", () => {
   assert.equal(themeOf("nimportequoi").key, "default");
   assert.equal(themeOf(undefined).key, "default");
+});
+
+check("les nouveaux habillages existent", () => {
+  for (const key of ["fete-des-meres", "fete-des-peres", "journee-creole", "vertieres", "semaine-sainte", "black-friday"]) {
+    assert.ok(THEME_KEYS.includes(key as never), key);
+  }
+});
+
+check("calendrier : Pâques et ses voisins", () => {
+  assert.equal(easterSunday(2026).toISOString().slice(0, 10), "2026-04-05");
+  assert.equal(seasonOn("2026-04-05"), "paques");
+  assert.equal(seasonOn("2026-03-30"), "semaine-sainte");
+  assert.equal(seasonOn("2026-02-14"), "saint-valentin");
+});
+
+check("calendrier : Black Friday 2026 (27 nov), Noël, fêtes des mères/pères", () => {
+  assert.equal(seasonOn("2026-11-27"), "black-friday");
+  assert.equal(seasonOn("2026-11-30"), "black-friday");
+  assert.equal(seasonOn("2026-12-10"), "noel");
+  assert.equal(seasonOn("2026-05-31"), "fete-des-meres");
+  assert.equal(seasonOn("2026-06-21"), "fete-des-peres");
+  assert.equal(seasonOn("2026-10-27"), "journee-creole");
+  assert.equal(seasonOn("2026-11-18"), "vertieres");
+});
+
+check("calendrier : entre deux fêtes, rien ; chaque fenêtre vise un thème existant", () => {
+  assert.equal(seasonOn("2026-03-01"), null);
+  for (const w of seasonWindows(2026)) assert.ok(THEME_KEYS.includes(w.key), w.key);
+});
+
+check("mode automatique suit le calendrier, le mode manuel l'ignore", () => {
+  assert.equal(resolveTheme("auto", "2026-12-10").key, "noel");
+  assert.equal(resolveTheme("auto", "2026-03-01").key, "default");
+  assert.equal(resolveTheme("octobre-rose", "2026-12-10").key, "octobre-rose");
+});
+
+check("chaque rangée de fête correspond à un habillage existant", () => {
+  for (const key of Object.keys(SEASON_RAILS)) assert.ok(THEME_KEYS.includes(key as never), key);
+});
+
+const mk = (title: string, price: number, originalPrice: number | null) =>
+  ({ id: title, title, description: null, collectionTitle: null, price, originalPrice }) as never;
+
+check("rangée Noël : seulement les produits qui correspondent", () => {
+  const r = seasonProducts("noel", [mk("Coffret cadeau", 10, null), mk("Pneu", 5, null)]);
+  assert.equal(r.length, 1);
+});
+
+check("Black Friday : uniquement les vraies promotions", () => {
+  const r = seasonProducts("black-friday", [mk("A", 5, 10), mk("B", 10, 10), mk("C", 10, null)]);
+  assert.deepEqual(r.map((p) => p.title), ["A"]);
+});
+
+check("été : un maillot de bain est proposé, sans accent aussi", () => {
+  assert.equal(seasonProducts("ete", [mk("Maillot de bain une pièce", 1, null)]).length, 1);
 });
 
 console.log(`\n${passed} vérifications réussies.`);

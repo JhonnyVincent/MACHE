@@ -26,7 +26,8 @@
 
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils";
-import { themeOf } from "../../mache-themes";
+import { resolveTheme } from "../../mache-themes";
+import { portAuPrinceDate } from "../../../lib/season-calendar";
 
 export const THEME_FIELD = "mache_theme";
 
@@ -54,7 +55,7 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     stored = null;
   }
 
-  const theme = themeOf(stored);
+  const theme = resolveTheme(stored, portAuPrinceDate());
 
   return res.json({
     theme: {
