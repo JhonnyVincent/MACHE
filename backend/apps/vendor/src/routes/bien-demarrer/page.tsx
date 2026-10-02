@@ -32,7 +32,7 @@ declare const __BACKEND_URL__: string;
 
 export const config = {
   label: "Accueil",
-  rank: 0,
+  rank: 1,
 };
 
 type Status = {

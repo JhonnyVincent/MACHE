@@ -234,7 +234,7 @@ check("panneau vendeur : en français d'office, menu simplifié, annuaire des fo
   /* Le menu complet est gardé : rien n'est masqué. */
   assert.doesNotMatch(nav, /hidden: true/);
   assert.match(nav, /label: "Avis"/);
-  assert.match(read("backend/apps/vendor/src/routes/bien-demarrer/page.tsx"), /rank: 0,/);
+  assert.match(read("backend/apps/vendor/src/routes/bien-demarrer/page.tsx"), /rank: 1,/);
   /* L'accueil vendeur est composé de blocs que le vendeur affiche, masque et range. */
   const home = read("backend/apps/vendor/src/routes/bien-demarrer/page.tsx");
   for (const block of ["premiers-pas", "demandes", "ventes", "grossiste", "boutique", "pub", "avis"]) assert.match(home, new RegExp(`id: "${block}"`), block);

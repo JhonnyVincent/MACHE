@@ -12,12 +12,12 @@ import { defineNavigationConfig } from "@mercurjs/dashboard-sdk";
 
 export default defineNavigationConfig({
   items: [
-    { id: "orders", rank: 1 },
-    { id: "products", rank: 2 },
-    { id: "customers", rank: 5 },
-    { id: "promotions", rank: 6 },
-    { id: "payouts", rank: 7 },
+    { id: "orders", rank: 2 },
+    { id: "products", rank: 3 },
+    { id: "customers", rank: 6 },
+    { id: "promotions", rank: 7 },
+    { id: "payouts", rank: 8 },
     /* Mercur ne traduit pas ce libellé en français. */
-    { id: "reviews", rank: 8, label: "Avis" },
+    { id: "reviews", rank: 9, label: "Avis" },
   ],
 });

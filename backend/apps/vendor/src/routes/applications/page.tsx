@@ -21,7 +21,7 @@ declare const __BACKEND_URL__: string;
 
 export const config = {
   label: "Applications",
-  rank: 10,
+  rank: 11,
 };
 
 type App = { id: string; name: string; text: string; group: string; live?: boolean; href?: string };

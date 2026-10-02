@@ -17,7 +17,7 @@ declare const __BACKEND_URL__: string;
 
 export const config = {
   label: "Revendeurs",
-  rank: 3,
+  rank: 4,
 };
 
 type Product = { id: string; title: string; authorized: Array<{ id: string; name: string }> };

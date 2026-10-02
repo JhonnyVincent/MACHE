@@ -23,7 +23,7 @@ declare const __BACKEND_URL__: string;
 
 export const config = {
   label: "Fournisseurs",
-  rank: 3,
+  rank: 4,
 };
 
 type Supplier = {
