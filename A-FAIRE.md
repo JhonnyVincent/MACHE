@@ -202,6 +202,8 @@ Décisions et infos du 1er octobre 2026 :
 
 ## 💳 Paiements : pistes étudiées (rien n'est signé ni contacté)
 
+**Décision (fondateur) : on garde Nium comme piste principale** (seul candidat dont la documentation liste Haïti). Plan B si Nium refuse ou n'est pas assez couvert : Rapyd, Airwallex, Payoneer (Haïti non confirmé pour chacun), à sonder avec la même question.
+
 **Le principe retenu pour y réfléchir** : MACHE ne garde pas l'argent des autres. Un prestataire licencié encaisse, garde, vérifie les vendeurs et verse. MACHE est la façade et perçoit sa commission. Le juriste confirme avant tout engagement.
 
 **Les flux voulus**
