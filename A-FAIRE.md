@@ -162,6 +162,18 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 - [x] **Demande d'autorisation par le revendeur** : page Revendeurs → « Produits de marque à revendre » → « Demander l'autorisation ». La marque est prévenue par e-mail, accepte ou refuse dans « Demandes reçues », et le revendeur est prévenu de la décision.
 - [ ] Reste à vérifier en conditions réelles : que le revendeur peut créer son offre sur le produit autorisé depuis le panneau (la visibilité est vérifiée, pas la création de l'offre elle-même).
 
+## 📣 Lancement et publicité (à reprendre plus tard)
+
+Décisions et infos du 1er octobre 2026 :
+
+- **Slogan** : « Made in Ayiti. Relié au monde. » (version française, en grand) et « Made in Ayiti, Connected Here & Everywhere » (version anglaise, en petit : ses initiales forment **MACHE** et elle explique le nom).
+- **Page de collecte** : une seule page avec un formulaire, sans site de plusieurs pages. Outils envisagés : **Carrd** (page simple, environ 19 $ par an avec domaine perso), **Mailchimp** ou **MailerLite** (page + liste d'e-mails). Wix testé mais jugé trop lourd. Texte de présentation volontairement mystérieux (« MACHE : un marché haïtien nouvelle génération… »).
+- **Publicité TikTok / Meta** : possible vers n'importe quelle adresse web. À prévoir : **nom de domaine propre**, **pixel de suivi** (souvent dans les offres payantes), **politique de confidentialité**, page rapide sur mobile. Alternative sans page : **formulaires intégrés** TikTok/Meta (la personne reste dans l'application).
+- **Comptes à créer** : un compte **TikTok Ads** (gratuit, moyen de paiement + infos de l'entreprise : la LLC aide) et un compte TikTok / Instagram / Facebook **au nom de MACHE** (même nom partout, logo, slogan, lien vers la page). Quelques courtes vidéos aident à rassurer.
+- **Faire un petit test** avec un budget minimum pour mesurer le coût d'une inscription avant d'investir.
+- [ ] Rédiger les textes des 2 ou 3 premières publicités (accroche + message court) : à faire quand le fondateur le demande.
+- [ ] Ajouter le slogan sur le site (sous le logo ou page À propos) : en attente de décision.
+
 ## ⏸️ Proposé, en attente de votre feu vert
 
 - [ ] **Grand livre + fiche mensuelle** par vendeur (sert dès aujourd'hui : ce que chaque vendeur doit en commission). Défauts retenus sauf avis contraire : mois calendaire, taux de change figé à la commande.
