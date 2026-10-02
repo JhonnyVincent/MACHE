@@ -80,7 +80,7 @@ export default async function orderPlacedNotify({ event, container }: Subscriber
             ["Articles", summary(order).lines.map((line) => `${line.quantity} × ${line.title}`).join("\n")],
             ["Total articles", money(summary(order).total, order.currency_code)],
           ],
-          path: "/dashboard/admin",
+          path: "/orders",
           label: "Ouvrir l'administration",
         })
       );

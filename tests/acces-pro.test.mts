@@ -207,8 +207,8 @@ check("le groupe des acheteurs professionnels est créé au démarrage", () => {
 });
 
 check("l'administration a son écran, et le client sa page", () => {
-  assert.match(read("src/app/dashboard/admin/layout.tsx"), /Comptes professionnels", href: "\/dashboard\/admin\/pros"/);
-  const page = read("src/app/dashboard/admin/pros/page.tsx");
+  assert.match(read("backend/apps/admin/src/routes/pros/page.tsx"), /label: "Comptes professionnels"/);
+  const page = read("backend/apps/admin/src/routes/pros/page.tsx");
   assert.match(page, /À décider/);
   assert.match(page, /placeholder="Motif du refus \(envoyé au client\)"/);
   assert.match(read("src/app/compte/pro/page.tsx"), /if \(!customer\) redirect\("\/compte\/connexion\?next=\/compte\/pro"\);/);

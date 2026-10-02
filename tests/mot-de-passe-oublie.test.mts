@@ -187,11 +187,10 @@ await check("le plafond de connexion ne se contourne plus en inventant une adres
 /* Le site                                                             */
 /* ------------------------------------------------------------------ */
 
-await check("les trois pages de connexion mènent à la bonne récupération", () => {
+await check("les pages de connexion publiques mènent à la bonne récupération", () => {
   const pages: Array<[string, string]> = [
     ["src/app/compte/connexion/page.tsx", "customer"],
     ["src/app/dashboard/seller/connexion/page.tsx", "member"],
-    ["src/app/dashboard/admin/connexion/page.tsx", "user"],
   ];
   for (const [file, actor] of pages) {
     const source = readFileSync(file, "utf8");

@@ -29,7 +29,6 @@
 
 import { Link } from "next-view-transitions";
 import { redirect } from "next/navigation";
-import { getAdminUser } from "@/lib/medusa/admin";
 import { getVendorSeller } from "@/lib/medusa/vendor";
 import { getCustomer } from "@/lib/medusa/customer";
 
@@ -51,23 +50,14 @@ const PORTES = [
     texte: "Les colis que vous portez ou que vous gardez en point de retrait.",
     href: "/dashboard/agent/connexion",
   },
-  {
-    titre: "MACHE Pilote",
-    texte: "Réservé à l'équipe de MACHE.",
-    href: "/dashboard/admin/connexion",
-  },
 ];
 
 export default async function DashboardRedirectPage() {
   /*
-    Dans cet ordre, et chacun est demandé à part : ces trois identités
+    Dans cet ordre, et chacun est demandé à part : ces identités
     vivent dans des sessions différentes, et être l'une n'apprend rien
     sur les autres.
   */
-  const admin = await getAdminUser();
-
-  if (admin) redirect("/dashboard/admin");
-
   const vendor = await getVendorSeller();
 
   if (vendor) redirect("/dashboard/seller");

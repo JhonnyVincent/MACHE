@@ -37,12 +37,6 @@ const DOORS = [
     href: "/dashboard/seller/connexion",
     action: "Espace vendeur",
   },
-  {
-    title: "Vous êtes de l'équipe MACHE",
-    text: "MACHE Pilote : la gestion de la marketplace.",
-    href: "/dashboard/admin/connexion",
-    action: "MACHE Pilote",
-  },
 ];
 
 export function AuthDoors({ what }: { what: string }) {

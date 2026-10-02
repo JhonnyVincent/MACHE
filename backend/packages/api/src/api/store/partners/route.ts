@@ -73,7 +73,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
         ["Lieu", parsed.value.location ?? "—"],
         ["Site", parsed.value.website ?? "—"],
       ],
-      path: "/dashboard/admin/partenaires",
+      path: "/partenaires",
       label: "Examiner la demande",
     })
   );

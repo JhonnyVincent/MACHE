@@ -48,9 +48,12 @@ dans `apps/storefront` : déplacer la racine du projet Next obligerait à
 changer le répertoire racine du service à la main, et casserait le
 déploiement entre-temps. Le gain serait cosmétique.
 
-Le même code peut tourner **deux fois**, sur deux services : `MACHE_ROLE`
-dit à chacun ce qu'il sert — le site public sans l'administration, ou
-l'administration seule. Absente, il sert tout.
+Le site ne contient **aucune page d'administration** : celle-ci vit dans
+le panneau du backend (`/dashboard` sur l'adresse du backend, écrite nulle
+part sur le site). Les anciennes adresses `/dashboard/admin…` répondent
+404. Les pages propres à MACHE (boutiques, messages, partenaires, apparence,
+contrats…) sont des pages ajoutées à ce panneau, dans
+`backend/apps/admin/src/routes/`, sous le menu « MACHE ».
 
 ---
 
@@ -79,8 +82,7 @@ environnement de fonctions éphémères n'a ni scheduler, ni connexions
 persistantes, et ne convient pas.
 
 ```
-Render  →  storefront Next.js          (MACHE_ROLE=public)
-Render  →  storefront Next.js          (MACHE_ROLE=admin, facultatif)
+Render  →  storefront Next.js          (site public)
 Render  →  backend Medusa + Mercur
 Postgres managé  →  base commerce
 Redis managé     →  file d'événements, cache, verrous

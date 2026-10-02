@@ -64,7 +64,7 @@ Cochez au fur et à mesure.
 - [x] **Grossistes invisibles du public** : ni catalogue, ni accueil, ni carte, ni plan du site ; leurs fiches produit sont sans prix et hors Google.
 - [x] **Devis retirés des fiches publiques** : réservés aux vendeurs connectés et aux comptes professionnels validés.
 - [x] **Annuaire « Trouver un fournisseur »** (grossistes + marques) sur le site (`/gros`) et dans le panneau vendeur (« Fournisseurs »).
-- [x] **Comptes professionnels** (hôtels, écoles…) : demande sur `/compte/pro`, décision par l'équipe sur `/dashboard/admin/pros` (accorder, refuser avec motif, retirer), e-mails automatiques.
+- [x] **Comptes professionnels** (hôtels, écoles…) : demande sur `/compte/pro`, décision par l'équipe sur `menu MACHE › Comptes professionnels` (accorder, refuser avec motif, retirer), e-mails automatiques.
 - [ ] **Après le déploiement** : rien à configurer — le groupe « MACHE — Acheteurs professionnels » est créé au redémarrage du backend. Prévoir de traiter les demandes dans « Comptes professionnels » (menu admin).
 
 ## ⚠️ Points vigilants — à ressortir à chaque analyse
@@ -135,7 +135,7 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 
 ## ✅ Fait (octobre 2026) : partenaires, panneau vendeur
 
-- [x] **Partenaires de services** : inscription publique (`/partenaires/inscription`), examen et gestion par l'équipe (`/dashboard/admin/partenaires` : ajouter, corriger, approuver, suspendre, exclure, supprimer), profils publics. Rien n'est public avant approbation.
+- [x] **Partenaires de services** : inscription publique (`/partenaires/inscription`), examen et gestion par l'équipe (`menu MACHE › Partenaires de services` : ajouter, corriger, approuver, suspendre, exclure, supprimer), profils publics. Rien n'est public avant approbation.
 - [x] **Panneau vendeur contrôlé de bout en bout** : états vides et libellés restés en anglais traduits (fichier `backend/apps/vendor/src/i18n/fr.json`, à compléter si une autre phrase apparaît).
 - [x] **Droits de l'équipe** : le panneau propose déjà 5 rôles à l'invitation d'un membre (Administration, Gestion des stocks, Gestion des commandes, Comptabilité, Support). **À vérifier avec un second compte** que « Gestion des commandes » peut expédier sans pouvoir rembourser (non testé).
 - [ ] **Boutiques côté administration** : suspendre et résilier (= bannir) existent déjà. **Ajouter une boutique à la main** et **supprimer** ne sont pas faits : une boutique a besoin d'un compte propriétaire (e-mail + mot de passe) et supprimer effacerait ses commandes et ses commissions. Proposition : bouton « inviter un vendeur » (lien d'inscription envoyé par e-mail) et « résilier » à la place de supprimer.
@@ -143,14 +143,14 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 
 ## ✅ Fait : équipe déléguée et invitation de vendeurs
 
-- [x] **Propriétaire + membres délégués** (`/dashboard/admin/equipe`, réservé au propriétaire) : deux espaces — **Suivi des clients** (messages, comptes pro, avis, clients bloqués) et **Site et mises à jour** (apparence, textes, promotions, partenaires). Le membre reçoit un e-mail pour choisir son mot de passe. La règle est appliquée **côté serveur** sur chaque route d'administration (testée : un délégué reçoit « refusé » sur les revenus, l'équipe, la suspension d'une boutique…).
+- [x] **Propriétaire + membres délégués** (`menu MACHE › Équipe`, réservé au propriétaire) : deux espaces — **Suivi des clients** (messages, comptes pro, avis, clients bloqués) et **Site et mises à jour** (apparence, textes, promotions, partenaires). Le membre reçoit un e-mail pour choisir son mot de passe. La règle est appliquée **côté serveur** sur chaque route d'administration (testée : un délégué reçoit « refusé » sur les revenus, l'équipe, la suspension d'une boutique…).
 - [x] **Inviter un vendeur** (page Boutiques) : e-mail avec le lien d'inscription ; le vendeur crée lui-même son compte, la boutique reste soumise à approbation.
 - [ ] Un compte administrateur **sans rôle noté est propriétaire** : ne créer les membres délégués que par la page Équipe. Pour un second propriétaire, créer le compte dans le panneau du backend.
 - [ ] Un troisième espace (ex. logistique, comptabilité) : à ajouter dans `backend/packages/api/src/lib/staff.ts` et `src/lib/staff.ts` (même liste, un test le vérifie).
 
 ## 🏷️ Noms des espaces (décidés le 1er octobre 2026)
 
-- **MACHE Pilote** : la gestion de la marketplace (le propriétaire et son équipe déléguée). Nom **affiché** (titres, connexion, e-mails de l'équipe).
+- **Administration** : la gestion de la marketplace (le propriétaire et son équipe déléguée) est le panneau Mercur de l'adresse du backend + `/dashboard`, menu **« MACHE »**. Elle n'est plus sur le site public (l'ancien « MACHE Pilote » a été transféré).
 - **MACHE Boutik** : l'espace des vendeurs, grossistes et marques. Nom **interne** pour distinguer dans le code et entre nous : **jamais affiché**. Les vendeurs voient « Espace vendeur ». Chacun invite son équipe dans Paramètres → Utilisateurs, avec cinq rôles (administration, stocks, commandes, comptabilité, support).
 - Voir `src/lib/spaces.ts`.
 
@@ -174,7 +174,16 @@ Décisions et infos du 1er octobre 2026 :
 - [ ] Rédiger les textes des 2 ou 3 premières publicités (accroche + message court) : à faire quand le fondateur le demande.
 - [ ] Ajouter le slogan sur le site (sous le logo ou page À propos) : en attente de décision.
 
-## 🎨 Habillages saisonniers (page « Apparence du site » de MACHE Pilote)
+## 🛡️ Administration unique (panneau Mercur, menu « MACHE »)
+
+- [x] Toutes les pages de l'ancien Pilote sont dans le panneau : Messages, Ce que MACHE gagne, Qui paie les promotions, Boutiques : décisions (approuver, vérifier, suspendre, résilier, inviter), Modération, Gel des versements, Comptes professionnels, Applications demandées, Partenaires de services, Agents, Points de retrait, Bloquer un compte client, Apparence du site, Contrats, Textes du site, Équipe.
+- [x] Le site public n'a plus aucune porte vers l'administration ; l'adresse `/dashboard/admin…` répond 404. Les e-mails d'alerte de l'équipe renvoient vers le panneau.
+- [ ] **Sécurité du compte (code à six chiffres) non transférée** : la page de connexion du panneau Mercur ne sait pas demander ce code, donc il ne protégerait plus rien. En attendant : mot de passe long et unique. À refaire en personnalisant la connexion du panneau.
+- [ ] Un membre délégué (Suivi des clients / Site et mises à jour) voit tout le menu ; le backend refuse ce qui n'est pas à lui (message d'erreur). Cacher le menu selon le rôle : à faire.
+- [ ] Les changements faits dans le panneau touchent le site avec un délai (cache) : habillage 5 min, textes 10 min, catalogue environ 1 min.
+- Doublons avec les menus de Mercur (Promotions, Boutiques…) : ceux de Mercur créent/modifient ; ceux du menu MACHE servent aux règles propres à MACHE (qui paie une promotion, vérifié/suspendu avec motif).
+
+## 🎨 Habillages saisonniers (menu MACHE › Apparence du site, dans le panneau admin)
 
 - [x] Disponibles (24) : MACHE, Noël, Octobre rose, Saint-Valentin, Fête du Drapeau, Bonne année, Indépendance (1er janvier), Carnaval, Pâques, **Semaine sainte, Fête des mères, Fête des pères, Été, Rentrée, Halloween, Journée du créole (28 oct.), Toussaint et Fèt Gede, Vertières (18 nov.), Black Friday**. Contrastes vérifiés par un test.
 - [x] **Mode automatique** (bouton sur la page « Apparence du site ») : le calendrier choisit la fête du jour (date d'Haïti). Pâques, Carnaval, Semaine sainte et Black Friday sont calculés chaque année. Entre deux fêtes : couleurs MACHE. Si vous choisissez un habillage à la main, on repasse en manuel.

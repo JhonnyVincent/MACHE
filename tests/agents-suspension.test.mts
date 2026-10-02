@@ -53,8 +53,9 @@ const BACKEND_IDENTITY = "backend/packages/api/src/api/agent-identity.ts";
 const BACKEND_CONTEXT = "backend/packages/api/src/api/agent-context.ts";
 const BACKEND_VERIFY =
   "backend/packages/api/src/api/store/agents/verify/route.ts";
-const SITE_ADMIN = "src/lib/medusa/agents-admin.ts";
-const SITE_ACCOUNTS = "src/lib/medusa/admin.ts";
+/* L'administration vit maintenant dans le panneau du backend (backend/apps/admin). */
+const SITE_ADMIN = "backend/apps/admin/src/routes/agents/page.tsx";
+const SITE_ACCOUNTS = "backend/apps/admin/src/routes/comptes-clients/page.tsx";
 const BACKEND_MIDDLEWARES = "backend/packages/api/src/api/middlewares.ts";
 const BACKEND_BLOCKED = "backend/packages/api/src/api/blocked-customers.ts";
 
@@ -136,7 +137,7 @@ check("l'administration suspend en déplaçant l'agent dans un groupe", () => {
   */
   assert.match(
     source,
-    /suspended \? \{ add: \[customerId\] \} : \{ remove: \[customerId\] \}/,
+    /suspended \? \{ add: \[a\.customerId\] \} : \{ remove: \[a\.customerId\] \}/,
     "la suspension doit être une appartenance à un groupe"
   );
 

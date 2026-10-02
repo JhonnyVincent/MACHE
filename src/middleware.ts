@@ -1,5 +1,5 @@
 /*
-  MIDDLEWARE : ce que ce déploiement a le droit de servir, et la langue.
+  MIDDLEWARE : l'administration absente du site, et la langue.
 
   IL N'A JAMAIS TOURNÉ JUSQU'ICI
 
@@ -48,110 +48,32 @@ function detectLocale(request: NextRequest) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* QUEL RÔLE JOUE CE DÉPLOIEMENT                                              */
+/* L'ADMINISTRATION N'EST PAS SUR CE SITE                                     */
 /* -------------------------------------------------------------------------- */
 
 /*
-  UN SEUL CODE, DEUX SERVICES.
+  L'administration de MACHE est le panneau du backend (`/dashboard` sur
+  l'adresse du backend, qui n'est écrite nulle part sur le site). Les
+  anciennes adresses `/dashboard/admin…` ne mènent donc plus à rien :
+  elles répondent 404 nu, sans page ni indice — pas même le nom de MACHE.
 
-  Le même dépôt, la même branche, le même code tournent deux fois chez
-  l'hébergeur. Une variable d'environnement dit à chaque service ce
-  qu'il a le droit de servir :
-
-  - « public » : tout, SAUF l'espace d'administration, qui répond 404
-    comme s'il n'existait pas ;
-  - « admin » : UNIQUEMENT l'espace d'administration ;
-  - absent : tout, c'est-à-dire exactement ce que fait le site
-    aujourd'hui.
-
-  POURQUOI LE DÉFAUT EST « TOUT »
-
-  Parce qu'un défaut qui coupe casse. Si cette variable manquait sur le
-  déploiement actuel et que le défaut était « public », l'espace
-  d'administration disparaîtrait au premier envoi — sans que personne
-  n'ait rien demandé. Une variable nouvelle ne doit rien changer tant
-  qu'on ne l'a pas posée.
-
-  CE QUE ÇA PROTÈGE, ET CE QUE ÇA NE PROTÈGE PAS
-
-  Ça protège de ce qu'on ne trouve pas : les robots qui balaient
-  internet essaient /admin, /dashboard, /wp-admin sur tous les sites
-  qu'ils croisent. Sur le domaine public, ils ne trouveront rien — donc
-  ils n'essaieront aucun mot de passe.
-
-  Ça ne remplace AUCUNE authentification. Qui a le mot de passe et le
-  code à six chiffres entre, quelle que soit l'adresse. Le contrôle
-  refait à chaque page — `getAdminUser()` — reste la vraie serrure ;
-  ceci ne fait que retirer la porte du trottoir.
-
-  Et ça ne protège pas le backend : Medusa sert son propre panneau
-  ailleurs, et ce partage-ci ne déplace que les écrans de MACHE.
+  Pour un robot qui balaie /admin, /dashboard, /wp-admin sur tous les
+  sites qu'il croise, il n'y a rien à trouver ici.
 */
-
 const ADMIN_PREFIX = "/dashboard/admin";
 
-type Role = "public" | "admin" | "tout";
-
-function deploymentRole(): Role {
-  const raw = (process.env.MACHE_ROLE ?? "").trim().toLowerCase();
-
-  if (raw === "public") return "public";
-  if (raw === "admin") return "admin";
-
-  /* Non renseigné, ou valeur inconnue : le comportement d'aujourd'hui. */
-  return "tout";
-}
-
-/*
-  Un 404 nu, sans page ni indice.
-
-  On ne rend pas la jolie page « introuvable » du site : elle porte
-  l'en-tête, le menu, le nom de MACHE. Sur le service d'administration,
-  qui répond à une adresse que personne ne doit deviner, autant ne rien
-  dire du tout. Et pour un robot, 404 est 404.
-*/
-function introuvable() {
-  return new NextResponse(null, { status: 404 });
-}
-
-/*
-  Rend une réponse quand ce déploiement n'a pas le droit de servir cette
-  adresse, et `null` quand il l'a.
-
-  Placé AVANT la langue et la session : inutile de rafraîchir une
-  session pour une requête qu'on s'apprête à refuser.
-*/
-function refuseHorsRole(request: NextRequest) {
-  const role = deploymentRole();
-
-  if (role === "tout") return null;
-
+function refuseAdmin(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const versAdmin =
-    pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`);
-
-  if (role === "public") {
-    /* L'espace d'administration n'existe pas sur le domaine public. */
-    return versAdmin ? introuvable() : null;
+  if (pathname === ADMIN_PREFIX || pathname.startsWith(`${ADMIN_PREFIX}/`)) {
+    return new NextResponse(null, { status: 404 });
   }
 
-  /* role === "admin" : rien d'autre que l'administration. */
-  if (versAdmin) return null;
-
-  /*
-    La racine mène à l'espace, par confort : quelqu'un de l'équipe qui
-    tape l'adresse du service sans le chemin arrive où il va.
-  */
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL(ADMIN_PREFIX, request.url));
-  }
-
-  return introuvable();
+  return null;
 }
 
 export async function middleware(request: NextRequest) {
-  const refus = refuseHorsRole(request);
+  const refus = refuseAdmin(request);
 
   if (refus) return refus;
 

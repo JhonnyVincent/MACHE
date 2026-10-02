@@ -5,7 +5,6 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { staffMayCall, staffRole, STAFF_ROLES as BACK_ROLES } from "../backend/packages/api/src/lib/staff.ts";
-import { roleMaySee, parseStaffRole, STAFF_ROLES as SITE_ROLES } from "../src/lib/staff.ts";
 
 let passed = 0;
 function check(name: string, run: () => void) {
@@ -65,19 +64,9 @@ check("un préfixe voisin ne passe pas (« /admin/mache/pros-secret »)", () => 
   assert.equal(staffMayCall("support", "GET", "/admin/mache/messages/%2e%2e/revenue"), false);
 });
 
-check("les rôles du site et du backend sont les mêmes", () => {
-  assert.deepEqual([...SITE_ROLES], [...BACK_ROLES]);
-  assert.equal(parseStaffRole({ mache_staff_role: "support" }), "support");
-});
-
-check("le menu du site : un délégué ne voit que son espace", () => {
-  assert.equal(roleMaySee("owner", "/dashboard/admin/equipe"), true);
-  assert.equal(roleMaySee("support", "/dashboard/admin/messages"), true);
-  assert.equal(roleMaySee("support", "/dashboard/admin/revenus"), false);
-  assert.equal(roleMaySee("support", "/dashboard/admin/equipe"), false);
-  assert.equal(roleMaySee("contenu", "/dashboard/admin/partenaires"), true);
-  assert.equal(roleMaySee("contenu", "/dashboard/admin/stores"), false);
-  assert.equal(roleMaySee("contenu", "/dashboard/admin"), true);
+check("les rôles du panneau d'administration sont ceux du backend", () => {
+  const page = read("backend/apps/admin/src/routes/equipe/page.tsx");
+  for (const role of BACK_ROLES) assert.ok(page.includes(`${role}:`), `le rôle « ${role} » manque dans la page Équipe du panneau`);
 });
 
 check("le garde est branché sur toutes les routes d'administration ; la création d'équipe et l'invitation en dépendent", () => {
@@ -88,7 +77,7 @@ check("le garde est branché sur toutes les routes d'administration ; la créati
   assert.match(guard, /status\(503\)/);
   assert.match(read("backend/packages/api/src/api/admin/mache/team/[id]/route.ts"), /Le propriétaire ne peut être ni modifié ni retiré/);
   assert.match(read("backend/packages/api/src/api/admin/mache/team/route.ts"), /generateResetPasswordTokenWorkflow/);
-  assert.match(read("src/app/dashboard/admin/stores/page.tsx"), /Inviter un vendeur/);
+  assert.match(read("backend/apps/admin/src/routes/boutiques/page.tsx"), /Inviter un vendeur/);
 });
 
 console.log(`\n${passed} vérifications réussies.`);

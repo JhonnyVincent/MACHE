@@ -146,7 +146,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
         ["Objet", subject],
         ["Catégorie", String(thread.category)],
       ],
-      path: `/dashboard/admin/messages/${thread.id}`,
+      path: "/messages",
       label: "Lire et répondre",
     })
   );

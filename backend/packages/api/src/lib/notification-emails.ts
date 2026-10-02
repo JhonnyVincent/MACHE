@@ -341,6 +341,17 @@ export function sellerApprovedEmail(input: { sellerName: string; handle: string 
 }
 
 /* 7. À l'ÉQUIPE MACHE : quelque chose attend une décision. */
+/*
+  Lien vers une page du PANNEAU d'administration (backend, `/dashboard`).
+  L'administration n'est plus sur le site public : l'adresse du panneau
+  n'est donc écrite que dans ces e-mails, adressés à l'équipe.
+*/
+export function panelLink(path: string): string {
+  const base = String(process.env.RENDER_EXTERNAL_URL || process.env.FILE_BACKEND_URL || "http://localhost:9000").replace(/\/+$/, "");
+
+  return `${base}/dashboard${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 export function adminAlertEmail(input: {
   subject: string;
   intro: string;
@@ -354,6 +365,6 @@ export function adminAlertEmail(input: {
       { kind: "p", text: input.intro },
       { kind: "rows", rows: input.rows },
     ],
-    { label: input.label, url: siteLink(input.path) }
+    { label: input.label, url: panelLink(input.path) }
   );
 }

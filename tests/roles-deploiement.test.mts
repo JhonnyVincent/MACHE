@@ -1,39 +1,23 @@
 /*
-  TESTS : ce que chaque déploiement a le droit de servir.
+  TESTS : l'administration n'est pas sur le site public.
 
-  LE PARTAGE
-
-  Un seul code tourne deux fois. Une variable d'environnement dit à
-  chaque service ce qu'il sert : le site public sans l'administration,
-  ou l'administration seule. Sur le domaine public, /dashboard/admin
-  répond 404 — les robots qui balaient internet n'y trouvent donc
-  aucune porte où essayer des mots de passe.
-
-  LE DÉFAUT DOIT RESTER « TOUT »
-
-  C'est la vérification la plus importante du fichier. Si le défaut
-  basculait vers « public », le déploiement actuel — qui n'a pas cette
-  variable — perdrait son espace d'administration au premier envoi,
-  sans que personne n'ait rien demandé. Une variable nouvelle ne change
-  rien tant qu'on ne l'a pas posée.
+  L'administration de MACHE est le panneau du backend (/dashboard sur
+  l'adresse du backend). Le site ne contient plus aucune page
+  « /dashboard/admin » : si quelqu'un tape l'ancienne adresse, il obtient
+  un 404 nu, sans page ni indice — pas même le nom de MACHE. Les robots
+  qui balaient /admin, /dashboard, /wp-admin n'y trouvent aucune porte.
 
   ET LE FICHIER DOIT RESTER DANS src/
 
   Il vivait à la racine, où Next ne le cherche pas quand l'application
   est dans `src/` : il n'était pas compilé du tout, donc il n'a jamais
-  tourné. Le remettre à la racine le rendrait muet de la même façon —
-  sans erreur, sans rien dans les journaux, et le partage cesserait
-  silencieusement de protéger quoi que ce soit.
-
-  Les trois rôles ont été vérifiés sur de vrais serveurs avant l'écriture
-  de ce test : absent → tout en 200 ; public → admin en 404 ; admin →
-  /shop en 404 et l'accueil en 307.
+  tourné. Le remettre à la racine le rendrait muet de la même façon.
 
   Lancer : npm run test:roles
 */
 
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 
 let passed = 0;
 
@@ -46,119 +30,62 @@ function check(name: string, run: () => void) {
 const CHEMIN = "src/middleware.ts";
 
 check("le middleware est là où Next le cherche", () => {
-  /*
-    Avec une application dans `src/`, Next attend `src/middleware.ts`.
-    À la racine, il est ignoré en silence.
-  */
-  assert.ok(
-    existsSync(CHEMIN),
-    "src/middleware.ts est absent : le partage ne s'appliquerait plus"
-  );
-
-  assert.equal(
-    existsSync("middleware.ts"),
-    false,
-    "un middleware à la racine n'est jamais compilé quand l'application est dans src/"
-  );
+  assert.ok(existsSync(CHEMIN), "src/middleware.ts est absent");
+  assert.equal(existsSync("middleware.ts"), false, "un middleware à la racine n'est jamais compilé quand l'application est dans src/");
 });
 
 const SOURCE = readFileSync(CHEMIN, "utf8");
 
-check("le défaut sert TOUT, pour ne rien casser", () => {
-  /*
-    Le cœur du test. Un défaut qui coupe ferait disparaître l'espace
-    d'administration du déploiement actuel au premier envoi.
-  */
-  assert.match(
-    SOURCE,
-    /return "tout";/,
-    "une variable absente ou inconnue doit rendre le comportement d'aujourd'hui"
-  );
-
-  const fonction = SOURCE.slice(
-    SOURCE.indexOf("function deploymentRole()"),
-    SOURCE.indexOf("function deploymentRole()") + 400
-  );
-
-  assert.equal(
-    /return "public";\s*\}\s*$/.test(fonction.trim()),
-    false,
-    "le défaut ne doit jamais être « public »"
-  );
-});
-
-check("le rôle public refuse l'administration, et rien d'autre", () => {
-  assert.match(
-    SOURCE,
-    /if \(role === "public"\)[\s\S]{0,200}versAdmin \? introuvable\(\) : null/,
-    "sur le domaine public, seul /dashboard/admin disparaît"
-  );
-});
-
-check("le rôle admin ne sert que l'administration", () => {
-  assert.match(
-    SOURCE,
-    /if \(versAdmin\) return null;/,
-    "l'administration passe"
-  );
-
-  assert.match(
-    SOURCE,
-    /return introuvable\(\);\s*\}\s*$/m,
-    "tout le reste est refusé"
-  );
-});
-
-check("un refus ne révèle rien", () => {
-  /*
-    Pas la jolie page « introuvable » du site : elle porte l'en-tête, le
-    menu, le nom de MACHE. Sur une adresse que personne ne doit
-    deviner, autant ne rien dire.
-  */
-  assert.match(
-    SOURCE,
-    /new NextResponse\(null, \{ status: 404 \}\)/,
-    "un 404 nu, sans page ni indice"
-  );
+check("l'ancienne adresse de l'administration répond 404, sans rien révéler", () => {
+  assert.match(SOURCE, /const ADMIN_PREFIX = "\/dashboard\/admin";/);
+  assert.match(SOURCE, /pathname === ADMIN_PREFIX \|\| pathname\.startsWith\(`\$\{ADMIN_PREFIX\}\/`\)/);
+  assert.match(SOURCE, /new NextResponse\(null, \{ status: 404 \}\)/, "un 404 nu, sans page ni indice");
 });
 
 check("le refus est décidé avant tout le reste", () => {
-  /*
-    Inutile de poser un cookie ou de faire quoi que ce soit pour une
-    requête qu'on s'apprête à refuser.
-  */
   const corps = SOURCE.slice(SOURCE.indexOf("export async function middleware"));
-
-  const posRefus = corps.indexOf("refuseHorsRole(request)");
+  const posRefus = corps.indexOf("refuseAdmin(request)");
   const posCookie = corps.indexOf("cookies.set");
 
   assert.ok(posRefus > -1 && posCookie > -1, "les deux étapes doivent exister");
-  assert.ok(
-    posRefus < posCookie,
-    "le refus doit précéder le travail inutile"
-  );
+  assert.ok(posRefus < posCookie, "le refus doit précéder le travail inutile");
 });
 
 check("le middleware n'appelle rien au loin", () => {
-  /*
-    Il tourne sur CHAQUE page. Un appel réseau posé ici — rafraîchir une
-    session chez un service tiers, par exemple — se paie sur toutes les
-    visites du site, et pas seulement quand il échoue : un hôte qui ne
-    répond plus fait attendre chaque page jusqu'au délai. C'est
-    exactement ce qui dormait ici avant d'être retiré.
-
-    Plutôt que d'interdire un paquet par son nom — ce qui ne protège que
-    de celui-là — on exige que ce fichier n'importe RIEN d'autre que ce
-    dont Next a besoin. Tout ajout futur devra passer par ce test, quel
-    qu'il soit.
-  */
+  /* Il tourne sur CHAQUE page : tout appel réseau se paierait sur toutes les visites. */
   const imports = [...SOURCE.matchAll(/from\s+"([^"]+)"/g)].map((m) => m[1]);
 
-  assert.deepEqual(
-    imports,
-    ["next/server"],
-    `le middleware ne doit importer que next/server, or il importe : ${imports.join(", ")}`
-  );
+  assert.deepEqual(imports, ["next/server"], `le middleware ne doit importer que next/server, or il importe : ${imports.join(", ")}`);
+});
+
+check("le site ne contient plus aucune page d'administration", () => {
+  assert.equal(existsSync("src/app/dashboard/admin"), false, "l'administration vit dans le panneau du backend, pas sur le site");
+});
+
+check("aucune page publique ne renvoie vers l'ancienne adresse", () => {
+  const dossiers = ["src/app", "src/components"];
+  const trouvés: string[] = [];
+
+  const parcourir = (dir: string) => {
+    for (const entrée of readdirSync(dir, { withFileTypes: true })) {
+      const chemin = `${dir}/${entrée.name}`;
+
+      if (entrée.isDirectory()) parcourir(chemin);
+      else if (/\.(tsx?|mdx?)$/.test(entrée.name) && readFileSync(chemin, "utf8").includes("/dashboard/admin")) trouvés.push(chemin);
+    }
+  };
+
+  dossiers.forEach(parcourir);
+
+  assert.deepEqual(trouvés, [], `ces fichiers mènent encore à /dashboard/admin : ${trouvés.join(", ")}`);
+});
+
+check("le panneau d'administration du backend porte les pages MACHE", () => {
+  const pages = readdirSync("backend/apps/admin/src/routes");
+
+  for (const page of ["mache", "boutiques", "messages", "revenus", "promotions-qui-paie", "gel-des-versements", "pros", "applications", "partenaires", "agents", "points-de-retrait", "comptes-clients", "apparence", "contrats", "textes", "moderation", "equipe"]) {
+    assert.ok(pages.includes(page), `la page « ${page} » manque dans le panneau d'administration`);
+  }
 });
 
 console.log(`\n${passed} vérifications passées.\n`);

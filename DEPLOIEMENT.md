@@ -167,8 +167,10 @@ l'annonce dans ses journaux.
 passe, lui, n'a pas à rester lisible par quiconque ouvre le tableau de
 bord de l'hébergeur.
 
-Ce compte ouvre `/dashboard/admin` sur le site **et** le panneau complet
-du backend — c'est le même identifiant.
+Ce compte ouvre le panneau d'administration : l'adresse de votre backend
+suivie de `/dashboard` (par exemple `https://mache-backend.onrender.com/dashboard`).
+C'est la seule porte de l'administration — le site public n'en a plus.
+Ne la publiez pas : donnez-la seulement à l'équipe.
 
 **Le mot de passe d'un compte existant n'est jamais réécrit.** Les
 variables peuvent rester en place sans danger : à chaque redémarrage le

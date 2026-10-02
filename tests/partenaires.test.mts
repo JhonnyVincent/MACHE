@@ -74,10 +74,10 @@ check("le backend : liste publique = approuvés seulement ; exclu = pas de retou
 });
 
 check("l'administration peut ajouter, approuver, suspendre, exclure, supprimer, corriger", () => {
-  const actions = read("src/app/dashboard/admin/partenaires/actions.ts");
-  for (const action of ["approve", "suspend", "ban", "delete", "update"]) assert.match(actions, new RegExp(`"${action}"`), action);
-  assert.match(actions, /createAdminPartner/);
-  assert.match(read("src/app/dashboard/admin/layout.tsx"), /\/dashboard\/admin\/partenaires/);
+  const page = read("backend/apps/admin/src/routes/partenaires/page.tsx");
+  for (const action of ["approve", "suspend", "ban", "delete", "update"]) assert.match(page, new RegExp(`"${action}"`), action);
+  assert.match(page, /\/admin\/mache\/partners"/);
+  assert.match(page, /label: "Partenaires de services"/);
 });
 
 check("le site : inscription publique, services listés, profil lu en base", () => {

@@ -55,7 +55,7 @@ export default async function sellerNotify({ event, container }: SubscriberArgs<
           ["Adresse de vitrine", seller.handle ? `/store/${seller.handle}` : "—"],
           ["E-mail", seller.email || "—"],
         ],
-        path: "/dashboard/admin/stores",
+        path: "/boutiques",
         label: "Voir les boutiques à approuver",
       })
     );

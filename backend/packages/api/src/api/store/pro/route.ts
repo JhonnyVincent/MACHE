@@ -77,7 +77,7 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
         ["Téléphone", request.phone],
         ...(request.note ? [["Message", request.note] as [string, string]] : []),
       ],
-      path: "/dashboard/admin/pros",
+      path: "/pros",
       label: "Valider ou refuser",
     })
   );

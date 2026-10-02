@@ -4,7 +4,7 @@
   Pour ne pas les confondre dans le code, la documentation et entre nous :
 
   - « MACHE Pilote » : la gestion de la marketplace — le propriétaire et
-    son équipe déléguée (/dashboard/admin). Ce nom est AFFICHÉ, car ceux
+    son équipe déléguée (panneau d'administration du backend, menu « MACHE »). Ce nom est AFFICHÉ, car ceux
     qui l'utilisent sont l'équipe.
 
   - « MACHE Boutik » : l'espace de chaque vendeur, grossiste ou marque

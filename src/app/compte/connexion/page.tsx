@@ -113,10 +113,6 @@ export default async function CustomerLoginPage({
         >
           Connexion vendeur
         </Link>
-        . Vous faites partie de l&apos;équipe MACHE ?{" "}
-        <Link href="/dashboard/admin/connexion" className="font-semibold hover:underline">
-          Connexion personnel
-        </Link>
         .
       </p>
     </main>

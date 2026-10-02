@@ -33,13 +33,19 @@ export function isResetActor(value: unknown): value is ResetActor {
 export const LOGIN_PAGE: Record<ResetActor, string> = {
   customer: "/compte/connexion",
   member: "/dashboard/seller/connexion",
-  user: "/dashboard/admin/connexion",
+  /*
+    L'administration n'est plus sur le site : c'est le panneau du backend
+    (adresse non publiée sur le site, donnée à l'équipe seulement).
+  */
+  get user() {
+    return `${medusaBackendUrl() ?? ""}/dashboard/login`;
+  },
 };
 
 export const SPACE_LABEL: Record<ResetActor, string> = {
   customer: "votre compte client",
   member: "votre espace vendeur (le même compte sert au panneau vendeur)",
-  user: "MACHE Pilote",
+  user: "l'administration de MACHE",
 };
 
 /* Le même seuil qu'à l'inscription : en dessous, un mot de passe ne protège plus rien. */
