@@ -268,3 +268,10 @@ Fait le 3 octobre 2026 :
 - Il n'existe pas de site « tout prêt » qui livre une liste de fournisseurs haïtiens à inviter : les places de marché (Alibaba, Faire, Ankorstore…) servent à **acheter** auprès de fournisseurs étrangers, pas à recruter des vendeurs pour sa propre place de marché. Pour l'import, certains vendeurs de MACHE peuvent s'y approvisionner, c'est tout.
 - Pistes réalistes pour recruter : démarcher à la main les commerçants des marchés et boutiques de Port-au-Prince, Pétion-Ville, Cap-Haïtien ; les artisans (fer découpé, peinture, vannerie) ; les associations de commerçants et chambres de commerce ; les groupes WhatsApp et Facebook de vendeurs ; la diaspora qui expédie de la marchandise. Un message simple : « ouvre ta boutique gratuitement sur MACHE », avec le lien /sell.
 - Offre de lancement à décider : formule gratuite, aide à photographier les 10 premiers produits, mise en avant des 50 premières boutiques.
+
+## Budget du site et langues
+
+- [x] Budget documenté dans `BUDGET.md` (Render, domaine, e-mails, traduction, photos) : environ 61 $ par mois pour le lancement, environ 71 $ avec les imprévus.
+- [ ] **Photos des produits** : elles sont écrites sur le disque du serveur, effacé à chaque mise à jour. Avant les vrais produits, ajouter un disque Render ou passer à Cloudflare R2.
+- [ ] Langues : proposer l'anglais, le créole ou l'espagnol selon le pays du visiteur (une proposition, jamais imposée) avec next-intl ; traduire les fiches produits avec Google Cloud Translation. À faire quand le fondateur le décidera.
+
