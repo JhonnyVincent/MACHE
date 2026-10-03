@@ -326,7 +326,7 @@ export function MainNav() {
   return (
     <nav className="bg-[var(--mache-dark)] text-white">
         <div className="container-page flex h-14 items-center gap-8 overflow-x-auto whitespace-nowrap text-base font-medium">
-          <Link href="/shop" className="inline-flex items-center gap-2">
+          <Link href="/catalogue" className="inline-flex items-center gap-2">
             <GridIcon className="h-5 w-5" /> {t.catalog}
           </Link>
 

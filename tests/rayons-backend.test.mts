@@ -30,8 +30,8 @@ check("les mêmes sous-rayons sous chaque rayon", () => {
   for (const site of CATEGORY_TREE) {
     const backend = MACHE_CATEGORY_TREE.find((c) => c.handle === site.slug)!;
     assert.deepEqual(
-      backend.children.map((k) => [k.handle, k.name]),
-      (site.children ?? []).map((k) => [k.slug, k.label]),
+      backend.children.map((k) => [k.handle, k.name, k.children.map((g) => [g.handle, g.name])]),
+      (site.children ?? []).map((k) => [k.slug, k.label, (k.children ?? []).map((g) => [g.slug, g.label])]),
       `sous-rayons de « ${site.label} »`
     );
   }
@@ -47,7 +47,7 @@ check("les trois rayons demandés sont bien là", () => {
 });
 
 check("aucun identifiant en double — il est unique dans la base", () => {
-  const all = MACHE_CATEGORY_TREE.flatMap((c) => [c.handle, ...c.children.map((k) => k.handle)]);
+  const all = MACHE_CATEGORY_TREE.flatMap((c) => [c.handle, ...c.children.flatMap((k) => [k.handle, ...k.children.map((g) => g.handle)])]);
   assert.equal(new Set(all).size, all.length);
 });
 
@@ -55,9 +55,14 @@ check("le démarrage crée les rayons, sans jamais rien supprimer ni renommer", 
   const script = readFileSync("backend/packages/api/src/scripts/mache-categories.ts", "utf8");
   const code = script.slice(script.indexOf("export default async function"));
   assert.doesNotMatch(code, /delete|softDelete|update|Update/, "le script ne fait qu'ajouter");
-  assert.match(code, /filter\(\(\{ parent \}\) => !byHandle\.has\(parent\.handle\)\)/);
+  assert.match(code, /filter\(\(entry\) => !byHandle\.has\(entry\.handle\)\)/);
   const boot = readFileSync("backend/packages/api/src/scripts/bootstrap.ts", "utf8");
   assert.match(boot, /await macheCategories\(args\);/);
+});
+
+check("le catalogue compte au moins mille catégories", () => {
+  const all = MACHE_CATEGORY_TREE.flatMap((c) => [c.handle, ...c.children.flatMap((k) => [k.handle, ...k.children.map((g) => g.handle)])]);
+  assert.ok(all.length >= 1000, `${all.length} catégories seulement`);
 });
 
 console.log(`\n${passed} vérifications passées.\n`);

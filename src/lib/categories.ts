@@ -22,158 +22,37 @@
   vide, afin que la navigation fonctionne dès le premier démarrage.
 */
 
-export type CategoryNode = {
-  slug: string;
-  label: string;
-  icon?: string;
-  /** Sous-catégories, dans l'ordre d'affichage. */
-  children?: { slug: string; label: string }[];
-};
-
 /*
-  Chaque rayon principal garde son émoji : c'est son icône dans la bande
-  « Parcourir les rayons » de l'accueil et dans les bandeaux de rayon.
+  L'arborescence (trois niveaux : rayon, sous-rayon, type d'article) est
+  générée depuis scripts/catalogue-source.mjs : c'est ce fichier-là que
+  l'on modifie, puis `node scripts/generate-categories.mjs`.
 */
-export const CATEGORY_TREE: CategoryNode[] = [
-  {
-    slug: "mode",
-    label: "Mode",
-    icon: "👕",
-    children: [
-      { slug: "vetements-femme", label: "Vêtements femme" },
-      { slug: "vetements-homme", label: "Vêtements homme" },
-      { slug: "mode-enfant", label: "Mode enfant" },
-      { slug: "chaussures-femme", label: "Chaussures femme" },
-      { slug: "chaussures-homme", label: "Chaussures homme" },
-      { slug: "chaussures-enfant", label: "Chaussures enfant" },
-      { slug: "lingerie-pyjamas", label: "Lingerie et pyjamas" },
-      { slug: "sacs-bagages", label: "Sacs et bagages" },
-      { slug: "bijoux-accessoires", label: "Bijoux et accessoires" },
-    ],
-  },
-  {
-    slug: "beaute",
-    label: "Beauté",
-    icon: "🌺",
-    children: [{ slug: "beaute-sante", label: "Beauté et santé" }],
-  },
-  {
-    slug: "maison",
-    label: "Maison",
-    icon: "🏠",
-    children: [
-      { slug: "maison-cuisine", label: "Maison et cuisine" },
-      { slug: "meubles", label: "Meubles" },
-      { slug: "electromenagers", label: "Électroménagers" },
-      { slug: "outillage-habitat", label: "Outillage et amélioration de l'habitat" },
-    ],
-  },
-  {
-    slug: "saveurs",
-    label: "Saveurs",
-    icon: "🍲",
-    children: [{ slug: "alimentation-epicerie", label: "Alimentation et épicerie" }],
-  },
-  {
-    slug: "artisanat",
-    label: "Artisanat",
-    icon: "🎨",
-    children: [{ slug: "arts-artisanat-couture", label: "Arts, artisanat et couture" }],
-  },
-  /*
-    TROIS RAYONS QUI DISENT COMMENT C'EST FAIT, PAS CE QUE C'EST.
+import { CATEGORY_TREE } from "./categories-data";
 
-    « Crochet » tombait dans Artisanat, « confiture maison » dans
-    Alimentation, « savon sans produits chimiques » dans Beauté — et
-    l'acheteur qui vient précisément chercher du fait-main, du fait-
-    maison ou du naturel n'avait aucun chemin pour les trouver. C'est
-    pourtant ce que ce marché a de particulier : ailleurs on vend de
-    l'usine, ici beaucoup de vendeurs fabriquent.
-
-    Ils croisent les rayons existants au lieu de les remplacer : une
-    poupée en crochet reste de l'artisanat, et se range aussi ici.
-  */
-  {
-    slug: "fait-a-la-main",
-    label: "Fait à la main",
-    icon: "🧶",
-    children: [
-      { slug: "crochet-tricot", label: "Crochet et tricot" },
-      { slug: "tableaux-peintures", label: "Tableaux et peintures" },
-      { slug: "vannerie-paille", label: "Vannerie et paille" },
-      { slug: "bois-sculpture", label: "Bois et sculpture" },
-      { slug: "couture-brodee", label: "Couture et broderie" },
-      { slug: "bijoux-faits-main", label: "Bijoux faits main" },
-    ],
-  },
-  {
-    slug: "fait-maison",
-    label: "Fait maison",
-    icon: "🏡",
-    children: [
-      { slug: "confitures-conserves", label: "Confitures et conserves" },
-      { slug: "patisserie-maison", label: "Pâtisserie maison" },
-      { slug: "epices-sauces", label: "Épices et sauces" },
-      { slug: "boissons-maison", label: "Boissons maison" },
-      { slug: "savons-cosmetiques-maison", label: "Savons et cosmétiques maison" },
-    ],
-  },
-  {
-    slug: "bio",
-    label: "Bio et naturel",
-    icon: "🌱",
-    children: [
-      { slug: "produits-bio", label: "Produits bio" },
-      { slug: "huiles-essentielles", label: "Huiles et plantes" },
-      { slug: "soins-naturels", label: "Soins naturels" },
-    ],
-  },
-  {
-    slug: "electronique",
-    label: "Électronique",
-    icon: "📱",
-    children: [
-      { slug: "telephones-accessoires", label: "Téléphones et accessoires" },
-      { slug: "electroniques", label: "Électroniques" },
-    ],
-  },
-  {
-    slug: "loisirs",
-    label: "Loisirs",
-    icon: "🎲",
-    children: [
-      { slug: "jouets-jeux", label: "Jouets et jeux" },
-      { slug: "sports-plein-air", label: "Sports et activités d'extérieur" },
-      { slug: "livres-medias", label: "Livres et médias" },
-    ],
-  },
-  {
-    slug: "bebe",
-    label: "Bébé",
-    icon: "🍼",
-    children: [{ slug: "bebe-maternite", label: "Bébé et maternité" }],
-  },
-  { slug: "automobile", label: "Automobile", icon: "🚗" },
-  { slug: "animaux", label: "Animaux", icon: "🐾", children: [{ slug: "accessoires-animaux", label: "Accessoires animaux" }] },
-  { slug: "bureau-scolaire", label: "Bureau et scolaire", icon: "✏️" },
-  { slug: "services", label: "Services", icon: "🛠️" },
-];
+export { CATEGORY_TREE };
+export type { CategoryNode, CategoryChild } from "./categories-data";
 
 export type FlatCategory = {
   slug: string;
   label: string;
   icon?: string;
   parentSlug?: string;
+  /** 0 = rayon, 1 = sous-rayon, 2 = type d'article. */
+  depth: number;
 };
 
 /** Arborescence aplatie : parents puis enfants, dans l'ordre d'affichage. */
 export const ALL_CATEGORIES: FlatCategory[] = CATEGORY_TREE.flatMap((node) => [
-  { slug: node.slug, label: node.label, icon: node.icon },
-  ...(node.children ?? []).map((child) => ({
-    slug: child.slug,
-    label: child.label,
-    parentSlug: node.slug,
-  })),
+  { slug: node.slug, label: node.label, icon: node.icon, depth: 0 },
+  ...(node.children ?? []).flatMap((child) => [
+    { slug: child.slug, label: child.label, parentSlug: node.slug, depth: 1 },
+    ...(child.children ?? []).map((leaf) => ({
+      slug: leaf.slug,
+      label: leaf.label,
+      parentSlug: child.slug,
+      depth: 2,
+    })),
+  ]),
 ]);
 
 const BY_SLUG = new Map(ALL_CATEGORIES.map((c) => [c.slug, c]));
@@ -216,6 +95,24 @@ for (const [label, slug] of Object.entries(LEGACY_LABELS)) {
   if (target) BY_LABEL.set(normalize(label), target);
 }
 
+const CHILDREN = new Map<string, FlatCategory[]>();
+for (const category of ALL_CATEGORIES) {
+  if (!category.parentSlug) continue;
+  CHILDREN.set(category.parentSlug, [...(CHILDREN.get(category.parentSlug) ?? []), category]);
+}
+
+/** Tous les descendants d'une catégorie, enfants puis petits-enfants. */
+export function descendantsOf(slug: string): FlatCategory[] {
+  return (CHILDREN.get(slug) ?? []).flatMap((child) => [child, ...descendantsOf(child.slug)]);
+}
+
+/** Chemin complet d'une catégorie, du rayon au type d'article. */
+export function categoryPath(slug: string): FlatCategory[] {
+  const category = BY_SLUG.get(slug);
+  if (!category) return [];
+  return [...(category.parentSlug ? categoryPath(category.parentSlug) : []), category];
+}
+
 export function findCategory(value: string | null | undefined) {
   if (!value) return undefined;
 
@@ -246,11 +143,10 @@ export function categoryMatchValues(slug: string): string[] {
 
   const values = new Set<string>([category.slug, category.label]);
 
-  // Un parent englobe ses enfants.
-  const node = CATEGORY_TREE.find((n) => n.slug === slug);
-  for (const child of node?.children ?? []) {
-    values.add(child.slug);
-    values.add(child.label);
+  // Un parent englobe tous ses descendants.
+  for (const descendant of descendantsOf(slug)) {
+    values.add(descendant.slug);
+    values.add(descendant.label);
   }
 
   // Libellés hérités pointant vers cette catégorie.

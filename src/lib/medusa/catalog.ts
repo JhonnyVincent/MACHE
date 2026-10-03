@@ -695,6 +695,17 @@ export async function fetchCollections(
   };
 }
 
+/** Une catégorie et tous ses descendants : un produit peut être classé dans un type d'article précis. */
+export function descendantIds(all: StoreCategory[], id: string): string[] {
+  const out = [id];
+  for (let i = 0; i < out.length; i += 1) {
+    for (const category of all) {
+      if (category.parentId === out[i] && !out.includes(category.id)) out.push(category.id);
+    }
+  }
+  return out;
+}
+
 export async function fetchCategories(
   limit = 24
 ): Promise<MedusaResult<StoreCategory[]>> {

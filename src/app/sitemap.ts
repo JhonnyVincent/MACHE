@@ -14,6 +14,7 @@
 */
 
 import type { MetadataRoute } from "next";
+import { ALL_CATEGORIES } from "@/lib/categories";
 import { fetchCategories, fetchProducts, fetchPublicSellers } from "@/lib/medusa/catalog";
 import { siteUrl } from "@/lib/seo";
 
@@ -21,6 +22,7 @@ export const revalidate = 3600;
 
 const STATIC_PAGES: Array<[string, number]> = [
   ["/", 1],
+  ["/catalogue", 0.8],
   ["/shop", 0.9],
   ["/gros", 0.7],
   ["/haiti", 0.6],
@@ -77,13 +79,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const [categories, sellers, products] = await Promise.all([
-    fetchCategories(300),
+    fetchCategories(1500),
     fetchPublicSellers(500),
     allProducts(),
   ]);
 
   if (categories.ok) {
-    for (const category of categories.data) {
+    // Rayons et sous-rayons seulement : mille pages de types d'articles vides se concurrenceraient.
+    const indexed = new Set(ALL_CATEGORIES.filter((c) => c.depth < 2).map((c) => c.slug));
+    for (const category of categories.data.filter((c) => indexed.has(c.handle) || !ALL_CATEGORIES.some((a) => a.slug === c.handle))) {
       entries.push({
         url: `${base}/shop?category=${encodeURIComponent(category.handle)}`,
         lastModified: now,

@@ -24,7 +24,7 @@
 */
 
 import {
-  fetchProducts, fetchPublicSellers, fetchCategories, fetchProductSellerMap,
+  fetchProducts, fetchPublicSellers, fetchCategories, fetchProductSellerMap, descendantIds,
   type StoreProduct, type StoreSeller, type StoreCategory,
 } from "./catalog";
 import { fetchSitePromotions } from "./promotions";
@@ -136,7 +136,7 @@ export async function fetchHomeData({
       */
       fetchProducts({ limit: 50, order: "-created_at" }),
       fetchPublicSellers(24),
-      fetchCategories(300),
+      fetchCategories(1500),
       fetchProducts({ handles: favoriteHandles.slice(0, 20), limit: 20, withCategories: true }),
       fetchProductSellerMap(),
       fetchSitePromotions(),
@@ -283,7 +283,7 @@ export async function fetchHomeData({
       const children = all.filter((category) => category.parentId === rayon.id);
 
       const found = await fetchProducts({
-        categoryId: [rayon.id, ...children.map((child) => child.id)],
+        categoryId: descendantIds(all, rayon.id),
         limit: 8,
       });
 

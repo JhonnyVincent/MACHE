@@ -77,7 +77,7 @@ export default async function RootLayout({
     premiers du catalogue étaient ceux de la démonstration Mercur
     (Sandals, Sneakers…), que son ordre par défaut place en tête.
   */
-  const categoriesResult = await fetchCategories(300);
+  const categoriesResult = await fetchCategories(1500);
 
   const macheOrder = new Map(CATEGORY_TREE.map((node, index) => [node.slug, index]));
 

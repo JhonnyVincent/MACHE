@@ -11,7 +11,8 @@ import {
   SELLER_PROFILES, isSellerProfile, readSellerProfile,
 } from "@/lib/seller-profile";
 import { reportOutage } from "@/lib/medusa/outage";
-import { fetchProducts, fetchCategories, fetchSellers } from "@/lib/medusa/catalog";
+import { fetchProducts, fetchCategories, fetchSellers, descendantIds } from "@/lib/medusa/catalog";
+import { CATEGORY_TREE, categoryPath, descendantsOf } from "@/lib/categories";
 import { ProductCard } from "@/components/home/rails";
 import { StaggerIn } from "@/components/anim/stagger-in";
 import type { Metadata } from "next";
@@ -42,7 +43,7 @@ export async function generateMetadata({
   }
 
   if (handle) {
-    const categories = await fetchCategories(300);
+    const categories = await fetchCategories(1500);
     const category = categories.ok ? categories.data.find((entry) => entry.handle === handle) : undefined;
 
     if (category) {
@@ -142,7 +143,7 @@ export default async function ShopPage({
     profileHasNoShop = sellerIds.length === 0;
   }
 
-  const categoriesResult = await fetchCategories(40);
+  const categoriesResult = await fetchCategories(1500);
   const categories = categoriesResult.ok ? categoriesResult.data : [];
 
   const category = categories.find((entry) => entry.handle === categoryHandle);
@@ -153,7 +154,7 @@ export default async function ShopPage({
         limit: PAGE_SIZE,
         offset: (page - 1) * PAGE_SIZE,
         q: search || undefined,
-        categoryId: category?.id,
+        categoryId: category ? descendantIds(categories, category.id) : undefined,
         order: sort.order,
         sellerIds,
         includeWholesale: access.allowed,
@@ -277,33 +278,59 @@ export default async function ShopPage({
           ))}
         </div>
 
-        {/* Catégories */}
+        {/*
+          Catégories. Plus de mille rayons existent : on ne les aligne pas
+          tous. Sans choix, on propose les rayons principaux ; un rayon
+          choisi montre son chemin et ses sous-rayons, et le catalogue
+          complet est une page à part.
+        */}
         {categories.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Link
-              href={linkWith({ category: undefined, page: undefined })}
-              className={`rounded-[6px] border px-3 py-1.5 text-sm transition-colors ${
-                !categoryHandle
-                  ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
-                  : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
-              }`}
-            >
-              Tout
-            </Link>
+          <div className="mt-4 space-y-3">
+            {categoryHandle && (
+              <nav aria-label="Chemin du rayon" className="flex flex-wrap items-center gap-1.5 text-sm text-[var(--mache-muted)]">
+                <Link href={linkWith({ category: undefined, page: undefined })} className="hover:text-[var(--mache-text)]">
+                  Catalogue
+                </Link>
+                {categoryPath(categoryHandle).map((step) => (
+                  <span key={step.slug} className="flex items-center gap-1.5">
+                    <span aria-hidden="true">/</span>
+                    {step.slug === categoryHandle ? (
+                      <span className="font-semibold text-[var(--mache-text)]">{step.label}</span>
+                    ) : (
+                      <Link href={linkWith({ category: step.slug, page: undefined })} className="hover:text-[var(--mache-text)]">
+                        {step.label}
+                      </Link>
+                    )}
+                  </span>
+                ))}
+              </nav>
+            )}
 
-            {categories.map((entry) => (
-              <Link
-                key={entry.id}
-                href={linkWith({ category: entry.handle, page: undefined })}
-                className={`rounded-[6px] border px-3 py-1.5 text-sm transition-colors ${
-                  categoryHandle === entry.handle
-                    ? "border-[var(--mache-text)] bg-[var(--mache-text)] font-semibold text-white"
-                    : "border-[var(--mache-line)] bg-white text-[var(--mache-text)] hover:border-[var(--mache-primary)]"
-                }`}
-              >
-                {entry.name}
+            <div className="flex flex-wrap gap-2">
+              {(() => {
+                const known = new Set(categories.map((entry) => entry.handle));
+                const here = categoryHandle ? descendantsOf(categoryHandle).filter((c) => c.parentSlug === categoryHandle) : [];
+                const chips = categoryHandle
+                  ? here
+                  : CATEGORY_TREE.map((node) => ({ slug: node.slug, label: node.label }));
+
+                return chips
+                  .filter((chip) => known.has(chip.slug))
+                  .map((chip) => (
+                    <Link
+                      key={chip.slug}
+                      href={linkWith({ category: chip.slug, page: undefined })}
+                      className="rounded-[6px] border border-[var(--mache-line)] bg-white px-3 py-1.5 text-sm text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)]"
+                    >
+                      {chip.label}
+                    </Link>
+                  ));
+              })()}
+
+              <Link href="/catalogue" className="rounded-[6px] px-3 py-1.5 text-sm font-semibold text-[var(--mache-primary)] hover:underline">
+                Tout le catalogue →
               </Link>
-            ))}
+            </div>
           </div>
         )}
 

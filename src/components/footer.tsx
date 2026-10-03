@@ -111,6 +111,13 @@ export function Footer({
                 Tout le catalogue
               </Link>
 
+              <Link
+                href="/catalogue"
+                className="block text-sm text-white/70 transition hover:text-white"
+              >
+                Tous les rayons
+              </Link>
+
               {/*
                 L'entrée pour les acheteurs professionnels. Sans elle,
                 les devis, les prix dégressifs et les commandes
