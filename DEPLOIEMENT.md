@@ -400,3 +400,39 @@ des offres ce qui n'en est pas.
   simulé : tant qu'aucun prestataire réel n'est branché, le site ne
   prétend pas encaisser.
 - **Le passage aux plans payants**, avant la première vente réelle.
+
+---
+
+## Variante : Medusa Cloud
+
+Medusa Cloud peut héberger le backend ET le site, à la place de Render.
+
+Formulaire de création du projet :
+
+| Champ | Valeur |
+|---|---|
+| Medusa root directory | `/backend/packages/api` |
+| Storefront root directory | la racine du dépôt |
+| Region | la plus proche des clients (côte est des États-Unis si proposée) |
+
+Variables du backend : `JWT_SECRET`, `COOKIE_SECRET`,
+`STOREFRONT_REVALIDATE_SECRET`, `STOREFRONT_URL` (adresse du site, connue
+après sa création), `NODE_VERSION=22`, `BREVO_API_KEY`, `MAIL_FROM`,
+`ADMIN_ALERT_EMAIL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, et
+**`MACHE_AUTO_BOOTSTRAP=true`**.
+
+Cette dernière est propre à Medusa Cloud : il n'exécute pas la commande
+de démarrage de Render, qui lance l'amorçage (région Haïti, clé publique,
+mille rayons, compte d'administration). Avec la variable, une tâche
+planifiée (`src/jobs/mache-bootstrap.ts`) le lance une fois par démarrage,
+dans la minute qui suit. Il écrit dans les journaux la clé publique et
+l'identifiant de région à reporter côté site.
+
+Variables du site : `NEXT_PUBLIC_MEDUSA_BACKEND_URL`,
+`MEDUSA_BACKEND_URL`, `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`,
+`NEXT_PUBLIC_MEDUSA_REGION_ID`, `NEXT_PUBLIC_SITE_URL`,
+`STOREFRONT_REVALIDATE_SECRET` (identique à celui du backend).
+
+Les secrets se génèrent chez soi (gestionnaire de mots de passe), jamais
+dans une conversation ni dans le dépôt.
+

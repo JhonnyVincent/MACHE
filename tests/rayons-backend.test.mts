@@ -65,4 +65,11 @@ check("le catalogue compte au moins mille catégories", () => {
   assert.ok(all.length >= 1000, `${all.length} catégories seulement`);
 });
 
+check("Medusa Cloud : l'amorçage part du serveur, seulement si MACHE_AUTO_BOOTSTRAP est posée", () => {
+  const job = readFileSync("backend/packages/api/src/jobs/mache-bootstrap.ts", "utf8");
+  assert.match(job, /MACHE_AUTO_BOOTSTRAP/);
+  assert.match(job, /if \(!wanted \|\| done \|\| running\) return;/);
+  assert.match(job, /await bootstrap\(\{ container, args: \[\] \}\);/);
+});
+
 console.log(`\n${passed} vérifications passées.\n`);
