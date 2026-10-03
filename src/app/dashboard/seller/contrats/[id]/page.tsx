@@ -112,14 +112,14 @@ export default async function SellerContractPage({
 
             {result.data.contract.dueAt &&
               ["sent", "viewed"].includes(result.data.contract.status) && (
-                <span className="text-sm text-[#565959]">
+                <span className="text-sm text-[var(--mache-muted)]">
                   À répondre avant le {formatDate(result.data.contract.dueAt)}
                 </span>
               )}
           </div>
 
           {result.data.summary && (
-            <p className="rounded-[6px] border border-[#d5d9d9] bg-[#f7f8f8] p-3 text-base leading-relaxed text-[#0f1111]">
+            <p className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-bg-2)] p-3 text-base leading-relaxed text-[var(--mache-text)]">
               {result.data.summary}
             </p>
           )}
@@ -130,7 +130,7 @@ export default async function SellerContractPage({
             reformaté à l'affichage n'est plus tout à fait le même
             document que celui dont on calcule l'empreinte.
           */}
-          <article className="whitespace-pre-wrap rounded-[10px] border border-[#d5d9d9] bg-white p-5 text-base leading-relaxed text-[#0f1111]">
+          <article className="whitespace-pre-wrap rounded-[8px] border border-[var(--mache-line)] bg-white p-5 text-base leading-relaxed text-[var(--mache-text)]">
             {result.data.body}
           </article>
 
@@ -142,8 +142,8 @@ export default async function SellerContractPage({
             >
               <dl className="space-y-1.5 text-sm">
                 <div className="flex gap-2">
-                  <dt className="text-[#565959]">Signé par</dt>
-                  <dd className="font-medium text-[#0f1111]">
+                  <dt className="text-[var(--mache-muted)]">Signé par</dt>
+                  <dd className="font-medium text-[var(--mache-text)]">
                     {result.data.contract.signerName}
                     {result.data.contract.signerRole
                       ? ` (${result.data.contract.signerRole})`
@@ -152,7 +152,7 @@ export default async function SellerContractPage({
                 </div>
               </dl>
 
-              <p className="mt-3 text-sm leading-relaxed text-[#565959]">
+              <p className="mt-3 text-sm leading-relaxed text-[var(--mache-muted)]">
                 Conservez cette page. Le contrat ne peut plus être modifié :
                 toute correction de MACHE prendrait la forme d&apos;une nouvelle
                 version, qu&apos;il faudrait vous soumettre à nouveau.
@@ -163,7 +163,7 @@ export default async function SellerContractPage({
               title="Vous avez refusé ce contrat"
               description={`Le ${formatDate(result.data.contract.declinedAt)}.`}
             >
-              <p className="text-sm leading-relaxed text-[#565959]">
+              <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
                 Motif transmis à MACHE : « {result.data.contract.declineReason} »
               </p>
             </Panel>
@@ -197,14 +197,14 @@ export default async function SellerContractPage({
                     <Input name="signer_email" type="email" maxLength={320} />
                   </Field>
 
-                  <label className="flex items-start gap-2.5 rounded-[6px] border border-[#d5d9d9] bg-[#f7f8f8] p-3">
+                  <label className="flex items-start gap-2.5 rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-bg-2)] p-3">
                     <input
                       type="checkbox"
                       name="agreed"
                       required
                       className="mt-0.5 h-4 w-4 shrink-0"
                     />
-                    <span className="text-sm leading-relaxed text-[#0f1111]">
+                    <span className="text-sm leading-relaxed text-[var(--mache-text)]">
                       J&apos;ai lu ce contrat en entier et j&apos;accepte ses
                       termes au nom de {seller.name}.
                     </span>
@@ -219,7 +219,7 @@ export default async function SellerContractPage({
                   Dit à l'endroit où l'on signe, pas en mentions légales
                   au bas de la page : c'est ici que la personne décide.
                 */}
-                <p className="mt-4 border-t border-[#d5d9d9] pt-3 text-xs leading-relaxed text-[#767676]">
+                <p className="mt-4 border-t border-[var(--mache-line)] pt-3 text-xs leading-relaxed text-[var(--mache-muted)]">
                   MACHE enregistre votre acceptation, l&apos;heure, et
                   l&apos;empreinte du texte exact que vous signez. MACHE ne
                   vérifie pas votre identité : ce n&apos;est pas une signature
@@ -252,7 +252,7 @@ export default async function SellerContractPage({
                   */}
                   <SubmitButton
                     pendingLabel="Enregistrement…"
-                    className="!bg-white !text-[#0f1111] !border !border-[#8d9096] hover:!bg-[#f7f8f8]"
+                    className="!bg-white !text-[var(--mache-text)] !border !border-[var(--mache-light)] hover:!bg-[var(--mache-bg-2)]"
                   >
                     Refuser ce contrat
                   </SubmitButton>
@@ -262,7 +262,7 @@ export default async function SellerContractPage({
           )}
 
           {/* -------------------------------------------------------- */}
-          <p className="break-all text-2xs leading-relaxed text-[#9a9a9a]">
+          <p className="break-all text-2xs leading-relaxed text-[var(--mache-light)]">
             Empreinte du texte (SHA-256) : {result.data.contract.contentHash}
             {result.data.contract.proofHash && (
               <>
@@ -275,7 +275,7 @@ export default async function SellerContractPage({
             présenté est bien celui-ci.
           </p>
 
-          <p className="text-sm text-[#565959]">
+          <p className="text-sm text-[var(--mache-muted)]">
             Une question sur ce contrat ?{" "}
             <Link href="/contact" className="font-medium underline">
               Écrivez à MACHE

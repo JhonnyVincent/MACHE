@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 }
 
 const button =
-  "inline-flex items-center rounded-[8px] border border-[var(--mache-line)] bg-white px-4 py-2.5 text-md font-semibold text-[var(--mache-text)] hover:border-[var(--mache-primary)]";
+  "inline-flex items-center rounded-[6px] border border-[var(--mache-line)] bg-white px-4 py-2.5 text-md font-semibold text-[var(--mache-text)] hover:border-[var(--mache-primary)]";
 
 export default async function PartnerProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const slug = (await params).slug;
@@ -54,7 +54,7 @@ export default async function PartnerProfilePage({ params }: { params: Promise<{
         ← Partenaires
       </Link>
 
-      <article className="mt-4 overflow-hidden rounded-[14px] border border-[var(--mache-line)] bg-white">
+      <article className="mt-4 overflow-hidden rounded-[8px] border border-[var(--mache-line)] bg-white">
         {partner.banner ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={partner.banner} alt="" className="h-40 w-full object-cover sm:h-56" />
@@ -68,7 +68,7 @@ export default async function PartnerProfilePage({ params }: { params: Promise<{
             <img
               src={partner.logo}
               alt={`Logo de ${partner.name}`}
-              className="-mt-10 h-20 w-20 rounded-[14px] border-4 border-white bg-white object-contain"
+              className="-mt-10 h-20 w-20 rounded-[8px] border-4 border-white bg-white object-contain"
             />
           )}
 
@@ -77,7 +77,7 @@ export default async function PartnerProfilePage({ params }: { params: Promise<{
           </h1>
 
           {partner.category && (
-            <p className="mt-2 inline-block rounded-full bg-[#f1f1f1] px-3 py-1 text-sm font-semibold text-[var(--mache-text)]">
+            <p className="mt-2 inline-block rounded-full bg-[var(--mache-bg-2)] px-3 py-1 text-sm font-semibold text-[var(--mache-text)]">
               {partner.category}
             </p>
           )}
@@ -92,7 +92,7 @@ export default async function PartnerProfilePage({ params }: { params: Promise<{
                 href={whatsappLink(partner.whatsapp, `Bonjour ${partner.name}, je vous contacte depuis MACHE.`)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center rounded-[8px] bg-[#25d366] px-4 py-2.5 text-md font-semibold text-[#06361a] hover:bg-[#1fbd5b]"
+                className="inline-flex items-center rounded-[6px] bg-[#25d366] px-4 py-2.5 text-md font-semibold text-[#06361a] hover:bg-[#1fbd5b]"
               >
                 Contacter sur WhatsApp
               </a>
@@ -120,7 +120,7 @@ export default async function PartnerProfilePage({ params }: { params: Promise<{
           </div>
 
           {/* Ce que MACHE fait, et ne fait pas. */}
-          <p className="mt-6 rounded-[10px] border border-[#e6d6b8] bg-[#fdf8ec] p-4 text-sm leading-relaxed text-[var(--mache-muted)]">
+          <p className="mt-6 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4 text-sm leading-relaxed text-[var(--mache-muted)]">
             {partner.name} est une entreprise indépendante : son service se traite directement avec elle, selon ses
             propres conditions.
             {!partner.mediated &&

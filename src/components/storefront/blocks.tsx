@@ -102,7 +102,7 @@ function TextBlock({ props }: { props: Record<string, unknown> }) {
     <section className="container-page py-6">
       <div className="max-w-2xl">
         {title && (
-          <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+          <h2 className="text-2xl text-[var(--mache-text)]">
             {title}
           </h2>
         )}
@@ -128,7 +128,7 @@ function ImageBlock({ props }: { props: Record<string, unknown> }) {
   return (
     <section className="container-page py-6">
       <figure>
-        <div className="overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-bg)]">
+        <div className="overflow-hidden rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={url} alt={alt} loading="lazy" className="w-full object-cover" />
         </div>
@@ -184,7 +184,7 @@ function ProductsBlock({
 
   return (
     <section id="produits" className="container-page py-6">
-      <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+      <h2 className="mb-3 text-2xl text-[var(--mache-text)]">
         {title}
       </h2>
 
@@ -214,11 +214,11 @@ function FaqBlock({ props }: { props: Record<string, unknown> }) {
 
   return (
     <section className="container-page py-6">
-      <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+      <h2 className="mb-3 text-2xl text-[var(--mache-text)]">
         {title}
       </h2>
 
-      <div className="max-w-2xl divide-y divide-[var(--mache-line)] rounded-[10px] border border-[var(--mache-line)] bg-white">
+      <div className="max-w-2xl divide-y divide-[var(--mache-line)] rounded-[8px] border border-[var(--mache-line)] bg-white">
         {items.map((item) => (
           <details key={item.question} className="group p-4">
             <summary className="cursor-pointer text-md font-semibold text-[var(--mache-text)]">
@@ -261,7 +261,7 @@ function CountdownBlock({ props }: { props: Record<string, unknown> }) {
 
   return (
     <section className="container-page py-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] p-4">
         <p className="text-md font-bold text-[var(--mache-primary-dark)]">{title}</p>
         <p className="text-md font-semibold text-[var(--mache-primary-dark)]">
           {days > 0
@@ -318,7 +318,7 @@ function CategoriesBlock({
 
   return (
     <section className="container-page py-6">
-      <h2 className="mb-3 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+      <h2 className="mb-3 text-2xl text-[var(--mache-text)]">
         {title}
       </h2>
       <div className="flex flex-wrap gap-2">

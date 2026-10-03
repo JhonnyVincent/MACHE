@@ -198,7 +198,7 @@ export default async function ProductPage({
         </nav>
 
         {query.error && (
-          <div className="mb-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          <div className="mb-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
             {decodeURIComponent(query.error)}
           </div>
         )}
@@ -207,7 +207,7 @@ export default async function ProductPage({
           {/* Images */}
           <div>
             {/* Au survol, la photo s'agrandit pour voir le détail. */}
-            <div className="group overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
+            <div className="group overflow-hidden rounded-[8px] border border-[var(--mache-line)] bg-white">
               <div className="aspect-square overflow-hidden">
                 {product.thumbnail ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
@@ -215,7 +215,7 @@ export default async function ProductPage({
                     fetchPriority="high"
                     src={product.thumbnail}
                     alt={product.title}
-                    className="h-full w-full cursor-zoom-in object-cover transition-transform duration-500 group-hover:scale-125 motion-reduce:transform-none"
+                    className="h-full w-full cursor-zoom-in object-cover transition-transform duration-500 motion-reduce:transform-none"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center text-base text-[var(--mache-light)]">
@@ -233,7 +233,7 @@ export default async function ProductPage({
                     className="aspect-square overflow-hidden rounded-[6px] border border-[var(--mache-line)] bg-white"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img loading="lazy" decoding="async" src={image} alt="" className="h-full w-full object-cover transition-transform duration-300 hover:scale-110 motion-reduce:transform-none" />
+                    <img loading="lazy" decoding="async" src={image} alt="" className="h-full w-full object-cover transition-transform duration-300 motion-reduce:transform-none" />
                   </span>
                 ))}
               </div>
@@ -312,7 +312,7 @@ export default async function ProductPage({
               déclinaison ne le concernent pas.
             */}
             {!tradeOnly && selected && selected.tiers.length > 0 && (
-              <div className="mt-5 overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-white">
+              <div className="mt-5 overflow-hidden rounded-[8px] border border-[var(--mache-line)] bg-white">
                 <p className="border-b border-[var(--mache-line)] bg-[var(--mache-bg)] px-3.5 py-2 text-sm font-bold text-[var(--mache-text)]">
                   Tarifs par quantité
                 </p>
@@ -361,7 +361,7 @@ export default async function ProductPage({
             {/* Ajout au panier */}
             <div className="mt-6">
               {tradeOnly ? (
-                <div className="rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] px-4 py-3 text-base text-[#1e3a5f]">
+                <div className="rounded-[6px] border border-[var(--mache-info-line)] bg-[var(--mache-info-soft)] px-4 py-3 text-base text-[var(--mache-navy)]">
                   <p className="font-bold">Article vendu en gros, aux professionnels</p>
                   <p className="mt-1 text-sm leading-relaxed">
                     Ce produit est proposé par un grossiste. Il est réservé aux vendeurs MACHE et aux comptes
@@ -401,7 +401,7 @@ export default async function ProductPage({
                   </button>
                 </form>
               ) : (
-                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base text-[var(--mache-muted)]">
+                <p className="rounded-[6px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] px-4 py-3 text-base text-[var(--mache-muted)]">
                   Aucun vendeur ne propose actuellement cette déclinaison.
                 </p>
               )}
@@ -432,7 +432,7 @@ export default async function ProductPage({
                     type="submit"
                     className={`inline-flex items-center gap-2 rounded-[6px] border px-4 py-2 text-base font-semibold transition-colors ${
                       isFavorite
-                        ? "border-[var(--mache-danger)] bg-[#fdeaec] text-[var(--mache-danger)]"
+                        ? "border-[var(--mache-danger)] bg-[var(--mache-danger-soft)] text-[var(--mache-danger)]"
                         : "border-[var(--mache-line)] text-[var(--mache-muted)] hover:border-[var(--mache-danger)] hover:text-[var(--mache-danger)]"
                     }`}
                   >
@@ -463,7 +463,7 @@ export default async function ProductPage({
               achète, et le voit.
             */}
             {offers.length > 0 && (
-              <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+              <div className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
                 <p className="text-base font-bold text-[var(--mache-text)]">
                   {offers.length > 1
                     ? `${offers.length} boutiques proposent cette déclinaison`
@@ -500,7 +500,7 @@ export default async function ProductPage({
                         {brandOffer && brandOffer.sellerId !== offer.sellerId && (
                           <Link
                             href={`/store/${brandOffer.sellerHandle}`}
-                            className="rounded-full bg-[#eef2ff] px-2 py-0.5 text-xs font-semibold text-[#1e3a8a] hover:underline"
+                            className="rounded-full bg-[var(--mache-info-soft)] px-2 py-0.5 text-xs font-semibold text-[var(--mache-navy)] hover:underline"
                           >
                             Revendeur de @{brandOffer.sellerName}
                           </Link>
@@ -597,7 +597,7 @@ export default async function ProductPage({
 
       {ratings.reviews.length > 0 && (
         <section className="container-page pb-8">
-          <h2 className="mb-1 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+          <h2 className="mb-1 text-2xl text-[var(--mache-text)]">
             Avis sur ce produit
           </h2>
           <RatingSummary ratings={ratings} />

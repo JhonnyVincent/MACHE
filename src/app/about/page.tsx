@@ -49,7 +49,7 @@ const AMBITIONS = [
     title: "Connecter Haïti au monde",
     now: "La diaspora achète chez des vendeurs qui sont en Haïti, depuis n'importe où : elle fait livrer ses proches sur place, ou se fait expédier la commande à l'étranger, après confirmation des frais d'expédition.",
     missing:
-      "Pas encore de tarifs négociés avec un transporteur ni de paiement en ligne : chaque envoi à l'étranger est chiffré un par un. Le site est en français ; le créole ne couvre pour l'instant que la navigation.",
+      "Aucun tarif négocié avec un transporteur ni de paiement en ligne : chaque envoi à l'étranger est chiffré un par un. Le site est en français ; le créole ne couvre pour l'instant que la navigation.",
   },
   {
     title: "Encourager les échanges entre producteurs",
@@ -93,23 +93,23 @@ export default async function AboutPage() {
 
   return (
     <main>
-      <section className="bg-[var(--mache-dark)] py-16 text-white">
+      <section className="bg-white py-16">
         <div className="container-page grid gap-10 lg:grid-cols-2 lg:items-center">
           <div>
-            <div className="mb-3 text-2xs font-bold uppercase tracking-widest text-[var(--mache-primary-strong)]">
+            <div className="mb-3 text-sm font-semibold tracking-label text-[var(--mache-primary)]">
               À propos de nous
             </div>
 
-            <h1 className="text-hero font-black tracking-tightest">
+            <h1 className="text-hero text-[var(--mache-text)]">
               Connecter Haïti au monde
             </h1>
 
-            <p className="mt-5 max-w-xl text-md leading-8 text-white/65">
+            <p className="mt-5 max-w-xl text-md leading-relaxed text-[var(--mache-text)]">
               Et encourager les échanges entre ceux qui produisent ici. C&apos;est
               l&apos;objectif de MACHE, et tout le reste en découle.
             </p>
 
-            <p className="mt-4 max-w-xl text-md leading-8 text-white/45">
+            <p className="mt-4 max-w-xl text-md leading-relaxed text-[var(--mache-muted)]">
               Un pays plein de gens qui fabriquent, cultivent et vendent, et pas
               d&apos;endroit commun où les trouver. Une diaspora qui veut acheter
               au pays sans passer par quelqu&apos;un qui connaît quelqu&apos;un.
@@ -118,21 +118,21 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-[20px] p-8">
+          <div className="overflow-hidden rounded-[12px] p-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               loading="lazy"
               decoding="async"
               src="/images/carte-haiti-mache.webp"
               alt="Carte d'Haïti aux couleurs de MACHE"
-              className="h-[340px] w-full object-contain"
+              className="h-[340px] w-full object-contain mix-blend-multiply"
             />
           </div>
         </div>
       </section>
 
       <section className="container-page py-14">
-        <h2 className="text-2xl font-bold tracking-tight text-[var(--mache-text)]">
+        <h2 className="text-2xl text-[var(--mache-text)]">
           Ce que ça veut dire, concrètement
         </h2>
 
@@ -145,7 +145,7 @@ export default async function AboutPage() {
         <div className="mt-6 grid gap-5 md:grid-cols-2">
           {AMBITIONS.map((item) => (
             <div key={item.title} className="card p-6">
-              <h3 className="text-lg font-black text-[var(--mache-text)]">
+              <h3 className="font-display text-xl font-semibold text-[var(--mache-text)]">
                 {item.title}
               </h3>
 
@@ -172,7 +172,7 @@ export default async function AboutPage() {
 
       {(sellerCount !== null || productCount !== null) && (
         <section className="container-page pb-14">
-          <h2 className="text-2xl font-bold tracking-tight text-[var(--mache-text)]">
+          <h2 className="text-2xl text-[var(--mache-text)]">
             Où nous en sommes
           </h2>
 
@@ -185,7 +185,7 @@ export default async function AboutPage() {
           <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {sellerCount !== null && (
               <div className="card p-6">
-                <div className="text-4xl font-black tracking-tightest text-[var(--mache-primary)]">
+                <div className="font-display text-4xl font-semibold text-[var(--mache-primary)]">
                   {sellerCount}
                 </div>
                 <div className="mt-1 text-sm text-[var(--mache-muted)]">
@@ -197,7 +197,7 @@ export default async function AboutPage() {
 
             {productCount !== null && (
               <div className="card p-6">
-                <div className="text-4xl font-black tracking-tightest text-[var(--mache-primary)]">
+                <div className="font-display text-4xl font-semibold text-[var(--mache-primary)]">
                   {productCount}
                 </div>
                 <div className="mt-1 text-sm text-[var(--mache-muted)]">
@@ -207,7 +207,7 @@ export default async function AboutPage() {
             )}
 
             <div className="card p-6">
-              <div className="text-4xl font-black tracking-tightest text-[var(--mache-primary)]">
+              <div className="font-display text-4xl font-semibold text-[var(--mache-primary)]">
                 10
               </div>
               <div className="mt-1 text-sm text-[var(--mache-muted)]">
@@ -225,8 +225,8 @@ export default async function AboutPage() {
       )}
 
       <section className="container-page pb-16">
-        <div className="rounded-[12px] border border-[var(--mache-line)] bg-white p-7">
-          <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)]">
+        <div className="rounded-[8px] border border-[var(--mache-line)] bg-white p-7">
+          <h2 className="text-xl text-[var(--mache-text)]">
             Vous produisez, cultivez ou fabriquez en Haïti ?
           </h2>
 
@@ -239,7 +239,7 @@ export default async function AboutPage() {
           <div className="mt-5 flex flex-wrap gap-3">
             <Link
               href="/dashboard/seller/inscription"
-              className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+              className="rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-semibold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
             >
               Ouvrir ma boutique
             </Link>

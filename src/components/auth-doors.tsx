@@ -55,7 +55,7 @@ export function AuthDoors({ what }: { what: string }) {
         {DOORS.map((door) => (
           <div
             key={door.href}
-            className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-[var(--mache-line)] bg-white p-4"
+            className="flex flex-wrap items-center justify-between gap-3 rounded-[8px] border border-[var(--mache-line)] bg-white p-4"
           >
             <div className="min-w-0">
               <p className="text-base font-bold text-[var(--mache-text)]">

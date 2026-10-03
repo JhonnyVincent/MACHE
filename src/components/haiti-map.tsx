@@ -50,7 +50,7 @@ export function HaitiMap({ shops = {} }: { shops?: DepartmentShops }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr] lg:items-center">
-      <div className="rounded-[12px] border border-[var(--mache-line)] bg-white p-3 sm:p-5">
+      <div className="rounded-[8px] border border-[var(--mache-line)] bg-white p-3 sm:p-5">
         <svg
           viewBox={HAITI_VIEWBOX}
           role="group"
@@ -105,7 +105,7 @@ export function HaitiMap({ shops = {} }: { shops?: DepartmentShops }) {
         département mais rien de ce qu'on en dit.
       */}
       <div aria-live="polite" className="min-w-0">
-        <p className="text-sm font-bold uppercase tracking-label text-[var(--mache-primary)]">
+        <p className="text-sm font-semibold tracking-label text-[var(--mache-primary)]">
           Chef-lieu : {active.capital}
         </p>
 
@@ -117,7 +117,7 @@ export function HaitiMap({ shops = {} }: { shops?: DepartmentShops }) {
           {active.text}
         </p>
 
-        <div className="mt-5 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
+        <div className="mt-5 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
           {count > 0 ? (
             <>
               <p className="text-md font-bold text-[var(--mache-text)]">

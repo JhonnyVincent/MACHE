@@ -23,7 +23,7 @@ export function SocialLinks({ className = "", size = 18 }: { className?: string;
             rel="noopener noreferrer"
             aria-label={`MACHE sur ${network.name} (nouvel onglet)`}
             title={network.name}
-            className="block opacity-80 transition hover:scale-110 hover:opacity-100 motion-reduce:transform-none"
+            className="block opacity-80 transition hover:opacity-100 motion-reduce:transform-none"
           >
             <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
               <path d={network.path} />

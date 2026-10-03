@@ -64,7 +64,7 @@ export default async function ProAccountPage({
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-12 sm:py-16">
         <h1 className="text-3xl font-bold tracking-tight text-[var(--mache-text)]">Compte professionnel</h1>
-        <div className="mt-5 rounded-[8px] border border-[#b7dfc0] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+        <div className="mt-5 rounded-[6px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] px-4 py-3 text-base text-[var(--mache-success)]">
           Vous êtes connecté comme vendeur : vous avez déjà accès aux grossistes et aux marques, et vous pouvez leur
           demander des devis. Un compte professionnel est pour ceux qui achètent sans vendre.
         </div>
@@ -96,26 +96,26 @@ export default async function ProAccountPage({
       </p>
 
       {access.as === "vendeur" && (
-        <div className="mt-5 rounded-[8px] border border-[#b7dfc0] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+        <div className="mt-5 rounded-[6px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] px-4 py-3 text-base text-[var(--mache-success)]">
           Vous êtes connecté comme vendeur : vous avez déjà accès aux fournisseurs, sans compte professionnel.
         </div>
       )}
 
       {query.error && (
-        <div className="mt-5 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+        <div className="mt-5 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}
 
       {query.envoye && (
-        <div className="mt-5 rounded-[8px] border border-[#b7dfc0] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+        <div className="mt-5 rounded-[6px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] px-4 py-3 text-base text-[var(--mache-success)]">
           Votre demande est envoyée. MACHE l&apos;examine et vous écrit par e-mail.
         </div>
       )}
 
       {status === "approved" && (
-        <div className="mt-6 rounded-[10px] border border-[#b7dfc0] bg-[#f4fbf7] p-5">
-          <h2 className="text-lg font-bold text-[#046c4e]">Votre compte professionnel est actif</h2>
+        <div className="mt-6 rounded-[8px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] p-5">
+          <h2 className="text-lg font-bold text-[var(--mache-success)]">Votre compte professionnel est actif</h2>
           <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
             Vous voyez les grossistes et les marques, et vous pouvez demander un devis depuis la fiche d&apos;un
             produit.
@@ -130,7 +130,7 @@ export default async function ProAccountPage({
       )}
 
       {status === "pending" && (
-        <div className="mt-6 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
+        <div className="mt-6 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-5">
           <h2 className="text-lg font-bold text-[var(--mache-text)]">Demande en cours d&apos;examen</h2>
           <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
             {pro?.organisation ? `${pro.organisation}${pro.city ? `, ${pro.city}` : ""} : ` : ""}
@@ -141,8 +141,8 @@ export default async function ProAccountPage({
       )}
 
       {status === "refused" && (
-        <div className="mt-6 rounded-[10px] border border-[#f2c2c8] bg-[#fdeaec] p-5">
-          <h2 className="text-lg font-bold text-[#b01124]">Demande non validée</h2>
+        <div className="mt-6 rounded-[8px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] p-5">
+          <h2 className="text-lg font-bold text-[var(--mache-danger-text)]">Demande non validée</h2>
           <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
             Le motif vous a été envoyé par e-mail. Vous pouvez compléter votre demande et la renvoyer.
           </p>

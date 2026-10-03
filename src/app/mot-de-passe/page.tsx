@@ -40,7 +40,7 @@ export default async function ForgotPasswordPage({
       </h1>
 
       {query.envoye ? (
-        <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
+        <div className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
           <p className="text-md font-semibold text-[var(--mache-text)]">
             Si un compte existe pour cette adresse, un e-mail vient de partir.
           </p>
@@ -67,7 +67,7 @@ export default async function ForgotPasswordPage({
           </p>
 
           {query.erreur && (
-            <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+            <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
               {query.erreur}
             </div>
           )}

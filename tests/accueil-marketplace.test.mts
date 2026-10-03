@@ -363,9 +363,9 @@ check("la FAQ de l'accueil reprend mot pour mot la page /faq", () => {
 
 check("points relais : un bloc vert léger ; livraison reste neutre", () => {
   const relay = PARTNERS_STRIP.slice(PARTNERS_STRIP.indexOf('key: "points-relais"'));
-  assert.match(relay.slice(0, 500), /from-\[#f0fdf4\] via-white to-\[#dcfce7\]/);
+  assert.match(relay.slice(0, 600), /bg-\[var\(--mache-success-soft\)\]/);
   const delivery = PARTNERS_STRIP.slice(PARTNERS_STRIP.indexOf('key: "livraison"'), PARTNERS_STRIP.indexOf('key: "points-relais"'));
-  assert.doesNotMatch(delivery, /#f0fdf4|#dcfce7/);
+  assert.doesNotMatch(delivery, /mache-success/);
   assert.match(PARTNERS_STRIP, /className=\{`\$\{block\} \$\{role\.tone\}`\}/);
 });
 

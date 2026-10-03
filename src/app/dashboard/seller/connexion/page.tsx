@@ -81,13 +81,13 @@ export default async function VendorLoginPage({
       </p>
 
       {query.reinitialise && (
-        <div className="mt-4 rounded-[8px] border border-[#b7dfc0] bg-[#eaf6ec] px-4 py-3 text-base text-[#116b25]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] px-4 py-3 text-base text-[var(--mache-success)]">
           Mot de passe changé. Connectez-vous avec le nouveau.
         </div>
       )}
 
       {query.error && (
-        <div className="mt-5 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base leading-relaxed text-[#b01124]">
+        <div className="mt-5 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}

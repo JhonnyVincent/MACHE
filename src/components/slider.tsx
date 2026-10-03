@@ -179,7 +179,7 @@ export function Slider({
   if (count === 0) return null;
 
   const arrowClass =
-    "absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--mache-line)] bg-[var(--mache-white)] text-xl text-[var(--mache-text)] shadow-[0_4px_14px_rgba(16,24,32,0.12)] transition-opacity hover:text-[var(--mache-primary)] disabled:pointer-events-none disabled:opacity-0 sm:flex";
+    "absolute top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--mache-line)] bg-[var(--mache-white)] text-xl text-[var(--mache-text)] shadow-soft transition-opacity hover:text-[var(--mache-primary)] disabled:pointer-events-none disabled:opacity-0 sm:flex";
 
   return (
     <div

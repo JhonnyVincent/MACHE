@@ -37,7 +37,7 @@ export function SellerSidebarNav({ sections }: { sections: NavSection[] }) {
     <nav className="scrollbar-slim flex-1 overflow-y-auto py-2">
       {sections.map((section) => (
         <div key={section.label} className="mb-4 last:mb-0">
-          <p className="px-4 pb-1.5 text-2xs font-semibold uppercase tracking-widest text-white/60">
+          <p className="px-4 pb-1.5 text-2xs font-semibold tracking-widest text-white/60">
             {section.label}
           </p>
 
@@ -52,13 +52,13 @@ export function SellerSidebarNav({ sections }: { sections: NavSection[] }) {
                     aria-current={active ? "page" : undefined}
                     className={`flex items-center gap-2 border-l-2 py-1.5 pl-3.5 pr-3 text-sm transition-colors ${
                       active
-                        ? "border-[#d2162c] bg-white/[0.07] font-semibold text-white"
+                        ? "border-[var(--mache-primary)] bg-white/[0.07] font-semibold text-white"
                         : "border-transparent text-white/60 hover:bg-white/[0.05] hover:text-white"
                     }`}
                   >
                     <span className="flex-1 truncate">{item.label}</span>
                     {item.badge ? (
-                      <span className="tnum rounded-[2px] bg-[#d2162c] px-1 py-px text-2xs font-semibold text-white">
+                      <span className="tnum rounded-[4px] bg-[var(--mache-primary)] px-1 py-px text-2xs font-semibold text-white">
                         {item.badge > 99 ? "99+" : item.badge}
                       </span>
                     ) : null}
@@ -79,7 +79,7 @@ export function SellerMobileNav({ sections }: { sections: NavSection[] }) {
   const items = sections.flatMap((section) => section.items);
 
   return (
-    <div className="scrollbar-slim flex gap-1 overflow-x-auto border-b border-[#d5d9d9] bg-white px-3 py-1.5 lg:hidden">
+    <div className="scrollbar-slim flex gap-1 overflow-x-auto border-b border-[var(--mache-line)] bg-white px-3 py-1.5 lg:hidden">
       {items.map((item) => {
         const active = isActive(item.href);
 
@@ -87,14 +87,14 @@ export function SellerMobileNav({ sections }: { sections: NavSection[] }) {
           <Link
             key={item.href}
             href={item.href}
-            className={`shrink-0 rounded-[3px] px-2.5 py-1 text-sm transition-colors ${
+            className={`shrink-0 rounded-[4px] px-2.5 py-1 text-sm transition-colors ${
               active
                 ? "bg-[#0a0a0a] font-semibold text-white"
-                : "text-[#565959] hover:bg-[#f0f2f2]"
+                : "text-[var(--mache-muted)] hover:bg-[var(--mache-bg-2)]"
             }`}
           >
             {item.label}
-            {item.badge ? <span className="tnum ml-1 text-[#d2162c]">{item.badge}</span> : null}
+            {item.badge ? <span className="tnum ml-1 text-[var(--mache-primary)]">{item.badge}</span> : null}
           </Link>
         );
       })}

@@ -47,9 +47,9 @@ export default async function CheckoutSuccessPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-14">
-      <div className="rounded-[12px] border border-[#b7dfc9] bg-[#f4fbf7] p-6 text-center">
+      <div className="rounded-[8px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] p-6 text-center">
         <p className="text-4xl" aria-hidden="true">✓</p>
-        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[#046c4e]">
+        <h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--mache-success)]">
           Commande enregistrée
         </h1>
 
@@ -74,7 +74,7 @@ export default async function CheckoutSuccessPage() {
       </div>
 
       {confirmation && (
-        <dl className="mt-5 space-y-2 rounded-[10px] border border-[var(--mache-line)] bg-white p-4 text-base">
+        <dl className="mt-5 space-y-2 rounded-[8px] border border-[var(--mache-line)] bg-white p-4 text-base">
           <div className="flex justify-between gap-4">
             {/*
               Le numéro que le client retrouve dans « Mes commandes » (#4),
@@ -99,14 +99,14 @@ export default async function CheckoutSuccessPage() {
           </div>
           <div className="flex justify-between gap-4 border-t border-[var(--mache-line)] pt-2">
             <dt className="text-[var(--mache-muted)]">Paiement</dt>
-            <dd className="font-semibold text-[#946200]">
+            <dd className="font-semibold text-[var(--mache-warn-text)]">
               {confirmation.international ? "Après votre accord sur les frais d'expédition" : "À régler à la livraison"}
             </dd>
           </div>
         </dl>
       )}
 
-      <div className="mt-5 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+      <div className="mt-5 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           Rien n&apos;a été prélevé
         </h2>

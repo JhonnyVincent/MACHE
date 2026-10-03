@@ -115,7 +115,7 @@ export default async function HaitiPage() {
           Rien à afficher nulle part : on l'annonce une fois, en clair,
           plutôt que de laisser découvrir dix fois « aucune boutique ».
         */
-        <div className="mt-8 rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
+        <div className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
           <p className="text-base font-semibold text-[var(--mache-text)]">
             Aucune boutique n&apos;a encore renseigné son adresse.
           </p>

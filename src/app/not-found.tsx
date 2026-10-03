@@ -18,7 +18,7 @@ export const metadata = privateMetadata("Page introuvable");
 export default function NotFound() {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-16 text-center">
-      <p className="text-sm font-bold uppercase tracking-widest text-[var(--mache-primary)]">Erreur 404</p>
+      <p className="text-sm font-semibold tracking-label text-[var(--mache-primary)]">Erreur 404</p>
 
       <h1 className="mt-2 text-3xl font-black text-[var(--mache-text)]">Cette page n&apos;existe pas (ou plus)</h1>
 

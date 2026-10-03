@@ -92,7 +92,7 @@ export default async function PartenairesPage() {
       {/* ---------------------------------------------------------------- */}
       <section className="border-b border-[var(--mache-line)] bg-[var(--mache-white)]">
         <div className="container-page py-10 lg:py-14">
-          <span className="inline-block rounded-[3px] bg-[var(--mache-primary)] px-2 py-1 text-xs font-bold uppercase tracking-widest text-white">
+          <span className="inline-block text-sm font-semibold tracking-label text-[var(--mache-primary)]">
             Partenaires
           </span>
 
@@ -121,7 +121,7 @@ export default async function PartenairesPage() {
             taux ni de délai, que MACHE ne fixe pas et ne vérifie pas.
           */}
           {PARTNERS.length === 0 ? (
-            <div className="mt-7 max-w-2xl rounded-[10px] border border-[#e6d6b8] bg-[#fdf8ec] p-5">
+            <div className="mt-7 max-w-2xl rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-5">
               <h2 className="text-md font-bold text-[var(--mache-text)]">
                 Cette page ne liste encore personne
               </h2>
@@ -134,7 +134,7 @@ export default async function PartenairesPage() {
               </p>
             </div>
           ) : (
-            <div className="mt-7 max-w-2xl rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
+            <div className="mt-7 max-w-2xl rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
               <h2 className="text-md font-bold text-[var(--mache-text)]">
                 Ils travaillent avec MACHE
               </h2>
@@ -207,7 +207,7 @@ export default async function PartenairesPage() {
           {services.length > 0 && (
             <ul className="mt-5 grid gap-3 sm:grid-cols-2">
               {services.map((partner) => (
-                <li key={partner.slug} className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+                <li key={partner.slug} className="rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
                   <Link href={`/partenaires/${partner.slug}`} className="text-md font-bold text-[var(--mache-text)] hover:underline">
                     {partner.name}
                   </Link>
@@ -234,7 +234,7 @@ export default async function PartenairesPage() {
           {PARTNERSHIPS.map((item) => (
             <article
               key={item.title}
-              className="flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
+              className="flex flex-col rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <h3 className="text-lg font-bold text-[var(--mache-text)]">{item.title}</h3>
@@ -246,10 +246,10 @@ export default async function PartenairesPage() {
                   rejoindre un dispositif qui tourne.
                 */}
                 <span
-                  className={`shrink-0 rounded-[3px] px-2 py-0.5 text-2xs font-bold uppercase tracking-wide ${
+                  className={`shrink-0 rounded-[4px] px-2 py-0.5 text-2xs font-bold tracking-wide ${
                     item.ready
-                      ? "bg-[#eaf6ec] text-[#116b25]"
-                      : "bg-[#f7f8f8] text-[#565959]"
+                      ? "bg-[var(--mache-success-soft)] text-[var(--mache-success)]"
+                      : "bg-[var(--mache-bg-2)] text-[var(--mache-muted)]"
                   }`}
                 >
                   {item.ready ? "En place" : "À construire"}
@@ -273,7 +273,7 @@ export default async function PartenairesPage() {
 
       {/* ---------------------------------------------------------------- */}
       <section className="mache-reveal container-page pb-10">
-        <div className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-6">
+        <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-6">
           <h2 className="text-xl font-black tracking-tight text-[var(--mache-text)]">
             Et les sponsors ?
           </h2>
@@ -296,7 +296,7 @@ export default async function PartenairesPage() {
 
       {/* ---------------------------------------------------------------- */}
       <section className="mache-reveal container-page">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[var(--mache-dark)] p-6 text-white">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[8px] bg-[var(--mache-dark)] p-6 text-white">
           <div>
             <h2 className="text-xl font-black tracking-tight">
               Vous vous reconnaissez dans l&apos;une de ces quatre lignes ?

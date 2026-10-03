@@ -155,7 +155,7 @@ function VendorsLegalPageEcrit() {
           </ul>
         </section>
 
-        <section className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+        <section className="rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4">
           <h2 className="text-lg font-bold text-[var(--mache-text)]">
             Ce qui reste à arrêter
           </h2>

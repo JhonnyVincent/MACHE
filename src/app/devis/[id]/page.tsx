@@ -78,7 +78,7 @@ export default async function QuotePage({
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-12 sm:py-16">
       {query.nouveau && (
-        <div className="mb-6 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
+        <div className="mb-6 rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
           <p className="font-semibold">Demande envoyée.</p>
           <p className="mt-1">
             {/*
@@ -93,12 +93,12 @@ export default async function QuotePage({
       )}
 
       {query.error && (
-        <div className="mb-6 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+        <div className="mb-6 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}
 
-      <p className="text-sm font-semibold uppercase tracking-label text-[var(--mache-muted)]">
+      <p className="text-sm font-semibold tracking-label text-[var(--mache-muted)]">
         Devis nº {quote.displayId}
       </p>
 
@@ -112,7 +112,7 @@ export default async function QuotePage({
       </p>
 
       {quote.message && (
-        <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+        <div className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
           <p className="text-sm font-semibold text-[var(--mache-text)]">
             Votre demande
           </p>
@@ -131,8 +131,8 @@ export default async function QuotePage({
       )}
 
       {quote.quotedAmount !== null && (
-        <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
-          <p className="text-sm font-semibold uppercase tracking-label text-[var(--mache-muted)]">
+        <div className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
+          <p className="text-sm font-semibold tracking-label text-[var(--mache-muted)]">
             Proposition du vendeur
           </p>
 
@@ -198,7 +198,7 @@ export default async function QuotePage({
       )}
 
       {quote.status === "accepted" && (
-        <p className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
+        <p className="mt-6 rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
           Le vendeur sait que vous acceptez sa proposition. La suite —
           livraison et règlement, se convient directement avec lui.
         </p>

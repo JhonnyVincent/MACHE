@@ -27,7 +27,7 @@ export function VerifiedBadge({ compact = false }: { compact?: boolean }) {
   return (
     <span
       title="MACHE a contrôlé les documents de cette entreprise."
-      className={`inline-flex items-center gap-1 rounded-[3px] bg-[#eaf6ec] font-bold text-[#116b25] ${
+      className={`inline-flex items-center gap-1 rounded-[4px] bg-[var(--mache-success-soft)] font-bold text-[var(--mache-success)] ${
         compact ? "px-1.5 py-0.5 text-2xs" : "px-2 py-0.5 text-xs"
       }`}
     >

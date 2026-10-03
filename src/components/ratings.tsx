@@ -65,7 +65,7 @@ export function ReviewList({ ratings }: { ratings: StoreRatings }) {
       {ratings.reviews.map((review) => (
         <li
           key={review.id}
-          className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4"
+          className="rounded-[8px] border border-[var(--mache-line)] bg-white p-4"
         >
           <div className="flex flex-wrap items-center gap-2">
             <Stars value={review.rating} />

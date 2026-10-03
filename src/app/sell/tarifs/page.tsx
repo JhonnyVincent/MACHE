@@ -51,7 +51,7 @@ export default function TarifsPage() {
         Le placer en haut plutôt qu'en note de bas de page est la seule
         façon qu'il soit lu.
       */}
-      <div className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
+      <div className="mt-6 rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
         <p className="font-semibold">Aucun paiement n&apos;est prélevé aujourd&apos;hui.</p>
         <p className="mt-1">
           MACHE n&apos;a pas encore de prestataire de paiement raccordé :
@@ -65,7 +65,7 @@ export default function TarifsPage() {
         {TARIFS.map((tarif) => (
           <div
             key={tarif.profile}
-            className="flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-white p-5"
+            className="flex flex-col rounded-[8px] border border-[var(--mache-line)] bg-white p-5"
           >
             <h2 className="text-xl font-bold text-[var(--mache-text)]">
               {tarif.title}
@@ -210,7 +210,7 @@ export default function TarifsPage() {
         portent le même bloc : une décision en suspens qu'on ne nomme
         pas devient une décision qu'on croit prise.
       */}
-      <section className="mt-8 rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
+      <section className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
         <h2 className="text-base font-bold text-[var(--mache-text)]">
           Ce qui reste à arrêter
         </h2>

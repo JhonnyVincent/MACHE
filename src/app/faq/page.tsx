@@ -48,7 +48,7 @@ export default function FaqPage() {
               {section.items.map((item) => (
                 <details
                   key={item.q}
-                  className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4"
+                  className="rounded-[8px] border border-[var(--mache-line)] bg-white p-4"
                 >
                   <summary className="cursor-pointer text-md font-bold text-[var(--mache-text)]">
                     {item.q}
@@ -63,7 +63,7 @@ export default function FaqPage() {
         ))}
       </div>
 
-      <div className="mt-10 rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
+      <div className="mt-10 rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
         <p className="text-md font-bold text-[var(--mache-text)]">
           Votre question n&apos;est pas là ?
         </p>

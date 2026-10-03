@@ -98,34 +98,34 @@ export default function SellMarqueOfficiellePage() {
   return (
     <main className="bg-[var(--mache-bg)] pb-12">
       {/* ---------------------------------------------------------------- */}
-      <section className="border-b border-[var(--mache-line)] bg-[#071f3d] text-white">
+      <section className="border-b border-[var(--mache-line)] bg-white">
         <div className="container-page py-12 lg:py-16">
-          <Link href="/sell" className="text-sm font-bold text-white/60 hover:text-white">
+          <Link href="/sell" className="text-sm text-[var(--mache-muted)] hover:text-[var(--mache-text)]">
             ← Retour à Devenir vendeur
           </Link>
 
-          <div className="mt-6 inline-flex rounded-[4px] border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold uppercase tracking-widest">
+          <p className="mt-6 text-sm font-semibold tracking-label text-[var(--mache-primary)]">
             Profil vendeur · Marque officielle
-          </div>
+          </p>
 
-          <h1 className="mt-5 max-w-3xl text-hero font-black tracking-tightest">
+          <h1 className="mt-3 max-w-3xl text-hero text-[var(--mache-text)]">
             Une boutique identifiée comme la vôtre.
           </h1>
 
-          <p className="mt-5 max-w-2xl text-md leading-relaxed text-white/75">
+          <p className="mt-5 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
             {tarif.audience} Le profil marque donne une boutique reconnaissable,
             une commission réduite, et l&apos;accès aux acheteurs professionnels.
           </p>
 
-          <div className="mt-8 rounded-[10px] border border-white/15 bg-white/5 p-5 sm:max-w-md">
-            <p className="text-xs font-semibold uppercase tracking-label text-white/50">
+          <div className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-6 sm:max-w-md">
+            <p className="text-sm font-semibold text-[var(--mache-muted)]">
               Abonnement mensuel
             </p>
-            <p className="mt-1.5 text-3xl font-black">{billingLine(tarif.billing)}</p>
-            <p className="mt-1.5 text-sm text-white/60">
+            <p className="mt-1.5 font-display text-3xl font-semibold text-[var(--mache-text)]">{billingLine(tarif.billing)}</p>
+            <p className="mt-1.5 text-sm text-[var(--mache-muted)]">
               soit environ {formatHtg(min)} à {formatHtg(max)} par mois
             </p>
-            <p className="mt-3 text-xs leading-relaxed text-white/45">
+            <p className="mt-3 text-xs leading-relaxed text-[var(--mache-muted)]">
               Conversion indicative au taux retenu par MACHE le {EUR_TO_HTG_DATE}.
               Le montant dû est celui en euros. La fourchette se resserre selon
               la taille de votre catalogue, c&apos;est le seul profil vendeur
@@ -142,7 +142,7 @@ export default function SellMarqueOfficiellePage() {
             </Link>
             <Link
               href="/sell/tarifs"
-              className="rounded-[6px] border border-white/30 px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-white hover:text-[#071f3d]"
+              className="rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-semibold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white"
             >
               Comparer les profils
             </Link>
@@ -163,7 +163,7 @@ export default function SellMarqueOfficiellePage() {
           {REEL.map(([title, text]) => (
             <div
               key={title}
-              className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
+              className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
             >
               <h3 className="text-md font-bold text-[var(--mache-text)]">{title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">{text}</p>
@@ -174,7 +174,7 @@ export default function SellMarqueOfficiellePage() {
 
       {/* ---------------------------------------------------------------- */}
       <section className="mache-reveal container-page pb-10">
-        <div className="rounded-[10px] border border-[#e6d6b8] bg-[#fdf8ec] p-6">
+        <div className="rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-6">
           <h2 className="text-xl font-black tracking-tight text-[var(--mache-text)]">
             Ce qui n&apos;est pas encore là
           </h2>
@@ -205,7 +205,7 @@ export default function SellMarqueOfficiellePage() {
           {ETAPES.map(([title, text], index) => (
             <li
               key={title}
-              className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
+              className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-[6px] bg-[var(--mache-text)] text-md font-black text-white">
                 {index + 1}
@@ -219,7 +219,7 @@ export default function SellMarqueOfficiellePage() {
 
       {/* ---------------------------------------------------------------- */}
       <section className="mache-reveal container-page">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[var(--mache-dark)] p-6 text-white">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-[8px] bg-[var(--mache-dark)] p-6 text-white">
           <div>
             <h2 className="text-xl font-black tracking-tight">
               Vous représentez une marque ?

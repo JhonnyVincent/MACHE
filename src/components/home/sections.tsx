@@ -20,10 +20,10 @@ export function Spotlight({ products }: { products: StoreProduct[] }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="mache-reveal container-page py-6">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+    <section className="mache-reveal container-page py-10">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+          <h2 className="text-2xl text-[var(--mache-text)]">
             Sur MACHE en ce moment
           </h2>
           <p className="mt-1 text-sm text-[var(--mache-muted)]">
@@ -40,14 +40,14 @@ export function Spotlight({ products }: { products: StoreProduct[] }) {
         {products.map((product) => (
           <li key={product.id}>
             <Link href={`/product/${product.handle ?? product.id}`} className="group block">
-              <div className="aspect-square overflow-hidden rounded-[10px] bg-[var(--mache-bg-2)]">
+              <div className="aspect-square overflow-hidden rounded-[8px] bg-[var(--mache-bg-2)]">
                 {product.thumbnail && (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={product.thumbnail}
                     alt=""
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110 motion-reduce:transform-none"
+                    className="h-full w-full object-cover transition-transform duration-300 motion-reduce:transform-none"
                   />
                 )}
               </div>
@@ -55,7 +55,7 @@ export function Spotlight({ products }: { products: StoreProduct[] }) {
                 {product.title}
               </p>
               {product.price !== null && (
-                <p className="mt-0.5 text-base font-bold text-[var(--mache-text)]">
+                <p className="mt-0.5 text-base font-semibold text-[var(--mache-text)]">
                   {formatAmount(product.price, product.currency)}
                 </p>
               )}
@@ -102,7 +102,7 @@ function TileGrid({ tile }: { tile: CategoryTile }) {
             src={src}
             alt=""
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 hover:scale-110 motion-reduce:transform-none"
+            className="h-full w-full object-cover transition-transform duration-500 motion-reduce:transform-none"
           />
         ))}
       </Link>
@@ -128,9 +128,9 @@ function TileGrid({ tile }: { tile: CategoryTile }) {
                 src={cell.image}
                 alt=""
                 loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover/cell:scale-110 motion-reduce:transform-none"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 motion-reduce:transform-none"
               />
-              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-2 pb-1.5 pt-5 text-xs font-bold leading-tight text-white sm:text-sm">
+              <span className="absolute inset-x-0 bottom-0 bg-[rgba(28,25,23,0.62)] px-2.5 py-1.5 text-xs font-medium leading-tight text-white sm:text-sm">
                 {cell.name}
               </span>
             </>
@@ -149,9 +149,9 @@ export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[];
   if (tiles.length === 0) return null;
 
   return (
-    <section className="mache-reveal container-page py-6">
-      <div className="mb-4">
-        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">Catégories</h2>
+    <section className="mache-reveal container-page py-10">
+      <div className="mb-6">
+        <h2 className="text-2xl text-[var(--mache-text)]">Catégories</h2>
         {fromFavorites && (
           <p className="mt-1 text-sm text-[var(--mache-muted)]">Choisies d&apos;après vos favoris</p>
         )}
@@ -161,11 +161,11 @@ export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[];
         {tiles.map((tile) => (
           <li
             key={tile.handle}
-            className="flex flex-col overflow-hidden rounded-[12px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow duration-300 hover:shadow-[0_10px_28px_rgba(16,24,32,0.14)]"
+            className="flex flex-col overflow-hidden rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow duration-300 hover:shadow-card-hover "
           >
             <Link
               href={tile.href}
-              className="flex items-center justify-between gap-2 px-3 py-2.5 text-base font-bold text-[var(--mache-text)] hover:text-[var(--mache-primary)] sm:text-lg"
+              className="flex items-center justify-between gap-2 px-3 py-2.5 text-base font-semibold text-[var(--mache-text)] hover:text-[var(--mache-primary)]"
             >
               <span className="truncate">{tile.name}</span>
               <span aria-hidden="true" className="text-sm text-[var(--mache-primary)]">→</span>
@@ -179,12 +179,12 @@ export function CategoryTiles({ tiles, fromFavorites }: { tiles: CategoryTile[];
         <li>
           <Link
             href="/shop"
-            className="group flex h-full min-h-[180px] flex-col items-center justify-center gap-2 rounded-[12px] border-2 border-dashed border-[var(--mache-line)] bg-[var(--mache-white)] text-center transition-colors hover:border-[var(--mache-primary)]"
+            className="group flex h-full min-h-[180px] flex-col items-center justify-center gap-2 rounded-[8px] border border-dashed border-[var(--mache-light)] bg-[var(--mache-white)] text-center transition-colors hover:border-[var(--mache-primary)]"
           >
-            <svg viewBox="0 0 24 24" className="h-10 w-10 text-[var(--mache-primary)] transition-transform duration-300 group-hover:rotate-90 motion-reduce:transform-none" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="h-10 w-10 text-[var(--mache-primary)] transition-transform duration-300 motion-reduce:transform-none" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
               <path d="M12 5v14M5 12h14" />
             </svg>
-            <span className="text-base font-bold text-[var(--mache-text)]">Tous les rayons</span>
+            <span className="text-base font-semibold text-[var(--mache-text)]">Tous les rayons</span>
             <span className="px-4 text-sm text-[var(--mache-muted)]">Filtrer, trier par nouveauté, changer de rayon</span>
           </Link>
         </li>
@@ -209,9 +209,9 @@ export function BrandsMarquee({ brands }: { brands: StoreSeller[] }) {
   const copies = Math.max(2, Math.ceil(8 / brands.length) * 2);
 
   return (
-    <section className="mache-reveal py-6">
-      <div className="container-page mb-4">
-        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">Nos marques</h2>
+    <section className="mache-reveal py-10">
+      <div className="container-page mb-6">
+        <h2 className="text-2xl text-[var(--mache-text)]">Nos marques</h2>
         <p className="mt-1 text-sm text-[var(--mache-muted)]">Les boutiques qui se présentent comme marque officielle</p>
       </div>
 
@@ -223,7 +223,7 @@ export function BrandsMarquee({ brands }: { brands: StoreSeller[] }) {
                 <Link
                   href={`/store/${brand.handle}`}
                   tabIndex={copy > 0 ? -1 : undefined}
-                  className="flex items-center gap-3 rounded-full border border-[var(--mache-line)] bg-[var(--mache-white)] px-5 py-3 transition-transform hover:scale-105 motion-reduce:transform-none"
+                  className="flex items-center gap-3 rounded-full border border-[var(--mache-line)] bg-[var(--mache-white)] px-5 py-3 transition-transform motion-reduce:transform-none"
                 >
                   <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-[var(--mache-bg)] text-sm font-black">
                     {brand.logo ? (
@@ -233,7 +233,7 @@ export function BrandsMarquee({ brands }: { brands: StoreSeller[] }) {
                       brand.name.slice(0, 2).toUpperCase()
                     )}
                   </span>
-                  <span className="whitespace-nowrap text-base font-bold text-[var(--mache-text)]">{brand.name}</span>
+                  <span className="whitespace-nowrap text-base font-semibold text-[var(--mache-text)]">{brand.name}</span>
                 </Link>
               </li>
             ))
@@ -253,11 +253,11 @@ export function BrandsMarquee({ brands }: { brands: StoreSeller[] }) {
 */
 export function SellCta() {
   return (
-    <section className="mache-reveal container-page py-5">
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-[var(--mache-primary)] p-6 text-white">
+    <section className="mache-reveal container-page py-10">
+      <div className="flex flex-wrap items-center justify-between gap-6 rounded-[8px] bg-[var(--mache-dark)] p-8 text-white sm:p-10">
         <div>
-          <h2 className="text-xl font-black tracking-tight">Devenez vendeur chez MACHE</h2>
-          <p className="mt-1.5 max-w-xl text-base leading-relaxed text-white">
+          <h2 className="text-2xl sm:text-3xl">Devenez vendeur chez MACHE</h2>
+          <p className="mt-2 max-w-xl text-md leading-relaxed text-white/75">
             Vous vendez quelque chose ? Ouvrez votre boutique et gardez votre marque.
             Particuliers, entreprises, fournisseurs et marques officielles.
           </p>
@@ -265,7 +265,7 @@ export function SellCta() {
 
         <Link
           href="/sell"
-          className="rounded-[6px] bg-white px-5 py-2.5 text-md font-bold text-[var(--mache-primary)] transition-transform hover:scale-105 motion-reduce:transform-none"
+          className="rounded-[6px] bg-[var(--mache-primary)] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
         >
           Commencer à vendre
         </Link>

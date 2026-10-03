@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Fraunces, Inter } from "next/font/google";
 import { SiteChrome } from "@/components/site-chrome";
 import { fetchCategories } from "@/lib/medusa/catalog";
 import { CATEGORY_TREE } from "@/lib/categories";
@@ -15,6 +15,19 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter"
+});
+
+/*
+  Deux familles, pas plus : Inter pour tout ce qui se lit vite (menus,
+  boutons, prix, formulaires) et Fraunces, une serif chaleureuse, pour les
+  titres des pages publiques. Le contraste entre les deux donne au site
+  une voix éditoriale, au lieu d'une même police partout.
+*/
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-display",
+  axes: ["opsz"]
 });
 
 /*
@@ -119,7 +132,7 @@ export default async function RootLayout({
         */}
         {style && <style dangerouslySetInnerHTML={{ __html: style }} />}
       </head>
-      <body className={inter.variable}>
+      <body className={`${inter.variable} ${fraunces.variable}`}>
         {/*
           Le bandeau saisonnier. C'est du texte rendu par React, donc
           échappé : il ne peut pas contenir de balise.

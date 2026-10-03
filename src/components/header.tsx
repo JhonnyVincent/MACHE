@@ -145,7 +145,7 @@ export function Header({ cartCount = 0,
         c'est qu'il y a quelque chose.
       */}
       {promotions.length > 0 && (
-        <div className="overflow-hidden bg-[var(--mache-primary)] py-2 text-sm font-black uppercase tracking-label text-white">
+        <div className="overflow-hidden bg-[var(--mache-primary)] py-2 text-sm font-semibold text-white">
           <div className="mache-ticker flex w-max gap-12 whitespace-nowrap">
             {[...promotions, ...promotions].map((promotion, index) => (
               <Link
@@ -171,8 +171,8 @@ export function Header({ cartCount = 0,
         La langue reste à droite, fixe : un sélecteur qui défile ne
         s'attrape pas.
       */}
-      <div className="border-b bg-black text-white">
-        <div className="flex h-10 items-center">
+      <div className="bg-[var(--mache-dark)] text-white">
+        <div className="flex h-9 items-center">
           <div className="relative min-w-0 flex-1 overflow-hidden">
             {/*
               Assez de copies pour couvrir tout l'écran : avec une seule
@@ -183,7 +183,7 @@ export function Header({ cartCount = 0,
               Seule la première série est lue : les copies sont cachées
               aux lecteurs d'écran.
             */}
-            <div className="mache-ticker mache-ticker-fast flex w-max items-center whitespace-nowrap text-base font-semibold">
+            <div className="mache-ticker mache-ticker-fast flex w-max items-center whitespace-nowrap text-sm font-medium">
               {Array.from({ length: 6 }).flatMap((_, copy) =>
                 SERVICES.map((service) => (
                   <Link
@@ -215,7 +215,7 @@ export function Header({ cartCount = 0,
               value={lang}
               onChange={(e) => changeLang(e.target.value as Lang)}
               aria-label="Langue"
-              className="bg-black text-white outline-none"
+              className="bg-[var(--mache-dark)] text-sm text-white outline-none"
             >
               <option value="fr">FR</option>
               <option value="ht">HT</option>
@@ -244,11 +244,11 @@ export function Header({ cartCount = 0,
           />
 
           <div className="min-w-0">
-            <div className="text-2xl font-black tracking-tightest text-[#071f3d] md:text-4xl">
+            <div className="font-display text-3xl font-semibold leading-none tracking-tight text-[var(--mache-navy)] md:text-4xl">
               Mache
             </div>
 
-            <div className="hidden text-xs font-black uppercase text-[#071f3d] sm:block">
+            <div className="mt-1.5 hidden text-xs font-medium text-[var(--mache-muted)] sm:block">
               Tout Ayiti. Tout en un seul Mache.
             </div>
           </div>
@@ -262,19 +262,19 @@ export function Header({ cartCount = 0,
             id="site-search"
             name="q"
             type="search"
-            className="w-full rounded-l-xl border border-r-0 px-6 py-4"
+            className="w-full rounded-l-[6px] border border-r-0 border-[var(--mache-line)] bg-[var(--mache-white)] px-4 py-3"
             placeholder={t.searchPlaceholder}
           />
           <button
             type="submit"
-            className="rounded-r-xl bg-[var(--mache-primary)] px-6 py-4 font-bold text-white"
+            className="rounded-r-[6px] bg-[var(--mache-primary)] px-5 py-3 font-semibold text-white hover:bg-[var(--mache-primary-dark)]"
             aria-label="Rechercher"
           >
-            <SearchIcon className="mx-auto h-6 w-6" />
+            <SearchIcon className="mx-auto h-5 w-5" />
           </button>
         </form>
 
-        <div className="flex justify-end gap-4 text-center text-sm md:gap-7 md:text-base">
+        <div className="flex justify-end gap-4 text-center text-sm md:gap-7">
           {/*
             UNE SEULE PORTE, ET ELLE AIGUILLE.
 
@@ -324,8 +324,8 @@ export function MainNav() {
   const t = translations[lang];
 
   return (
-    <nav className="bg-black text-white">
-        <div className="container-page flex h-16 items-center gap-6 overflow-x-auto whitespace-nowrap">
+    <nav className="bg-[var(--mache-dark)] text-white">
+        <div className="container-page flex h-14 items-center gap-8 overflow-x-auto whitespace-nowrap text-base font-medium">
           <Link href="/shop" className="inline-flex items-center gap-2">
             <GridIcon className="h-5 w-5" /> {t.catalog}
           </Link>

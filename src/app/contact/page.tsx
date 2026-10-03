@@ -72,7 +72,7 @@ export default async function ContactPage({
       {query.error && (
         <p
           role="alert"
-          className="mt-5 rounded-[6px] border border-[#f2c2c8] bg-[#fdeaec] px-3 py-2.5 text-sm text-[#b01124]"
+          className="mt-5 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-3 py-2.5 text-sm text-[var(--mache-danger-text)]"
         >
           {query.error}
         </p>
@@ -83,7 +83,7 @@ export default async function ContactPage({
         lu une fois le message envoyé — c'est-à-dire trop tard pour
         décider de créer un compte, ou pour penser à garder son lien.
       */}
-      <div className="mt-6 rounded-[10px] border border-[#e6d6b8] bg-[#fdf8ec] p-4">
+      <div className="mt-6 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           Comment vous aurez notre réponse
         </h2>

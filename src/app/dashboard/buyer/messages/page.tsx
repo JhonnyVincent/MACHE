@@ -64,19 +64,19 @@ export default async function BuyerMessagesPage() {
                     lieu de notification.
                   */
                   thread.awaitingSender
-                    ? "border-[#b7dfc9] bg-[#f4fbf7]"
-                    : "border-[#d5d9d9]"
+                    ? "border-[var(--mache-success-line)] bg-[var(--mache-success-soft)]"
+                    : "border-[var(--mache-line)]"
                 }`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="min-w-0">
                     <Link
                       href={`/messages/${thread.id}`}
-                      className="text-md font-semibold text-[#0f1111] hover:underline"
+                      className="text-md font-semibold text-[var(--mache-text)] hover:underline"
                     >
                       {thread.subject}
                     </Link>
-                    <p className="mt-0.5 text-xs text-[#565959]">
+                    <p className="mt-0.5 text-xs text-[var(--mache-muted)]">
                       Dernier message le {formatDate(thread.lastMessageAt)}
                     </p>
                   </div>
@@ -94,7 +94,7 @@ export default async function BuyerMessagesPage() {
         </Panel>
       )}
 
-      <p className="text-sm leading-relaxed text-[#565959]">
+      <p className="text-sm leading-relaxed text-[var(--mache-muted)]">
         MACHE n&apos;envoie pas d&apos;e-mail : vous ne serez pas prévenu
         d&apos;une réponse. Cette page est l&apos;endroit où la trouver.
       </p>

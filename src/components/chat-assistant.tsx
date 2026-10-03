@@ -87,13 +87,13 @@ export function ChatAssistant() {
       <button
         onClick={() => setOpen((prev) => !prev)}
         aria-expanded={open}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-[var(--mache-dark)] px-5 py-3 text-sm font-semibold text-white shadow-[var(--shadow-medium)] transition hover:-translate-y-0.5"
+        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-[var(--mache-dark)] px-5 py-3 text-sm font-semibold text-white shadow-soft transition "
       >
         {open ? "Fermer" : "Aide rapide"}
       </button>
 
       {open && (
-        <div className="fixed bottom-20 right-5 z-40 flex w-[min(360px,calc(100%-24px))] flex-col overflow-hidden rounded-[14px] border border-[var(--mache-line)] bg-white shadow-[var(--shadow-medium)]">
+        <div className="fixed bottom-20 right-5 z-40 flex w-[min(360px,calc(100%-24px))] flex-col overflow-hidden rounded-[8px] border border-[var(--mache-line)] bg-white shadow-soft">
           <div className="flex items-center justify-between bg-[var(--mache-dark)] px-4 py-3 text-white">
             <div>
               <p className="text-sm font-bold">Aide rapide</p>
@@ -149,7 +149,7 @@ export function ChatAssistant() {
                   <button
                     key={entry.question}
                     onClick={() => setChoisie(entry)}
-                    className="block w-full rounded-[8px] border border-[var(--mache-line)] px-3 py-2 text-left text-base text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
+                    className="block w-full rounded-[6px] border border-[var(--mache-line)] px-3 py-2 text-left text-base text-[var(--mache-text)] transition-colors hover:border-[var(--mache-primary)] hover:text-[var(--mache-primary)]"
                   >
                     {entry.question}
                   </button>

@@ -4,27 +4,32 @@
 
 :root {
   /*
-    #e91e3a donnait 4,46 de contraste avec du texte blanc — sous le seuil
-    de lisibilité du niveau AA (4,5), sur chaque bouton du site. Deux
-    pour cent plus sombre donne 4,63, et l'œil ne fait pas la différence.
-    Mesuré, pas estimé : `npm run test:themes`.
+    LA PALETTE, REDUITE A L'ESSENTIEL
+
+    Un rouge de marque (pour les actions et les prix remisés), un encre
+    chaude pour le texte, un papier légèrement ocre pour le fond, et des
+    gris chauds pour les filets. Plus de roses de remplissage : ils
+    donnaient une teinte de fête à chaque page.
+
+    #d41834 reste le rouge : 4,63 de contraste avec du texte blanc, mesuré
+    par `npm run test:themes`.
   */
   --mache-primary: #d41834;
-  --mache-primary-soft: #ffe8ee;
+  --mache-primary-soft: #fbeaed;
   --mache-primary-strong: #ff3f61;
   --mache-primary-dark: #9f1024;
 
-  --mache-dark: #101820;
-  --mache-dark-2: #172331;
+  --mache-dark: #1c1917;
+  --mache-dark-2: #26211e;
 
-  --mache-bg: #f7f4f1;
-  --mache-bg-2: #fff3f6;
+  --mache-bg: #faf8f5;
+  --mache-bg-2: #f2eee8;
 
   --mache-white: #ffffff;
-  --mache-line: #ead8dd;
-  --mache-text: #181818;
-  --mache-muted: #6f6568;
-  --mache-light: #9b9296;
+  --mache-line: #e5dfd7;
+  --mache-text: #1f1a17;
+  --mache-muted: #6a625b;
+  --mache-light: #8c847c;
 
   --mache-success: #0f7b4b;
   --mache-success-soft: #e8f5ee;
@@ -33,25 +38,35 @@
   --mache-blue-soft: #ebf0ff;
 
   --mache-danger: #c8261a;
-  --mache-gold: #d4962a;
-  --mache-gold-soft: #fdf6e8;
+  --mache-danger-text: #a8190f;
+  --mache-danger-soft: #fbeceb;
+  --mache-danger-line: #efc6c2;
+  --mache-warn-text: #8a5a00;
+  --mache-warn-soft: #faf3e4;
+  --mache-warn-line: #ead9b3;
+  --mache-success-line: #bcdcc9;
+  --mache-info-soft: #eef3fb;
+  --mache-info-line: #c9d6ea;
+  --mache-navy: #12284a;
+  --mache-gold: #b07a1c;
+  --mache-gold-soft: #faf3e4;
 
-  --shadow-soft: 0 4px 18px rgba(16, 24, 32, 0.08);
-  --shadow-medium: 0 12px 35px rgba(233, 30, 58, 0.18);
+  --shadow-soft: 0 1px 2px rgba(31, 26, 23, 0.05), 0 6px 18px rgba(31, 26, 23, 0.05);
+  --shadow-medium: 0 2px 10px rgba(31, 26, 23, 0.08);
 
-  --radius-sm: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
 }
 
 .dark {
-  --mache-bg: #111111;
-  --mache-bg-2: #1a1916;
-  --mache-white: #171717;
-  --mache-line: #292424;
-  --mache-text: #f5f1ef;
-  --mache-muted: #a8a0a0;
-  --mache-light: #c0b9b4;
+  --mache-bg: #151311;
+  --mache-bg-2: #1c1917;
+  --mache-white: #1f1b18;
+  --mache-line: #302a26;
+  --mache-text: #f4efe9;
+  --mache-muted: #a9a198;
+  --mache-light: #beb6ac;
 }
 
 * {
@@ -65,11 +80,25 @@ body {
 
 body {
   font-family: var(--font-inter), Arial, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.6;
   background: var(--mache-bg);
   color: var(--mache-text);
-  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
+}
+
+/*
+  Les titres du site public sont en serif (Fraunces). Les espaces connectés
+  (tableaux de bord), qui portent leur propre en-tête, gardent Inter : un
+  outil de travail se lit mieux en sans-serif, partout pareil.
+*/
+body:not(:has([data-chrome])) :is(h1, h2) {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-optical-sizing: auto;
 }
 
 a {
@@ -91,14 +120,11 @@ img {
   background: var(--mache-white);
   border: 1px solid var(--mache-line);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  transition: border-color 0.18s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(233, 30, 58, 0.22);
-  box-shadow: var(--shadow-medium);
+  border-color: var(--mache-light);
 }
 
 .badge {
@@ -106,10 +132,9 @@ img {
   align-items: center;
   border: 1px solid var(--mache-line);
   border-radius: 999px;
-  padding: 6px 12px;
-  font-size: 11.5px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
   background: var(--mache-white);
 }
 
@@ -117,65 +142,62 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 20px;
-  background: linear-gradient(135deg, var(--mache-primary), var(--mache-primary-strong));
+  border: 1px solid var(--mache-primary);
+  border-radius: var(--radius-sm);
+  padding: 11px 20px;
+  background: var(--mache-primary);
   color: white;
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.22s ease;
-  box-shadow: 0 10px 24px rgba(233, 30, 58, 0.25);
+  transition: background-color 0.18s ease, border-color 0.18s ease;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--mache-primary-dark), var(--mache-primary));
-  transform: translateY(-2px);
+  background: var(--mache-primary-dark);
+  border-color: var(--mache-primary-dark);
 }
 
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--mache-line);
-  border-radius: 12px;
-  padding: 12px 20px;
-  background: var(--mache-white);
+  border: 1px solid var(--mache-text);
+  border-radius: var(--radius-sm);
+  padding: 11px 20px;
+  background: transparent;
   color: var(--mache-text);
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 14.5px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.22s ease;
+  transition: background-color 0.18s ease, color 0.18s ease;
 }
 
 .btn-secondary:hover {
-  background: var(--mache-primary-soft);
-  border-color: var(--mache-primary);
-  color: var(--mache-primary);
-  transform: translateY(-1px);
+  background: var(--mache-text);
+  color: var(--mache-white);
 }
 
 .input {
   width: 100%;
-  border: 1.5px solid var(--mache-line);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border: 1px solid var(--mache-line);
+  border-radius: var(--radius-sm);
+  padding: 11px 13px;
   background: var(--mache-white);
   color: var(--mache-text);
   outline: none;
-  transition: 0.22s ease;
+  transition: border-color 0.18s ease;
 }
 
 .input:focus,
 input:focus,
 select:focus {
-  border-color: var(--mache-primary) !important;
-  box-shadow: 0 0 0 4px rgba(233, 30, 58, 0.12);
+  border-color: var(--mache-text) !important;
+  box-shadow: 0 0 0 3px rgba(31, 26, 23, 0.08);
 }
 
 header:not([data-chrome="app"]) {
-  box-shadow: 0 2px 18px rgba(16, 24, 32, 0.06);
+  border-bottom: 1px solid var(--mache-line);
 }
 
 header input::placeholder {
@@ -184,18 +206,7 @@ header input::placeholder {
 
 header button,
 header a {
-  transition: all 0.22s ease;
-}
-
-header .border-t a {
-  font-size: 13.5px;
-  font-weight: 700;
-}
-
-header .border-t a:hover {
-  background: var(--mache-primary-soft);
-  color: var(--mache-primary);
-  transform: translateY(-1px);
+  transition: color 0.18s ease, background-color 0.18s ease;
 }
 
 /*
@@ -205,26 +216,16 @@ header .border-t a:hover {
   les liens de la sidebar noire au survol.
 */
 aside:not([data-chrome="dark"]) {
-  background:
-    radial-gradient(circle at top left, rgba(233, 30, 58, 0.14), transparent 34%),
-    #ffffff;
+  background: #ffffff;
 }
 
 aside:not([data-chrome="dark"]) a {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--mache-text);
-  border: 1px solid transparent;
 }
 
 aside:not([data-chrome="dark"]) a:hover {
-  transform: translateX(6px) scale(1.02);
-  background: var(--mache-primary-soft) !important;
-  color: var(--mache-primary);
-  border-color: rgba(233, 30, 58, 0.18);
-}
-
-aside:not([data-chrome="dark"]) a:active {
-  transform: scale(0.98);
+  background: var(--mache-bg-2) !important;
 }
 
 /*

@@ -213,3 +213,27 @@ cd packages/api
 
 **Mercur impose `bun`.** Sous npm, le template échoue sur un conflit de
 peer dependencies entre `react-hook-form@7.49.1` et `@hookform/resolvers@5.4.0`.
+
+---
+
+## Design du site public
+
+Une seule source de vérité : les variables de `src/app/globals.css` et
+l'échelle de `tailwind.config.ts`.
+
+- **Deux polices** : Inter (menus, boutons, prix, formulaires) et Fraunces,
+  une serif chaleureuse, pour les titres `h1` et `h2` des pages publiques
+  (les tableaux de bord gardent Inter). Pas d'autre famille.
+- **Tailles** : dix crans seulement (`text-xs` à `text-4xl`, plus `text-hero`).
+  Pas de taille en pixels écrite à la main.
+- **Graisses** : 400, 500, 600, et 700 pour les grands titres. `font-bold`
+  et `font-semibold` sont volontairement identiques.
+- **Couleurs** : un rouge de marque, une encre chaude, un fond papier, des
+  gris chauds. Les couleurs d'état (succès, alerte, erreur, info) ont leurs
+  variables. Aucune couleur hexadécimale dans les composants.
+- **Formes** : rayons de 4, 6 et 8 pixels ; pas de dégradés, pas de
+  déplacements ni de zooms au survol, pas d'ombres portées marquées.
+- **Icônes** : traits fins dessinés dans `src/components/icons.tsx`, jamais
+  d'emoji.
+- **La carte d'Haïti** est posée en `mix-blend-multiply` sur un fond blanc :
+  l'image et la page ne font qu'un.

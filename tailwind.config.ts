@@ -53,6 +53,7 @@ const config: Config = {
           des chiffres tabulaires, ce qui suffit à les aligner.
         */
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        display: ["var(--font-display)", "Georgia", "serif"],
         mono: ["var(--font-inter)", "system-ui", "sans-serif"]
       },
 
@@ -70,32 +71,32 @@ const config: Config = {
         d'écart.
       */
       fontSize: {
-        "2xs": ["10.5px", { lineHeight: "1.4" }],
-        xs: ["11.5px", { lineHeight: "1.45" }],
-        sm: ["12.5px", { lineHeight: "1.5" }],
-        base: ["13.5px", { lineHeight: "1.55" }],
-        md: ["14.5px", { lineHeight: "1.6" }],
-        lg: ["16px", { lineHeight: "1.5" }],
-        xl: ["19px", { lineHeight: "1.35" }],
-        "2xl": ["22px", { lineHeight: "1.25" }],
-        "3xl": ["26px", { lineHeight: "1.2" }],
-        "4xl": ["32px", { lineHeight: "1.12" }],
+        "2xs": ["11px", { lineHeight: "1.4" }],
+        xs: ["12px", { lineHeight: "1.5" }],
+        sm: ["13px", { lineHeight: "1.5" }],
+        base: ["14.5px", { lineHeight: "1.6" }],
+        md: ["15.5px", { lineHeight: "1.6" }],
+        lg: ["17px", { lineHeight: "1.5" }],
+        xl: ["20px", { lineHeight: "1.35" }],
+        "2xl": ["24px", { lineHeight: "1.25" }],
+        "3xl": ["30px", { lineHeight: "1.2" }],
+        "4xl": ["38px", { lineHeight: "1.12" }],
         /* Réservé au bandeau d'accueil, qui s'adapte à la largeur. */
-        hero: ["clamp(28px, 4.2vw, 46px)", { lineHeight: "1.06" }]
+        hero: ["clamp(34px, 4.6vw, 56px)", { lineHeight: "1.04" }]
       },
 
       fontWeight: {
         /*
-          Trois graisses, pas huit. `font-black` et `font-[900]`
-          coexistaient, comme `font-bold` et `font-[700]` : la même
-          épaisseur écrite de deux façons, ce qui empêche de voir qu'on
-          en emploie trop.
+          Quatre graisses d'écriture, dont deux seulement pour les titres :
+          400 (texte), 500 (menus), 600 (boutons, intitulés), 700 (grands
+          titres). Les anciennes « black » à 800 donnaient au site un air
+          criard ; `bold` et `semibold` se confondent volontairement.
         */
         normal: "400",
         medium: "500",
         semibold: "600",
-        bold: "700",
-        black: "800"
+        bold: "600",
+        black: "700"
       },
       /*
         Cinq crans d'approche, au lieu de dix valeurs arbitraires allant de
@@ -107,17 +108,16 @@ const config: Config = {
         tightest: "-0.03em",
         tighter: "-0.02em",
         tight: "-0.01em",
-        label: "0.08em",
-        widest: "0.11em"
+        label: "0.02em",
+        widest: "0.04em"
       },
       boxShadow: {
-        soft: "0 10px 30px rgba(0,0,0,0.08)",
-        // Ombres plates et discrètes pour les cartes du dashboard.
-        card: "0 1px 2px rgba(15, 27, 46, 0.04), 0 1px 3px rgba(15, 27, 46, 0.06)",
-        "card-hover": "0 4px 12px rgba(15, 27, 46, 0.08), 0 2px 4px rgba(15, 27, 46, 0.04)"
+        soft: "0 1px 2px rgba(31, 26, 23, 0.05), 0 6px 18px rgba(31, 26, 23, 0.06)",
+        card: "0 1px 2px rgba(31, 26, 23, 0.05)",
+        "card-hover": "0 2px 10px rgba(31, 26, 23, 0.08)"
       },
       borderRadius: {
-        xl2: "1.25rem"
+        xl2: "12px"
       }
     }
   },

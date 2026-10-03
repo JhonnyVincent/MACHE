@@ -74,16 +74,16 @@ export default async function SellerContractsPage() {
                 {waiting.map((item) => (
                   <li
                     key={item.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-[6px] border border-[#d5d9d9] bg-white p-3"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-[6px] border border-[var(--mache-line)] bg-white p-3"
                   >
                     <div className="min-w-0">
                       <Link
                         href={`/dashboard/seller/contrats/${item.id}`}
-                        className="text-md font-semibold text-[#0f1111] hover:underline"
+                        className="text-md font-semibold text-[var(--mache-text)] hover:underline"
                       >
                         {item.title}
                       </Link>
-                      <p className="mt-0.5 text-xs text-[#565959]">
+                      <p className="mt-0.5 text-xs text-[var(--mache-muted)]">
                         Version {item.version} · reçu le {formatDate(item.sentAt)}
                         {item.dueAt ? ` · à répondre avant le ${formatDate(item.dueAt)}` : ""}
                       </p>
@@ -105,16 +105,16 @@ export default async function SellerContractsPage() {
                 {settled.map((item) => (
                   <li
                     key={item.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-[6px] border border-[#d5d9d9] bg-white p-3"
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-[6px] border border-[var(--mache-line)] bg-white p-3"
                   >
                     <div className="min-w-0">
                       <Link
                         href={`/dashboard/seller/contrats/${item.id}`}
-                        className="text-md font-semibold text-[#0f1111] hover:underline"
+                        className="text-md font-semibold text-[var(--mache-text)] hover:underline"
                       >
                         {item.title}
                       </Link>
-                      <p className="mt-0.5 text-xs text-[#565959]">
+                      <p className="mt-0.5 text-xs text-[var(--mache-muted)]">
                         Version {item.version}
                         {item.signedAt
                           ? ` · signé le ${formatDate(item.signedAt)} par ${item.signerName ?? "—"}`

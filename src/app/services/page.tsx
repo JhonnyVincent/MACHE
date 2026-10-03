@@ -115,7 +115,7 @@ export default function ServicesPage() {
           {aujourdhui.map((item) => (
             <div
               key={item.titre}
-              className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4"
+              className="rounded-[8px] border border-[var(--mache-line)] bg-white p-4"
             >
               <p className="text-md font-bold text-[var(--mache-text)]">
                 {item.titre}
@@ -146,7 +146,7 @@ export default function ServicesPage() {
           {pasEncore.map((item) => (
             <div
               key={item.titre}
-              className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4"
+              className="rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4"
             >
               <p className="text-md font-bold text-[var(--mache-text)]">
                 {item.titre}

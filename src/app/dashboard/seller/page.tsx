@@ -139,8 +139,8 @@ export default async function SellerEntryPage({
       </ul>
 
       {query.bienvenue && vendor && (
-        <div className="mt-5 rounded-[10px] border border-[#b7dfc9] bg-[#f4fbf7] p-4">
-          <p className="text-md font-bold text-[#046c4e]">
+        <div className="mt-5 rounded-[8px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] p-4">
+          <p className="text-md font-bold text-[var(--mache-success)]">
             Votre boutique « {vendor.name} » est ouverte.
           </p>
           <p className="mt-1 text-base leading-relaxed text-[var(--mache-muted)]">
@@ -157,7 +157,7 @@ export default async function SellerEntryPage({
         c'est une attente ou un refus.
       */}
       {vendor && vendor.status !== "active" && (
-        <div className="mt-5 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+        <div className="mt-5 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4">
           <p className="text-md font-bold text-[var(--mache-text)]">
             {vendor.status === "rejected"
               ? "Votre boutique n'a pas été retenue"
@@ -230,7 +230,7 @@ export default async function SellerEntryPage({
         laissez-passer, sans redemander les identifiants.
       */}
       {vendor && (
-      <div className="mt-8 rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+      <div className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           Le panneau vendeur
         </h2>

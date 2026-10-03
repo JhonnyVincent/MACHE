@@ -96,7 +96,7 @@ export default async function ThreadPage({
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-10 sm:py-14">
-      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--mache-muted)]">
+      <p className="text-xs font-semibold tracking-widest text-[var(--mache-muted)]">
         Conversation n° {thread.displayId}
       </p>
 
@@ -109,7 +109,7 @@ export default async function ThreadPage({
       </p>
 
       {query.envoye === "1" && (
-        <div className="mt-6 rounded-[10px] border-2 border-[var(--mache-primary)] bg-white p-4">
+        <div className="mt-6 rounded-[8px] border-2 border-[var(--mache-primary)] bg-white p-4">
           <h2 className="text-md font-bold text-[var(--mache-text)]">
             Message envoyé
           </h2>
@@ -147,7 +147,7 @@ export default async function ThreadPage({
       {query.error && (
         <p
           role="alert"
-          className="mt-5 rounded-[6px] border border-[#f2c2c8] bg-[#fdeaec] px-3 py-2.5 text-sm text-[#b01124]"
+          className="mt-5 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-3 py-2.5 text-sm text-[var(--mache-danger-text)]"
         >
           {query.error}
         </p>
@@ -161,13 +161,13 @@ export default async function ThreadPage({
           return (
             <li
               key={message.id}
-              className={`rounded-[10px] border p-4 ${
+              className={`rounded-[8px] border p-4 ${
                 fromMache
                   ? "border-[var(--mache-line)] bg-[var(--mache-white)]"
                   : "border-transparent bg-[var(--mache-bg-2)]"
               }`}
             >
-              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--mache-muted)]">
+              <p className="text-xs font-semibold tracking-wide text-[var(--mache-muted)]">
                 {fromMache ? "MACHE" : message.authorName}
                 {message.createdAt ? ` · ${when(message.createdAt)}` : ""}
               </p>
@@ -188,7 +188,7 @@ export default async function ThreadPage({
 
       {/* ---------------------------------------------------------- */}
       {closed ? (
-        <div className="mt-8 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4">
+        <div className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4">
           <p className="text-md font-semibold text-[var(--mache-text)]">
             Cette conversation est close
           </p>

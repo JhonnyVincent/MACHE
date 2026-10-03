@@ -61,7 +61,7 @@ export default async function AgentLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#eef1f3] font-sans text-base text-[#0f1111] antialiased">
+    <div className="flex h-screen overflow-hidden bg-[var(--mache-bg-2)] font-sans text-base text-[var(--mache-text)] antialiased">
       <aside
         data-chrome="dark"
         className="hidden w-[216px] shrink-0 flex-col bg-[#0a0a0a] text-white lg:flex"
@@ -69,7 +69,7 @@ export default async function AgentLayout({ children }: { children: React.ReactN
         <div className="border-b border-white/10 px-4 py-3">
           <Link href="/" className="block">
             <p className="text-md font-bold leading-none tracking-widest">MACHE</p>
-            <p className="mt-1 text-2xs font-medium uppercase tracking-widest text-white/70">
+            <p className="mt-1 text-2xs font-medium tracking-widest text-white/70">
               Espace agent
             </p>
           </Link>
@@ -97,14 +97,14 @@ export default async function AgentLayout({ children }: { children: React.ReactN
       <div className="flex flex-1 flex-col overflow-hidden">
         <header
           data-chrome="app"
-          className="flex h-12 shrink-0 items-center gap-3 border-b border-[#d5d9d9] bg-white px-3 sm:px-4"
+          className="flex h-12 shrink-0 items-center gap-3 border-b border-[var(--mache-line)] bg-white px-3 sm:px-4"
         >
           <Link href="/" className="text-md font-bold tracking-widest lg:hidden">
             MACHE
           </Link>
 
           {customer && (
-            <div className="ml-auto flex items-center gap-2 border-l border-[#d5d9d9] pl-3">
+            <div className="ml-auto flex items-center gap-2 border-l border-[var(--mache-line)] pl-3">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0a0a0a] text-2xs font-semibold text-white">
                 {initialsOf(displayName, 1)}
               </span>

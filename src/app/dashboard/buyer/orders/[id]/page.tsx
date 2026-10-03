@@ -120,7 +120,7 @@ export default async function BuyerOrderPage({
               <Row key={item.id}>
                 <Cell strong>
                   <span className="flex items-center gap-2.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[3px] border border-[#e3e6e6] bg-[#f7f8f8]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[4px] border border-[var(--mache-line)] bg-[var(--mache-bg-2)]">
                       {item.thumbnail ? (
                         /* eslint-disable-next-line @next/next/no-img-element */
                         <img loading="lazy" decoding="async" src={item.thumbnail} alt="" className="h-full w-full object-cover" />
@@ -157,7 +157,7 @@ export default async function BuyerOrderPage({
               </Notice>
             )}
 
-            <p className="text-base leading-relaxed text-[#565959]">
+            <p className="text-base leading-relaxed text-[var(--mache-muted)]">
               Votre avis est relu par MACHE avant d&apos;être publié.
               Seuls les avis de clients qui ont réellement commandé
               l&apos;article peuvent être déposés.
@@ -170,22 +170,22 @@ export default async function BuyerOrderPage({
                   <form
                     key={item.id}
                     action={submitReviewAction}
-                    className="rounded-[8px] border border-[#e3e6e6] p-4"
+                    className="rounded-[6px] border border-[var(--mache-line)] p-4"
                   >
                     <input type="hidden" name="order_id" value={order.id} />
                     <input type="hidden" name="product_id" value={item.productId ?? ""} />
 
-                    <p className="text-base font-bold text-[#0f1111]">
+                    <p className="text-base font-bold text-[var(--mache-text)]">
                       {item.title}
                     </p>
 
                     <div className="mt-2.5 flex flex-wrap items-center gap-3">
-                      <label className="text-sm text-[#565959]">
+                      <label className="text-sm text-[var(--mache-muted)]">
                         Note
                         <select
                           name="rating"
                           defaultValue="5"
-                          className="ml-2 rounded-[4px] border border-[#888c8c] px-2 py-1 text-base"
+                          className="ml-2 rounded-[4px] border border-[var(--mache-muted)] px-2 py-1 text-base"
                         >
                           {[5, 4, 3, 2, 1].map((n) => (
                             <option key={n} value={n}>
@@ -201,12 +201,12 @@ export default async function BuyerOrderPage({
                       rows={2}
                       maxLength={300}
                       placeholder="Ce que vous avez pensé de l'article (facultatif, 300 caractères)"
-                      className="mt-2.5 w-full rounded-[4px] border border-[#888c8c] px-3 py-2 text-base"
+                      className="mt-2.5 w-full rounded-[4px] border border-[var(--mache-muted)] px-3 py-2 text-base"
                     />
 
                     <button
                       type="submit"
-                      className="mt-2.5 rounded-[4px] bg-[#0f1111] px-4 py-2 text-base font-bold text-white hover:bg-black"
+                      className="mt-2.5 rounded-[4px] bg-[var(--mache-text)] px-4 py-2 text-base font-bold text-white hover:bg-black"
                     >
                       Envoyer mon avis
                     </button>
@@ -220,7 +220,7 @@ export default async function BuyerOrderPage({
           <Notice tone="info" title="Paiement à la livraison">
             Rien n&apos;a été prélevé. Vous réglerez en main propre à la
             réception, après avoir vérifié le colis.{" "}
-            <Link href="/legal/returns" className="font-medium text-[#d2162c] hover:underline">
+            <Link href="/legal/returns" className="font-medium text-[var(--mache-primary)] hover:underline">
               En cas de problème
             </Link>
           </Notice>

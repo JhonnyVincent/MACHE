@@ -91,7 +91,7 @@ export default function ErrorScreen({
       </div>
 
       {error.digest && (
-        <div className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
+        <div className="mt-8 rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
           <p className="text-sm font-semibold text-[var(--mache-text)]">
             Référence à nous transmettre
           </p>

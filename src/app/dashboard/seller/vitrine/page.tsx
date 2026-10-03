@@ -52,7 +52,7 @@ export default async function VitrinePage({
         </p>
 
         {query.error && (
-          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
             {decodeURIComponent(query.error)}
           </div>
         )}
@@ -143,7 +143,7 @@ export default async function VitrinePage({
       </div>
 
       {seller.status !== "active" && (
-        <div className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base leading-relaxed text-[var(--mache-muted)]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-muted)]">
           Votre boutique est au statut «&nbsp;{seller.status}&nbsp;». Vous pouvez
           préparer votre vitrine dès maintenant ; elle sera visible du public une
           fois la boutique approuvée par MACHE.
@@ -151,13 +151,13 @@ export default async function VitrinePage({
       )}
 
       {query.error && (
-        <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}
 
       {query.success && (
-        <div className="mt-4 rounded-[8px] border border-[#b7dfc9] bg-[#f4fbf7] px-4 py-3 text-base text-[#046c4e]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] px-4 py-3 text-base text-[var(--mache-success)]">
           {decodeURIComponent(query.success)}
         </div>
       )}
@@ -171,7 +171,7 @@ export default async function VitrinePage({
           return (
             <section
               key={`${block.type}-${index}`}
-              className="rounded-[10px] border border-[var(--mache-line)] bg-white"
+              className="rounded-[8px] border border-[var(--mache-line)] bg-white"
             >
               <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--mache-line)] px-4 py-2.5">
                 <div>
@@ -311,7 +311,7 @@ export default async function VitrinePage({
       </div>
 
       {/* Ajouter */}
-      <section className="mt-6 rounded-[10px] border border-dashed border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
+      <section className="mt-6 rounded-[8px] border border-dashed border-[var(--mache-line)] bg-[var(--mache-bg)] p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           Ajouter un bloc
         </h2>

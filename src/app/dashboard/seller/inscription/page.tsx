@@ -87,7 +87,7 @@ export default async function VendorRegistrationPage({
       </p>
 
       {query.error && (
-        <div className="mt-5 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base leading-relaxed text-[#b01124]">
+        <div className="mt-5 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}
@@ -224,7 +224,7 @@ export default async function VendorRegistrationPage({
         Dit avant qu'on le demande. Une boutique qui n'apparaît pas dans
         le catalogue sans explication passe pour une inscription ratée.
       */}
-      <div className="mt-6 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+      <div className="mt-6 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4">
         <p className="text-base font-bold text-[var(--mache-text)]">
           Votre boutique est relue avant d&apos;être publiée
         </p>

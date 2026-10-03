@@ -96,7 +96,7 @@ export default async function StorePage({
   if (!access.allowed && isTradeOnlyProfile(readSellerProfile(seller.metadata))) {
     return (
       <main className="mx-auto w-full max-w-2xl px-4 py-16">
-        <p className="text-sm font-bold uppercase tracking-widest text-[var(--mache-primary)]">Grossiste</p>
+        <p className="text-sm font-semibold tracking-label text-[var(--mache-primary)]">Grossiste</p>
         <h1 className="mt-2 text-2xl font-black text-[var(--mache-text)]">{seller.name}</h1>
         <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
           Cette boutique vend en gros, à d&apos;autres commerçants. Sa vitrine et ses prix sont réservés aux vendeurs
@@ -212,7 +212,7 @@ export default async function StorePage({
       */}
       {!productsResult.ok && (
         <div className="container-page py-6">
-          <div className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-4">
+          <div className="rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-4">
             <p className="text-md font-bold text-[var(--mache-text)]">
               Catalogue de la boutique indisponible
             </p>
@@ -239,7 +239,7 @@ export default async function StorePage({
       */}
       {ratings.reviews.length > 0 && (
         <section className="container-page py-6">
-          <h2 className="mb-1 text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+          <h2 className="mb-1 text-2xl text-[var(--mache-text)]">
             Avis sur cette boutique
           </h2>
           <RatingSummary ratings={ratings} />
@@ -249,7 +249,7 @@ export default async function StorePage({
 
       {productsResult.ok && products.length === 0 && (
         <div className="container-page py-6">
-          <div className="rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
+          <div className="rounded-[8px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
             <p className="text-md font-bold text-[var(--mache-text)]">
               Cette boutique n&apos;a pas encore de produit en ligne
             </p>

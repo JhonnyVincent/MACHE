@@ -62,7 +62,7 @@ function DeliveryCard({ delivery }: { delivery: AgentDelivery }) {
     ["assigned", "in_transit", "ready_for_pickup"].includes(delivery.status);
 
   return (
-    <div className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+    <div className="rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-md font-bold text-[var(--mache-text)]">
@@ -110,7 +110,7 @@ function DeliveryCard({ delivery }: { delivery: AgentDelivery }) {
       </dl>
 
       {delivery.failureReason && (
-        <p className="mt-3 rounded-[6px] bg-[#fdecec] px-3 py-2 text-sm text-[#8a1c1c]">
+        <p className="mt-3 rounded-[6px] bg-[var(--mache-danger-soft)] px-3 py-2 text-sm text-[#8a1c1c]">
           Échec précédent : {delivery.failureReason}
         </p>
       )}
@@ -130,7 +130,7 @@ function DeliveryCard({ delivery }: { delivery: AgentDelivery }) {
       {canConfirm && (
         <form
           action={confirmDeliveryAction}
-          className="mt-4 rounded-[8px] border border-dashed border-[var(--mache-line)] bg-[var(--mache-bg)] p-3"
+          className="mt-4 rounded-[6px] border border-dashed border-[var(--mache-line)] bg-[var(--mache-bg)] p-3"
         >
           <input type="hidden" name="delivery_id" value={delivery.id} />
 
@@ -156,7 +156,7 @@ function DeliveryCard({ delivery }: { delivery: AgentDelivery }) {
                 inputMode="text"
                 maxLength={12}
                 placeholder="6 caractères"
-                className="font-mono uppercase tracking-widest"
+                className="font-mono tracking-widest"
               />
             </Field>
             <SubmitButton pendingLabel="Vérification…">Confirmer la remise</SubmitButton>

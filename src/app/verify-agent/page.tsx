@@ -74,7 +74,7 @@ export default async function VerifyAgentPage({
           autoComplete="off"
           autoCapitalize="characters"
           placeholder="MCH-AG-0000"
-          className="w-full rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-md uppercase tracking-label outline-none focus:border-[var(--mache-primary)]"
+          className="w-full rounded-[6px] border border-[var(--mache-line)] px-3 py-2.5 text-md tracking-label outline-none focus:border-[var(--mache-primary)]"
         />
         <button
           type="submit"
@@ -94,7 +94,7 @@ export default async function VerifyAgentPage({
               qu'un service est en panne serait aussi faux que de le
               laisser passer.
             */
-            <section className="rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
+            <section className="rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-5">
               <p className="text-lg font-bold text-[var(--mache-text)]">
                 Vérification impossible pour le moment
               </p>
@@ -116,7 +116,7 @@ export default async function VerifyAgentPage({
               </Link>
             </section>
           ) : !result.found ? (
-            <section className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
+            <section className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
               <p className="text-lg font-bold text-[var(--mache-danger)]">
                 Aucun agent ne correspond à ce code
               </p>
@@ -134,15 +134,15 @@ export default async function VerifyAgentPage({
             </section>
           ) : (
             <section
-              className={`rounded-[10px] border p-5 ${
+              className={`rounded-[8px] border p-5 ${
                 result.trustworthy
-                  ? "border-[#b7dfc9] bg-[#f4fbf7]"
-                  : "border-[#f2c2c8] bg-[#fdeaec]"
+                  ? "border-[var(--mache-success-line)] bg-[var(--mache-success-soft)]"
+                  : "border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)]"
               }`}
             >
               <p
                 className={`text-lg font-bold ${
-                  result.trustworthy ? "text-[#046c4e]" : "text-[#b01124]"
+                  result.trustworthy ? "text-[var(--mache-success)]" : "text-[var(--mache-danger-text)]"
                 }`}
               >
                 {result.trustworthy
@@ -153,7 +153,7 @@ export default async function VerifyAgentPage({
               </p>
 
               {!result.trustworthy && (
-                <p className="mt-2 text-base leading-relaxed text-[#b01124]">
+                <p className="mt-2 text-base leading-relaxed text-[var(--mache-danger-text)]">
                   Cette personne n&apos;est pas autorisée à intervenir pour MACHE
                   aujourd&apos;hui. Ne lui remettez ni colis ni argent.
                 </p>
@@ -176,7 +176,7 @@ export default async function VerifyAgentPage({
                     {result.displayName}
                   </p>
                   {result.officialBadge && result.trustworthy && (
-                    <span className="mt-1 inline-block rounded-[3px] bg-[var(--mache-text)] px-2 py-0.5 text-xs font-semibold text-white">
+                    <span className="mt-1 inline-block rounded-[4px] bg-[var(--mache-text)] px-2 py-0.5 text-xs font-semibold text-white">
                       Badge officiel
                     </span>
                   )}
@@ -208,7 +208,7 @@ export default async function VerifyAgentPage({
         </div>
       )}
 
-      <section className="mt-10 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-5">
+      <section className="mt-10 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-5">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           Trois règles simples
         </h2>

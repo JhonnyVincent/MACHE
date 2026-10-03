@@ -106,26 +106,26 @@ function Delivery({ delivery }: { delivery: VendorDelivery }) {
       <dl className="mt-3 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
         {delivery.recipientName && (
           <div>
-            <dt className="text-[#767676]">Destinataire</dt>
-            <dd className="text-[#0f1111]">{delivery.recipientName}</dd>
+            <dt className="text-[var(--mache-muted)]">Destinataire</dt>
+            <dd className="text-[var(--mache-text)]">{delivery.recipientName}</dd>
           </div>
         )}
         {delivery.recipientPhone && (
           <div>
-            <dt className="text-[#767676]">Téléphone</dt>
-            <dd className="text-[#0f1111]">{delivery.recipientPhone}</dd>
+            <dt className="text-[var(--mache-muted)]">Téléphone</dt>
+            <dd className="text-[var(--mache-text)]">{delivery.recipientPhone}</dd>
           </div>
         )}
         {delivery.recipientAddress && (
           <div className="sm:col-span-2">
-            <dt className="text-[#767676]">Adresse</dt>
-            <dd className="text-[#0f1111]">{delivery.recipientAddress}</dd>
+            <dt className="text-[var(--mache-muted)]">Adresse</dt>
+            <dd className="text-[var(--mache-text)]">{delivery.recipientAddress}</dd>
           </div>
         )}
         {delivery.carrierName && (
           <div>
-            <dt className="text-[#767676]">Transporteur</dt>
-            <dd className="text-[#0f1111]">
+            <dt className="text-[var(--mache-muted)]">Transporteur</dt>
+            <dd className="text-[var(--mache-text)]">
               {delivery.carrierName}
               {delivery.trackingNumber ? ` · ${delivery.trackingNumber}` : ""}
             </dd>
@@ -133,8 +133,8 @@ function Delivery({ delivery }: { delivery: VendorDelivery }) {
         )}
         {delivery.confirmedAt && (
           <div>
-            <dt className="text-[#767676]">Remise confirmée</dt>
-            <dd className="text-[#0f1111]">{formatDate(delivery.confirmedAt)}</dd>
+            <dt className="text-[var(--mache-muted)]">Remise confirmée</dt>
+            <dd className="text-[var(--mache-text)]">{formatDate(delivery.confirmedAt)}</dd>
           </div>
         )}
       </dl>
@@ -150,7 +150,7 @@ function Delivery({ delivery }: { delivery: VendorDelivery }) {
       )}
 
       {next.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-[#e7e7e7] pt-4">
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-[var(--mache-line)] pt-4">
           {next.map((status) => (
             <form key={status} action={advanceDeliveryAction}>
               <input type="hidden" name="delivery_id" value={delivery.id} />
@@ -166,7 +166,7 @@ function Delivery({ delivery }: { delivery: VendorDelivery }) {
       {canConfirm && (
         <form
           action={confirmDeliveryAction}
-          className="mt-4 space-y-3 border-t border-[#e7e7e7] pt-4"
+          className="mt-4 space-y-3 border-t border-[var(--mache-line)] pt-4"
         >
           <input type="hidden" name="delivery_id" value={delivery.id} />
 
@@ -182,7 +182,7 @@ function Delivery({ delivery }: { delivery: VendorDelivery }) {
               required
               autoComplete="off"
               placeholder="6 caractères"
-              className="tnum uppercase"
+              className="tnum"
             />
           </Field>
 
@@ -256,7 +256,7 @@ export default async function SellerDeliveriesPage({
             sans ce lien, il n&apos;a aucun moyen d&apos;y accéder, et vous
             n&apos;aurez aucun code à saisir.
           </p>
-          <p className="tnum mt-2 break-all rounded-[3px] border border-[#d5d9d9] bg-white px-2.5 py-2 text-xs">
+          <p className="tnum mt-2 break-all rounded-[4px] border border-[var(--mache-line)] bg-white px-2.5 py-2 text-xs">
             /suivi/{query.livraison}?jeton={query.jeton}
           </p>
         </Notice>
@@ -368,7 +368,7 @@ export default async function SellerDeliveriesPage({
 
       {settled.length > 0 && (
         <>
-          <h2 className="pt-2 text-sm font-semibold uppercase tracking-label text-[#565959]">
+          <h2 className="pt-2 text-sm font-semibold tracking-label text-[var(--mache-muted)]">
             Terminées
           </h2>
           {settled.map((delivery) => (

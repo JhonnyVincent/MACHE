@@ -44,7 +44,7 @@ export default async function CustomerRegisterPage({
       </p>
 
       {query.error && (
-        <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}

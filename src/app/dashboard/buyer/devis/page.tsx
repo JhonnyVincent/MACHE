@@ -130,7 +130,7 @@ export default async function BuyerQuotesPage() {
           Demander un prix n&apos;engage à rien, et accepter une
           proposition ne déclenche aucun paiement : MACHE n&apos;encaisse
           pas, le règlement se convient avec le vendeur.{" "}
-          <Link href="/legal/terms" className="font-medium text-[#d2162c] hover:underline">
+          <Link href="/legal/terms" className="font-medium text-[var(--mache-primary)] hover:underline">
             Conditions d&apos;utilisation
           </Link>
         </Notice>

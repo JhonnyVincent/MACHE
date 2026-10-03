@@ -37,7 +37,7 @@ export default function ExportPage() {
         Exporter depuis Haïti
       </h1>
 
-      <div className="mt-6 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
+      <div className="mt-6 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-5">
         <p className="text-md font-bold text-[var(--mache-text)]">
           L&apos;export s&apos;ouvre, sur confirmation
         </p>

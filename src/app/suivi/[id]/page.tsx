@@ -85,10 +85,10 @@ export default async function SuiviPage({
       </h1>
 
       {!result.ok ? (
-        <div className="mt-6 rounded-lg border border-[#f2c2c8] bg-[#fdeaec] p-4">
-          <p className="font-semibold text-[#b01124]">Ce suivi ne s&apos;affiche pas</p>
-          <p className="mt-1 text-sm leading-relaxed text-[#565959]">{result.reason}</p>
-          <p className="mt-2 text-sm leading-relaxed text-[#565959]">
+        <div className="mt-6 rounded-lg border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] p-4">
+          <p className="font-semibold text-[var(--mache-danger-text)]">Ce suivi ne s&apos;affiche pas</p>
+          <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">{result.reason}</p>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">
             Vérifiez le lien que le vendeur vous a transmis : il contient une
             clé qui ne peut pas être devinée. Si vous avez un compte,{" "}
             <Link href="/compte/connexion" className="underline">
@@ -99,36 +99,36 @@ export default async function SuiviPage({
         </div>
       ) : (
         <>
-          <p className="mt-2 text-sm text-[#565959]">
+          <p className="mt-2 text-sm text-[var(--mache-muted)]">
             Commande {result.data.orderId}
             {result.data.createdAt ? ` · ouvert le ${formatDay(result.data.createdAt)}` : ""}
           </p>
 
           {query.erreur && (
-            <div className="mt-5 rounded-lg border border-[#f2c2c8] bg-[#fdeaec] p-4">
-              <p className="text-sm leading-relaxed text-[#b01124]">{query.erreur}</p>
+            <div className="mt-5 rounded-lg border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] p-4">
+              <p className="text-sm leading-relaxed text-[var(--mache-danger-text)]">{query.erreur}</p>
             </div>
           )}
 
           {query.fait && (
-            <div className="mt-5 rounded-lg border border-[#b7dfc9] bg-[#eefaf3] p-4">
-              <p className="text-sm leading-relaxed text-[#046c4e]">{query.fait}</p>
+            <div className="mt-5 rounded-lg border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] p-4">
+              <p className="text-sm leading-relaxed text-[var(--mache-success)]">{query.fait}</p>
             </div>
           )}
 
-          <section className="mt-6 rounded-lg border border-[#d5d9d9] bg-white p-5">
-            <p className="text-2xs font-medium uppercase tracking-label text-[#565959]">
+          <section className="mt-6 rounded-lg border border-[var(--mache-line)] bg-white p-5">
+            <p className="text-2xs font-medium tracking-label text-[var(--mache-muted)]">
               Où en est votre colis
             </p>
             <p className="mt-1 text-xl font-semibold text-[var(--mache-text)]">
               {TRACKING_STATUS_LABELS[result.data.status] ?? result.data.status}
             </p>
-            <p className="mt-1 text-sm text-[#565959]">
+            <p className="mt-1 text-sm text-[var(--mache-muted)]">
               {TRACKING_METHOD_LABELS[result.data.method] ?? result.data.method}
             </p>
 
             {result.data.recipientAddress && (
-              <p className="mt-3 text-sm leading-relaxed text-[#565959]">
+              <p className="mt-3 text-sm leading-relaxed text-[var(--mache-muted)]">
                 {result.data.method === "relay" ? "À retirer à" : "Livré à"} :{" "}
                 <span className="text-[var(--mache-text)]">
                   {result.data.recipientAddress}
@@ -137,7 +137,7 @@ export default async function SuiviPage({
             )}
 
             {result.data.confirmedAt && (
-              <p className="mt-3 text-sm text-[#046c4e]">
+              <p className="mt-3 text-sm text-[var(--mache-success)]">
                 Remise confirmée le {formatDay(result.data.confirmedAt)}.
                 {result.data.confirmationNote ? ` ${result.data.confirmationNote}` : ""}
               </p>
@@ -151,19 +151,19 @@ export default async function SuiviPage({
           */}
           {result.data.code && (
             <section className="mt-5 rounded-lg border-2 border-[var(--mache-primary)] bg-white p-5">
-              <p className="text-2xs font-medium uppercase tracking-label text-[#565959]">
+              <p className="text-2xs font-medium tracking-label text-[var(--mache-muted)]">
                 Votre code de remise
               </p>
               <p className="tnum mt-2 text-4xl font-black tracking-[0.2em] text-[var(--mache-text)]">
                 {result.data.code}
               </p>
-              <p className="mt-3 text-sm leading-relaxed text-[#565959]">
+              <p className="mt-3 text-sm leading-relaxed text-[var(--mache-muted)]">
                 Donnez-le <strong>seulement au moment où vous recevez le
                 colis</strong>, à la personne qui vous le remet. C&apos;est en
                 le saisissant qu&apos;elle prouve la livraison, et c&apos;est
                 ce qui déclenche le paiement du vendeur.
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-[#b01124]">
+              <p className="mt-2 text-sm leading-relaxed text-[var(--mache-danger-text)]">
                 Ne le communiquez jamais par téléphone ni par message avant
                 d&apos;avoir le colis entre les mains.
               </p>
@@ -171,11 +171,11 @@ export default async function SuiviPage({
           )}
 
           {result.data.method === "carrier" && (
-            <section className="mt-5 rounded-lg border border-[#f3d9a5] bg-[#fdf6e8] p-5">
+            <section className="mt-5 rounded-lg border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-5">
               <p className="font-semibold text-[var(--mache-text)]">
                 Ce colis voyage avec un transporteur
               </p>
-              <p className="mt-1 text-sm leading-relaxed text-[#565959]">
+              <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
                 {result.data.carrierName ? `${result.data.carrierName}. ` : ""}
                 MACHE ne contrôle pas ce transport et ne peut pas en garantir
                 les délais. Il n&apos;y a pas de code à remettre : son livreur
@@ -213,7 +213,7 @@ export default async function SuiviPage({
                     >
                       J&apos;ai reçu ce colis
                     </label>
-                    <p className="mt-1 text-sm leading-relaxed text-[#565959]">
+                    <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
                       Votre constat sera enregistré comme une déclaration, pas
                       comme une preuve, c&apos;est la seule information
                       disponible pour un transport que MACHE ne contrôle pas.
@@ -224,12 +224,12 @@ export default async function SuiviPage({
                       name="note"
                       rows={2}
                       placeholder="Une remarque, si besoin"
-                      className="mt-2 w-full rounded-[3px] border border-[#8d9096] px-2.5 py-1.5 text-sm outline-none focus:border-[var(--mache-primary)]"
+                      className="mt-2 w-full rounded-[4px] border border-[var(--mache-light)] px-2.5 py-1.5 text-sm outline-none focus:border-[var(--mache-primary)]"
                     />
 
                     <button
                       type="submit"
-                      className="mt-2 rounded-[3px] bg-[var(--mache-primary)] px-4 py-2 text-sm font-semibold text-white"
+                      className="mt-2 rounded-[4px] bg-[var(--mache-primary)] px-4 py-2 text-sm font-semibold text-white"
                     >
                       Constater la réception
                     </button>
@@ -254,12 +254,12 @@ export default async function SuiviPage({
                 <li
                   key={step}
                   className={`flex items-center gap-3 text-sm ${
-                    reached ? "text-[var(--mache-text)]" : "text-[#9a9a9a]"
+                    reached ? "text-[var(--mache-text)]" : "text-[var(--mache-light)]"
                   }`}
                 >
                   <span
                     className={`inline-block h-2 w-2 rounded-full ${
-                      reached ? "bg-[var(--mache-primary)]" : "bg-[#d5d9d9]"
+                      reached ? "bg-[var(--mache-primary)]" : "bg-[var(--mache-line)]"
                     }`}
                   />
                   {TRACKING_STATUS_LABELS[step] ?? step}
@@ -269,7 +269,7 @@ export default async function SuiviPage({
           </ol>
 
           {result.data.status === "failed" && (
-            <p className="mt-4 text-sm leading-relaxed text-[#b01124]">
+            <p className="mt-4 text-sm leading-relaxed text-[var(--mache-danger-text)]">
               La remise a échoué. Le vendeur peut la relancer ; en cas de
               doute,{" "}
               <Link href="/messages" className="underline">

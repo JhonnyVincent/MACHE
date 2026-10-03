@@ -62,13 +62,13 @@ export default async function SellerProfilePage({
       </div>
 
       {query.error && (
-        <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}
 
       {query.success && (
-        <div className="mt-4 rounded-[8px] border border-[#b7dfc9] bg-[#f4fbf7] px-4 py-3 text-base text-[#046c4e]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] px-4 py-3 text-base text-[var(--mache-success)]">
           {decodeURIComponent(query.success)}
         </div>
       )}
@@ -83,7 +83,7 @@ export default async function SellerProfilePage({
         {SELLER_PROFILES.map((entry) => (
           <label
             key={entry.id}
-            className={`flex cursor-pointer gap-3 rounded-[10px] border p-4 transition-colors ${
+            className={`flex cursor-pointer gap-3 rounded-[8px] border p-4 transition-colors ${
               current === entry.id
                 ? "border-[var(--mache-primary)] bg-[var(--mache-primary-soft)]"
                 : "border-[var(--mache-line)] bg-white hover:border-[var(--mache-primary)]"
@@ -146,7 +146,7 @@ export default async function SellerProfilePage({
             {STOREFRONT_THEMES.map((entry) => (
               <label
                 key={entry.id}
-                className={`flex cursor-pointer items-start gap-3 rounded-[10px] border p-3 transition-colors ${
+                className={`flex cursor-pointer items-start gap-3 rounded-[8px] border p-3 transition-colors ${
                   theme.id === entry.id
                     ? "border-[var(--mache-text)] bg-[var(--mache-bg)]"
                     : "border-[var(--mache-line)] bg-white hover:border-[var(--mache-text)]"

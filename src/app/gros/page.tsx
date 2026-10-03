@@ -109,7 +109,7 @@ export default async function SupplierPage({
         </p>
 
         <section className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
+          <div className="rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
             <h2 className="text-lg font-bold text-[var(--mache-text)]">Vous vendez sur MACHE</h2>
             <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
               Particulier, boutique, marque ou grossiste : un vendeur est aussi un acheteur. Connectez-vous à votre
@@ -131,7 +131,7 @@ export default async function SupplierPage({
             </div>
           </div>
 
-          <div className="rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
+          <div className="rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
             <h2 className="text-lg font-bold text-[var(--mache-text)]">Vous achetez pour une organisation</h2>
             <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">
               Hôtel, école, restaurant, entreprise, association : demandez un compte professionnel. MACHE le valide,
@@ -139,12 +139,12 @@ export default async function SupplierPage({
             </p>
 
             {pending && (
-              <p className="mt-3 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-3 py-2 text-sm text-[var(--mache-text)]">
+              <p className="mt-3 rounded-[6px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] px-3 py-2 text-sm text-[var(--mache-text)]">
                 Votre demande est en cours d&apos;examen. Vous serez prévenu par e-mail.
               </p>
             )}
             {refused && (
-              <p className="mt-3 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-3 py-2 text-sm text-[#b01124]">
+              <p className="mt-3 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-3 py-2 text-sm text-[var(--mache-danger-text)]">
                 Votre dernière demande n&apos;a pas été validée. Vous pouvez la compléter et la renvoyer.
               </p>
             )}
@@ -207,7 +207,7 @@ export default async function SupplierPage({
 
       <section className="mt-8 grid gap-4 sm:grid-cols-3">
         {HOW.map((item) => (
-          <div key={item.title} className="rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+          <div key={item.title} className="rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
             <h2 className="text-base font-bold text-[var(--mache-text)]">{item.title}</h2>
             <p className="mt-1.5 text-base leading-relaxed text-[var(--mache-muted)]">{item.text}</p>
           </div>
@@ -246,7 +246,7 @@ export default async function SupplierPage({
         </p>
 
         {!result.ok && (
-          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
             La liste ne peut pas être affichée pour le moment. Réessayez dans quelques minutes.
           </div>
         )}
@@ -257,7 +257,7 @@ export default async function SupplierPage({
             utiles : chercher dans le catalogue, ou devenir fournisseur.
             Pas d'exemples inventés.
           */
-          <div className="mt-4 rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
+          <div className="mt-4 rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
             <p className="text-base font-semibold text-[var(--mache-text)]">
               {filter === "tous"
                 ? "Aucun grossiste ni aucune marque ne s'est encore déclaré sur MACHE."
@@ -296,7 +296,7 @@ export default async function SupplierPage({
               const profile = readSellerProfile(seller.metadata) as SellerProfile;
 
               return (
-                <div key={seller.id} className="flex flex-col rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+                <div key={seller.id} className="flex flex-col rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
                   <h3 className="flex flex-wrap items-center gap-2 text-base font-bold text-[var(--mache-text)]">
                     {seller.name}
                     <span className="rounded-full bg-[var(--mache-bg)] px-2 py-0.5 text-xs font-semibold text-[var(--mache-muted)]">
@@ -343,7 +343,7 @@ export default async function SupplierPage({
         )}
       </section>
 
-      <section className="mt-10 rounded-[10px] border border-[var(--mache-line)] bg-white p-5">
+      <section className="mt-10 rounded-[8px] border border-[var(--mache-line)] bg-white p-5">
         <h2 className="text-base font-bold text-[var(--mache-text)]">Un devis n&apos;est pas une commande</h2>
 
         <p className="mt-1.5 max-w-2xl text-base leading-relaxed text-[var(--mache-muted)]">

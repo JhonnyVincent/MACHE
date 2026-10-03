@@ -327,7 +327,7 @@ export default async function ShopPage({
 
         {/* Résultats */}
         {products.length === 0 ? (
-          <div className="mt-8 rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
+          <div className="mt-8 rounded-[8px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
             <p className="text-md font-bold text-[var(--mache-text)]">
               {!result.ok
                 ? "Catalogue momentanément indisponible"

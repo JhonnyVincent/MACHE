@@ -29,13 +29,13 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-[#d5d9d9] pb-3">
+    <div className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-[var(--mache-line)] pb-3">
       <div>
-        <h1 className="text-xl font-semibold leading-tight tracking-tight text-[#0f1111]">
+        <h1 className="text-xl font-semibold leading-tight tracking-tight text-[var(--mache-text)]">
           {title}
         </h1>
         {subtitle && (
-          <p className="mt-1 text-sm leading-relaxed text-[#565959]">
+          <p className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">
             {subtitle}
           </p>
         )}
@@ -59,15 +59,15 @@ export function Panel({
   padded?: boolean;
 }) {
   return (
-    <section className="rounded-[3px] border border-[#d5d9d9] bg-white">
+    <section className="rounded-[4px] border border-[var(--mache-line)] bg-white">
       {(title || actions) && (
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[#e3e6e6] px-4 py-2.5">
+        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--mache-line)] px-4 py-2.5">
           <div>
             {title && (
-              <h2 className="text-base font-semibold text-[#0f1111]">{title}</h2>
+              <h2 className="text-base font-semibold text-[var(--mache-text)]">{title}</h2>
             )}
             {description && (
-              <p className="mt-0.5 text-xs text-[#565959]">{description}</p>
+              <p className="mt-0.5 text-xs text-[var(--mache-muted)]">{description}</p>
             )}
           </div>
           {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -91,8 +91,8 @@ export function Panel({
 */
 export function StatRow({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-[3px] border border-[#d5d9d9] bg-white">
-      <div className="-mb-px -mr-px grid grid-cols-2 [&>*]:border-b [&>*]:border-r [&>*]:border-[#e3e6e6] sm:grid-cols-3 xl:grid-cols-5">
+    <div className="overflow-hidden rounded-[4px] border border-[var(--mache-line)] bg-white">
+      <div className="-mb-px -mr-px grid grid-cols-2 [&>*]:border-b [&>*]:border-r [&>*]:border-[var(--mache-line)] sm:grid-cols-3 xl:grid-cols-5">
         {children}
       </div>
     </div>
@@ -111,21 +111,21 @@ export function Stat({
   tone?: "default" | "warning" | "danger" | "success";
 }) {
   const toneClass = {
-    default: "text-[#0f1111]",
-    warning: "text-[#b45309]",
-    danger: "text-[#b01124]",
-    success: "text-[#046c4e]",
+    default: "text-[var(--mache-text)]",
+    warning: "text-[var(--mache-warn-text)]",
+    danger: "text-[var(--mache-danger-text)]",
+    success: "text-[var(--mache-success)]",
   }[tone];
 
   return (
     <div className="bg-white px-3.5 py-3">
-      <p className="text-2xs font-medium uppercase tracking-label text-[#565959]">
+      <p className="text-2xs font-medium tracking-label text-[var(--mache-muted)]">
         {label}
       </p>
       <p className={`tnum mt-1.5 text-xl font-semibold leading-none ${toneClass}`}>
         {value}
       </p>
-      {hint && <p className="mt-1.5 text-xs leading-snug text-[#767676]">{hint}</p>}
+      {hint && <p className="mt-1.5 text-xs leading-snug text-[var(--mache-muted)]">{hint}</p>}
     </div>
   );
 }
@@ -145,13 +145,13 @@ export function Table({
     <div className="overflow-x-auto">
       <table className="w-full min-w-[560px] border-collapse text-sm">
         <thead>
-          <tr className="border-b border-[#d5d9d9] bg-[#f7f8f8]">
+          <tr className="border-b border-[var(--mache-line)] bg-[var(--mache-bg-2)]">
             {columns.map((column) => (
               <th
                 key={column.key}
                 scope="col"
                 style={column.width ? { width: column.width } : undefined}
-                className={`px-3 py-2 text-2xs font-semibold uppercase tracking-label text-[#565959] ${
+                className={`px-3 py-2 text-2xs font-semibold tracking-label text-[var(--mache-muted)] ${
                   column.align === "right"
                     ? "text-right"
                     : column.align === "center"
@@ -172,7 +172,7 @@ export function Table({
 
 export function Row({ children }: { children: ReactNode }) {
   return (
-    <tr className="border-b border-[#e3e6e6] last:border-0 hover:bg-[#f7fafa]">
+    <tr className="border-b border-[var(--mache-line)] last:border-0 hover:bg-[var(--mache-bg-2)]">
       {children}
     </tr>
   );
@@ -195,7 +195,7 @@ export function Cell({
     <td
       className={`px-3 py-2.5 align-middle ${
         align === "right" ? "text-right" : align === "center" ? "text-center" : "text-left"
-      } ${strong ? "font-semibold text-[#0f1111]" : muted ? "text-[#565959]" : "text-[#0f1111]"} ${
+      } ${strong ? "font-semibold text-[var(--mache-text)]" : muted ? "text-[var(--mache-muted)]" : "text-[var(--mache-text)]"} ${
         numeric ? "tnum" : ""
       }`}
     >
@@ -216,16 +216,16 @@ export function Badge({
   tone?: "neutral" | "success" | "warning" | "danger" | "info";
 }) {
   const toneClass = {
-    neutral: "border-[#d5d9d9] bg-[#f7f8f8] text-[#565959]",
-    success: "border-[#b7dfc9] bg-[#eefaf3] text-[#046c4e]",
-    warning: "border-[#f3d9a5] bg-[#fdf6e8] text-[#946200]",
-    danger: "border-[#f2c2c8] bg-[#fdeaec] text-[#b01124]",
-    info: "border-[#c2d4f0] bg-[#eef3fc] text-[#1d3357]",
+    neutral: "border-[var(--mache-line)] bg-[var(--mache-bg-2)] text-[var(--mache-muted)]",
+    success: "border-[var(--mache-success-line)] bg-[var(--mache-success-soft)] text-[var(--mache-success)]",
+    warning: "border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] text-[var(--mache-warn-text)]",
+    danger: "border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] text-[var(--mache-danger-text)]",
+    info: "border-[var(--mache-info-line)] bg-[var(--mache-info-soft)] text-[#1d3357]",
   }[tone];
 
   return (
     <span
-      className={`inline-flex items-center rounded-[2px] border px-1.5 py-0.5 text-2xs font-medium ${toneClass}`}
+      className={`inline-flex items-center rounded-[4px] border px-1.5 py-0.5 text-2xs font-medium ${toneClass}`}
     >
       {children}
     </span>
@@ -246,15 +246,15 @@ export function Button({
   size?: "sm" | "md";
 }) {
   const base =
-    "inline-flex items-center justify-center gap-1.5 rounded-[3px] font-medium transition-colors whitespace-nowrap";
+    "inline-flex items-center justify-center gap-1.5 rounded-[4px] font-medium transition-colors whitespace-nowrap";
 
   const sizeClass = size === "sm" ? "px-2.5 py-1 text-xs" : "px-3 py-1.5 text-sm";
 
   const variantClass = {
-    primary: "bg-[#d2162c] text-white hover:bg-[#b01124]",
+    primary: "bg-[var(--mache-primary)] text-white hover:bg-[var(--mache-danger-text)]",
     secondary:
-      "border border-[#8d9096] bg-white text-[#0f1111] hover:bg-[#f7fafa] shadow-[0_1px_0_rgba(0,0,0,0.05)]",
-    ghost: "text-[#d2162c] hover:underline",
+      "border border-[var(--mache-light)] bg-white text-[var(--mache-text)] hover:bg-[var(--mache-bg-2)] shadow-soft",
+    ghost: "text-[var(--mache-primary)] hover:underline",
   }[variant];
 
   const className = `${base} ${sizeClass} ${variantClass}`;
@@ -285,9 +285,9 @@ export function EmptyState({
 }) {
   return (
     <div className="px-4 py-10 text-center">
-      <p className="text-base font-semibold text-[#0f1111]">{title}</p>
+      <p className="text-base font-semibold text-[var(--mache-text)]">{title}</p>
       {description && (
-        <p className="mx-auto mt-1.5 max-w-md text-sm leading-relaxed text-[#565959]">
+        <p className="mx-auto mt-1.5 max-w-md text-sm leading-relaxed text-[var(--mache-muted)]">
           {description}
         </p>
       )}
@@ -306,16 +306,16 @@ export function Notice({
   children?: ReactNode;
 }) {
   const toneClass = {
-    info: "border-[#c2d4f0] bg-[#eef3fc]",
-    warning: "border-[#f3d9a5] bg-[#fdf6e8]",
-    danger: "border-[#f2c2c8] bg-[#fdeaec]",
+    info: "border-[var(--mache-info-line)] bg-[var(--mache-info-soft)]",
+    warning: "border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)]",
+    danger: "border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)]",
   }[tone];
 
   return (
-    <div className={`rounded-[3px] border px-3.5 py-3 ${toneClass}`}>
-      <p className="text-sm font-semibold text-[#0f1111]">{title}</p>
+    <div className={`rounded-[4px] border px-3.5 py-3 ${toneClass}`}>
+      <p className="text-sm font-semibold text-[var(--mache-text)]">{title}</p>
       {children && (
-        <div className="mt-1 text-sm leading-relaxed text-[#565959]">{children}</div>
+        <div className="mt-1 text-sm leading-relaxed text-[var(--mache-muted)]">{children}</div>
       )}
     </div>
   );
@@ -345,15 +345,15 @@ export function Meter({
   const color =
     intent === "capacity"
       ? percent >= 100
-        ? "bg-[#b01124]"
+        ? "bg-[var(--mache-danger-text)]"
         : percent >= 80
-          ? "bg-[#b45309]"
-          : "bg-[#565959]"
+          ? "bg-[var(--mache-warn-text)]"
+          : "bg-[var(--mache-muted)]"
       : percent >= 70
-        ? "bg-[#046c4e]"
+        ? "bg-[var(--mache-success)]"
         : percent >= 35
-          ? "bg-[#b45309]"
-          : "bg-[#b01124]";
+          ? "bg-[var(--mache-warn-text)]"
+          : "bg-[var(--mache-danger-text)]";
 
   return (
     <div
@@ -361,7 +361,7 @@ export function Meter({
       aria-valuenow={Math.round(percent)}
       aria-valuemin={0}
       aria-valuemax={100}
-      className="h-1.5 w-full overflow-hidden rounded-[2px] bg-[#e3e6e6]"
+      className="h-1.5 w-full overflow-hidden rounded-[4px] bg-[var(--mache-line)]"
     >
       <div className={`h-full ${color}`} style={{ width: `${percent}%` }} />
     </div>
@@ -396,19 +396,19 @@ export function Field({
     <div>
       <label
         htmlFor={htmlFor}
-        className="block text-sm font-semibold text-[#0f1111]"
+        className="block text-sm font-semibold text-[var(--mache-text)]"
       >
         {label}
-        {required && <span className="ml-1 text-[#b01124]">*</span>}
+        {required && <span className="ml-1 text-[var(--mache-danger-text)]">*</span>}
       </label>
       <div className="mt-1.5">{children}</div>
-      {hint && <p className="mt-1.5 text-xs leading-snug text-[#767676]">{hint}</p>}
+      {hint && <p className="mt-1.5 text-xs leading-snug text-[var(--mache-muted)]">{hint}</p>}
     </div>
   );
 }
 
 const CONTROL_CLASS =
-  "w-full rounded-[3px] border border-[#8d9096] bg-white px-2.5 py-1.5 text-sm text-[#0f1111] outline-none transition-colors placeholder:text-[#9a9a9a] focus:border-[#d2162c] focus:ring-1 focus:ring-[#d2162c]/30 disabled:bg-[#f7f8f8] disabled:text-[#767676]";
+  "w-full rounded-[4px] border border-[var(--mache-light)] bg-white px-2.5 py-1.5 text-sm text-[var(--mache-text)] outline-none transition-colors placeholder:text-[var(--mache-light)] focus:border-[var(--mache-primary)] focus:ring-1 focus:ring-[var(--mache-primary)]/30 disabled:bg-[var(--mache-bg-2)] disabled:text-[var(--mache-muted)]";
 
 export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   const { className, ...rest } = props;

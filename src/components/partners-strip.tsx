@@ -47,12 +47,13 @@ const OPEN_ROLES = [
     title: "Points relais",
     text: "Des commerces de quartier qui gardent les colis jusqu'à ce que l'acheteur vienne les chercher.",
     /* Vert léger, nuancé de blanc, voulu par MACHE pour les points relais. */
-    tone: "border-[#bbf7d0] bg-gradient-to-br from-[#f0fdf4] via-white to-[#dcfce7]",
+    /* Vert léger, voulu par MACHE pour les points relais. */
+    tone: "border-[var(--mache-success-line)] bg-[var(--mache-success-soft)]",
   },
 ];
 
 const block =
-  "flex h-full w-[280px] flex-col rounded-[12px] border p-5 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] hover:shadow-[0_10px_26px_rgba(16,24,32,0.14)] motion-reduce:transform-none sm:w-[320px]";
+  "flex h-full w-[280px] flex-col rounded-[8px] border p-6 transition-colors hover:border-[var(--mache-text)] sm:w-[320px]";
 
 export function PartnersStrip() {
   if (PARTNERS.length === 0) return null;
@@ -60,9 +61,9 @@ export function PartnersStrip() {
   const copies = 4;
 
   return (
-    <section className="mache-reveal py-6">
-      <div className="container-page mb-4 flex flex-wrap items-baseline justify-between gap-3">
-        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">Nos partenaires</h2>
+    <section className="mache-reveal py-10">
+      <div className="container-page mb-6 flex flex-wrap items-baseline justify-between gap-3">
+        <h2 className="text-2xl text-[var(--mache-text)]">Nos partenaires</h2>
         <Link href="/partenaires" className="text-sm font-semibold text-[var(--mache-primary)] hover:underline">
           Tous nos partenaires →
         </Link>
@@ -78,17 +79,17 @@ export function PartnersStrip() {
                   target="_blank"
                   rel="noopener noreferrer"
                   tabIndex={copy > 0 ? -1 : undefined}
-                  className={`${block} border-[#1e3a8a] bg-[#1e3a8a] text-white`}
+                  className={`${block} border-[var(--mache-line)] bg-[var(--mache-white)] text-[var(--mache-text)]`}
                 >
-                  <span className="text-xs font-bold uppercase tracking-widest text-white/70">Partenaire</span>
-                  <span className="mt-2 text-2xl font-black">
+                  <span className="text-sm font-semibold text-[var(--mache-muted)]">Partenaire</span>
+                  <span className="mt-2 font-display text-xl font-semibold">
                     {partner.name}
-                    <span className="ml-1 text-sm text-white/70" aria-hidden="true">↗</span>
+                    <span className="ml-1 text-sm text-[var(--mache-muted)]" aria-hidden="true">↗</span>
                     <span className="sr-only"> (site externe)</span>
                   </span>
-                  <span className="mt-2 text-sm leading-relaxed text-white/85">{partner.does}</span>
+                  <span className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">{partner.does}</span>
                   {!partner.mediated && (
-                    <span className="mt-auto pt-3 text-xs text-white/65">En direct avec {partner.name}.</span>
+                    <span className="mt-auto pt-3 text-xs text-[var(--mache-muted)]">En direct avec {partner.name}.</span>
                   )}
                 </a>
               </li>
@@ -100,15 +101,15 @@ export function PartnersStrip() {
                   tabIndex={copy > 0 ? -1 : undefined}
                   className={`${block} ${role.tone}`}
                 >
-                  <span className="text-xs font-bold uppercase tracking-widest text-[#8a5a00]">
+                  <span className="text-sm font-semibold text-[var(--mache-muted)]">
                     Place à prendre
                   </span>
-                  <span className="mt-2 text-2xl font-black text-[var(--mache-text)]">
-                    <role.Icon className="mr-2 inline h-6 w-6 align-[-4px]" />
+                  <span className="mt-2 font-display text-xl font-semibold text-[var(--mache-text)]">
+                    <role.Icon className="mr-2 inline h-5 w-5 align-[-3px] text-[var(--mache-primary)]" />
                     {role.title}
                   </span>
                   <span className="mt-2 text-sm leading-relaxed text-[var(--mache-muted)]">{role.text}</span>
-                  <span className="mt-auto pt-3 text-sm font-bold text-[var(--mache-primary)]">Devenir partenaire →</span>
+                  <span className="mt-auto pt-3 text-sm font-semibold text-[var(--mache-primary)]">Devenir partenaire →</span>
                 </Link>
               </li>
             )),

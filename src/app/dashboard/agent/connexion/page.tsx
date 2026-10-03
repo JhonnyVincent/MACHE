@@ -42,7 +42,7 @@ export default async function AgentLoginPage({
 
   return (
     <main className="mx-auto w-full max-w-md px-4 py-12 sm:py-16">
-      <span className="inline-block rounded-[3px] bg-[var(--mache-text)] px-2 py-1 text-xs font-bold uppercase tracking-widest text-white">
+      <span className="inline-block text-sm font-semibold tracking-label text-[var(--mache-primary)]">
         Espace agent
       </span>
 
@@ -57,7 +57,7 @@ export default async function AgentLoginPage({
       {query.error && (
         <p
           role="alert"
-          className="mt-5 rounded-[6px] border border-[#f2c2c8] bg-[#fdeaec] px-3 py-2.5 text-sm text-[#b01124]"
+          className="mt-5 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-3 py-2.5 text-sm text-[var(--mache-danger-text)]"
         >
           {query.error}
         </p>
@@ -102,7 +102,7 @@ export default async function AgentLoginPage({
         comme celle-ci génère : « je n'arrive pas à créer mon compte
         agent ». Il n'y a rien à créer.
       */}
-      <div className="mt-8 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4">
+      <div className="mt-8 rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           C&apos;est votre compte MACHE habituel
         </h2>

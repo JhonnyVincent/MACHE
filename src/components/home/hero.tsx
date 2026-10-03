@@ -19,41 +19,40 @@ import { CountUp } from "@/components/anim/count-up";
 
 export type HeroCount = { label: string; value: number };
 
-const chip =
-  "inline-block rounded-[3px] px-2 py-1 text-xs font-bold uppercase tracking-widest";
+/* Une petite ligne d'introduction au-dessus du titre : du texte, pas une pastille. */
+const chip = "inline-block text-sm font-semibold tracking-label";
 
 const primaryButton =
-  "rounded-[6px] bg-[var(--mache-primary)] px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-[var(--mache-primary-dark)]";
+  "inline-flex items-center rounded-[6px] bg-[var(--mache-primary)] px-5 py-3 text-base font-semibold text-white transition-colors hover:bg-[var(--mache-primary-dark)]";
 
 const secondaryButton =
-  "rounded-[6px] border border-[var(--mache-text)] px-5 py-2.5 text-md font-bold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white";
+  "inline-flex items-center rounded-[6px] border border-[var(--mache-text)] px-5 py-3 text-base font-semibold text-[var(--mache-text)] transition-colors hover:bg-[var(--mache-text)] hover:text-white";
 
 /* Les points du défilement sont posés en bas : chaque diapositive leur laisse la place. */
 const frame = "container-page grid h-full items-center gap-6 py-8 pb-14 lg:py-12 lg:pb-16";
 
+/* Fond blanc franc : celui de la carte. Image et page ne font qu'un. */
 function MapSlide({ counts }: { counts: HeroCount[] }) {
   const shown = counts.filter((count) => count.value > 0);
 
   return (
-    <div className="h-full bg-gradient-to-br from-white via-white to-[var(--mache-bg-2)]">
+    <div className="h-full bg-white">
       <div className={`${frame} lg:grid-cols-[1.15fr_0.85fr]`}>
         <div>
-          <span className={`${chip} bg-[var(--mache-primary)] text-white`}>
-            Marketplace haïtienne
-          </span>
+          <span className={`${chip} text-[var(--mache-primary)]`}>Marketplace haïtienne</span>
 
-          <h1 className="mt-4 text-hero font-black tracking-tightest text-[var(--mache-text)]">
+          <h1 className="mt-3 text-hero text-[var(--mache-text)]">
             Acheter chez les vendeurs d&apos;Haïti,
             <br className="hidden sm:block" /> au même endroit.
           </h1>
 
-          <p className="mt-4 max-w-xl text-md leading-relaxed text-[var(--mache-muted)]">
+          <p className="mt-5 max-w-xl text-md leading-relaxed text-[var(--mache-muted)]">
             Des boutiques indépendantes, des marques et des fournisseurs
             réunis sur une seule place de marché. Chaque vendeur garde sa
             boutique ; vous n&apos;avez qu&apos;un panier.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-2.5">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/shop" className={primaryButton}>
               Voir le catalogue
             </Link>
@@ -68,13 +67,13 @@ function MapSlide({ counts }: { counts: HeroCount[] }) {
             n'aide personne, et un chiffre rond inventé encore moins.
           */}
           {shown.length > 0 && (
-            <dl className="mt-7 flex flex-wrap gap-x-8 gap-y-3">
+            <dl className="mt-10 flex flex-wrap gap-x-10 gap-y-3 border-t border-[var(--mache-line)] pt-5">
               {shown.map((count) => (
                 <div key={count.label}>
-                  <dt className="text-xs font-semibold uppercase tracking-label text-[var(--mache-muted)]">
+                  <dt className="text-sm text-[var(--mache-muted)]">
                     {count.label}
                   </dt>
-                  <dd className="mt-0.5 text-2xl font-black leading-none text-[var(--mache-text)]">
+                  <dd className="mt-0.5 font-display text-2xl font-semibold leading-none text-[var(--mache-text)]">
                     <CountUp value={count.value} />
                   </dd>
                 </div>
@@ -94,16 +93,7 @@ function MapSlide({ counts }: { counts: HeroCount[] }) {
             width={1000}
             height={800}
             alt="Carte d'Haïti aux couleurs de MACHE"
-            className="w-full max-w-[420px] object-contain"
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            loading="lazy"
-            decoding="async"
-            src="/images/logo-mache.webp"
-            alt=""
-            aria-hidden="true"
-            className="absolute -bottom-2 right-2 w-24 object-contain opacity-90"
+            className="w-full max-w-[460px] object-contain mix-blend-multiply"
           />
         </div>
       </div>
@@ -117,11 +107,11 @@ function MapSlide({ counts }: { counts: HeroCount[] }) {
 */
 function ShopsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "shops" }> }) {
   return (
-    <div className="h-full bg-gradient-to-br from-[var(--mache-primary-soft)] via-white to-white">
+    <div className="h-full bg-[var(--mache-bg-2)]">
       <div className={`${frame} lg:grid-cols-[0.9fr_1.1fr]`}>
         <div>
-          <span className={`${chip} bg-[var(--mache-text)] text-white`}>Nouvelles boutiques</span>
-          <h2 className="mt-4 text-3xl font-black tracking-tightest text-[var(--mache-text)] sm:text-4xl">
+          <span className={`${chip} text-[var(--mache-muted)]`}>Nouvelles boutiques</span>
+          <h2 className="mt-3 text-3xl text-[var(--mache-text)] sm:text-4xl">
             Ils viennent d&apos;ouvrir sur MACHE
           </h2>
           <p className="mt-3 max-w-lg text-md leading-relaxed text-[var(--mache-muted)]">
@@ -139,7 +129,7 @@ function ShopsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "shops" }> })
             <li key={seller.id}>
               <Link
                 href={`/store/${seller.handle}`}
-                className="flex h-full flex-col items-center gap-2 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-3 text-center transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(16,24,32,0.12)] motion-reduce:transform-none"
+                className="flex h-full flex-col items-center gap-2 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-3 text-center transition-transform duration-200 hover:shadow-card-hover motion-reduce:transform-none"
               >
                 <span className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border border-[var(--mache-line)] bg-white text-base font-black text-[var(--mache-muted)]">
                   {seller.logo ? (
@@ -166,11 +156,11 @@ function ShopsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "shops" }> })
 */
 function PromotionsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "promotions" }> }) {
   return (
-    <div className="h-full bg-gradient-to-br from-[var(--mache-primary)] to-[var(--mache-primary-dark)] text-white">
+    <div className="h-full bg-[var(--mache-primary)] text-white">
       <div className={`${frame} lg:grid-cols-[1fr_1fr]`}>
         <div>
-          <span className={`${chip} bg-white text-[var(--mache-primary)]`}>Nos promotions</span>
-          <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">En ce moment sur MACHE</h2>
+          <span className={`${chip} text-white/80`}>Nos promotions</span>
+          <h2 className="mt-3 text-3xl sm:text-4xl">En ce moment sur MACHE</h2>
           {slide.labels.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-2">
               {slide.labels.map((label) => (
@@ -196,7 +186,7 @@ function PromotionsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "promoti
               <Link
                 key={product.href}
                 href={product.href}
-                className="group block overflow-hidden rounded-[10px] bg-white"
+                className="group block overflow-hidden rounded-[8px] bg-white"
               >
                 <div className="aspect-square overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -204,7 +194,7 @@ function PromotionsSlide({ slide }: { slide: Extract<HeroSlide, { kind: "promoti
                     src={product.image}
                     alt={product.title}
                     loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="h-full w-full object-cover transition-transform duration-300 "
                   />
                 </div>
               </Link>
@@ -221,11 +211,11 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
 
   return (
     /* Fond bleu soutenu — ni ciel ni nuit —, voulu par MACHE pour les partenaires. */
-    <div className="h-full bg-gradient-to-br from-[#1e40af] to-[#1e3a8a] text-white">
+    <div className="h-full bg-[var(--mache-navy)] text-white">
       <div className={`${frame} lg:grid-cols-[1.1fr_0.9fr]`}>
         <div>
-          <span className={`${chip} bg-white/10 text-white`}>Nos partenaires</span>
-          <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">
+          <span className={`${chip} text-white/70`}>Nos partenaires</span>
+          <h2 className="mt-3 text-3xl sm:text-4xl">
             Ils travaillent avec MACHE
           </h2>
           <p className="mt-3 max-w-lg text-md leading-relaxed text-white/75">
@@ -239,7 +229,7 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
             </a>
             <Link
               href="/partenaires"
-              className="rounded-[6px] border border-white/60 px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-white hover:text-[#1e3a8a]"
+              className="rounded-[6px] border border-white/60 px-5 py-2.5 text-md font-bold text-white transition-colors hover:bg-white hover:text-[var(--mache-navy)]"
             >
               Tous nos partenaires
             </Link>
@@ -254,9 +244,9 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
               href={partner.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="block rounded-[12px] border border-white/15 bg-white/5 p-6 transition-colors hover:bg-white/10"
+              className="block rounded-[8px] border border-white/20 p-6 transition-colors hover:bg-white/10"
             >
-              <span className="block text-4xl font-black tracking-tightest">{partner.name}</span>
+              <span className="block font-display text-3xl font-semibold">{partner.name}</span>
               <span className="mt-2 block text-base text-white/70">{partner.does}</span>
             </a>
           ))}
@@ -268,7 +258,7 @@ function PartnersSlide({ slide }: { slide: Extract<HeroSlide, { kind: "partners"
 
 export function HeroCarousel({ slides, counts }: { slides: HeroSlide[]; counts: HeroCount[] }) {
   return (
-    <section className="border-b border-[var(--mache-line)]">
+    <section>
       <Slider variant="hero" label="À la une sur MACHE" autoplayMs={7000}>
         <MapSlide counts={counts} />
         {slides.map((slide) => {

@@ -50,13 +50,13 @@ export default async function CartPage({
         </h1>
 
         {query.error && (
-          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
             {decodeURIComponent(query.error)}
           </div>
         )}
 
         {isEmpty ? (
-          <div className="mt-6 rounded-[10px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
+          <div className="mt-6 rounded-[8px] border border-dashed border-[var(--mache-line)] bg-white p-10 text-center">
             <p className="text-md font-bold text-[var(--mache-text)]">
               Votre panier est vide
             </p>
@@ -78,7 +78,7 @@ export default async function CartPage({
               {cart.lines.map((line) => (
                 <div
                   key={line.id}
-                  className="flex gap-3 rounded-[10px] border border-[var(--mache-line)] bg-white p-3"
+                  className="flex gap-3 rounded-[8px] border border-[var(--mache-line)] bg-white p-3"
                 >
                   <span className="h-20 w-20 shrink-0 overflow-hidden rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-bg)]">
                     {line.thumbnail ? (
@@ -153,7 +153,7 @@ export default async function CartPage({
             </AnimatedList>
 
             {/* Récapitulatif */}
-            <aside className="h-fit rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+            <aside className="h-fit rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
               <h2 className="text-md font-bold text-[var(--mache-text)]">
                 Récapitulatif
               </h2>
@@ -206,7 +206,7 @@ export default async function CartPage({
                 et chez qui.
               */}
               {blocked.length > 0 && (
-                <div className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] p-3.5">
+                <div className="mt-4 rounded-[6px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-3.5">
                   <p className="text-base font-bold text-[var(--mache-text)]">
                     {blocked.length > 1
                       ? "Deux boutiques demandent une commande minimum"

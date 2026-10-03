@@ -60,13 +60,13 @@ export default async function FavoritesPage({
       </h1>
 
       {query.favori && (
-        <p className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base text-[var(--mache-text)]">
+        <p className="mt-4 rounded-[6px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] px-4 py-3 text-base text-[var(--mache-text)]">
           {decodeURIComponent(query.favori)}
         </p>
       )}
 
       {handles.length === 0 ? (
-        <div className="mt-6 rounded-[10px] border border-[var(--mache-line)] bg-white p-6">
+        <div className="mt-6 rounded-[8px] border border-[var(--mache-line)] bg-white p-6">
           <p className="text-md leading-relaxed text-[var(--mache-muted)]">
             Vous n&apos;avez encore rien mis de côté. Le cœur sur une fiche
             produit ajoute l&apos;article ici.
@@ -97,7 +97,7 @@ export default async function FavoritesPage({
           </p>
 
           {missing > 0 && (
-            <p className="mt-4 rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
+            <p className="mt-4 rounded-[6px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
               {missing} article{missing > 1 ? "s ne sont plus" : " n'est plus"}{" "}
               en ligne : le vendeur {missing > 1 ? "les" : "l'"}a retiré du
               catalogue. {missing > 1 ? "Ils restent" : "Il reste"} dans votre

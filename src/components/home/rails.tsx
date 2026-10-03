@@ -32,7 +32,7 @@ function RailHeader({
   return (
     <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
       <div>
-        <h2 className="text-xl font-bold leading-tight tracking-tight text-[var(--mache-text)] sm:text-2xl">
+        <h2 className="text-2xl text-[var(--mache-text)]">
           {title}
         </h2>
         {subtitle && (
@@ -75,18 +75,15 @@ export function ProductCard({ product }: { product: StoreProduct }) {
     : 0;
 
   return (
-    <Link
-      href={`/product/${product.handle}`}
-      className="group flex h-full flex-col overflow-hidden rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(16,24,32,0.12)] motion-reduce:transform-none motion-reduce:transition-none"
-    >
-      <div className="relative aspect-square overflow-hidden bg-[var(--mache-bg)]">
+    <Link href={`/product/${product.handle}`} className="group flex h-full flex-col">
+      <div className="relative aspect-square overflow-hidden rounded-[6px] bg-[var(--mache-bg-2)]">
         {product.thumbnail ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={product.thumbnail}
             alt={product.title}
             loading="lazy"
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-110 motion-reduce:transform-none"
+            className="h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-[var(--mache-light)]">
@@ -95,20 +92,20 @@ export function ProductCard({ product }: { product: StoreProduct }) {
         )}
 
         {hasDiscount && (
-          <span className="absolute left-2 top-2 rounded-[3px] bg-[var(--mache-primary)] px-1.5 py-0.5 text-xs font-bold text-white">
+          <span className="absolute left-2 top-2 rounded-[4px] bg-[var(--mache-primary)] px-1.5 py-0.5 text-xs font-semibold text-white">
             −{discountPercent} %
           </span>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-3">
-        <h3 className="line-clamp-2 text-base font-medium leading-snug text-[var(--mache-text)] group-hover:underline">
+      <div className="flex flex-1 flex-col pt-3">
+        <h3 className="line-clamp-2 text-base leading-snug text-[var(--mache-text)] group-hover:underline">
           {product.title}
         </h3>
 
-        <div className="mt-auto pt-2">
+        <div className="mt-auto pt-1.5">
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <span className="text-lg font-black leading-none tracking-tighter text-[var(--mache-text)]">
+            <span className="text-md font-semibold text-[var(--mache-text)]">
               {formatAmount(product.price, product.currency)}
             </span>
             {hasDiscount && (
@@ -119,7 +116,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
           </div>
 
           {product.variantCount > 1 && (
-            <p className="mt-1 text-xs text-[var(--mache-muted)]">
+            <p className="mt-0.5 text-xs text-[var(--mache-muted)]">
               {product.variantCount} variantes
             </p>
           )}
@@ -159,7 +156,7 @@ export function ProductRailSection({
   if (products.length === 0) return null;
 
   return (
-    <section className="mache-reveal container-page py-5">
+    <section className="mache-reveal container-page py-10">
       <RailHeader title={title} subtitle={subtitle} href={href} linkLabel={linkLabel} />
 
       <Slider

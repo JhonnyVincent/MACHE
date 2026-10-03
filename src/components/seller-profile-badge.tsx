@@ -22,7 +22,7 @@ export function SellerProfileBadge({
   return (
     <span
       title={`${info.meaning} Profil déclaré par le vendeur.`}
-      className="inline-flex items-center rounded-[3px] border border-[var(--mache-line)] bg-[var(--mache-bg)] px-2 py-0.5 text-xs font-semibold text-[var(--mache-muted)]"
+      className="inline-flex items-center rounded-[4px] border border-[var(--mache-line)] bg-[var(--mache-bg)] px-2 py-0.5 text-xs font-semibold text-[var(--mache-muted)]"
     >
       {info.badge}
       {withMeaning && (

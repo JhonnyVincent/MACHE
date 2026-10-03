@@ -130,14 +130,14 @@ export default async function NewQuotePage({
         à une commande et n'en est pas une laisse croire à un achat
         conclu.
       */}
-      <div className="mt-4 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
+      <div className="mt-4 rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-primary-soft)] px-4 py-3 text-base leading-relaxed text-[var(--mache-text)]">
         Ceci n&apos;est pas une commande. Rien n&apos;est réservé et rien
         n&apos;est payé : vous demandez un prix, le vendeur vous répond,
         et vous décidez ensuite.
       </div>
 
       {query.error && (
-        <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+        <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
           {decodeURIComponent(query.error)}
         </div>
       )}

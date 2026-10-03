@@ -12,476 +12,201 @@ const sellerProfiles = [
   {
     title: "Vendeur",
     href: "/sell/vendeur",
-    badge: "Simple",
-    description: "Pour vendre vos produits, seul ou avec une boutique. Un vendeur peut aussi acheter auprès des grossistes et des marques.",
+    description:
+      "Pour vendre vos produits, seul ou avec une boutique. Un vendeur peut aussi acheter auprès des grossistes et des marques.",
     points: ["Boutique et catalogue", "Commandes et livraisons", "Accès aux grossistes"],
   },
   {
     title: "Fournisseur",
     href: "/sell/fournisseur",
-    badge: "B2B",
-    description: "Pour vendre en volume aux boutiques, revendeurs et partenaires.",
-    points: ["Prix de gros", "Commandes volume", "Contrats"],
+    description: "Pour vendre en volume aux boutiques, aux revendeurs et aux partenaires.",
+    points: ["Prix de gros", "Commandes en volume", "Contrats"],
   },
   {
     title: "Marque officielle",
     href: "/sell/marque-officielle",
-    badge: "Premium",
-    description: "Pour les marques qui veulent une boutique vérifiée et une image forte.",
-    points: ["Badge officiel", "Boutique premium", "Visibilité"],
-  },
-];
-
-const modes = [
-  {
-    title: "Marketplace",
-    text: "Vendez vos produits directement sur Mache.",
-  },
-  {
-    title: "SaaS vendeur",
-    text: "Gérez stock, produits, ventes et activité business.",
-  },
-  {
-    title: "Marketplace + SaaS",
-    text: "Vendez et gérez votre business depuis un seul espace.",
+    description: "Pour les marques qui veulent une boutique vérifiée et une image soignée.",
+    points: ["Badge officiel", "Boutique vérifiée", "Visibilité auprès des revendeurs"],
   },
 ];
 
 const steps = [
-  "Créer votre compte vendeur",
-  "Choisir votre profil",
-  "Ajouter vos informations",
-  "Préparer vos produits",
-  "Recevoir vos commandes",
+  ["Créer votre compte", "Quelques minutes, avec votre adresse e-mail."],
+  ["Choisir votre profil", "Vendeur, fournisseur ou marque officielle."],
+  ["Présenter votre boutique", "Votre nom, votre logo, vos coordonnées."],
+  ["Ajouter vos produits", "Photos, prix, stock et livraison."],
+  ["Recevoir vos commandes", "Vous suivez tout depuis votre espace vendeur."],
 ];
 
 const plans = [
-  {
-    name: "Starter",
-    price: "Gratuit",
-    text: "Pour commencer simplement.",
-  },
-  {
-    name: "Pro",
-    price: "Mensuel",
-    text: "Pour vendeurs actifs.",
-  },
-  {
-    name: "Business",
-    price: "Sur devis",
-    text: "Pour boutiques, marques et fournisseurs.",
-  },
+  ["Starter", "Gratuit", "Pour commencer simplement."],
+  ["Pro", "Mensuel", "Pour les vendeurs actifs."],
+  ["Business", "Sur devis", "Pour les boutiques, marques et fournisseurs."],
 ];
 
 export default function SellPage() {
   return (
-    <main className="bg-white">
-      <section className="relative overflow-hidden bg-[#071f3d] text-white">
-        <div className="absolute inset-0 opacity-20">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            loading="lazy"
-            decoding="async"
-            src="/images/carte-haiti-mache.webp"
-            alt=""
-            aria-hidden="true"
-            className="h-full w-full object-contain object-right"
-          />
-        </div>
-
-        <div className="container-page relative grid gap-10 py-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+    <main>
+      {/* Même fond blanc que la carte : l'image et la page ne font qu'un. */}
+      <section className="bg-white">
+        <div className="container-page grid items-center gap-10 py-14 lg:grid-cols-[1.1fr_0.9fr] lg:py-20">
           <div>
-            <div className="inline-flex rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold">
-              Marketplace + SaaS vendeur
-            </div>
+            <p className="text-sm font-semibold tracking-label text-[var(--mache-primary)]">
+              Vendre sur MACHE
+            </p>
 
-            <h1 className="mt-6 max-w-4xl text-hero font-black tracking-tightest">
-              Vendez sur Mache. Gérez votre boutique. Développez votre business.
+            <h1 className="mt-3 max-w-2xl text-hero text-[var(--mache-text)]">
+              Ouvrez votre boutique et vendez partout en Haïti.
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">
-              Une plateforme pensée pour les vendeurs, grossistes et marques :
-              vente en ligne, stock, commandes, publicité, dashboard vendeur et outils business.
+            <p className="mt-5 max-w-xl text-md leading-relaxed text-[var(--mache-muted)]">
+              Vendeurs, grossistes et marques : une place de marché pour présenter vos produits,
+              recevoir vos commandes et suivre vos livraisons, avec votre propre boutique.
             </p>
 
             {/*
-              Un seul bouton, et non « créer un compte » à côté de « se
-              connecter » : les deux mènent au même endroit, le panneau
-              vendeur, qui gère lui-même l'inscription et la connexion.
-              Deux boutons identiques obligent à choisir sans qu'il y ait
-              de choix.
+              Un seul bouton d'inscription, et non « créer un compte » à
+              côté de « se connecter » : les deux mènent au même endroit,
+              le panneau vendeur, qui gère lui-même l'inscription et la
+              connexion.
+
+              Le tarif est accessible dès l'accroche : un vendeur se
+              demande d'abord ce que ça va lui coûter, et ne pas répondre
+              ici se lit comme un prix qu'on préfère ne pas montrer.
             */}
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/dashboard/seller/inscription" className="btn-primary">
                 Ouvrir ma boutique
               </Link>
-
-              {/*
-                Le tarif, accessible depuis l'accroche.
-
-                Un vendeur qui envisage d'ouvrir une boutique se demande
-                d'abord ce que ça va lui coûter. Ne pas répondre à cet
-                endroit oblige à s'inscrire pour le savoir, ce qui se
-                lit comme un prix qu'on préfère ne pas montrer.
-              */}
-              <Link href="/sell/tarifs" className="btn-secondary border-white/30 text-white">
+              <Link href="/sell/tarifs" className="btn-secondary">
                 Voir les tarifs
               </Link>
-
-              <Link href="/contact" className="btn-secondary border-white/30 text-white">
-                Nous contacter
-              </Link>
-            </div>
-
-            <div className="mt-10 grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                <p className="text-3xl font-black">4+</p>
-                <p className="text-sm text-white/65">types de vendeurs</p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                <p className="text-3xl font-black">15</p>
-                <p className="text-sm text-white/65">modules vendeurs</p>
-              </div>
-
-              <div className="rounded-2xl border border-white/10 bg-white/10 p-4">
-                <p className="text-3xl font-black">360°</p>
-                <p className="text-sm text-white/65">vente + SaaS + pub</p>
-              </div>
             </div>
           </div>
 
-          {/*
-            Aperçu d'une boutique. C'est une illustration, et elle est
-            annoncée comme telle : sans étiquette, un futur vendeur lit
-            « Boutique Soleil » comme une boutique existante.
-          */}
-          <div className="rounded-[2rem] border border-white/10 bg-white/10 p-5 shadow-2xl backdrop-blur">
-            <p className="mb-3 text-center text-xs font-bold uppercase tracking-label text-white/60">
-              Exemple de boutique
-            </p>
-
-            <div className="rounded-[1.5rem] bg-white p-5 text-neutral-950">
-              <div className="h-32 rounded-3xl bg-gradient-to-r from-orange-100 to-red-100" />
-
-              <div className="-mt-10 flex items-end gap-4 px-4">
-                {/*
-                  Cette vignette portait le logo de MACHE.
-
-                  Deux problèmes, et le second se voit à l'usage. Prêter
-                  l'identité de MACHE à une boutique fictive laisse
-                  croire que MACHE tient boutique. Et surtout : un
-                  visiteur qui voyait le logo au milieu de la page le
-                  prenait pour l'en-tête du site, cliquait dessus pour
-                  revenir à l'accueil — et rien ne se passait, puisque
-                  c'était une image décorative.
-
-                  Des initiales sur un aplat disent « le logo du vendeur
-                  viendra ici » sans emprunter celui de personne.
-                */}
-                <div
-                  aria-hidden="true"
-                  className="flex h-20 w-20 items-center justify-center rounded-3xl border-4 border-white bg-gradient-to-br from-orange-200 to-red-200 text-2xl font-black text-[#071f3d]"
-                >
-                  BS
-                </div>
-
-                <div className="pb-2">
-                  <h2 className="text-2xl font-black">Boutique Soleil</h2>
-                  <p className="text-sm text-neutral-500">
-                    Vendeur vérifié · Port-au-Prince
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-6 rounded-2xl bg-[#071f3d] p-4 text-white">
-                <p className="text-sm text-white/60">Boutique publique</p>
-                <p className="mt-1 text-xl font-black">/store/ma-boutique</p>
-              </div>
-
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                {["Stock", "Commandes", "Pub"].map((item) => (
-                  <div key={item} className="rounded-2xl bg-neutral-50 p-3 text-center">
-                    <p className="font-black">{item}</p>
-                    <p className="mt-1 text-xs text-neutral-500">Actif</p>
-                  </div>
-                ))}
-              </div>
-
-              {/*
-                Cet encart affichait « ⭐ 4.8 / 5 · Temps de réponse rapide » :
-                une note inventée, présentée à de futurs vendeurs comme un
-                résultat obtenu. Il montre désormais ce qu'une boutique gagne
-                réellement à être vérifiée.
-              */}
-              <div className="mt-5 flex items-center justify-between rounded-2xl border p-4">
-                <div>
-                  <p className="font-black">Badge vérifié</p>
-                  <p className="text-sm text-neutral-500">
-                    Accordé après contrôle de vos documents
-                  </p>
-                </div>
-
-                <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-black text-[var(--mache-primary)]">
-                  Vérifié
-                </span>
-              </div>
-            </div>
+          <div className="hidden justify-center lg:flex">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/carte-haiti-mache.webp"
+              width={1000}
+              height={800}
+              alt="Carte d'Haïti aux couleurs de MACHE"
+              className="w-full max-w-[440px] object-contain mix-blend-multiply"
+            />
           </div>
         </div>
       </section>
 
-      <section className="container-page py-14">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-black uppercase text-[var(--mache-primary)]">
-            Choisissez votre profil
-          </p>
-
-          <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-            Un espace adapté à chaque vendeur.
-          </h2>
-
-          <p className="mt-4 text-neutral-500">
-            Chaque profil aura ses propres avantages, formules, modules SaaS et outils de vente.
+      <section className="container-page py-16">
+        <div className="max-w-2xl">
+          <h2 className="text-3xl text-[var(--mache-text)] sm:text-4xl">Trois façons de vendre</h2>
+          <p className="mt-3 text-md leading-relaxed text-[var(--mache-muted)]">
+            Chaque profil a sa propre page, ses propres outils et sa propre formule.
           </p>
         </div>
 
-        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {sellerProfiles.map((profile) => (
-            <Link key={profile.title} href={profile.href} className="card group p-6 transition hover:-translate-y-1 hover:shadow-lg">
-              <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-black text-[var(--mache-primary)]">
-                {profile.badge}
-              </span>
+            <Link
+              key={profile.title}
+              href={profile.href}
+              className="group flex flex-col rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-7 transition-colors hover:border-[var(--mache-text)]"
+            >
+              <h3 className="font-display text-2xl font-semibold text-[var(--mache-text)]">{profile.title}</h3>
 
-              <h3 className="mt-4 text-2xl font-black group-hover:text-[var(--mache-primary)]">
-                {profile.title}
-              </h3>
+              <p className="mt-3 text-base leading-relaxed text-[var(--mache-muted)]">{profile.description}</p>
 
-              <p className="mt-3 text-sm leading-7 text-neutral-500">
-                {profile.description}
-              </p>
-
-              <div className="mt-5 space-y-2">
+              <ul className="mt-5 space-y-2 border-t border-[var(--mache-line)] pt-5">
                 {profile.points.map((point) => (
-                  <p key={point} className="text-sm font-medium">
-                    ✓ {point}
-                  </p>
+                  <li key={point} className="flex gap-3 text-base">
+                    <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--mache-primary)]" />
+                    {point}
+                  </li>
                 ))}
-              </div>
+              </ul>
 
-              <p className="mt-6 text-sm font-black text-[var(--mache-primary)]">
-                Voir le profil →
-              </p>
+              <span className="mt-auto pt-6 text-base font-semibold text-[var(--mache-primary)]">
+                Voir le profil <span aria-hidden="true">→</span>
+              </span>
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="bg-neutral-50 py-14">
-        <div className="container-page grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <section id="guide-vendeur" className="bg-[var(--mache-bg-2)] py-16">
+        <div className="container-page grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <p className="text-sm font-black uppercase text-[var(--mache-primary)]">
-              Marketplace ou SaaS
-            </p>
-
-            <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-              Une seule plateforme, plusieurs façons de l’utiliser.
-            </h2>
-
-            <p className="mt-4 leading-8 text-neutral-500">
-              Certains vendeurs veulent vendre sur Mache. D’autres veulent seulement gérer leur
-              stock et leur activité. Les plus avancés feront les deux.
+            <h2 className="text-3xl text-[var(--mache-text)] sm:text-4xl">Cinq étapes pour commencer</h2>
+            <p className="mt-3 max-w-md text-md leading-relaxed text-[var(--mache-muted)]">
+              Le parcours est le même pour tous les profils. Vous ouvrez la boutique, puis vous la
+              complétez à votre rythme.
             </p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {modes.map((mode) => (
-              <div key={mode.title} className="rounded-3xl bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-black">{mode.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-neutral-500">{mode.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="container-page py-14">
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="card p-6">
-            <h2 className="text-3xl font-black">Simulation dashboard vendeur</h2>
-
-            <p className="mt-3 text-neutral-500">
-              Un aperçu rapide de l’espace vendeur : simple, clair et orienté action.
-            </p>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {[
-                ["Commandes", "24 nouvelles"],
-                ["Stock faible", "8 produits"],
-                ["Revenus", "245k HTG"],
-                ["Publicités", "3 actives"],
-              ].map(([label, value]) => (
-                <div key={label} className="rounded-2xl bg-neutral-50 p-5">
-                  <p className="text-2xl font-black">{value}</p>
-                  <p className="text-sm text-neutral-500">{label}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-2xl border p-5">
-              <p className="font-black">À faire aujourd’hui</p>
-              <div className="mt-3 space-y-2">
-                {[
-                  "Préparer 3 commandes",
-                  "Ajouter du stock sur 5 produits",
-                  "Vérifier une publicité sponsorisée",
-                ].map((task) => (
-                  <p key={task} className="rounded-xl bg-orange-50 px-4 py-3 text-sm">
-                    {task}
-                  </p>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="overflow-hidden rounded-[2rem] border bg-neutral-100">
-            <img
-              loading="lazy"
-              decoding="async"
-              src="/images/carte-haiti-mache.webp"
-              alt="Carte d'Haïti aux couleurs de MACHE"
-              className="h-[520px] w-full object-cover"
-            />
-          </div>
-        </div>
-      </section>
-
-      <section id="guide-vendeur" className="bg-[#071f3d] py-14 text-white">
-        <div className="container-page">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-sm font-black uppercase text-orange-300">
-              Guide vendeur
-            </p>
-
-            <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-              Devenir vendeur en quelques étapes.
-            </h2>
-
-            <p className="mt-4 text-white/65">
-              Un parcours simple pour créer, vérifier et lancer votre activité.
-            </p>
-          </div>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-5">
-            {steps.map((step, index) => (
-              <div key={step} className="rounded-3xl border border-white/10 bg-white/10 p-5">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-lg font-black text-[#071f3d]">
+          <ol className="divide-y divide-[var(--mache-line)] border-y border-[var(--mache-line)]">
+            {steps.map(([title, text], index) => (
+              <li key={title} className="flex gap-6 py-5">
+                <span className="w-8 shrink-0 font-display text-2xl font-semibold text-[var(--mache-primary)]">
                   {index + 1}
+                </span>
+                <div>
+                  <p className="text-md font-semibold text-[var(--mache-text)]">{title}</p>
+                  <p className="mt-0.5 text-base text-[var(--mache-muted)]">{text}</p>
                 </div>
-
-                <p className="mt-4 text-sm font-bold leading-6 text-white/85">
-                  {step}
-                </p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      <section className="container-page py-14">
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+      <section className="container-page py-16">
+        <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
           <div>
-            <p className="text-sm font-black uppercase text-[var(--mache-primary)]">
-              Formules vendeurs
+            <h2 className="text-3xl text-[var(--mache-text)] sm:text-4xl">Des formules simples</h2>
+            <p className="mt-3 max-w-md text-md leading-relaxed text-[var(--mache-muted)]">
+              On commence gratuitement et on choisit plus tard, selon l&apos;activité. Le détail est
+              sur la page des tarifs.
             </p>
-
-            <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-              Des formules simples au départ, évolutives ensuite.
-            </h2>
-
-            <p className="mt-4 leading-8 text-neutral-500">
-              Chaque profil vendeur pourra avoir ses propres options Marketplace, SaaS ou Hybrid.
-            </p>
+            <Link href="/sell/tarifs" className="mt-6 inline-block text-base font-semibold text-[var(--mache-primary)] hover:underline">
+              Voir tous les tarifs →
+            </Link>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
-            {plans.map((plan) => (
-              <div key={plan.name} className="card p-6">
-                <h3 className="text-xl font-black">{plan.name}</h3>
-
-                <p className="mt-3 text-2xl font-black text-[var(--mache-primary)]">
-                  {plan.price}
-                </p>
-
-                <p className="mt-3 text-sm leading-7 text-neutral-500">{plan.text}</p>
+          <dl className="grid gap-5 sm:grid-cols-3">
+            {plans.map(([name, price, text]) => (
+              <div key={name} className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-6">
+                <dt className="text-sm font-semibold text-[var(--mache-muted)]">{name}</dt>
+                <dd className="mt-2 font-display text-2xl font-semibold text-[var(--mache-text)]">{price}</dd>
+                <dd className="mt-2 text-base text-[var(--mache-muted)]">{text}</dd>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="container-page pb-14">
-        <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-          <div className="card p-6">
-            <img
-              loading="lazy"
-              decoding="async"
-              src="/images/carte-haiti-mache.webp"
-              alt="Carte Haiti Mache"
-              className="mx-auto max-h-[380px] object-contain"
-            />
-          </div>
-
-          <div>
-            <p className="text-sm font-black uppercase text-[var(--mache-primary)]">
-              Besoin d’aide ?
-            </p>
-
-            <h2 className="mt-3 text-3xl font-black sm:text-4xl">
-              Une question, un problème ou un devis business ?
-            </h2>
-
-            <p className="mt-4 leading-8 text-neutral-500">
-              L’équipe Mache peut accompagner les vendeurs, boutiques, fournisseurs et marques
-              officielles pour choisir le bon profil et les bons modules.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/contact" className="btn-primary">
-                Contacter l’équipe
-              </Link>
-
-              <Link href="/dashboard/seller/inscription" className="btn-secondary">
-                Créer mon compte vendeur
-              </Link>
-            </div>
-          </div>
+          </dl>
         </div>
       </section>
 
       <section className="container-page pb-16">
-        <div className="overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#071f3d] to-[#d20a1e] p-8 text-white sm:p-10">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-            <div>
-              <p className="text-sm font-black uppercase text-white/70">
-                Devenir vendeur Mache
-              </p>
+        <div className="flex flex-wrap items-center justify-between gap-6 rounded-[8px] bg-[var(--mache-dark)] p-8 text-white sm:p-10">
+          <div className="max-w-xl">
+            <h2 className="text-2xl sm:text-3xl">Une question avant de vous lancer ?</h2>
+            <p className="mt-2 text-md leading-relaxed text-white/75">
+              L&apos;équipe MACHE vous aide à choisir le bon profil, que vous soyez vendeur, boutique,
+              fournisseur ou marque officielle.
+            </p>
+          </div>
 
-              <h2 className="mt-3 text-4xl font-black">
-                Commencez petit. Grandissez avec Mache.
-              </h2>
-
-              <p className="mt-5 max-w-2xl leading-8 text-white/75">
-                Créez votre compte vendeur, choisissez votre profil et activez les outils adaptés :
-                marketplace, SaaS ou les deux.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row lg:justify-end">
-              <Link href="/dashboard/seller/inscription" className="btn-primary">
-                Ouvrir ma boutique
-              </Link>
-            </div>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/dashboard/seller/inscription"
+              className="rounded-[6px] bg-[var(--mache-primary)] px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-[var(--mache-primary-dark)]"
+            >
+              Ouvrir ma boutique
+            </Link>
+            <Link
+              href="/contact"
+              className="rounded-[6px] border border-white/40 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-white hover:text-[var(--mache-text)]"
+            >
+              Contacter l&apos;équipe
+            </Link>
           </div>
         </div>
       </section>

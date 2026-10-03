@@ -119,7 +119,7 @@ export default async function BuyerOrdersPage() {
           Un panier contenant les articles de plusieurs boutiques produit
           une commande par vendeur : chacune est préparée, expédiée et
           réglée séparément.{" "}
-          <Link href="/legal/shipping" className="font-medium text-[#d2162c] hover:underline">
+          <Link href="/legal/shipping" className="font-medium text-[var(--mache-primary)] hover:underline">
             Comment se passe la livraison
           </Link>
         </Notice>

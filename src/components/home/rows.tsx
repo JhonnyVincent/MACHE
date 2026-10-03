@@ -32,9 +32,9 @@ function Heading({
   linkLabel?: string;
 }) {
   return (
-    <div className="container-page mb-4 flex flex-wrap items-end justify-between gap-2">
+    <div className="container-page mb-6 flex flex-wrap items-end justify-between gap-2">
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">{title}</h2>
+        <h2 className="text-2xl text-[var(--mache-text)]">{title}</h2>
         {subtitle && <p className="mt-1 text-sm text-[var(--mache-muted)]">{subtitle}</p>}
       </div>
       {href && linkLabel && (
@@ -65,7 +65,7 @@ export function NewArrivals({ products }: { products: StoreProduct[] }) {
   if (products.length === 0) return null;
 
   return (
-    <section className="mache-reveal py-6">
+    <section className="mache-reveal py-10">
       <Heading
         title="Nouveautés"
         subtitle="Les derniers articles mis en ligne sur MACHE"
@@ -136,7 +136,7 @@ export function NewShopsMarquee({ sellers }: { sellers: StoreSeller[] }) {
   if (sellers.length === 0) return null;
 
   return (
-    <section className="mache-reveal py-6">
+    <section className="mache-reveal py-10">
       <Heading
         title="Nouvelles boutiques"
         subtitle="Les vendeurs qui viennent d'ouvrir sur MACHE"
@@ -152,21 +152,21 @@ export function NewShopsMarquee({ sellers }: { sellers: StoreSeller[] }) {
           <Link
             href={`/store/${seller.handle}`}
             tabIndex={hidden ? -1 : undefined}
-            className="group block h-full overflow-hidden rounded-[12px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow hover:shadow-[0_10px_28px_rgba(16,24,32,0.14)]"
+            className="group block h-full overflow-hidden rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] transition-shadow hover:shadow-card-hover "
           >
-            <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[var(--mache-primary-soft)] to-[var(--mache-bg-2)] sm:h-48">
+            <div className="relative h-40 overflow-hidden bg-[var(--mache-bg-2)] sm:h-48">
               {seller.banner ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={seller.banner}
                   alt=""
                   loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 motion-reduce:transform-none"
+                  className="h-full w-full object-cover transition-transform duration-500 motion-reduce:transform-none"
                 />
               ) : (
                 <span
                   aria-hidden="true"
-                  className="flex h-full items-center justify-center text-6xl font-black tracking-tighter text-[var(--mache-primary)] opacity-25"
+                  className="flex h-full items-center justify-center font-display text-5xl font-semibold text-[var(--mache-light)]"
                 >
                   {seller.name.slice(0, 2).toUpperCase()}
                 </span>
@@ -220,7 +220,7 @@ export function SuggestionsMarquee({
   if (products.length === 0) return null;
 
   return (
-    <section className="mache-reveal py-6">
+    <section className="mache-reveal py-10">
       <Heading title={title} subtitle={subtitle} href={href} linkLabel="Tout voir" />
       <Marquee
         label={title}
@@ -275,8 +275,6 @@ const EARN_ROLES = [
     ],
     cta: "Devenir point relais",
     href: `/contact?sujet=autre&objet=${encodeURIComponent("Devenir point relais")}`,
-    tone: "border-[#bbf7d0] bg-gradient-to-br from-[#f0fdf4] via-white to-[#dcfce7]",
-    accent: "text-[#15803d]",
   },
   {
     key: "agent",
@@ -290,66 +288,59 @@ const EARN_ROLES = [
     ],
     cta: "Devenir agent",
     href: `/contact?sujet=autre&objet=${encodeURIComponent("Devenir agent MACHE")}`,
-    tone: "border-[#bfdbfe] bg-gradient-to-br from-[#eff6ff] via-white to-[#dbeafe]",
-    accent: "text-[#1d4ed8]",
   },
 ];
 
 export function EarnWithMache() {
   return (
-    <section className="mache-reveal container-page py-8">
-      <div className="overflow-hidden rounded-[16px] bg-gradient-to-br from-[#111827] via-[#1e293b] to-[#1e3a8a] p-6 text-white sm:p-10">
+    <section className="mache-reveal container-page py-10">
+      <div className="rounded-[8px] bg-[var(--mache-bg-2)] p-8 sm:p-12">
         <div className="max-w-2xl">
-          <span className="inline-block rounded-[3px] bg-[var(--mache-primary)] px-2 py-1 text-xs font-bold uppercase tracking-widest">
+          <p className="text-sm font-semibold tracking-label text-[var(--mache-primary)]">
             Sans ouvrir de boutique
-          </span>
-          <h2 className="mt-4 text-3xl font-black tracking-tightest sm:text-4xl">
+          </p>
+          <h2 className="mt-3 text-3xl text-[var(--mache-text)] sm:text-4xl">
             Gagnez de l&apos;argent avec MACHE
           </h2>
-          <p className="mt-3 text-md leading-relaxed text-white/80">
+          <p className="mt-4 text-md leading-relaxed text-[var(--mache-muted)]">
             Faites de votre commerce un point relais, ou devenez agent vérifié
             dans votre quartier. MACHE grandit avec ceux qui livrent et qui
             accueillent.
           </p>
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
           {EARN_ROLES.map((role) => (
             <Link
               key={role.key}
               href={role.href}
-              className={`group flex flex-col rounded-[12px] border p-6 text-[var(--mache-text)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(0,0,0,0.35)] motion-reduce:transform-none ${role.tone}`}
+              className="group flex flex-col rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-7 text-[var(--mache-text)] transition-colors hover:border-[var(--mache-text)]"
             >
-              <span className="flex items-center gap-3">
-                <span
-                  aria-hidden="true"
-                  className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-sm transition-transform duration-300 group-hover:scale-110 motion-reduce:transform-none"
-                >
-                  <role.Icon className="h-6 w-6" />
-                </span>
+              <span className="flex items-start gap-4">
+                <role.Icon className="mt-1 h-7 w-7 shrink-0 text-[var(--mache-primary)]" />
                 <span>
-                  <span className="block text-xl font-black">{role.title}</span>
-                  <span className="block text-sm text-[var(--mache-muted)]">{role.who}</span>
+                  <span className="block font-display text-xl font-semibold">{role.title}</span>
+                  <span className="mt-0.5 block text-sm text-[var(--mache-muted)]">{role.who}</span>
                 </span>
               </span>
 
-              <ul className="mt-5 space-y-2.5">
+              <ul className="mt-6 space-y-3">
                 {role.points.map((point) => (
-                  <li key={point} className="flex gap-2 text-base leading-snug">
-                    <span aria-hidden="true" className={`font-black ${role.accent}`}>✓</span>
+                  <li key={point} className="flex gap-3 text-base leading-snug">
+                    <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--mache-primary)]" />
                     <span>{point}</span>
                   </li>
                 ))}
               </ul>
 
-              <p className="mt-5 text-sm text-[var(--mache-muted)]">
+              <p className="mt-6 text-sm text-[var(--mache-muted)]">
                 Rémunéré en fonction des colis livrés. Montants et conditions
                 fixés avec MACHE avant de commencer : rien ne vous engage sans
                 que vous les connaissiez.
               </p>
 
-              <span className={`mt-auto pt-5 text-base font-bold ${role.accent}`}>
-                {role.cta} <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">→</span>
+              <span className="mt-auto pt-6 text-base font-semibold text-[var(--mache-primary)]">
+                {role.cta} <span aria-hidden="true">→</span>
               </span>
             </Link>
           ))}
@@ -359,19 +350,16 @@ export function EarnWithMache() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* FAQ                                                                        */
-/* -------------------------------------------------------------------------- */
-
 /*
+
   Les mêmes réponses que la page /faq, tirées du même fichier
   (src/lib/faq.tsx) : elles ne peuvent pas se contredire.
 */
 export function HomeFaq() {
   return (
-    <section className="mache-reveal container-page py-8">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-        <h2 className="text-xl font-bold tracking-tight text-[var(--mache-text)] sm:text-2xl">
+    <section className="mache-reveal container-page py-10">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
+        <h2 className="text-2xl text-[var(--mache-text)]">
           Questions fréquentes
         </h2>
         <Link href="/faq" className="text-base font-semibold text-[var(--mache-primary)] hover:underline">
@@ -383,9 +371,9 @@ export function HomeFaq() {
         {HOME_FAQ.map((item) => (
           <details
             key={item.q}
-            className="group rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4 transition-shadow open:shadow-[0_6px_18px_rgba(16,24,32,0.08)]"
+            className="group rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-4 transition-shadow open:shadow-soft"
           >
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-md font-bold text-[var(--mache-text)]">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-md font-semibold text-[var(--mache-text)]">
               {item.q}
               <span
                 aria-hidden="true"

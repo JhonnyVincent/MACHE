@@ -61,7 +61,7 @@ export default async function PartnerRegistrationPage({
       </p>
 
       {query.error && (
-        <p role="alert" className="mt-5 rounded-[6px] border border-[#f2c2c8] bg-[#fdeaec] px-3 py-2.5 text-sm text-[#b01124]">
+        <p role="alert" className="mt-5 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-3 py-2.5 text-sm text-[var(--mache-danger-text)]">
           {query.error}
         </p>
       )}
@@ -125,7 +125,7 @@ export default async function PartnerRegistrationPage({
           </div>
         </div>
 
-        <div className="rounded-[10px] border border-[var(--mache-line)] bg-[#f8f8f8] p-4">
+        <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg-2)] p-4">
           <p className="text-sm font-bold text-[var(--mache-text)]">Pour que l&apos;équipe vous réponde (non publié)</p>
           <div className="mt-3 grid gap-4 sm:grid-cols-2">
             <div>

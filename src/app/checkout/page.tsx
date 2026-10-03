@@ -42,7 +42,7 @@ function Step({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-[10px] border border-[var(--mache-line)] bg-white">
+    <section className="rounded-[8px] border border-[var(--mache-line)] bg-white">
       <header className="flex items-center gap-2.5 border-b border-[var(--mache-line)] px-4 py-3">
         <span
           className={`flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold ${
@@ -138,7 +138,7 @@ export default async function CheckoutPage({
         </h1>
 
         {query.error && (
-          <div className="mt-4 rounded-[8px] border border-[#f2c2c8] bg-[#fdeaec] px-4 py-3 text-base text-[#b01124]">
+          <div className="mt-4 rounded-[6px] border border-[var(--mache-danger-line)] bg-[var(--mache-danger-soft)] px-4 py-3 text-base text-[var(--mache-danger-text)]">
             {decodeURIComponent(query.error)}
           </div>
         )}
@@ -245,7 +245,7 @@ export default async function CheckoutPage({
               </form>
 
               {state.international && (
-                <div className="mt-4 rounded-[8px] border border-[#bfdbfe] bg-[#eff6ff] p-3.5 text-sm leading-relaxed text-[#1e3a5f]">
+                <div className="mt-4 rounded-[6px] border border-[var(--mache-info-line)] bg-[var(--mache-info-soft)] p-3.5 text-sm leading-relaxed text-[var(--mache-navy)]">
                   <p className="font-bold">
                     Livraison vers : {countryLabel(prefill.countryCode)}, commande sur confirmation
                   </p>
@@ -267,7 +267,7 @@ export default async function CheckoutPage({
                   en dépendent.
                 </p>
               ) : state.shippingBySeller.length === 0 ? (
-                <p className="rounded-[8px] border border-[#f3d9a5] bg-[#fdf6e8] px-3 py-2.5 text-base text-[var(--mache-muted)]">
+                <p className="rounded-[6px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] px-3 py-2.5 text-base text-[var(--mache-muted)]">
                   Aucun mode de livraison ne dessert cette adresse. Vérifiez le
                   pays et la ville, ou contactez MACHE.
                 </p>
@@ -328,7 +328,7 @@ export default async function CheckoutPage({
             {/* 3. Paiement */}
             <Step number={3} title="Paiement">
               {state.international ? (
-                <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
+                <div className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
                   <p className="text-base font-semibold text-[var(--mache-text)]">
                     Rien à payer maintenant
                   </p>
@@ -340,7 +340,7 @@ export default async function CheckoutPage({
                   </p>
                 </div>
               ) : (
-                <div className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
+                <div className="rounded-[6px] border border-[var(--mache-line)] bg-[var(--mache-bg)] p-3.5">
                   <p className="text-base font-semibold text-[var(--mache-text)]">
                     Paiement à la livraison
                   </p>
@@ -367,7 +367,7 @@ export default async function CheckoutPage({
           </div>
 
           {/* Récapitulatif */}
-          <aside className="h-fit rounded-[10px] border border-[var(--mache-line)] bg-white p-4">
+          <aside className="h-fit rounded-[8px] border border-[var(--mache-line)] bg-white p-4">
             <h2 className="text-md font-bold text-[var(--mache-text)]">
               Votre commande
             </h2>

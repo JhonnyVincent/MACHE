@@ -82,7 +82,7 @@ function ShippingPageEcrit() {
       </p>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="mt-9 rounded-[10px] border border-[#bfdbfe] bg-[#eff6ff] p-5">
+      <section className="mt-9 rounded-[8px] border border-[var(--mache-info-line)] bg-[var(--mache-info-soft)] p-5">
         <h2 className="text-xl font-black tracking-tight text-[var(--mache-text)]">
           Hors d&apos;Haïti : la commande sur confirmation
         </h2>
@@ -103,7 +103,7 @@ function ShippingPageEcrit() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="mt-9 rounded-[10px] border-2 border-[var(--mache-primary)] bg-[var(--mache-white)] p-5">
+      <section className="mt-9 rounded-[8px] border-2 border-[var(--mache-primary)] bg-[var(--mache-white)] p-5">
         <h2 className="text-xl font-black tracking-tight text-[var(--mache-text)]">
           Votre code de remise
         </h2>
@@ -166,7 +166,7 @@ function ShippingPageEcrit() {
           {PATHS.map((path) => (
             <article
               key={path.title}
-              className="rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
+              className="rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5"
             >
               <h3 className="text-lg font-bold text-[var(--mache-text)]">{path.title}</h3>
 
@@ -192,7 +192,7 @@ function ShippingPageEcrit() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="mt-10 rounded-[10px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
+      <section className="mt-10 rounded-[8px] border border-[var(--mache-line)] bg-[var(--mache-white)] p-5">
         <h2 className="text-lg font-bold text-[var(--mache-text)]">
           Vérifier un agent avant de lui remettre quoi que ce soit
         </h2>
@@ -212,7 +212,7 @@ function ShippingPageEcrit() {
       </section>
 
       {/* ---------------------------------------------------------------- */}
-      <section className="mt-6 rounded-[10px] border border-[#f3d9a5] bg-[#fdf6e8] p-5">
+      <section className="mt-6 rounded-[8px] border border-[var(--mache-warn-line)] bg-[var(--mache-warn-soft)] p-5">
         <h2 className="text-md font-bold text-[var(--mache-text)]">
           Ce qui n&apos;est pas encore en place
         </h2>
