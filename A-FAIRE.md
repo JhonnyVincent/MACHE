@@ -166,7 +166,7 @@ Principe : MACHE ne stocke aucune donnée bancaire et ne détient pas l'argent ;
 
 Décisions et infos du 1er octobre 2026 :
 
-- **Slogan** : « Made in Ayiti. Relié au monde. » (version française, en grand) et « Made in Ayiti, Connected Here & Everywhere » (version anglaise, en petit : ses initiales forment **MACHE** et elle explique le nom).
+- **Slogan** : « Made in Ayiti. Relié au monde. » (version française, en grand) (la version anglaise « Connected Here & Everywhere » est retirée du site à la demande du fondateur).
 - **Page de collecte** : une seule page avec un formulaire, sans site de plusieurs pages. Outils envisagés : **Carrd** (page simple, environ 19 $ par an avec domaine perso), **Mailchimp** ou **MailerLite** (page + liste d'e-mails). Wix testé mais jugé trop lourd. Texte de présentation volontairement mystérieux (« MACHE : un marché haïtien nouvelle génération… »).
 - **Publicité TikTok / Meta** : possible vers n'importe quelle adresse web. À prévoir : **nom de domaine propre**, **pixel de suivi** (souvent dans les offres payantes), **politique de confidentialité**, page rapide sur mobile. Alternative sans page : **formulaires intégrés** TikTok/Meta (la personne reste dans l'application).
 - **Comptes à créer** : un compte **TikTok Ads** (gratuit, moyen de paiement + infos de l'entreprise : la LLC aide) et un compte TikTok / Instagram / Facebook **au nom de MACHE** (même nom partout, logo, slogan, lien vers la page). Quelques courtes vidéos aident à rassurer.

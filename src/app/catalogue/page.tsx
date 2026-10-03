@@ -32,7 +32,6 @@ export default function CataloguePage() {
 
           <h1 className="mt-3 max-w-3xl text-hero text-[var(--mache-text)]">Made in Ayiti. Relié au monde.</h1>
 
-          <p className="mt-2 text-sm text-[var(--mache-muted)]">Made in Ayiti, Connected Here &amp; Everywhere</p>
 
           <p className="mt-5 max-w-2xl text-md leading-relaxed text-[var(--mache-muted)]">
             {CATEGORY_TREE.length} rayons et {total} catégories, de la mode à la maison, de
